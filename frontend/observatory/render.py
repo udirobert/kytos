@@ -140,9 +140,9 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
                 Run #{_run_index(latest, runs)} of {VCC_DAYS} — {_h(metric_bits)}.
               </p>
               <p class="vessel-legend-inline">
-                <span class="legend-item legend-fill">fill = ceiling headroom</span>
-                <span class="legend-item legend-warn">cracks = audit warnings</span>
-                <span class="legend-item legend-info">droplets = info flags</span>
+                <span class="legend-item legend-fill">nucleus = ceiling headroom</span>
+                <span class="legend-item legend-warn">membrane stress = audit warnings</span>
+                <span class="legend-item legend-info">vesicles = info flags</span>
               </p>
               <div class="home-cta-row">
                 <a class="button" href="{run_href}">Open run detail →</a>
@@ -319,7 +319,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         m = ", ".join(f"{k}={v}" for k, v in metrics.items())
         severity = _run_severity(run.facts)
         vd = _vessel_data(run.facts)
-        # Mini SVG vessel on each card — visual identity consistent with home
+        # Mini SVG vessel on each card — visual identity without WebGL on this page
         mini_svg = _vessel_svg(run.facts, svg_class="vessel-mini")
         cards += f"""
         <a class="run-card" href="{href}">
@@ -335,32 +335,31 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         </a>
         """
 
-    # Full-bleed 3D vessel hero — same instrument as home page, consistent identity
     latest = runs[-1] if runs else None
     if latest:
-        vd = _vessel_data(latest.facts)
-        vessel_json = json.dumps(vd)
-        svg = _vessel_svg(latest.facts, clip_id="vessel-clip-runs")
-        hero = f"""
-        <section class="runs-hero">
-          <div class="vessel-fullscreen vessel-3d-container vessel-runs" id="vessel-canvas">
-            <div class="vessel-svg-fallback">{svg}</div>
-            <script type="application/json" id="vessel-data">{vessel_json}</script>
-          </div>
-          <div class="runs-hero-overlay">
-            <h1 class="runs-hero-title">Experiment runs</h1>
-            <p class="runs-hero-sub">
-              Every run's metrics, audit flags, and provenance — published in the open.
-            </p>
-          </div>
+        header_vessel = _vessel_svg(latest.facts, svg_class="vessel-mini runs-header-vessel")
+        run_count = f"{len(runs)} run{'s' if len(runs) != 1 else ''} published"
+        header = f"""
+        <section class="runs-header">
+          <div class="runs-header-vessel-wrap">{header_vessel}</div>
+          <h1>Experiment runs</h1>
+          <p class="runs-header-sub">
+            Metrics, audit flags, and provenance for every experiment — click a card to open.
+          </p>
+          <p class="runs-header-count">{run_count}</p>
         </section>
         """
     else:
-        hero = '<section class="runs-hero"><h1>Experiment runs</h1></section>'
+        header = """
+        <section class="runs-header">
+          <h1>Experiment runs</h1>
+          <p class="runs-header-sub muted">Waiting for the first run with facts.json.</p>
+        </section>
+        """
 
     body = (
         _nav("runs", runs, root_prefix=root_prefix)
-        + hero
+        + header
         + f'<main class="content"><div class="run-grid">{cards}</div></main>'
     )
     meta = PageMeta(
@@ -369,7 +368,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
             "Index of Kytos experiment runs with cell-eval metrics, audit flags, and provenance."
         ),
         canonical_path="/runs/",
-        needs_vessel=True,
+        needs_vessel=False,
     )
     return _head(meta, root_prefix=root_prefix) + f'<body class="page-runs">{body}</body></html>'
 
@@ -559,9 +558,9 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
         <div class="hero-fullscreen hero-video">
           <video class="briefing-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}" preload="none"></video>
-          <span class="briefing-stamp">kytos newsroom · run #1 of 78 · the oracle speaks</span>
+          <span class="briefing-stamp">kytos newsroom · run #1 of 78 · the cell speaks</span>
           <button class="briefing-unmute" type="button" hidden
-                  aria-label="Unmute the oracle briefing">♪ unmute — the oracle sings</button>
+                  aria-label="Unmute the cell briefing">♪ unmute — the cell sings</button>
         </div>
         """
     if hero:
@@ -597,22 +596,37 @@ def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "v
     fill, warns, infos = vd["fill_pct"], vd["warns"], vd["infos"]
 
     fill_y = 236 - int(fill / 100 * 190)  # liquid surface y (bottom = 236)
+    # Membrane stress marks (audit warnings) on the cell's edge
     cracks = "".join(
         f'<path class="vessel-crack" d="M {72 + i * 12} {150 + (i % 3) * 14} l {10 + i} {26 + i}"/>'
         for i in range(min(warns, 6))
     )
+    # Vesicles (info flags) floating in the cytoplasm
     droplets = "".join(
         f'<circle class="vessel-info" cx="{55 + i * 22}" cy="{46 + (i % 2) * 28}" r="3"/>'
         for i in range(min(infos, 5))
     )
+    # The instrument: the vessel silhouette that holds the cell
     glass_path = (
         "M 80 12 L 120 12 L 120 58 Q 120 92 156 132 Q 188 168 172 208"
         " Q 158 240 100 240 Q 42 240 28 208 Q 12 168 44 132 Q 80 92 80 58 Z"
     )
+    # The subject: the cell inside the vessel — nucleus = headroom, cytoplasm
+    # = the rising liquid, membrane = the vessel's inner wall.
+    cell_cy = 132
+    cell_r = 62
+    nucleus_r = max(10, int(cell_r * fill / 100))  # nucleus grows with headroom
+    nucleus_cx, nucleus_cy = 100, 150
+    nucleus = f'<circle class="cell-nucleus" cx="{nucleus_cx}" cy="{nucleus_cy}" r="{nucleus_r}"/>'
+    cell = (
+        f'<circle class="cell-membrane" cx="{cell_cy}" cy="{cell_cy}" r="{cell_r}"/>'
+        f'<circle class="cell-membrane" cx="{cell_cy}" cy="{cell_cy}" r="{cell_r - 4}"/>'
+        f"{nucleus}"
+    )
 
     return f"""
       <svg class="{svg_class}" viewBox="0 0 200 250" role="img"
-           aria-label="Kytos vessel instrument: fill {fill} percent, {warns} audit warnings">
+           aria-label="Kytos cell instrument: nucleus fill {fill} percent, {warns} audit warnings">
         <defs>
           <clipPath id="{clip_id}">
             <path d="{glass_path}"/>
@@ -622,6 +636,7 @@ def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "v
         <rect class="vessel-liquid" x="10" y="{fill_y}" width="180" height="250"
               clip-path="url(#{clip_id})"/>
         <line class="vessel-liquid-line" x1="30" y1="{fill_y}" x2="170" y2="{fill_y}"/>
+        <g class="cell-subject">{cell}</g>
         <g class="vessel-cracks">{cracks}</g>
         <g class="vessel-droplets">{droplets}</g>
       </svg>"""
@@ -665,9 +680,9 @@ def _vessel_stage(
         <div class="vessel-svg-fallback">{svg}</div>
       </div>
       <script type="application/json" id="vessel-data">{vessel_json}</script>
-      <p class="vessel-label">κύτος · the hollow vessel fills with evidence</p>
+      <p class="vessel-label">κύτος · the instrument that shows when the model is wrong</p>
       <p class="vessel-legend">
-        <span class="legend-item legend-fill">fill = {fill}% ceiling headroom</span>
+        <span class="legend-item legend-fill">nucleus = {fill}% ceiling headroom</span>
         <span class="legend-item legend-warn">{warns} {warn_plural}</span>
         <span class="legend-item legend-info">{infos} info {info_plural}</span>
       </p>

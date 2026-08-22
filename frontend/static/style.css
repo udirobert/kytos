@@ -350,7 +350,8 @@ code {
   display: none;
 }
 
-.vessel-3d-container {
+.home-stage .vessel-3d-container,
+.run-hero .vessel-3d-container {
   position: absolute;
   inset: 0;
   display: grid;
@@ -650,7 +651,55 @@ code {
    RUNS INDEX
    ════════════════════════════════════════════════════════════════════════ */
 
-/* Full-bleed 3D vessel hero — consistent identity with home page */
+/* Compact header — SVG only; no WebGL (canvas was blocking card clicks) */
+.runs-header {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 0.5rem;
+  text-align: center;
+}
+
+.runs-header-vessel-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.runs-header-vessel {
+  width: 72px;
+  height: auto;
+  opacity: 0.92;
+}
+
+.runs-header h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 400;
+  margin: 0 0 0.5rem;
+}
+
+.runs-header-sub {
+  color: var(--muted);
+  font-size: 0.92rem;
+  max-width: 42ch;
+  margin: 0 auto 0.35rem;
+  line-height: 1.5;
+}
+
+.runs-header-count {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.page-runs .content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Legacy runs-hero (removed from runs index — kept for reference if reused) */
 .runs-hero {
   position: relative;
   min-height: 55vh;
@@ -1096,6 +1145,21 @@ code {
 
 .vessel-info {
   fill: rgba(103, 232, 249, 0.85);
+}
+
+/* The subject: the cell inside the instrument — nucleus = headroom */
+.cell-membrane {
+  fill: rgba(148, 163, 184, 0.06);
+  stroke: rgba(94, 234, 212, 0.55);
+  stroke-width: 1.4;
+}
+
+.cell-nucleus {
+  fill: rgba(94, 234, 212, 0.5);
+  stroke: rgba(94, 234, 212, 0.9);
+  stroke-width: 1.2;
+  filter: drop-shadow(0 0 6px rgba(94, 234, 212, 0.45));
+  transition: r 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .vessel-label {
