@@ -1041,6 +1041,42 @@
     });
   }
 
+  // ── About flow: 3-phase guided disclosure ─────────────────────────────────
+  function initAboutFlow() {
+    var flow = document.getElementById("about-flow");
+    if (!flow) return;
+
+    var phases = flow.querySelectorAll(".about-phase");
+
+    function goTo(n) {
+      phases.forEach(function (p) {
+        var phaseNum = parseInt(p.dataset.phase, 10);
+        if (phaseNum === n) {
+          p.hidden = false;
+          p.classList.add("is-active");
+          p.classList.remove("is-shown");
+          void p.offsetHeight;
+          p.classList.add("is-shown");
+        } else {
+          p.classList.remove("is-active");
+          p.classList.remove("is-shown");
+          p.hidden = true;
+        }
+      });
+    }
+
+    flow.querySelectorAll("[data-next]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        goTo(parseInt(btn.dataset.next, 10));
+      });
+    });
+    flow.querySelectorAll("[data-back]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        goTo(parseInt(btn.dataset.back, 10));
+      });
+    });
+  }
+
   function onReady() {
     initPlotly();
     initVccRail();
@@ -1061,6 +1097,7 @@
     initSvgVesselInteractivity();
     initViewModeToggle();
     initHomeFlow();
+    initAboutFlow();
   }
 
   if (document.readyState === "loading") {

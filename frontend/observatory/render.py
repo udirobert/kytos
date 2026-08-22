@@ -1730,17 +1730,13 @@ def _run_header_compact(
         <a href="{root_prefix}runs/index.html">← All runs</a>
         {jk}
       </nav>
-      <div class="run-header-grid">
-        <div class="run-header-copy">
-          <p class="eyebrow">
-            Run #{_run_index(run, runs)} of {VCC_DAYS} · {_h(facts.get("created", ""))}
-          </p>
-          <h1 class="run-header-title">{_h(facts.get("headline", run.run_id))}</h1>
-          {status_badge}
-          {score_line}
-        </div>
-        {media}
-      </div>
+      <p class="eyebrow">
+        Run #{_run_index(run, runs)} of {VCC_DAYS} · {_h(facts.get("created", ""))}
+      </p>
+      <h1 class="run-header-title">{_h(facts.get("headline", run.run_id))}</h1>
+      {status_badge}
+      {score_line}
+      {media}
       <button class="run-inspect-cta" type="button" data-scroll-to="evidence-journey">
         Inspect the evidence ↓
       </button>
@@ -1801,15 +1797,9 @@ def _run_header_media(visual: dict, facts: dict) -> str:
           <button class="briefing-unmute" type="button" hidden
                   aria-label="Unmute bulletin">♪ unmute</button>
         </div>"""
-    if hero:
-        return f"""
-        <div class="run-header-media">
-          <img class="run-header-thumb" src="{_h(hero)}" alt="Run visual">
-        </div>"""
-    return f"""
-        <div class="run-header-media run-header-vessel-wrap">
-          {_vessel_svg(facts, svg_class="vessel-mini run-header-vessel")}
-        </div>"""
+    # No static thumbnail — the 3D vessel behind the hero is the visual.
+    # Only the bulletin/briefing video earns its place in the header.
+    return ""
 
 
 def _provenance_block(prov: dict, run_id: str) -> str:

@@ -3,9 +3,40 @@
 {% block content %}
 {{ nav | safe }}
 <main class="content about-content">
-  {{ analogy_html | safe }}
-  {{ timeline_html | safe }}
-  {{ vessel_about_panel | safe }}
-  {{ substantiation_about_html | safe }}
+  <div class="about-flow" id="about-flow">
+
+    <!-- Phase 1: The Claim -->
+    <div class="about-phase t-stagger is-shown is-active" data-phase="1">
+      {{ analogy_html | safe }}
+      <button class="button about-phase-cta t-stagger-line t-stagger-line--4"
+              type="button" data-next="2">
+        See the timeline →
+      </button>
+    </div>
+
+    <!-- Phase 2: The Evidence -->
+    <div class="about-phase t-stagger" data-phase="2" hidden>
+      {{ timeline_html | safe }}
+      {{ vessel_about_panel | safe }}
+      <button class="button about-phase-cta t-stagger-line t-stagger-line--4"
+              type="button" data-next="3">
+        Why the Observatory →
+      </button>
+      <button class="about-phase-back t-stagger-line t-stagger-line--5"
+              type="button" data-back="1">
+        ← Back
+      </button>
+    </div>
+
+    <!-- Phase 3: The Substance -->
+    <div class="about-phase t-stagger" data-phase="3" hidden>
+      {{ substantiation_about_html | safe }}
+      <button class="about-phase-back t-stagger-line t-stagger-line--4"
+              type="button" data-back="2">
+        ← Back
+      </button>
+    </div>
+
+  </div>
 </main>
 {% endblock %}
