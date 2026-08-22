@@ -191,9 +191,16 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         href = f"{_h(run.run_id)}/index.html"
         metrics = run.facts.get("headline_metrics") or {}
         m = ", ".join(f"{k}={v}" for k, v in metrics.items())
+        severity = _run_severity(run.facts)
+        vd = _vessel_data(run.facts)
         cards += f"""
         <a class="run-card" href="{href}">
-          <span class="run-card-id">{_h(run.run_id)}</span>
+          <span class="run-card-top">
+            <span class="run-card-id">
+              <span class="run-pill-dot dot-{severity}"></span>{_h(run.run_id)}
+            </span>
+            <span class="run-card-fill">{vd["fill_pct"]}%</span>
+          </span>
           <span class="run-card-headline">{_h(run.facts.get("headline", ""))}</span>
           <span class="run-card-metrics">{_h(m)}</span>
         </a>
@@ -210,7 +217,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         ),
         canonical_path="/runs/",
     )
-    return _head(meta, root_prefix=root_prefix) + f"<body>{body}</body></html>"
+    return _head(meta, root_prefix=root_prefix) + f'<body class="page-runs">{body}</body></html>'
 
 
 def render_run_detail(
@@ -225,7 +232,7 @@ def render_run_detail(
     chart_json = metrics_bar_chart(metrics_names, scores, ceilings) if metrics_names else "{}"
 
     visual = facts.get("visual") or {}
-    hero_html = _stage_hero(visual, media_prefix, facts)
+    vd = _vessel_data(facts)
 
     flags_html = _audit_flags(facts.get("audit_flags") or [])
     hypotheses = facts.get("hypotheses_preregistered") or []
@@ -263,59 +270,76 @@ def render_run_detail(
     {_nav(run.run_id, runs, root_prefix=root_prefix)}
     {_confession_banner(facts, run.run_id)}
     <nav class="breadcrumb"><a href="{root_prefix}runs/index.html">← All runs</a></nav>
-    <main class="run-layout">
-      <section class="stage-column">
-        {hero_html}
-        <div class="stage-caption">
-          <p class="eyebrow">{_h(facts.get("created", ""))}</p>
-          <h1>{_h(facts.get("headline", run.run_id))}</h1>
-          <p class="metric-summary">{metric_summary}</p>
+    <section class="run-hero">
+      <div class="vessel-fullscreen vessel-3d-container" id="vessel-canvas">
+        <div class="vessel-svg-fallback">{_vessel_svg(facts, clip_id="vessel-clip-run")}</div>
+        <script type="application/json" id="vessel-data">{json.dumps(vd)}</script>
+      </div>
+      <div class="run-hero-overlay">
+        <p class="eyebrow">{_h(facts.get("created", ""))}</p>
+        <h1 class="run-hero-title">{_h(facts.get("headline", run.run_id))}</h1>
+        <p class="metric-summary">{metric_summary}</p>
+        <div class="run-hero-strip">
+          <span class="data-strip-item">
+            <span class="data-strip-label">fill</span>
+            <span class="data-strip-value">{vd["fill_pct"]}%</span>
+          </span>
+          <span class="data-strip-sep"></span>
+          <span class="data-strip-item">
+            <span class="data-strip-label">audit</span>
+            <span class="data-strip-value data-strip-warn">{vd["warns"]} warn</span>
+          </span>
+          <span class="data-strip-sep"></span>
+          <span class="data-strip-item">
+            <span class="data-strip-label">info</span>
+            <span class="data-strip-value">{vd["infos"]}</span>
+          </span>
         </div>
+      </div>
+    </section>
+    <main class="run-evidence">
+      <section class="panel">
+        <h2>Audit flags</h2>
+        {flags_html}
       </section>
-      <aside class="evidence-rail">
-        <section class="panel">
-          <h2>Audit flags</h2>
-          {flags_html}
-        </section>
-        <section class="panel">
-          <h2>Metrics vs ceiling</h2>
-          <p class="panel-note">From committed CSVs only — never LLM-generated.
-          Click a headline value to open its source.</p>
-          <div id="metrics-chart" class="chart"></div>
-          <script type="application/json" id="metrics-chart-data">{chart_json}</script>
-        </section>
-        <section class="panel collapsible">
-          <h2>Literature</h2>
-          <p class="panel-note">Tavily enrichment · auxiliary evidence</p>
-          {lit_html}
-        </section>
-        <section class="panel collapsible">
-          <h2>Biomedical NER</h2>
-          <p class="panel-note">Pioneer GLiNER2 · deterministic entity extraction</p>
-          {entity_html}
-        </section>
-        <section class="panel">
-          <h2>Narrative</h2>
-          <p class="panel-note">OpenAI digest · traces to facts.json</p>
-          {narrative_html}
-        </section>
-        <section class="panel">
-          <h2>Pre-registered hypotheses</h2>
-          <ul class="hyp-list">{hyp_html or "<li class='muted'>None</li>"}</ul>
-        </section>
-        <footer class="provenance">
-          <h2>Provenance</h2>
-          <dl>
-            <dt>commit</dt><dd><code>{_h(str(prov.get("commit", "")))}</code></dd>
-            <dt>seed</dt><dd>{_h(str(prov.get("seed", "")))}</dd>
-            <dt>code_hash</dt><dd><code>{_h(str(prov.get("code_hash", "")))}</code></dd>
-          </dl>
-          <p class="reproduce">Reproduce:
-          <code id="reproduce-cmd">python -m kytos.audit --run experiments/{_h(run.run_id)}
-          &amp;&amp; python -m kytos.eval.facts --run experiments/{_h(run.run_id)}</code>
-          <button class="copy-btn" type="button" data-copy="#reproduce-cmd">copy</button></p>
-        </footer>
-      </aside>
+      <section class="panel">
+        <h2>Metrics vs ceiling</h2>
+        <p class="panel-note">From committed CSVs only — never LLM-generated.
+        Click a headline value to open its source.</p>
+        <div id="metrics-chart" class="chart"></div>
+        <script type="application/json" id="metrics-chart-data">{chart_json}</script>
+      </section>
+      <section class="panel collapsible">
+        <h2>Literature</h2>
+        <p class="panel-note">Tavily enrichment · auxiliary evidence</p>
+        {lit_html}
+      </section>
+      <section class="panel collapsible">
+        <h2>Biomedical NER</h2>
+        <p class="panel-note">Pioneer GLiNER2 · deterministic entity extraction</p>
+        {entity_html}
+      </section>
+      <section class="panel">
+        <h2>Narrative</h2>
+        <p class="panel-note">OpenAI digest · traces to facts.json</p>
+        {narrative_html}
+      </section>
+      <section class="panel">
+        <h2>Pre-registered hypotheses</h2>
+        <ul class="hyp-list">{hyp_html or "<li class='muted'>None</li>"}</ul>
+      </section>
+      <footer class="provenance">
+        <h2>Provenance</h2>
+        <dl>
+          <dt>commit</dt><dd><code>{_h(str(prov.get("commit", "")))}</code></dd>
+          <dt>seed</dt><dd>{_h(str(prov.get("seed", "")))}</dd>
+          <dt>code_hash</dt><dd><code>{_h(str(prov.get("code_hash", "")))}</code></dd>
+        </dl>
+        <p class="reproduce">Reproduce:
+        <code id="reproduce-cmd">python -m kytos.audit --run experiments/{_h(run.run_id)}
+        &amp;&amp; python -m kytos.eval.facts --run experiments/{_h(run.run_id)}</code>
+        <button class="copy-btn" type="button" data-copy="#reproduce-cmd">copy</button></p>
+      </footer>
     </main>
     <script src="{root_prefix}static/site.js" defer></script>
     """
