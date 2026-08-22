@@ -3,27 +3,27 @@
     "narrative": {
       "status": "fallback",
       "detail": "Deterministic fallback digest (no API key or LLM call failed).",
-      "timestamp": "2026-08-22T23:00:32+00:00"
+      "timestamp": "2026-08-22T23:15:41+00:00"
     },
     "literature": {
       "status": "skipped",
       "detail": "TAVILY_API_KEY not set \u2014 enrichment not attempted.",
-      "timestamp": "2026-08-22T23:00:32+00:00"
+      "timestamp": "2026-08-22T23:15:41+00:00"
     },
     "ner": {
       "status": "fallback",
       "detail": "Regex fallback extractor \u2014 6 files enriched (no API key or all model calls failed).",
-      "timestamp": "2026-08-22T23:00:32+00:00"
+      "timestamp": "2026-08-22T23:15:41+00:00"
     },
     "visuals": {
       "status": "skipped",
       "detail": "FAL_KEY not set \u2014 no hero or share card generated.",
-      "timestamp": "2026-08-22T23:00:32+00:00"
+      "timestamp": "2026-08-22T23:15:41+00:00"
     },
     "briefing": {
       "status": "skipped",
       "detail": "FAL_KEY not set \u2014 no briefing video generated.",
-      "timestamp": "2026-08-22T23:00:32+00:00"
+      "timestamp": "2026-08-22T23:15:41+00:00"
     }
   }
 }

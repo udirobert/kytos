@@ -1,12 +1,12 @@
 {
   "status": "fail",
   "summary": "3/4 checks passed",
-  "generated_at": "2026-08-22T23:00:33+00:00",
+  "generated_at": "2026-08-22T23:15:42+00:00",
   "cases": [
     {
       "name": "numbers_grounded",
       "ok": false,
-      "detail": "21/22 numbers trace to facts.json \u2014 ungrounded: 33"
+      "detail": "21/23 numbers trace to facts.json \u2014 ungrounded: 15, 42"
     },
     {
       "name": "no_facts_annotation_leak",
