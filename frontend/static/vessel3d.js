@@ -586,6 +586,31 @@ function initVessel3D() {
   bioLight.position.set(-4, 1, 2);
   scene.add(bioLight);
 
+  // Evidence journey state: the instrument changes emphasis as the reader
+  // moves from audit stress to evidence, digest, and independent trust.
+  var journeyColors = {
+    audit: new THREE.Color(0xfbbf24),
+    evidence: new THREE.Color(0x2dd4bf),
+    narrative: new THREE.Color(0xc4b5fd),
+    trust: new THREE.Color(0x22d3ee),
+  };
+  var journeyState = "audit";
+  var journeyTargetColor = journeyColors.audit.clone();
+  var crackBaseColor = new THREE.Color(0xfbbf24);
+  var journeyIntensity = 1;
+  var journeyTargetIntensity = 1;
+  function setJourneyState(state) {
+    if (!journeyColors[state]) return;
+    journeyState = state;
+    journeyTargetColor.copy(journeyColors[state]);
+    journeyTargetIntensity = state === "audit" ? 1.18 : state === "trust" ? 1.08 : 0.92;
+    container.setAttribute("data-journey-state", state);
+  }
+  window.addEventListener("kytos:journey-state", function (event) {
+    setJourneyState(event.detail && event.detail.state);
+  });
+  setJourneyState(container.getAttribute("data-journey-state") || "audit");
+
   // ── Controls ─────────────────────────────────────────────────────────────
   // Interactive: judges can drag to rotate and scroll to zoom. Auto-rotate
   // pauses on interaction and resumes after 3s of idle — this makes the
@@ -824,6 +849,25 @@ function initVessel3D() {
       }
     }
 
+    // Journey state eases instead of snapping, preserving the specimen feel.
+    nucleusMat.color.lerp(journeyTargetColor, 0.045);
+    nucleusGlowMat.color.lerp(journeyTargetColor, 0.045);
+    nucleusLight.color.copy(journeyTargetColor);
+    nucleusLight.intensity += (0.5 * journeyIntensity - nucleusLight.intensity) * 0.04;
+    bioLight.color.lerp(journeyTargetColor, 0.035);
+    bioLight.intensity += (0.6 * journeyTargetIntensity - bioLight.intensity) * 0.04;
+    journeyIntensity += (journeyTargetIntensity - journeyIntensity) * 0.04;
+    if (bloomPass) {
+      bloomPass.strength += (0.5 * journeyTargetIntensity - bloomPass.strength) * 0.04;
+    }
+    organelles.forEach(function (organelle, index) {
+      var emphasis = journeyState === "evidence" ? 1.15 : journeyState === "trust" ? 1.05 : 0.9;
+      organelle.material.opacity = Math.min(1, organelle.material.opacity + (0.55 * emphasis - organelle.material.opacity) * 0.03);
+      if (organelle.userData && organelle.userData.phase !== undefined) {
+        organelle.userData.journeyEmphasis = emphasis + index * 0.01;
+      }
+    });
+
     // Glass fade-in
     var glassA = fadeFactor("glass");
     vesselMat.opacity = glassA;
@@ -906,7 +950,9 @@ function initVessel3D() {
       var parentMesh = isParent ? c : c.userData.parent;
       var isHovered = parentMesh && hoveredObj === parentMesh;
       if (isParent) {
-        c.material.opacity = (0.8 + Math.sin(t * 2 + ci) * 0.2) * crackA;
+        var crackColor = journeyState === "audit" ? journeyTargetColor : crackBaseColor;
+        c.material.color.lerp(crackColor, 0.06);
+        c.material.opacity = (0.8 + Math.sin(t * 2 + ci) * 0.2) * crackA * (journeyState === "audit" ? 1.1 : 0.72);
         c.material.transparent = true;
         // Hover scale on crack tubes
         var targetScale = isHovered ? 1.4 : 1.0;
@@ -914,7 +960,8 @@ function initVessel3D() {
         c.userData.curScale += (targetScale - c.userData.curScale) * 0.15;
         c.scale.setScalar(c.userData.curScale);
       } else {
-        c.material.opacity = (isHovered ? 0.45 : 0.15) * crackA;
+        c.material.color.lerp(journeyState === "audit" ? journeyTargetColor : crackBaseColor, 0.06);
+        c.material.opacity = (isHovered ? 0.45 : 0.15) * crackA * (journeyState === "audit" ? 1.1 : 0.72);
       }
     });
 

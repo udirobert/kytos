@@ -87,7 +87,11 @@ def _narrative_label(narrative: str | None) -> str:
 
 
 def _prepare_narrative_markdown(text: str) -> str:
-    """Drop audit/hypothesis sections already shown in other panels."""
+    """Drop audit/hypothesis sections already shown in other panels.
+
+    Also strips LLM-generated debug annotations like ``(facts: key.path)``
+    that leak JSON key paths into user-facing prose.
+    """
     lines = text.splitlines()
     out: list[str] = []
     i = 0
@@ -113,7 +117,10 @@ def _prepare_narrative_markdown(text: str) -> str:
             continue
         out.append(line)
         i += 1
-    return "\n".join(out).strip()
+    cleaned = "\n".join(out).strip()
+    # Remove LLM debug annotations: (facts: ...) or (facts: key.path)
+    cleaned = re.sub(r"\s*\(facts:\s*[^)]*\)", "", cleaned)
+    return cleaned
 
 
 def _narrative_display_html(narrative: str | None) -> str:
@@ -186,15 +193,16 @@ def _run_card_delta(run: RunSummary, prev: RunSummary | None) -> str:
     return ""
 
 
-def _evidence_sub_panel(title: str, hint: str, body: str) -> str:
+def _evidence_block(title: str, hint: str, body: str) -> str:
+    """Flat evidence section — no nested accordion inside the Evidence panel."""
     return f"""
-    <details class="evidence-sub-panel">
-      <summary class="evidence-sub-summary">
-        <span class="evidence-sub-title">{_h(title)}</span>
+    <section class="evidence-block">
+      <header class="evidence-block-header">
+        <h3 class="evidence-block-title">{_h(title)}</h3>
         <span class="disclosure-hint">{_h(hint)}</span>
-      </summary>
-      <div class="evidence-sub-body">{body}</div>
-    </details>
+      </header>
+      <div class="evidence-block-body">{body}</div>
+    </section>
     """
 
 
@@ -273,6 +281,53 @@ def _home_proof_pill(facts: dict) -> str:
     return f'<p class="home-proof">{_h(" · ".join(parts))}</p>'
 
 
+def _bio_atmosphere(*, variant: str = "stage", density: str = "light") -> str:
+    """Shared biological motif layer inspired by specimen plates and DNA studies.
+
+    It stays behind content and uses static SVG geometry so the same visual language
+    works on Home, Runs, and run detail without another runtime dependency.
+    """
+    density_class = f" bio-atmosphere-{density}"
+    helix_left = (
+        "M22 0 C118 70 118 140 22 210 C-8 232 -8 278 22 300 "
+        "C118 370 118 440 22 510 C10 520 8 540 22 560"
+    )
+    helix_right = (
+        "M118 0 C22 70 22 140 118 210 C148 232 148 278 118 300 "
+        "C22 370 22 440 118 510 C130 520 132 540 118 560"
+    )
+    helix_bars = (
+        "M42 42 L98 42 M30 112 L110 112 M26 182 L114 182 "
+        "M42 252 L98 252 M26 322 L114 322 M30 392 L110 392 "
+        "M42 462 L98 462 M26 532 L114 532"
+    )
+    vein_branches = (
+        "M130 204 C120 150 90 112 36 74 M178 154 C188 110 212 76 266 36 "
+        "M232 128 C278 124 314 142 352 184"
+    )
+    return f"""
+      <div class="bio-atmosphere bio-atmosphere-{_h(variant)}{density_class}" aria-hidden="true">
+        <svg class="bio-helix" viewBox="0 0 140 560" preserveAspectRatio="none">
+          <path d="{helix_left}"/>
+          <path d="{helix_right}"/>
+          <path d="{helix_bars}"/>
+        </svg>
+        <svg class="bio-veins" viewBox="0 0 420 300" preserveAspectRatio="none">
+          <path d="M0 266 C88 242 128 202 178 154 C222 112 268 82 420 38"/>
+          <path d="{vein_branches}"/>
+          <ellipse cx="70" cy="100" rx="38" ry="13" transform="rotate(30 70 100)"/>
+          <ellipse cx="224" cy="72" rx="42" ry="14" transform="rotate(-32 224 72)"/>
+          <ellipse cx="326" cy="151" rx="44" ry="14" transform="rotate(28 326 151)"/>
+        </svg>
+        <span class="bio-organelle bio-organelle-a"></span>
+        <span class="bio-organelle bio-organelle-b"></span>
+        <span class="bio-organelle bio-organelle-c"></span>
+        <span class="bio-membrane bio-membrane-a"></span>
+        <span class="bio-membrane bio-membrane-b"></span>
+      </div>
+    """
+
+
 def _home_vessel_legend_html(vd: dict[str, Any], *, about_href: str) -> str:
     warn_word = "warning" if vd["warns"] == 1 else "warnings"
     info_word = "flag" if vd["infos"] == 1 else "flags"
@@ -313,6 +368,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
 
         stage = f"""
         <section class="home-stage">
+          {_bio_atmosphere(variant="home", density="light")}
           <div class="home-hero-grid">
             <div class="home-vessel-column">
               <div class="vessel-fullscreen vessel-3d-container vessel-home" id="vessel-canvas">
@@ -472,7 +528,10 @@ def _vessel_about_panel(runs: list[RunSummary]) -> str:
 
 def _run_card_metrics_line(run: RunSummary) -> str:
     """Human-readable run card metrics: ceiling % and audit warns."""
-    facts = run.facts
+    return _metrics_line_from_facts(run.facts)
+
+
+def _metrics_line_from_facts(facts: dict) -> str:
     metrics = facts.get("headline_metrics") or {}
     ceilings = facts.get("ceiling_headroom") or {}
     parts: list[str] = []
@@ -665,7 +724,7 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         _head(meta, root_prefix=root_prefix)
         + f'<body class="page-about">{body}</body>'
         + f'<script src="{root_prefix}static/site.js" defer></script>'
-        + "</body></html>"
+        + "</html>"
     )
 
 
@@ -702,6 +761,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         run_count = f"{len(runs)} run{'s' if len(runs) != 1 else ''} published"
         header = f"""
         <section class="runs-header">
+          {_bio_atmosphere(variant="archive", density="light")}
           <div class="runs-header-vessel-wrap">{header_vessel}</div>
           <h1>Experiment runs</h1>
           <p class="runs-header-sub">
@@ -736,6 +796,31 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
     return _head(meta, root_prefix=root_prefix) + f'<body class="page-runs">{body}</body></html>'
 
 
+def _evidence_journey() -> str:
+    """Run-detail navigation rail: one route through the evidence."""
+    steps = (
+        ("audit", "01", "Audit", "stress detected", "amber"),
+        ("evidence", "02", "Evidence", "field context", "teal"),
+        ("narrative", "03", "Digest", "grounded account", "violet"),
+        ("trust", "04", "Trust", "reproduce + verify", "cyan"),
+    )
+    items = "".join(
+        f'<a class="journey-step journey-step-{accent}" href="#{section_id}" '
+        f'data-journey-target="{section_id}">'
+        f'<span class="journey-step-number">{number}</span>'
+        f'<span class="journey-step-copy"><strong>{title}</strong><small>{hint}</small></span>'
+        f"</a>"
+        for section_id, number, title, hint, accent in steps
+    )
+    return f"""
+    <nav class="evidence-journey" aria-label="Run evidence journey">
+      <span class="journey-label">specimen trail</span>
+      <div class="journey-steps">{items}</div>
+      <span class="journey-progress" aria-hidden="true"><span></span></span>
+    </nav>
+    """
+
+
 def render_run_detail(
     run: RunSummary,
     runs: list[RunSummary],
@@ -768,24 +853,23 @@ def render_run_detail(
 
     prov = facts.get("provenance") or {}
     headline_m = facts.get("headline_metrics") or {}
-    headline_c = facts.get("ceiling_headroom") or {}
     csv_href = f"{root_prefix}metrics/agg_results.csv"
-    metric_pills = _metric_pills(headline_m, headline_c, csv_href)
+    score_line = _run_score_line(facts, csv_href)
 
     evidence_hint = _evidence_hint(literature, entity_summary)
     lit_count = len(literature)
     evidence_body = (
-        _evidence_sub_panel(
+        _evidence_block(
             "Literature",
             f"{lit_count} gene{'s' if lit_count != 1 else ''}",
             f'<p class="panel-note">Tavily · auxiliary, not scored</p>{lit_html}',
         )
-        + _evidence_sub_panel(
+        + _evidence_block(
             "Field context",
             "VCC / perturbation research",
             _newsroom_rail(run.path, max_results=3, snippet_chars=120),
         )
-        + _evidence_sub_panel(
+        + _evidence_block(
             "Biomedical NER",
             f"{entity_summary.get('total_entities', 0)} entities",
             f'<p class="panel-note">{_entity_panel_note(entity_summary)}</p>{entity_html}',
@@ -798,8 +882,7 @@ def render_run_detail(
 
     hyp_list = hyp_html or '<li class="muted">None</li>'
     audit_inner = (
-        _run_verdict(facts, run.run_id)
-        + flags_html
+        flags_html
         + '<details class="chart-details">'
         + "<summary>Metrics chart (all scores vs ceiling)</summary>"
         + '<div id="metrics-chart" class="chart chart-compact"></div>'
@@ -815,11 +898,11 @@ def render_run_detail(
 
     body = f"""
     <section class="run-hero">
+      {_bio_atmosphere(variant="detail", density="light")}
       <div class="vessel-fullscreen vessel-3d-container vessel-run" id="vessel-canvas">
         <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
         <div class="vessel-svg-fallback">{_vessel_svg(facts, clip_id="vessel-clip-run")}</div>
         <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
-        {_VESSEL_ONBOARD_HTML}
         <script type="application/json" id="vessel-data">{json.dumps(vd)}</script>
       </div>
       <div class="run-hero-overlay">
@@ -831,15 +914,14 @@ def render_run_detail(
             runs,
             facts,
             visual,
-            vd,
-            entity_summary,
-            metric_pills,
+            score_line,
             root_prefix=root_prefix,
         )
     }
       </div>
     </section>
     <main class="run-evidence">
+      {_evidence_journey()}
       {
         _disclosure_section(
             "Audit & metrics",
@@ -1122,34 +1204,20 @@ def _disclosure_section(
     """
 
 
-def _metric_pills(headline_m: dict[str, Any], headline_c: dict[str, Any], csv_href: str) -> str:
-    if not headline_m:
+def _run_score_line(facts: dict, csv_href: str) -> str:
+    """Single hero score surface: % ceiling + audit warns (links to metrics CSV)."""
+    line = _metrics_line_from_facts(facts)
+    if not line or line == "—":
         return ""
-    pills = []
-    for key in headline_m:
-        label = _metric_label(key)
-        pills.append(
-            f'<span class="metric-pill" title="{_h(key)}">'
-            f"{_h(label)} "
-            f'<a class="metric-src" href="{csv_href}" title="opens metrics CSV">'
-            f"<strong>{_h(str(headline_m.get(key, '—')))}</strong></a> "
-            f'<span class="metric-ceiling">/ {_h(str(headline_c.get(key, "—")))}</span>'
-            f"</span>"
-        )
-    return "".join(pills)
+    return (
+        f'<p class="run-score-line">'
+        f'<a class="run-score-link" href="{_h(csv_href)}" title="Open metrics CSV">'
+        f"{_h(line)}</a></p>"
+    )
 
 
 def _audit_summary(facts: dict) -> str:
-    flags = facts.get("audit_flags") or []
-    warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
-    metrics = facts.get("headline_metrics") or {}
-    metric_bits = ", ".join(f"{_metric_label(k)} {v}" for k, v in list(metrics.items())[:2])
-    parts = []
-    if warns:
-        parts.append(f"{warns} audit warn{'s' if warns != 1 else ''}")
-    if metric_bits:
-        parts.append(metric_bits)
-    return " · ".join(parts) if parts else "Scores from committed CSVs"
+    return _metrics_line_from_facts(facts) or "Scores from committed CSVs"
 
 
 def _evidence_hint(literature: list[dict], entity_summary: dict) -> str:
@@ -1162,42 +1230,17 @@ def _evidence_hint(literature: list[dict], entity_summary: dict) -> str:
     return "Literature & entity enrichment"
 
 
-def _run_verdict(facts: dict, run_id: str) -> str:
-    flags = facts.get("audit_flags") or []
-    warns = [f for f in flags if f.get("severity") in ("warn", "error")]
-    if not warns:
-        return ""
-    rules = ", ".join(_h(f.get("rule", "?")) for f in warns[:3])
-    return (
-        f'<p class="run-verdict">'
-        f"<strong>{len(warns)} warning(s)</strong> on this run ({rules}) — "
-        f"we publish our own failures. "
-        f"<code>python -m kytos.audit --run experiments/{_h(run_id)}</code>"
-        f"</p>"
-    )
-
-
 def _run_header_compact(
     run: RunSummary,
     runs: list[RunSummary],
     facts: dict,
     visual: dict,
-    vd: dict,
-    entity_summary: dict,
-    metric_pills: str,
+    score_line: str,
     *,
     root_prefix: str,
 ) -> str:
     media = _run_header_media(visual, facts)
     jk = '<span class="jk-hint">j/k · switch runs</span>' if len(runs) > 1 else ""
-    entity_strip = ""
-    if entity_summary.get("total_entities"):
-        entity_strip = f"""
-          <span class="data-strip-sep"></span>
-          <span class="data-strip-item">
-            <span class="data-strip-label">entities</span>
-            {_count_span("data-strip-value", entity_summary["total_entities"])}
-          </span>"""
     return f"""
     <header class="run-header">
       <nav class="breadcrumb">
@@ -1210,24 +1253,7 @@ def _run_header_compact(
             Run #{_run_index(run, runs)} of {VCC_DAYS} · {_h(facts.get("created", ""))}
           </p>
           <h1 class="run-header-title">{_h(facts.get("headline", run.run_id))}</h1>
-          <div class="metric-pills">{metric_pills}</div>
-          <div class="run-hero-strip run-header-strip">
-            <span class="data-strip-item">
-              <span class="data-strip-label">fill</span>
-              {_count_span("data-strip-value", vd["fill_pct"], "%", "0%")}
-            </span>
-            <span class="data-strip-sep"></span>
-            <span class="data-strip-item">
-              <span class="data-strip-label">audit</span>
-              {_count_span("data-strip-value data-strip-warn", vd["warns"], " warn", "0 warn")}
-            </span>
-            <span class="data-strip-sep"></span>
-            <span class="data-strip-item">
-              <span class="data-strip-label">info</span>
-              {_count_span("data-strip-value", vd["infos"])}
-            </span>
-            {entity_strip}
-          </div>
+          {score_line}
         </div>
         {media}
       </div>
@@ -1246,22 +1272,20 @@ def _run_header_media(visual: dict, facts: dict) -> str:
         media_class = "run-header-media-bulletin" if is_bulletin else "run-header-media-briefing"
         label = "8s run bulletin" if is_bulletin else "full broadcast"
         kicker = "RUN BULLETIN" if is_bulletin else "FULL BROADCAST"
-        run_label = _h(str(facts.get("run_id", "run"))).upper()
         metrics = facts.get("headline_metrics") or {}
         ceilings = facts.get("ceiling_headroom") or {}
-        score_bits = []
+        score = "score pending"
         for key, value in list(metrics.items())[:1]:
             ceiling = ceilings.get(key)
-            if ceiling not in (None, 0):
-                score_bits.append(f"{round(100 * float(value) / float(ceiling))}%")
-            else:
-                score_bits.append(str(value))
-        audit_flags = facts.get("audit_flags") or []
-        audit_genes = next(
-            (gene for flag in audit_flags for gene in flag.get("genes") or []),
+            score = (
+                f"{round(100 * float(value) / float(ceiling))}%"
+                if ceiling not in (None, 0)
+                else str(value)
+            )
+        audit_gene = next(
+            (gene for flag in facts.get("audit_flags") or [] for gene in flag.get("genes") or []),
             "audit",
         )
-        score_display = _h(score_bits[0] if score_bits else "score pending")
         return f"""
         <div class="run-header-media run-header-media-video {media_class}">
           <div class="bulletin-bio-lines" aria-hidden="true"></div>
@@ -1271,12 +1295,12 @@ def _run_header_media(visual: dict, facts: dict) -> str:
                  muted playsinline preload="metadata"{poster}></video>
           <div class="bulletin-overlay" aria-hidden="true">
             <span class="bulletin-kicker">{kicker}</span>
-            <span class="bulletin-run">KYTOS · {_h(run_label)} · {label}</span>
+            <span class="bulletin-run">KYTOS · {_h(str(facts.get("run_id", "run")).upper())}</span>
             <span class="bulletin-state">AUDIT ACTIVE</span>
           </div>
           <div class="bulletin-data-rail" aria-label="Run bulletin facts">
-            <span><strong>{score_display}</strong> ceiling</span>
-            <span><strong>{_h(str(audit_genes))}</strong> flagged</span>
+            <span><strong>{_h(score)} ceiling</strong></span>
+            <span><strong>{_h(str(audit_gene))}</strong> flagged</span>
           </div>
           <button class="briefing-play" type="button" aria-label="Play {label}">
             <span aria-hidden="true">▶</span> {label}
@@ -1336,6 +1360,7 @@ def _audit_flags_compact(flags: list[dict[str, Any]]) -> str:
 
 def _confession_banner(facts: dict, run_id: str) -> str:
     """Self-own moment: our own run violating our own rules is the demo opener."""
+    del run_id  # reproduce lives in Trust panel; keep banner copy short
     flags = facts.get("audit_flags") or []
     warns = [f for f in flags if f.get("severity") in ("warn", "error")]
     if not warns:
@@ -1344,8 +1369,7 @@ def _confession_banner(facts: dict, run_id: str) -> str:
     return f"""
     <div class="confession-banner">
       <p class="eyebrow">Audit confession — this run fails its own rules</p>
-      <p>{len(warns)} warning(s) on our published baseline: {rules}.
-      Reproduce: <code>python -m kytos.audit --run experiments/{_h(run_id)}</code></p>
+      <p>{len(warns)} warning(s) on our published baseline: {rules}.</p>
     </div>
     """
 

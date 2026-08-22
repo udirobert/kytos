@@ -62,17 +62,20 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "disclosure-panel" in html
     assert "Audit &amp; metrics" in html
     assert "gene-evidence-link" in html
-    assert "evidence-sub-panel" in html
+    assert "evidence-block" in html
+    assert "run-score-line" in html
+    assert "evidence-journey" in html
+    assert "bio-atmosphere" in html
     assert "narrative-more" in html
     assert "briefing-play" in html
-    assert "run-header-media-bulletin" in html
-    assert "bulletin-data-rail" in html
-    assert "visual/bulletin.mp4" in html
-    assert (dist / "runs" / "k001-mean-shift-baseline" / "visual" / "bulletin.mp4").is_file()
+    assert "run-header-media-briefing" in html
+    assert "visual/briefing.mp4" in html
+    assert (dist / "runs" / "k001-mean-shift-baseline" / "visual" / "briefing.mp4").is_file()
     assert "chart-details" in html
     assert "run-header" in html
     assert "vessel3d.js" in html  # run detail now has full-bleed vessel
     assert "run-hero" in html
+    assert "% ceiling" in html
     assert "metrics-chart-data" in html
     assert "vessel3d.js" not in runs_html
     assert "runs-header" in runs_html

@@ -62,7 +62,7 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
 
     about_dir = out_dir / "about"
     about_dir.mkdir()
-    (about_dir / "index.html").write_text(render_about(runs, root_prefix=""), encoding="utf-8")
+    (about_dir / "index.html").write_text(render_about(runs, root_prefix="../"), encoding="utf-8")
 
     runs_dir = out_dir / "runs"
     runs_dir.mkdir()

@@ -352,6 +352,100 @@
     });
   }
 
+  // ── Living specimen parallax ────────────────────────────────────────────
+  // The biological atmosphere is a quiet depth layer, not a second interface.
+  function initBioParallax() {
+    var atmosphere = document.querySelector(".bio-atmosphere");
+    if (!atmosphere || prefersReducedMotion()) {
+      return;
+    }
+    var ticking = false;
+    function update() {
+      var max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      var progress = Math.max(0, Math.min(1, window.scrollY / max));
+      atmosphere.style.setProperty("--bio-scroll", progress.toFixed(4));
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+    update();
+  }
+
+  // ── Evidence journey ────────────────────────────────────────────────────
+  // Sections stay as native <details>; this rail only makes the reading order
+  // visible and keeps the active specimen stage in view while scrolling.
+  function initEvidenceJourney() {
+    var rail = document.querySelector(".evidence-journey");
+    if (!rail) {
+      return;
+    }
+    var links = Array.prototype.slice.call(rail.querySelectorAll("[data-journey-target]"));
+    var navigationLock = null;
+    var sections = links.map(function (link) {
+      return document.getElementById(link.getAttribute("data-journey-target"));
+    }).filter(Boolean);
+    if (!sections.length) {
+      return;
+    }
+
+    function setActive(section) {
+      var state = section.getAttribute("data-accent") || section.id;
+      document.documentElement.setAttribute("data-journey-state", state);
+      var atmosphere = document.querySelector(".bio-atmosphere");
+      if (atmosphere) atmosphere.setAttribute("data-journey-state", state);
+      window.dispatchEvent(new CustomEvent("kytos:journey-state", {
+        detail: { state: state, section: section.id },
+      }));
+      links.forEach(function (link) {
+        var active = link.getAttribute("data-journey-target") === section.id;
+        link.classList.toggle("is-active", active);
+        link.setAttribute("aria-current", active ? "step" : "false");
+      });
+      var index = Math.max(0, sections.indexOf(section));
+      var progress = sections.length > 1 ? index / (sections.length - 1) : 1;
+      var fill = rail.querySelector(".journey-progress span");
+      if (fill) {
+        fill.style.height = Math.round(progress * 100) + "%";
+      }
+    }
+
+    links.forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        var target = document.getElementById(link.getAttribute("data-journey-target"));
+        if (!target) return;
+        event.preventDefault();
+        target.open = true;
+        target.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+        history.replaceState(null, "", "#" + target.id);
+        setActive(target);
+        if (navigationLock) window.clearTimeout(navigationLock);
+        navigationLock = window.setTimeout(function () {
+          navigationLock = null;
+          setActive(target);
+        }, prefersReducedMotion() ? 0 : 700);
+      });
+    });
+
+    if (typeof IntersectionObserver === "undefined") {
+      setActive(sections[0]);
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      var visible = entries.filter(function (entry) { return entry.isIntersecting; });
+      if (!visible.length || navigationLock) return;
+      visible.sort(function (a, b) {
+        return Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top);
+      });
+      setActive(visible[0].target);
+    }, { rootMargin: "-18% 0px -62% 0px", threshold: [0, 0.2, 0.6] });
+    sections.forEach(function (section) { observer.observe(section); });
+    setActive(sections[0]);
+  }
+
   // ── Scroll reveal: evidence cards fade in ──────────────────────────────
   function initScrollReveal() {
     var panels = document.querySelectorAll(".evidence-rail .panel, .page-home .panel");
@@ -567,6 +661,8 @@
     initCountUp();
     initCopyButtons();
     initScrollReveal();
+    initBioParallax();
+    initEvidenceJourney();
     initBriefingUnmute();
     initBriefingPlay();
     initGeneEvidenceLinks();
