@@ -13,6 +13,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from frontend.observatory.render import (  # noqa: E402 - after sys.path bootstrap
+    render_about,
     render_home,
     render_run_detail,
     render_runs_index,
@@ -59,6 +60,10 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
     runs = discover_runs(experiments_dir)
     (out_dir / "index.html").write_text(render_home(runs, root_prefix=""), encoding="utf-8")
 
+    about_dir = out_dir / "about"
+    about_dir.mkdir()
+    (about_dir / "index.html").write_text(render_about(runs, root_prefix=""), encoding="utf-8")
+
     runs_dir = out_dir / "runs"
     runs_dir.mkdir()
     (runs_dir / "index.html").write_text(
@@ -87,7 +92,7 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         )
         (run_out / "index.html").write_text(html, encoding="utf-8")
 
-    sitemap_paths = ["/", "/runs/"] + [f"/runs/{run.run_id}/" for run in runs]
+    sitemap_paths = ["/", "/about/", "/runs/"] + [f"/runs/{run.run_id}/" for run in runs]
     (out_dir / "robots.txt").write_text(render_robots_txt(), encoding="utf-8")
     (out_dir / "sitemap.xml").write_text(render_sitemap_xml(sitemap_paths), encoding="utf-8")
 

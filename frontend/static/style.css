@@ -622,6 +622,31 @@ code {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
+   ABOUT PAGE
+   ════════════════════════════════════════════════════════════════════════ */
+
+.page-about .about-content {
+  max-width: 760px;
+  margin: 3rem auto;
+  padding: 0 2rem 4rem;
+}
+
+.page-about .about-content .panel {
+  margin-bottom: 1.5rem;
+}
+
+.page-about .about-content h2:first-child,
+.page-about .about-content h3:first-child {
+  margin-top: 0;
+}
+
+.page-about .prose {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
    RUNS INDEX
    ════════════════════════════════════════════════════════════════════════ */
 

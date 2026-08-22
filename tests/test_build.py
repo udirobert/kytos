@@ -23,8 +23,10 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "Built" in result.stdout
 
     home = dist / "index.html"
+    about = dist / "about" / "index.html"
     run_page = dist / "runs" / "k001-mean-shift-baseline" / "index.html"
     assert home.is_file()
+    assert about.is_file()
     assert run_page.is_file()
 
     home_html = home.read_text(encoding="utf-8")
@@ -32,9 +34,14 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert 'property="og:image"' in home_html
     assert 'name="twitter:card"' in home_html
     assert "https://kytos.example/" in home_html
-    assert "VEED Summer Lock-In" in home_html
-    assert "vcc-stats" in home_html
-    assert "hackathon-countdown" in home_html
+    assert "Open run detail" in home_html
+    assert "About the build" in home_html
+
+    about_html = about.read_text(encoding="utf-8")
+    assert "VEED Summer Lock-In" in about_html
+    assert "vcc-stats" in about_html
+    assert "hackathon-countdown" in about_html
+    assert "Why the Observatory" in about_html
 
     html = run_page.read_text(encoding="utf-8")
     assert "k001-mean-shift-baseline" in html
@@ -50,4 +57,5 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert (dist / "robots.txt").is_file()
     assert (dist / "sitemap.xml").is_file()
     assert "Sitemap: https://kytos.example/sitemap.xml" in (dist / "robots.txt").read_text()
+    assert "/about/" in (dist / "sitemap.xml").read_text()
     assert "/runs/k001-mean-shift-baseline/" in (dist / "sitemap.xml").read_text()

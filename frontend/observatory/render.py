@@ -72,6 +72,7 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
     links = [
         ("Home", f"{root_prefix}index.html", active == "home"),
         ("Runs", f"{root_prefix}runs/index.html", active == "runs"),
+        ("About", f"{root_prefix}about/index.html", active == "about"),
     ]
     lis = "".join(
         f'<li><a class="nav-link{" is-active" if is_active else ""}" href="{href}">{label}</a></li>'
@@ -148,6 +149,9 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
                 <a class="home-chip" href="{root_prefix}runs/index.html">
                   Browse all <strong>{len(runs)}</strong> runs
                 </a>
+                <a class="home-chip" href="{root_prefix}about/index.html">
+                  About the build
+                </a>
               </div>
             </div>
           </div>
@@ -184,7 +188,23 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         </section>
         """
 
-    timeline = f"""
+    body = _nav("home", runs, root_prefix=root_prefix) + stage
+    meta = PageMeta(
+        title="Home",
+        description=SITE_DESCRIPTION,
+        canonical_path="/",
+    )
+    return (
+        _head(meta, root_prefix=root_prefix)
+        + f'<body class="page-home">{body}'
+        + f'<script src="{root_prefix}static/site.js" defer></script>'
+        + "</body></html>"
+    )
+
+
+def _timeline_html() -> str:
+    """VCC timeline + hackathon countdown — shared between pages."""
+    return f"""
     <section class="panel timeline-panel timeline-centered">
       <div class="timeline-hackathon">
         <p class="timeline-eyebrow">🔥 Today · London</p>
@@ -253,7 +273,10 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     </section>
     """
 
-    problem = """
+
+def _why_html() -> str:
+    """The 'Why the Observatory' essay — shared between pages."""
+    return """
     <section class="panel">
       <h2>Why the Observatory</h2>
       <p class="prose">Arc expanded to six metrics because narrow scoring invites optimization
@@ -263,15 +286,26 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     </section>
     """
 
-    body = _nav("home", runs, root_prefix=root_prefix) + stage + timeline + problem
+
+def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
+    body = (
+        _nav("about", runs, root_prefix=root_prefix)
+        + '<main class="content about-content">'
+        + _timeline_html()
+        + _why_html()
+        + "</main>"
+    )
     meta = PageMeta(
-        title="Home",
-        description=SITE_DESCRIPTION,
-        canonical_path="/",
+        title="About",
+        description=(
+            "The Kytos Observatory story — hackathon build, Virtual Cell Challenge "
+            "timeline, and why we publish every run's failures in the open."
+        ),
+        canonical_path="/about/",
     )
     return (
         _head(meta, root_prefix=root_prefix)
-        + f'<body class="page-home">{body}'
+        + f'<body class="page-about">{body}</body>'
         + f'<script src="{root_prefix}static/site.js" defer></script>'
         + "</body></html>"
     )
