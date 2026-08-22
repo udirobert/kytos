@@ -519,6 +519,10 @@
         var target = document.getElementById(link.getAttribute("data-journey-target"));
         if (!target) return;
         event.preventDefault();
+        // Close all other panels — one open at a time
+        sections.forEach(function (s) {
+          if (s !== target) s.open = false;
+        });
         target.open = true;
         target.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
         history.replaceState(null, "", "#" + target.id);
@@ -545,6 +549,20 @@
     }, { rootMargin: "-18% 0px -62% 0px", threshold: [0, 0.2, 0.6] });
     sections.forEach(function (section) { observer.observe(section); });
     setActive(sections[0]);
+  }
+
+  // ── Run inspect CTA: smooth-scroll to evidence section ─────────────────
+  function initRunInspectCta() {
+    var cta = document.querySelector("[data-scroll-to]");
+    if (!cta) return;
+    cta.addEventListener("click", function () {
+      var target = document.getElementById(cta.dataset.scrollTo);
+      if (!target) return;
+      target.scrollIntoView({
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+        block: "start",
+      });
+    });
   }
 
   // ── Scroll reveal: evidence cards fade in ──────────────────────────────
@@ -1032,6 +1050,7 @@
     initScrollReveal();
     initBioParallax();
     initEvidenceJourney();
+    initRunInspectCta();
     initBriefingUnmute();
     initBriefingPlay();
     initBulletinNext();

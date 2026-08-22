@@ -1729,17 +1729,6 @@ def _run_header_compact(
       <nav class="breadcrumb">
         <a href="{root_prefix}runs/index.html">← All runs</a>
         {jk}
-        <div class="view-mode-toggle" id="view-mode-toggle"
-             role="group" aria-label="Observatory mode">
-          <button type="button" class="btn-mode active" data-mode="broadcast"
-                  title="Broadcast Mode: Video and vessel focus">
-            <span class="mode-icon">🎙️</span> Broadcast
-          </button>
-          <button type="button" class="btn-mode" data-mode="science"
-                  title="Deep Science Mode: Expand all metrics, volcano plots, and audit traces">
-            <span class="mode-icon">🔬</span> Science
-          </button>
-        </div>
       </nav>
       <div class="run-header-grid">
         <div class="run-header-copy">
@@ -1752,6 +1741,9 @@ def _run_header_compact(
         </div>
         {media}
       </div>
+      <button class="run-inspect-cta" type="button" data-scroll-to="evidence-journey">
+        Inspect the evidence ↓
+      </button>
     </header>
     """
 

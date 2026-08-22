@@ -2273,6 +2273,27 @@ a.run-insight-card:hover {
   gap: 0.45rem;
 }
 
+/* ── Run inspect CTA: single action from hero to evidence ──────────────── */
+.run-inspect-cta {
+  display: block;
+  margin: 1.5rem auto 0;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: rgba(45, 212, 191, 0.08);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.run-inspect-cta:hover {
+  background: rgba(45, 212, 191, 0.18);
+  transform: translateY(-1px);
+}
+
 .evidence-journey {
   position: sticky;
   top: 0.7rem;

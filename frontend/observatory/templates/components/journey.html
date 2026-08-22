@@ -1,4 +1,4 @@
-<nav class="evidence-journey" aria-label="Run evidence journey">
+<nav class="evidence-journey" id="evidence-journey" aria-label="Run evidence journey">
   <span class="journey-label">specimen trail</span>
   <div class="journey-steps">
     {% for step in steps %}
@@ -9,6 +9,17 @@
     {% endfor %}
   </div>
   <span class="journey-progress" aria-hidden="true"><span></span></span>
+  <div class="view-mode-toggle" id="view-mode-toggle"
+       role="group" aria-label="Observatory mode">
+    <button type="button" class="btn-mode active" data-mode="broadcast"
+            title="Broadcast Mode: Video and vessel focus">
+      <span class="mode-icon">🎙️</span> Broadcast
+    </button>
+    <button type="button" class="btn-mode" data-mode="science"
+            title="Deep Science Mode: Expand all metrics, volcano plots, and audit traces">
+      <span class="mode-icon">🔬</span> Science
+    </button>
+  </div>
   <span class="journey-live" aria-live="polite">
     <span class="journey-live-dot" aria-hidden="true"></span>
     <span class="journey-live-copy">
