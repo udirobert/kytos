@@ -801,7 +801,6 @@ html.no-webgl .vessel-loading {
   width: 100%;
   max-width: 44ch;
   margin: 0 auto 1.25rem;
-  min-height: 3.2em;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -810,12 +809,15 @@ html.no-webgl .vessel-loading {
 .home-catch-track {
   position: relative;
   width: 100%;
-  min-height: 3em;
+  height: 4.5em;
+  overflow: hidden;
 }
 
 .home-catch-slide {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   margin: 0;
   text-align: center;
   color: var(--accent, #2dd4bf);
@@ -823,16 +825,19 @@ html.no-webgl .vessel-loading {
   line-height: 1.55;
   text-wrap: pretty;
   opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s linear 0.5s;
   pointer-events: none;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(8, 20, 30, 0.5);
 }
 
 .home-catch-slide.is-active {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
   pointer-events: auto;
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s linear 0s;
 }
 
 .home-catch-slide em {
@@ -871,18 +876,16 @@ html.no-webgl .vessel-loading {
   outline-offset: 2px;
 }
 
-/* Reduced motion: show all slides stacked, no animation */
+/* Reduced motion: show first slide only, statically */
 @media (prefers-reduced-motion: reduce) {
-  .home-catch-carousel {
-    min-height: auto;
-  }
   .home-catch-track {
-    position: static;
-    min-height: auto;
+    height: auto;
+    overflow: visible;
   }
   .home-catch-slide {
     position: static;
     opacity: 1;
+    visibility: visible;
     transform: none;
     margin-bottom: 0.4rem;
   }
