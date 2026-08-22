@@ -427,6 +427,7 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
         <div class="hero-fullscreen hero-video">
           <video class="briefing-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}"></video>
+          <span class="briefing-stamp">briefing #1 of ~12 · the vessel speaks</span>
         </div>
         """
     if hero:
