@@ -13,9 +13,38 @@ from frontend.observatory.runs import RunSummary
 
 SITE_TITLE = "Kytos Observatory"
 
+# The 78-day public build (Aug 20 → Nov 5). The demo's closer — "run #1 of 78"
+# — is stamped on the surface so the long-game story survives a silent scroll.
+VCC_DAYS = 78
+
 
 def _h(text: str) -> str:
     return html.escape(text, quote=True)
+
+
+def _run_index(run: RunSummary, runs: list[RunSummary]) -> int:
+    """1-based position of a run in the published sequence (for the #N of 78 stamp)."""
+    try:
+        return runs.index(run) + 1
+    except ValueError:
+        return len(runs)
+
+
+def _narrative_label(narrative: str | None) -> str:
+    """Label the narrative panel from its own provenance comment — never guess."""
+    first = (narrative or "").splitlines()[0] if narrative else ""
+    if "generated_by=llm" in first:
+        provider = (
+            "venice"
+            if "provider=venice" in first
+            else "openai"
+            if "provider=openai" in first
+            else "llm"
+        )
+        return f"LLM digest ({provider}) · traces to facts.json"
+    if "generated_by=fallback" in first:
+        return "deterministic digest · no LLM · site builds offline"
+    return "run digest · traces to facts.json"
 
 
 def _run_severity(facts: dict) -> str:
@@ -100,7 +129,8 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
                 and <em>show when the model is biologically wrong.</em>
               </h1>
               <p class="home-lede">
-                Latest run {_h(latest.run_id)}: {headline}. Headline metrics {_h(metric_bits)}.
+                Run #{_run_index(latest, runs)} of {VCC_DAYS} — {_h(latest.run_id)}: {headline}.
+                Headline metrics {_h(metric_bits)}.
               </p>
               <div class="home-cta-row">
                 <a class="button" href="{run_href}">Open run detail →</a>
@@ -278,7 +308,9 @@ def render_run_detail(
     <section class="run-hero">
       {hero_html}
       <div class="run-hero-overlay">
-        <p class="eyebrow">{_h(facts.get("created", ""))}</p>
+        <p class="eyebrow">
+          Run #{_run_index(run, runs)} of {VCC_DAYS} · {_h(facts.get("created", ""))}
+        </p>
         <h1 class="run-hero-title">{_h(facts.get("headline", run.run_id))}</h1>
         <p class="metric-summary">{metric_summary}</p>
         <div class="run-hero-strip">
@@ -323,7 +355,7 @@ def render_run_detail(
       </section>
       <section class="panel">
         <h2>Narrative</h2>
-        <p class="panel-note">OpenAI digest · traces to facts.json</p>
+        <p class="panel-note">{_narrative_label(narrative)}</p>
         {narrative_html}
       </section>
       <section class="panel">
