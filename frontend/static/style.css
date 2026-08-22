@@ -695,6 +695,24 @@ code {
   object-fit: cover;
 }
 
+/* The vessel speaks — series stamp on the Fabric briefing */
+.briefing-stamp {
+  position: absolute;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 2;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(7, 11, 18, 0.72);
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
 .hero-image-bg::after {
   content: "";
   position: absolute;
