@@ -186,6 +186,126 @@ function initVessel3D() {
   // Top ring vertex indices for wave animation
   var topRingStart = (liquidPts.length - 1) * (LIQUID_SEGMENTS + 1);
 
+  // ── The cell — biological specimen floating in the vessel ────────────────
+  // The vessel is the Observatory (the instrument). The cell is the specimen
+  // inside it — the prediction subject. Its health glow scales with fill level,
+  // and membrane damage appears as amber fissures (audit warnings).
+  var cellGroup = new THREE.Group();
+  vesselGroup.add(cellGroup);
+
+  // Cell membrane — organic, slightly irregular sphere (not a perfect ball)
+  var cellRadius = 1.1;
+  var CELL_SEGMENTS = lowPerf ? 32 : 48;
+  var cellGeo = new THREE.IcosahedronGeometry(cellRadius, 2);
+  // Deform vertices for organic irregularity
+  var cellPos = cellGeo.attributes.position;
+  for (var ci = 0; ci < cellPos.count; ci++) {
+    var cx = cellPos.getX(ci);
+    var cy = cellPos.getY(ci);
+    var cz = cellPos.getZ(ci);
+    var noise = 1 + Math.sin(cx * 3) * 0.04 + Math.cos(cy * 4) * 0.03 + Math.sin(cz * 5) * 0.02;
+    cellPos.setXYZ(ci, cx * noise, cy * noise, cz * noise);
+  }
+  cellGeo.computeVertexNormals();
+
+  // Membrane health = fill level. A healthy cell (high fill) glows bright teal.
+  // A sick cell (low fill) glows dim. This is biologically literal.
+  var cellHealth = fillPct / 100;
+  var cellMat = new THREE.MeshPhysicalMaterial({
+    color: 0x5eead4,
+    emissive: 0x5eead4,
+    emissiveIntensity: 0.3 + cellHealth * 0.5,
+    roughness: 0.12,
+    metalness: 0,
+    transmission: 0.35,
+    thickness: 1.5,
+    ior: 1.4,
+    clearcoat: 0.8,
+    clearcoatRoughness: 0.1,
+    transparent: true,
+    opacity: 0,
+    side: THREE.DoubleSide,
+  });
+  var cellMembrane = new THREE.Mesh(cellGeo, cellMat);
+  // Cell sits in the upper portion of the liquid, floating at the surface
+  cellGroup.position.y = fillLevel + 0.3;
+  cellGroup.add(cellMembrane);
+
+  // Nucleus — the prediction core, brightest point
+  var nucleusGeo = new THREE.SphereGeometry(0.35, 24, 24);
+  var nucleusMat = new THREE.MeshBasicMaterial({
+    color: 0x67e8f9,
+    transparent: true,
+    opacity: 0,
+  });
+  var nucleus = new THREE.Mesh(nucleusGeo, nucleusMat);
+  cellGroup.add(nucleus);
+
+  // Nucleus glow
+  var nucleusGlowGeo = new THREE.SphereGeometry(0.55, 16, 16);
+  var nucleusGlowMat = new THREE.MeshBasicMaterial({
+    color: 0x67e8f9,
+    transparent: true,
+    opacity: 0,
+    blending: THREE.AdditiveBlending,
+  });
+  var nucleusGlow = new THREE.Mesh(nucleusGlowGeo, nucleusGlowMat);
+  cellGroup.add(nucleusGlow);
+
+  // Nucleus point light — illuminates the cell interior
+  var nucleusLight = new THREE.PointLight(0x67e8f9, 0.5 + cellHealth * 0.8, 5);
+  cellGroup.add(nucleusLight);
+
+  // Organelles — 6 color-coded, orbiting the nucleus. Each represents a metric.
+  var organelleColors = [
+    0x5eead4, // teal — primary
+    0x67e8f9, // cyan
+    0xa78bfa, // violet
+    0xfbbf24, // amber
+    0xf472b6, // pink
+    0x4ade80, // green
+  ];
+  var organellesGroup = new THREE.Group();
+  cellGroup.add(organellesGroup);
+  var organelles = [];
+  for (var oi = 0; oi < 6; oi++) {
+    var orgGeo = new THREE.SphereGeometry(0.08 + Math.random() * 0.04, 12, 12);
+    var orgMat = new THREE.MeshBasicMaterial({
+      color: organelleColors[oi],
+      transparent: true,
+      opacity: 0,
+    });
+    var organelle = new THREE.Mesh(orgGeo, orgMat);
+    var orgAngle = (oi / 6) * Math.PI * 2;
+    var orgTilt = (oi % 2 === 0 ? 1 : -1) * 0.3;
+    organelle.userData = {
+      angle: orgAngle,
+      tilt: orgTilt,
+      radius: 0.55 + Math.random() * 0.15,
+      speed: 0.3 + Math.random() * 0.2,
+      phase: Math.random() * Math.PI * 2,
+    };
+    organelle.position.set(
+      Math.cos(orgAngle) * organelle.userData.radius,
+      orgTilt,
+      Math.sin(orgAngle) * organelle.userData.radius,
+    );
+    organelles.push(organelle);
+    organellesGroup.add(organelle);
+
+    // Glow halo for each organelle
+    var orgGlowGeo = new THREE.SphereGeometry(0.14, 8, 8);
+    var orgGlowMat = new THREE.MeshBasicMaterial({
+      color: organelleColors[oi],
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+    });
+    var orgGlow = new THREE.Mesh(orgGlowGeo, orgGlowMat);
+    orgGlow.userData = { parent: organelle };
+    organellesGroup.add(orgGlow);
+  }
+
   // ── Bubbles (rising through the liquid) ──────────────────────────────────
   var bubbleCount = 12;
   var bubbles = [];
@@ -452,15 +572,18 @@ function initVessel3D() {
   var fillDuration = 1.8;
   var running = true;
 
-  // Staggered entrance: glass → liquid → bubbles → cracks → droplets
+  // Staggered entrance: glass → liquid → cell → nucleus → organelles → bubbles → cracks → droplets
   // Each element has a start time and fade-in duration.
   var entranceT = 0;
   var ENTRANCE = {
     glass: { start: 0.0, dur: 0.8 },
     liquid: { start: 0.4, dur: 1.2 },
-    bubbles: { start: 1.2, dur: 0.6 },
-    cracks: { start: 1.5, dur: 0.8 },
-    droplets: { start: 1.8, dur: 0.6 },
+    cell: { start: 1.0, dur: 1.0 },
+    nucleus: { start: 1.4, dur: 0.6 },
+    organelles: { start: 1.8, dur: 0.6 },
+    bubbles: { start: 2.0, dur: 0.6 },
+    cracks: { start: 2.3, dur: 0.8 },
+    droplets: { start: 2.6, dur: 0.6 },
     particles: { start: 0.2, dur: 1.0 },
   };
   var entranceDone = reducedMotion;
@@ -486,7 +609,7 @@ function initVessel3D() {
     // Entrance timeline advances in real time
     if (!entranceDone) {
       entranceT += dt;
-      if (entranceT > 3.0) entranceDone = true;
+      if (entranceT > 3.5) entranceDone = true;
     }
 
     // Glass fade-in
@@ -510,6 +633,50 @@ function initVessel3D() {
     var bubbleA = fadeFactor("bubbles");
     if (bubbleA < 1) {
       bubbles.forEach(function (b) { b.material.opacity = 0.6 * bubbleA; });
+    }
+
+    // Cell membrane fade-in
+    var cellA = fadeFactor("cell");
+    cellMat.opacity = 0.7 * cellA;
+
+    // Nucleus fade-in + pulse
+    var nucleusA = fadeFactor("nucleus");
+    nucleusMat.opacity = nucleusA;
+    nucleusGlowMat.opacity = 0.4 * nucleusA;
+    if (!reducedMotion) {
+      var pulse = 1 + Math.sin(t * 1.8) * 0.08;
+      nucleus.scale.setScalar(pulse);
+      nucleusGlow.scale.setScalar(pulse * 1.2);
+      nucleusLight.intensity = (0.5 + cellHealth * 0.8) * nucleusA * (0.8 + Math.sin(t * 1.8) * 0.2);
+    }
+
+    // Organelles fade-in + orbit
+    var orgA = fadeFactor("organelles");
+    organelles.forEach(function (org) { org.material.opacity = orgA; });
+    organellesGroup.children.forEach(function (og) {
+      if (og.userData.parent) {
+        // Glow halo follows its organelle
+        og.material.opacity = 0.25 * orgA;
+      }
+    });
+    if (!reducedMotion) {
+      organelles.forEach(function (org) {
+        var d = org.userData;
+        d.angle += d.speed * dt;
+        org.position.set(
+          Math.cos(d.angle) * d.radius,
+          d.tilt + Math.sin(t * 1.5 + d.phase) * 0.08,
+          Math.sin(d.angle) * d.radius,
+        );
+      });
+      organellesGroup.children.forEach(function (og) {
+        if (og.userData.parent) {
+          og.position.copy(og.userData.parent.position);
+        }
+      });
+      // Cell membrane gentle rotation + breathing
+      cellMembrane.rotation.y += dt * 0.15;
+      cellGroup.position.y = fillLevel + 0.3 + Math.sin(t * 0.6) * 0.05;
     }
 
     // Crack opacity — fade in after bubbles
