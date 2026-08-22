@@ -1,20 +1,20 @@
-<!-- kytos narrative · generated_by=llm · provider=venice · model=stealth-ox-alpha · 2026-08-22T12:49:02+00:00 UTC -->
+<!-- kytos narrative · generated_by=llm · provider=openai · model=gpt-4o-mini · 2026-08-22T13:14:14+00:00 UTC -->
 
-# Run Digest: `k001-mean-shift-baseline`
+## Basal Mean-Shift Baseline — Ceiling Headroom Probe
 
-**Headline:** The basal mean-shift baseline achieved a DESigGenesRecall of 0.12 and a pearson_delta of 0.08 (facts: headline_metrics), leaving substantial headroom to the ceiling of 0.45 recall and 0.31 pearson_delta (facts: ceiling_headroom).
+The run achieved a DESigGenesRecall of 0.12, indicating a significant gap from the ceiling headroom of 0.45 (facts: headline_metrics.DESigGenesRecall, ceiling_headroom.DESigGenesRecall). The pearson_delta was recorded at 0.08, which is also below the ceiling of 0.31 (facts: headline_metrics.pearson_delta, ceiling_headroom.pearson_delta).
 
-## Key Findings
+### Audit Flags
+Two warnings were raised during the analysis:
+1. **Housekeeping Gene Shift**: The housekeeping genes ACTB and GAPDH exhibited a shift of up to +2.10 log2FC, surpassing the threshold of ±1.0, with ACTB showing the peak shift (facts: audit_flags[0].message).
+2. **Pathway Coherence**: The 'interferon_response' pathway displayed mixed directionality, with two genes upregulated and two downregulated among those measured (facts: audit_flags[1].message).
 
-- **Large gap to ceiling:** Baseline recall (0.12) sits well below the ceiling value of 0.45 (facts: headline_metrics.DESigGenesRecall; facts: ceiling_headroom.DESigGenesRecall), suggesting basal co-expression alone captures only a small fraction of cross-context transfer performance.
-- **Preregistered hypothesis confirmed:** The run preregistered that "Basal co-expression alone explains <20% of cross-context transfer on DESigGenesRecall" — the observed 0.12 is consistent with this claim (facts: hypotheses_preregistered[0]; facts: headline_metrics.DESigGenesRecall).
-- **Second hypothesis also consistent:** The prediction that the mean-shift baseline would sit below 50% of ceiling on pearson_delta holds: 0.08 is roughly a quarter of the 0.31 ceiling (facts: hypotheses_preregistered[1]; facts: headline_metrics.pearson_delta; facts: ceiling_headroom.pearson_delta).
+### Hypotheses
+The run was guided by two preregistered hypotheses: 
+- Basal co-expression alone explains less than 20% of cross-context transfer on DESigGenesRecall.
+- The mean-shift baseline is expected to remain below 50% of the ceiling on pearson_delta (facts: hypotheses_preregistered).
 
-## Audit Flags
+This analysis highlights the challenges in achieving high recall and coherence in gene expression studies, suggesting further investigation is needed to refine the model. 
 
-- **Housekeeping shift (warn):** ACTB and GAPDH shifted up to +2.10 log2FC against a ±1.0 threshold, with ACTB peaking (facts: audit_flags[hk-stability]).
-- **Pathway coherence (warn):** The `interferon_response` pathway shows mixed directionality among measured genes ISG15, IFIT1, MX1, and OAS1 — two up, two down (facts: audit_flags[pathway-interferon_response]).
-
-## Provenance
-
-Commit `2fe7bd7f4f0902b454d0f2face73f917e6e065d5`, seed 0, code hash `k001-mean-shift-v0` (facts: provenance).
+![Hero Image](visual/hero.png)  
+![Share Card](visual/share-card.png)
