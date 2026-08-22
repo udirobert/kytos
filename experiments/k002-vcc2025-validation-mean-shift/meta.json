@@ -6,6 +6,7 @@
   "data_status": "real",
   "inputs": {
     "source_url": "https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/validation/adata_Validation.h5ad",
+    "source_sha256_12": "376f0bab27d9f22e",
     "source_note": "Arc Institute public bucket; 98,927 cells × 18,080 genes, 50 perturbations + non-targeting",
     "basal_anndata": "data/raw/vcc2025/basal_lognorm.h5ad (derived, gitignored)",
     "real_anndata": "data/raw/vcc2025/real_lognorm.h5ad (derived, gitignored)",

@@ -76,6 +76,60 @@ CASES: list[tuple[str, dict, list[tuple[str, str]]]] = [
         },
         [("pathway_coherence", "warn")],
     ),
+    # ── control_group_stability ───────────────────────────────────────────────
+    (
+        "ctrl_clear_stable",
+        {"control_group": {"gene_shifts": {"ACTB": 0.1, "GAPDH": -0.2}}},
+        [],
+    ),
+    (
+        "ctrl_error_planted",
+        {"control_group": {"gene_shifts": {"ACTB": 0.8, "GAPDH": 0.3}}},
+        [("control_group_stability", "error")],
+    ),
+    # ── dose_response ─────────────────────────────────────────────────────────
+    (
+        "dose_clear_proportionate",
+        {"dose_response": [{"gene": "BRCA1", "knockdown_pct": 80.0, "target_shift": 1.5}]},
+        [],
+    ),
+    (
+        "dose_warn_strong_knockdown_weak_shift",
+        {"dose_response": [{"gene": "MYC", "knockdown_pct": 85.0, "target_shift": 0.1}]},
+        [("dose_response", "warn")],
+    ),
+    (
+        "dose_warn_weak_knockdown_large_shift",
+        {"dose_response": [{"gene": "CDK4", "knockdown_pct": 15.0, "target_shift": 2.5}]},
+        [("dose_response", "warn")],
+    ),
+    # ── gene_group_coherence ──────────────────────────────────────────────────
+    (
+        "group_clear_coherent",
+        {
+            "gene_groups": [
+                {
+                    "name": "proteasome",
+                    "genes": ["PSMA1", "PSMA2", "PSMA3"],
+                    "gene_shifts": {"PSMA1": 0.8, "PSMA2": 0.7, "PSMA3": 0.6},
+                }
+            ]
+        },
+        [],
+    ),
+    (
+        "group_info_incoherent",
+        {
+            "gene_groups": [
+                {
+                    "name": "ribosomal",
+                    "genes": ["RPL5", "RPL11", "RPS20"],
+                    "gene_shifts": {"RPL5": 1.2, "RPL11": 1.0, "RPS20": -0.8},
+                }
+            ]
+        },
+        [("gene_group_coherence", "info")],
+    ),
 ]
 
 

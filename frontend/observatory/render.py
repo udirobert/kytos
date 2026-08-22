@@ -398,6 +398,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         vessel_legend = _home_vessel_legend_html(vd, about_href=about_href)
         visual = latest.facts.get("visual") or {}
         hero = visual.get("hero")
+        presenter = visual.get("presenter")
         hero_img = ""
         if hero:
             hero_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(hero)}"
@@ -406,9 +407,21 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
                 f'decoding="async" loading="eager">'
             )
 
+        # Dr. Kytos presenter background for home page
+        presenter_bg = ""
+        if presenter:
+            presenter_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(presenter)}"
+            presenter_bg = f"""
+            <div class="home-presenter-bg">
+              <video class="home-presenter-video" src="{_h(presenter_src)}"
+                     autoplay muted loop playsinline preload="auto"></video>
+            </div>
+            """
+
         stage = f"""
         <section class="home-stage">
           {_bio_atmosphere(variant="home", density="light")}
+          {presenter_bg}
           <div class="home-hero-grid">
             <div class="home-vessel-column">
               <div class="vessel-fullscreen vessel-3d-container vessel-home" id="vessel-canvas">
@@ -1041,15 +1054,30 @@ def render_run_detail(
 def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
     """Full-bleed hero for the run detail page.
 
-    Priority: Fabric briefing video > fal hero image > 3D vessel.
+    Priority: Dr. Kytos presenter video > briefing video > hero image > 3D
+    vessel.  The presenter frames the run as a broadcast from the biological
+    accountability desk — a named correspondent who contextualises findings.
     Each variant fills the viewport as a background layer.
     """
+    presenter = visual.get("presenter")
     briefing = visual.get("briefing")
     hero = visual.get("hero")
     # facts.json visual paths are run-relative and already include the
     # `visual/` dir (run-protocol schema) — build.py copies the run's visual/
-    # next to the page, so the facts value IS the correct src. Prepending
-    # media_prefix here double-prefixes to visual/visual/... (regression fixed).
+    # next to the page, so the facts value IS the correct src.
+    if presenter:
+        src = _h(presenter)
+        poster = f"{_h(hero)}" if hero else ""
+        return f"""
+        <div class="hero-fullscreen hero-presenter">
+          <video class="presenter-video" src="{src}" autoplay muted loop playsinline
+                 controls poster="{poster}" preload="none"></video>
+          <div class="presenter-overlay">
+            <span class="presenter-badge">KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT</span>
+            <span class="presenter-stamp">correspondent · Dr. Kytos</span>
+          </div>
+        </div>
+        """
     if briefing:
         src = f"{_h(briefing)}"
         poster = f"{_h(hero)}" if hero else ""

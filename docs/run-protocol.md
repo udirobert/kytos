@@ -21,6 +21,9 @@ experiments/<run-id>/
     flags.json        # lemma-style biological sanity flags
   narrative/
     report.md         # LLM narration from facts + metrics (OpenAI prod; Venice dev)
+  verification/
+    planted_signal.json   # planted-signal self-test (tools/planted_signal.py)
+    narrative_check.json  # digest grounding check (tools/check_narrative.py)
   literature/         # cached Tavily JSON per audit flag (optional)
   visual/             # fal: hero.png, share-card.png, briefing.mp4 (Fabric)
 ```

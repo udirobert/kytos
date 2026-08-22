@@ -6,7 +6,32 @@ import json
 from typing import Any
 
 
+METRIC_DESCRIPTIONS: dict[str, str] = {
+    "DESigGenesRecall": "DE gene recall (FDR < 0.05)",
+    "pearson_delta": "Pearson correlation of expression Δ",
+    "DEDirectionMatch": "DE direction concordance (+/-)",
+    "DESpearmanSignificant": "Spearman rank correlation (sig genes)",
+    "DESpearmanLFC": "Spearman rank correlation (all genes)",
+    "DENsigCounts": "DE gene count recovery accuracy",
+    "mse": "Mean squared error (full matrix)",
+    "mae": "Mean absolute error (full matrix)",
+    "mse_delta": "MSE on perturbation delta vector",
+    "mae_delta": "MAE on perturbation delta vector",
+    "clustering_agreement": "Latent cluster preservation",
+    "discrimination_score": "Control vs perturbed discriminability",
+}
+
+
 def metrics_bar_chart(metrics: list[str], scores: list[float], ceilings: list[float]) -> str:
+    hover_scores = [
+        f"<b>{m}</b><br>Score: {s:.4g}<br><i>{METRIC_DESCRIPTIONS.get(m, '')}</i>"
+        for m, s in zip(metrics, scores)
+    ]
+    hover_ceilings = [
+        f"<b>{m}</b><br>Ceiling: {c:.4g}<br><i>{METRIC_DESCRIPTIONS.get(m, '')}</i>"
+        for m, c in zip(metrics, ceilings)
+    ]
+
     figure: dict[str, Any] = {
         "data": [
             {
@@ -14,6 +39,8 @@ def metrics_bar_chart(metrics: list[str], scores: list[float], ceilings: list[fl
                 "name": "Score",
                 "x": metrics,
                 "y": scores,
+                "hovertext": hover_scores,
+                "hoverinfo": "text",
                 "marker": {"color": "#5eead4"},
             },
             {
@@ -21,6 +48,8 @@ def metrics_bar_chart(metrics: list[str], scores: list[float], ceilings: list[fl
                 "name": "Ceiling",
                 "x": metrics,
                 "y": ceilings,
+                "hovertext": hover_ceilings,
+                "hoverinfo": "text",
                 "marker": {"color": "#67e8f9", "opacity": 0.55},
             },
         ],
