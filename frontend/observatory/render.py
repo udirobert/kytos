@@ -234,6 +234,11 @@ def render_run_detail(
     visual = facts.get("visual") or {}
     vd = _vessel_data(facts)
 
+    # When real visual assets exist (fal hero, Fabric briefing), use them as
+    # the full-bleed hero instead of the 3D vessel. The 3D vessel is the
+    # fallback when no committed visuals are available.
+    hero_html = _stage_hero(visual, media_prefix, facts)
+
     flags_html = _audit_flags(facts.get("audit_flags") or [])
     hypotheses = facts.get("hypotheses_preregistered") or []
     hyp_html = "".join(f"<li>{_h(item)}</li>" for item in hypotheses)
@@ -271,10 +276,7 @@ def render_run_detail(
     {_confession_banner(facts, run.run_id)}
     <nav class="breadcrumb"><a href="{root_prefix}runs/index.html">← All runs</a></nav>
     <section class="run-hero">
-      <div class="vessel-fullscreen vessel-3d-container" id="vessel-canvas">
-        <div class="vessel-svg-fallback">{_vessel_svg(facts, clip_id="vessel-clip-run")}</div>
-        <script type="application/json" id="vessel-data">{json.dumps(vd)}</script>
-      </div>
+      {hero_html}
       <div class="run-hero-overlay">
         <p class="eyebrow">{_h(facts.get("created", ""))}</p>
         <h1 class="run-hero-title">{_h(facts.get("headline", run.run_id))}</h1>
@@ -366,23 +368,29 @@ def render_run_detail(
 
 
 def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
+    """Full-bleed hero for the run detail page.
+
+    Priority: Fabric briefing video > fal hero image > 3D vessel.
+    Each variant fills the viewport as a background layer.
+    """
     briefing = visual.get("briefing")
     hero = visual.get("hero")
     if briefing:
         src = f"{media_prefix}{briefing}"
+        poster = f"{_h(media_prefix + hero)}" if hero else ""
         return f"""
-        <div class="stage-hero video-hero">
+        <div class="hero-fullscreen hero-video">
           <video class="briefing-video" src="{_h(src)}" autoplay muted loop playsinline
-                 controls poster="{_h(media_prefix + hero) if hero else ""}"></video>
+                 controls poster="{poster}"></video>
         </div>
         """
     if hero:
         return f"""
-        <div class="stage-hero">
+        <div class="hero-fullscreen hero-image-bg">
           <img src="{_h(media_prefix + hero)}" alt="Run visual" class="hero-image">
         </div>
         """
-    return _vessel_stage(facts)
+    return _vessel_stage(facts, fullscreen=True)
 
 
 def _vessel_data(facts: dict) -> dict:
@@ -439,11 +447,19 @@ def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "v
       </svg>"""
 
 
-def _vessel_stage(facts: dict, *, stage_class: str = "stage-hero vessel-instrument") -> str:
+def _vessel_stage(
+    facts: dict,
+    *,
+    stage_class: str = "stage-hero vessel-instrument",
+    fullscreen: bool = False,
+) -> str:
     """Vessel instrument with 3D canvas + SVG fallback + legend.
 
     The 3D scene loads progressively via import map. If WebGL is unavailable
     the SVG fallback stays visible and the canvas never replaces it.
+
+    When fullscreen=True, the vessel container itself becomes the full-bleed
+    background layer (used by run detail page when no fal/fabric visuals exist).
     """
     vd = _vessel_data(facts)
     fill, warns, infos = vd["fill_pct"], vd["warns"], vd["infos"]
@@ -452,6 +468,17 @@ def _vessel_stage(facts: dict, *, stage_class: str = "stage-hero vessel-instrume
     vessel_json = json.dumps(vd)
 
     svg = _vessel_svg(facts)
+    if fullscreen:
+        container_class = "vessel-fullscreen vessel-3d-container"
+        inner = f"""
+        <div class="vessel-svg-fallback">{svg}</div>
+        <script type="application/json" id="vessel-data">{vessel_json}</script>
+        """
+        return f"""
+        <div class="{container_class}" id="vessel-canvas">
+          {inner}
+        </div>
+        """
     return f"""
     <div class="{stage_class}">
       <div class="vessel-3d-container" id="vessel-canvas">

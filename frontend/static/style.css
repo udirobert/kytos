@@ -663,6 +663,49 @@ code {
    RUN DETAIL — full-bleed immersive hero + scrolling evidence
    ════════════════════════════════════════════════════════════════════════ */
 
+/* Full-bleed hero variants: video, image, or 3D vessel */
+.hero-fullscreen {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-fullscreen canvas,
+.hero-fullscreen video,
+.hero-fullscreen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-image-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 50%,
+    transparent 0%,
+    rgba(6, 10, 16, 0.4) 50%,
+    rgba(6, 10, 16, 0.8) 100%
+  );
+  pointer-events: none;
+}
+
+.hero-video::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 50%,
+    transparent 0%,
+    rgba(6, 10, 16, 0.3) 50%,
+    rgba(6, 10, 16, 0.6) 100%
+  );
+  pointer-events: none;
+}
+
 .breadcrumb {
   max-width: 1400px;
   margin: 0.8rem auto 0;
