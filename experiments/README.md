@@ -20,7 +20,8 @@ prediction outputs.
   mean-shift floor. DE sig-genes recall 0.0 vs ceiling 0.494; pearson_delta
   mathematically undefined (constant prediction) vs ceiling 0.667; audit clean.
   Scoring matrix subsampled (200 cells/pert + 3,000 controls, seed 0) —
-  full-depth run pending k003.
+  full-depth run pending k003. Process notes:
+  [`docs/k002-retro.md`](../docs/k002-retro.md).
 
 ```bash
 # Dev A — assemble deterministic artifacts

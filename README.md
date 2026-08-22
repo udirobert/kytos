@@ -62,6 +62,7 @@ first (hackathon Milestone 0, 2026-08-22). Full research and demarcation:
 | [`docs/phase0-environment.md`](docs/phase0-environment.md) | declared packages + install (`uv`) |
 | [`docs/venice-dev.md`](docs/venice-dev.md) | **local dev narration** — Venice AI (privacy, env, vs OpenAI prod) |
 | [`docs/run-protocol.md`](docs/run-protocol.md) | experiment run-IDs, `meta.json`, `facts.json`, provenance rules |
+| [`docs/k002-retro.md`](docs/k002-retro.md) | **process notes** from the first real cell-eval run — what worked, what didn't, k003 plan |
 | [`docs/security.md`](docs/security.md) | secrets policy + caveats |
 | [`NOTES.md`](NOTES.md) | task, motivation, catalog learnings |
 
