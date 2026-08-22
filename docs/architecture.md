@@ -165,6 +165,11 @@ detour from the science track.
 | **Early Oct** | decide Layer A/B split; freeze + test submission with exact gene list & AnnData gating |
 | **Late Oct → Nov 5** | test set (Oct 22); audit → ensembled final → capped submissions |
 
+**Status (2026-08-22):** Milestone 0 fully landed — facts assembler, audit
+rules, k001 seed, four enrichment tools (degrade-verified), and the frontend
+(`frontend/build.py` → `dist/`, Netlify via `netlify.toml`). Next scientific step is
+the `cell-eval` install + k001 `run --ceiling`.
+
 ---
 
 ## 7. Open decisions pending gates

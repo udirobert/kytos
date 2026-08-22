@@ -14,11 +14,20 @@ and [plant-dna](https://github.com/thebuggeddev/plant-dna): run strip, center
 stage (κύτος vessel + VEED Fabric briefing), evidence rail (metrics, audit,
 literature, narrative, provenance). See observatory doc §3.
 
-## Build (once implemented)
+## Build & deploy
 
 ```bash
-python frontend/build.py --experiments experiments/ --out frontend/dist/
+python3 frontend/build.py --experiments experiments/ --out frontend/dist/
+python3 -m http.server 8080 --directory frontend/dist
 ```
+
+**Netlify** auto-deploys on every **push** to the connected branch (`netlify.toml` at repo root).
+
+1. [Netlify](https://app.netlify.com) → **Add new site** → **Import from Git** → select `udirobert/kytos`
+2. Netlify reads `netlify.toml` (build command + `frontend/dist` publish dir) — no dashboard overrides needed
+3. Push to `main` → production deploy; other branches get preview URLs if enabled in site settings
+
+Local preview does not trigger Netlify — only pushes to the linked remote do.
 
 Enrichment (run before build):
 

@@ -1,0 +1,27 @@
+{
+  "run_id": "k001-mean-shift-baseline",
+  "flags": [
+    {
+      "id": "hk-stability",
+      "severity": "warn",
+      "genes": [
+        "ACTB",
+        "GAPDH"
+      ],
+      "rule": "housekeeping_shift",
+      "message": "Housekeeping genes shifted up to +2.10 log2FC (threshold \u00b11.0); peak ACTB."
+    },
+    {
+      "id": "pathway-interferon_response",
+      "severity": "warn",
+      "genes": [
+        "ISG15",
+        "IFIT1",
+        "MX1",
+        "OAS1"
+      ],
+      "rule": "pathway_coherence",
+      "message": "Pathway 'interferon_response' shows mixed directionality (2 up, 2 down among measured genes)."
+    }
+  ]
+}

@@ -34,6 +34,7 @@ first (hackathon Milestone 0, 2026-08-22). Full research and demarcation:
 |---|---|
 | [`docs/competitive-landscape.md`](docs/competitive-landscape.md) | **problem, evidence, wedge, adjacent projects** — pitch foundation |
 | [`docs/observatory.md`](docs/observatory.md) | build-in-public surface: UX, partners, Fabric, hackathon scope |
+| [`docs/milestone-0-worksplit.md`](docs/milestone-0-worksplit.md) | three-developer parallel split for Milestone 0 |
 | [`docs/architecture.md`](docs/architecture.md) | model-stack ADR: Layer A (gene transfer) + Layer B (cell sampler), gates |
 | [`docs/code-organization.md`](docs/code-organization.md) | repo layout, backend & Observatory frontend stack |
 | [`docs/phase0-environment.md`](docs/phase0-environment.md) | declared packages + install (`uv`) |
@@ -77,7 +78,7 @@ python submission/script.py --basal <basal> --targets <genes> \
   --gene-order <genelist> --out pred.h5ad --meta meta.json
 ```
 
-Observatory build (once implemented — see [`docs/observatory.md`](docs/observatory.md)):
+Observatory build (enrichment + static site — see [`docs/observatory.md`](docs/observatory.md)):
 
 ```bash
 python tools/render_narrative.py   --run experiments/<run-id>
@@ -90,15 +91,19 @@ python frontend/build.py --experiments experiments/ --out frontend/dist/
 Every commit is gated by a **deterministic, offline** secrets scan + `ruff`
 lint + `ruff` format (see [`docs/security.md`](docs/security.md)).
 
-## Status (Phase 0 — day 1, 2026-08-22)
+## Status (Phase 0 — updated 2026-08-22)
 
 - [x] Notes reviewed, stack reasoned (architecture ADR)
 - [x] Problem / wedge / competitive landscape documented
 - [x] Submission harness contract drafted + running (degrades with no deps)
 - [x] Repo organized: package-per-concern backend, consolidated `docs/`
-- [ ] **Observatory Milestone 0** — run page, `facts.json`, OpenAI + Tavily + fal/Fabric ([plan](docs/observatory.md))
+- [x] Milestone 0 worksplit agreed — three-dev parallel build ([docs/milestone-0-worksplit.md](docs/milestone-0-worksplit.md))
+- [x] **k001 seeded (Dev A)**: `facts.json` assembler, audit rules (`housekeeping_shift`, `pathway_coherence`), metrics + ceiling CSVs, committed run artifacts
+- [x] **Enrichment tools (Dev B)**: OpenAI narrative (+ deterministic fallback), Tavily literature, fal visuals, VEED Fabric briefing — degrade-empty verified against k001; live runs need API keys ([tools/README.md](tools/README.md))
+- [x] **Observatory frontend (Dev C)**: `frontend/build.py` → `dist/` (home, runs index, k001 run page); Netlify deploy ([`netlify.toml`](netlify.toml))
+- [ ] Integration: enrichment with keys → rebuilt `dist/` → deploy → 2-min Loom
 - [ ] Install `cell-eval` + `anndata` (uv) → H5AD write path
-- [ ] k001 mean-shift baseline → `cell-eval run --ceiling`
+- [ ] k001 through `cell-eval run --ceiling` — real metrics replace mock CSVs
 
 ## Open decisions
 

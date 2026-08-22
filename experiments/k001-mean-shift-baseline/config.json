@@ -1,0 +1,6 @@
+{
+  "model": "mean-shift-baseline",
+  "context_similarity": "cosine_basal_centroid",
+  "scale": 1.0,
+  "seed": 0
+}

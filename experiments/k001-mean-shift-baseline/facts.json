@@ -1,0 +1,46 @@
+{
+  "run_id": "k001-mean-shift-baseline",
+  "created": "2026-08-22",
+  "headline": "Basal mean-shift baseline \u2014 ceiling headroom probe",
+  "headline_metrics": {
+    "DESigGenesRecall": 0.12,
+    "pearson_delta": 0.08
+  },
+  "ceiling_headroom": {
+    "DESigGenesRecall": 0.45,
+    "pearson_delta": 0.31
+  },
+  "audit_flags": [
+    {
+      "id": "hk-stability",
+      "severity": "warn",
+      "genes": [
+        "ACTB",
+        "GAPDH"
+      ],
+      "rule": "housekeeping_shift",
+      "message": "Housekeeping genes shifted up to +2.10 log2FC (threshold \u00b11.0); peak ACTB."
+    },
+    {
+      "id": "pathway-interferon_response",
+      "severity": "warn",
+      "genes": [
+        "ISG15",
+        "IFIT1",
+        "MX1",
+        "OAS1"
+      ],
+      "rule": "pathway_coherence",
+      "message": "Pathway 'interferon_response' shows mixed directionality (2 up, 2 down among measured genes)."
+    }
+  ],
+  "hypotheses_preregistered": [
+    "Basal co-expression alone explains <20% of cross-context transfer on DESigGenesRecall",
+    "Mean-shift baseline will sit below 50% of ceiling on pearson_delta"
+  ],
+  "provenance": {
+    "commit": "2fe7bd7f4f0902b454d0f2face73f917e6e065d5",
+    "seed": 0,
+    "code_hash": "k001-mean-shift-v0"
+  }
+}

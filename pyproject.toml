@@ -27,6 +27,11 @@ eval = [
     "cell-eval",
     "pdex",
 ]
+obs = [
+    "openai>=1.0",
+    "tavily-python>=0.3",
+    "fal-client>=0.2",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -39,6 +39,7 @@ kytos/
 ├── docs/                  # ALL prose lives here (this repo's "knowledge base")
 │   ├── observatory.md         # build-in-public surface: visual UX, partner tech
 │   ├── competitive-landscape.md  # problem, evidence, wedge, adjacent projects
+│   ├── milestone-0-worksplit.md  # three-dev parallel split (hackathon day)
 │   ├── architecture.md        # model-stack ADR (Layer A/B, gates)
 │   ├── code-organization.md   # THIS FILE
 │   ├── phase0-environment.md  # declared packages + install
@@ -180,7 +181,7 @@ Layout grammar: `Header · Run strip · Stage (vessel + Fabric video) · Evidenc
 
 ## 6. Open questions to resolve as we go
 
-1. Deploy target for `frontend/dist/` (GitHub Pages vs Cloudflare Pages)?
+1. ~~Deploy target for `frontend/dist/`~~ → **Netlify** (`netlify.toml`)
 2. MkDocs vs all-in-one Python generator for Observatory layout — decide Milestone 0.
 3. fal model for hero still vs Fabric source frame (same image or separate).
 4. Interactive UMAP on run detail — emit JSON from Layer B before Phase 2 ends.

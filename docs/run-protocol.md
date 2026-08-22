@@ -114,4 +114,11 @@ Deliverables for **k001**:
 - a one-line conclusion answering *how much does basal-conditioning alone buy*
   (architecture Gate → Layer A/B severity).
 
+**Status (2026-08-22):** k001 is seeded — `meta.json`, `config.json`, `codehash`,
+`metrics/agg_results.csv` + `ceiling_results.csv` (mock), `audit/context.json` +
+`flags.json`, `facts.json`, and a deterministic fallback `narrative/report.md`
+are committed. Pending: real `cell-eval run --ceiling` numbers replacing the
+mock CSVs, LLM narrative (with key), `literature/`, `visual/`, `briefing.mp4`,
+and the one-line basal-conditioning conclusion.
+
 The k001 run page is the **Observatory Milestone 0** demo surface (2026-08-22).

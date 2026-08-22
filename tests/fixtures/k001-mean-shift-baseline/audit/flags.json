@@ -1,0 +1,18 @@
+{
+  "flags": [
+    {
+      "id": "flag-housekeeping-1",
+      "severity": "warn",
+      "genes": ["ACTB", "GAPDH"],
+      "rule": "housekeeping_shift",
+      "message": "Housekeeping genes shift beyond threshold vs basal"
+    },
+    {
+      "id": "flag-pathway-1",
+      "severity": "info",
+      "genes": ["MTOR"],
+      "rule": "pathway_coherence",
+      "message": "Flagged gene set fails pathway consistency"
+    }
+  ]
+}

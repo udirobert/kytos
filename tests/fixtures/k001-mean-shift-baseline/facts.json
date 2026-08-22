@@ -1,0 +1,40 @@
+{
+  "run_id": "k001-mean-shift-baseline",
+  "created": "2026-08-22",
+  "headline": "Mean-shift baseline: zero-knowledge floor for k001",
+  "headline_metrics": {
+    "DESigGenesRecall": 0.0,
+    "pearson_delta": 0.0,
+    "mse_delta": 0.0
+  },
+  "ceiling_headroom": {
+    "DESigGenesRecall": 0.42,
+    "pearson_delta": 0.61,
+    "mse_delta": 0.0
+  },
+  "audit_flags": [
+    {
+      "id": "flag-housekeeping-1",
+      "severity": "warn",
+      "genes": ["ACTB", "GAPDH"],
+      "rule": "housekeeping_shift",
+      "discuss_url": null
+    },
+    {
+      "id": "flag-pathway-1",
+      "severity": "info",
+      "genes": ["MTOR"],
+      "rule": "pathway_coherence",
+      "discuss_url": null
+    }
+  ],
+  "hypotheses_preregistered": [
+    "Housekeeping genes shift by <10% under most knockdowns",
+    "Knockdown effects propagate along basal co-expression structure"
+  ],
+  "provenance": {
+    "commit": "2fe7bd7",
+    "seed": 0,
+    "code_hash": "abc123"
+  }
+}

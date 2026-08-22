@@ -1,0 +1,22 @@
+{
+  "run_id": "k001-mean-shift-baseline",
+  "created": "2026-08-22",
+  "task": "baseline",
+  "headline": "Basal mean-shift baseline \u2014 ceiling headroom probe",
+  "inputs": {
+    "basal_anndata": "fixtures/mock-basal-summary.json",
+    "gene_list": "fixtures/mock-targets.json",
+    "expected_genelist": "submission/fixtures/gene_order.txt"
+  },
+  "code": {
+    "commit": "2fe7bd7f4f0902b454d0f2face73f917e6e065d5",
+    "hash": "k001-mean-shift-v0"
+  },
+  "seed": 0,
+  "normalization": "log1p",
+  "hypotheses_preregistered": [
+    "Basal co-expression alone explains <20% of cross-context transfer on DESigGenesRecall",
+    "Mean-shift baseline will sit below 50% of ceiling on pearson_delta"
+  ],
+  "notes": "Milestone 0 mock metrics for Observatory demo; replace with cell-eval run output."
+}

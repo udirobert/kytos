@@ -1,0 +1,22 @@
+{
+  "run_id": "k001-mean-shift-baseline",
+  "housekeeping_shifts": {
+    "ACTB": 2.1,
+    "GAPDH": 1.6,
+    "B2M": 0.4,
+    "PPIA": 0.2
+  },
+  "pathways": [
+    {
+      "name": "interferon_response",
+      "genes": ["ISG15", "IFIT1", "MX1", "OAS1"],
+      "expected_direction": "down",
+      "gene_shifts": {
+        "ISG15": 0.8,
+        "IFIT1": -0.6,
+        "MX1": 0.3,
+        "OAS1": -0.4
+      }
+    }
+  ]
+}

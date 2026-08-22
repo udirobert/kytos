@@ -1,0 +1,5 @@
+metric,ceiling
+DESigGenesRecall,0.45
+pearson_delta,0.31
+mae_delta,0.22
+discrimination_score,0.78

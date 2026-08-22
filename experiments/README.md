@@ -13,3 +13,9 @@ assemble `facts.json`, run enrichment tools, and commit all artifacts alongside
 prediction outputs.
 
 **First run:** `k001-mean-shift-baseline` — Observatory Milestone 0 demo (2026-08-22).
+
+```bash
+# Dev A — assemble deterministic artifacts
+python -m kytos.audit --run experiments/k001-mean-shift-baseline
+python -m kytos.eval.facts --run experiments/k001-mean-shift-baseline
+```

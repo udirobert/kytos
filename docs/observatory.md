@@ -181,6 +181,8 @@ python frontend/build.py --experiments experiments/ --out frontend/dist/
 
 ## 6. Milestone 0 scope (2026-08-22)
 
+Parallel team split: [`milestone-0-worksplit.md`](milestone-0-worksplit.md).
+
 Ruthless cut for hackathon deadline (19:00 opt-in):
 
 | Priority | Ship | Defer |
@@ -194,6 +196,15 @@ Ruthless cut for hackathon deadline (19:00 opt-in):
 | P0 | 2-min Loom on **live URL** | UMAP strip |
 
 One gorgeous run page beats three half-finished pages.
+
+### Progress (2026-08-22, end of day 1)
+
+| Track | Status |
+|---|---|
+| Core (A) | ✅ `facts.json` assembler (`src/kytos/eval/facts.py`), audit rules + CLI (`src/kytos/audit/`), k001 seeded: metrics CSVs, flags, `facts.json` |
+| Enrich (B) | ✅ four `tools/render_*.py` + `tools/README.md` + `obs` extra; degrade-empty verified against k001 (`narrative/report.md` fallback committed); live fal/Tavily/Fabric runs pending API keys |
+| Frontend (C) | ✅ `frontend/build.py` → `dist/` (home, runs index, k001 run detail) + Netlify (`netlify.toml`) |
+| Integration | ⏳ enrichment with keys → rebuild `dist/` → deploy → 2-min Loom |
 
 ### Later (Aug → Nov 2026)
 
@@ -220,7 +231,7 @@ Full problem/evidence talking points: [`competitive-landscape.md §6`](competiti
 
 ## 8. Open questions
 
-1. Deploy target for `frontend/dist/` (GitHub Pages vs Cloudflare Pages)?
+1. ~~Deploy target for `frontend/dist/`~~ → **Netlify** (`netlify.toml`)
 2. Font / palette final choice (avoid cloning Plant DNA's Space Mono verbatim)?
 3. fal model for hero still vs Fabric source frame (same image or separate)?
 4. Pioneer fine-tune for critique classification — post-hackathon?

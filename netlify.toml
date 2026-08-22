@@ -1,0 +1,23 @@
+# Kytos Observatory — Netlify static deploy
+# Connect this repo at https://app.netlify.com → Add new site → Import from Git.
+# Netlify rebuilds on every push to the connected branch (enable in Site settings).
+
+[build]
+  command = "python3 frontend/build.py --experiments experiments --out frontend/dist"
+  publish = "frontend/dist"
+
+[build.environment]
+  PYTHON_VERSION = "3.12"
+
+# Pretty URLs: /runs/k001-mean-shift-baseline/ → index.html
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"

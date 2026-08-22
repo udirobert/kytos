@@ -250,6 +250,8 @@ The realistic path:
 
 ---
 
-*Next: Observatory Milestone 0 (2026-08-22) — see `docs/observatory.md` and
-`docs/competitive-landscape.md`. Then register, download Atlas 2025, read the
-Altos preprint, run k001 through cell-eval, and publish the first run page.*
+*Next (end of day 1, 2026-08-22): finish the Observatory run page (Developer C),
+then the science track — install `cell-eval` + `anndata` (uv), run k001 through
+`cell-eval run --ceiling`, register, download Atlas 2025, read the Altos
+preprint, and publish the first run page. Milestone 0 progress:
+[`docs/milestone-0-worksplit.md`](docs/milestone-0-worksplit.md).*
