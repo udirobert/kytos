@@ -6,7 +6,11 @@
   }
 
   function markNoWebGL() {
+    if (document.documentElement.classList.contains("no-webgl")) {
+      return;
+    }
     document.documentElement.classList.add("no-webgl");
+    animateVesselFallback();
   }
 
   function isNoWebGL() {
@@ -35,9 +39,8 @@
     setTimeout(function () {
       if (!container.classList.contains("is-3d")) {
         markNoWebGL();
-        animateVesselFallback();
       }
-    }, 1500);
+    }, 3000);
   }
 
   // ── Text states swap (transitions.dev pattern) ──────────────────────────

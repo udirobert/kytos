@@ -42,6 +42,8 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "About the 78-day build" in home_html
     assert "home-scroll-hint" not in home_html
     assert "home-data-strip" not in home_html
+    assert "home-hero-grid" in home_html
+    assert "home-vessel-legend" in home_html
     assert "run-strip" not in home_html
     assert "DE gene recall" in home_html
 

@@ -234,8 +234,9 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
 
 
 def _head(meta: PageMeta, *, root_prefix: str) -> str:
+    html_class = "no-webgl" if meta.needs_vessel else ""
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="{html_class}">
 <head>
 {render_head_tags(meta, root_prefix=root_prefix)}
 </head>
@@ -258,6 +259,22 @@ def _home_proof_pill(facts: dict) -> str:
     return f'<p class="home-proof">{_h(" · ".join(parts))}</p>'
 
 
+def _home_vessel_legend_html(vd: dict[str, Any], *, about_href: str) -> str:
+    warn_word = "warning" if vd["warns"] == 1 else "warnings"
+    info_word = "flag" if vd["infos"] == 1 else "flags"
+    parts = [
+        f'<span class="legend-item legend-fill">{vd["fill_pct"]}% headroom</span>',
+        f'<span class="legend-item legend-warn">{vd["warns"]} audit {warn_word}</span>',
+    ]
+    if vd["infos"]:
+        parts.append(f'<span class="legend-item legend-info">{vd["infos"]} info {info_word}</span>')
+    return (
+        f'<p class="home-vessel-legend vessel-legend-inline">{"".join(parts)}</p>'
+        f'<p class="home-vessel-about-link">'
+        f'<a href="{_h(about_href)}">What is the vessel?</a></p>'
+    )
+
+
 def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     latest = runs[-1] if runs else None
     if latest:
@@ -268,30 +285,47 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
 
         run_index = _run_index(latest, runs)
         proof = _home_proof_pill(latest.facts)
+        about_href = f"{root_prefix}about/index.html"
+        vessel_legend = _home_vessel_legend_html(vd, about_href=about_href)
+        visual = latest.facts.get("visual") or {}
+        hero = visual.get("hero")
+        hero_img = ""
+        if hero:
+            hero_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(hero)}"
+            hero_img = (
+                f'<img class="home-vessel-bg" src="{_h(hero_src)}" alt="" '
+                f'decoding="async" loading="eager">'
+            )
 
-        # Full-bleed 3D vessel as background layer
         stage = f"""
         <section class="home-stage">
-          <div class="vessel-fullscreen vessel-3d-container vessel-home" id="vessel-canvas">
-            <div class="vessel-svg-fallback">{svg}</div>
-            <script type="application/json" id="vessel-data">{vessel_json}</script>
-          </div>
-          <div class="home-overlay">
-            <div class="home-overlay-content">
-              <h1 class="home-headline">
-                We publish every prediction — and
-                <em>every time biology says we&rsquo;re wrong.</em>
-              </h1>
-              <p class="home-subline">
-                Run #{run_index} of {VCC_DAYS} · Virtual Cell Challenge 2026
-              </p>
-              {proof}
-              <div class="home-cta-row">
-                <a class="button" href="{run_href}">View run #{run_index} →</a>
+          <div class="home-hero-grid">
+            <div class="home-vessel-column">
+              <div class="vessel-fullscreen vessel-3d-container vessel-home" id="vessel-canvas">
+                {hero_img}
+                <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
+                <div class="vessel-svg-fallback">{svg}</div>
+                <script type="application/json" id="vessel-data">{vessel_json}</script>
               </div>
-              <p class="home-about-link">
-                <a href="{root_prefix}about/index.html">About the 78-day build</a>
-              </p>
+              {vessel_legend}
+            </div>
+            <div class="home-copy-column home-overlay">
+              <div class="home-overlay-content">
+                <h1 class="home-headline">
+                  We publish every prediction — and
+                  <em>every time biology says we&rsquo;re wrong.</em>
+                </h1>
+                <p class="home-subline">
+                  Run #{run_index} of {VCC_DAYS} · Virtual Cell Challenge 2026
+                </p>
+                {proof}
+                <div class="home-cta-row">
+                  <a class="button" href="{run_href}">View run #{run_index} →</a>
+                </div>
+                <p class="home-about-link">
+                  <a href="{about_href}">About the 78-day build</a>
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -602,9 +636,16 @@ def render_run_detail(
     )
 
     body = f"""
-    {_nav(run.run_id, runs, root_prefix=root_prefix)}
-    {_confession_banner(facts, run.run_id)}
-    {
+    <section class="run-hero">
+      <div class="vessel-fullscreen vessel-3d-container vessel-run" id="vessel-canvas">
+        <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
+        <div class="vessel-svg-fallback">{_vessel_svg(facts, clip_id="vessel-clip-run")}</div>
+        <script type="application/json" id="vessel-data">{json.dumps(vd)}</script>
+      </div>
+      <div class="run-hero-overlay">
+        {_nav(run.run_id, runs, root_prefix=root_prefix)}
+        {_confession_banner(facts, run.run_id)}
+        {
         _run_header_compact(
             run,
             runs,
@@ -616,6 +657,8 @@ def render_run_detail(
             root_prefix=root_prefix,
         )
     }
+      </div>
+    </section>
     <main class="run-evidence">
       {
         _disclosure_section(
@@ -671,7 +714,7 @@ def render_run_detail(
         og_type="article",
         og_image=og_image,
         needs_plotly=True,
-        needs_vessel=False,
+        needs_vessel=True,
     )
 
     return _head(meta, root_prefix=root_prefix) + f"<body class='page-run'>{body}</body></html>"
