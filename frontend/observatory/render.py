@@ -7,6 +7,7 @@ from typing import Any
 
 from frontend.observatory import data as data_mod
 from frontend.observatory.charts import metrics_bar_chart
+from frontend.observatory.meta import PageMeta, SITE_DESCRIPTION, render_head_tags
 from frontend.observatory.runs import RunSummary
 
 SITE_TITLE = "Kytos Observatory"
@@ -50,19 +51,11 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
     """
 
 
-def _head(title: str, *, root_prefix: str) -> str:
+def _head(meta: PageMeta, *, root_prefix: str) -> str:
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{_h(title)} · {_h(SITE_TITLE)}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap"
-        rel="stylesheet">
-  <link rel="stylesheet" href="{root_prefix}static/style.css">
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+{render_head_tags(meta, root_prefix=root_prefix)}
 </head>
 """
 
@@ -108,7 +101,12 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     """
 
     body = _nav("home", runs, root_prefix=root_prefix) + hero + timeline + problem
-    return _head("Home", root_prefix=root_prefix) + f'<body class="page-home">{body}</body></html>'
+    meta = PageMeta(
+        title="Home",
+        description=SITE_DESCRIPTION,
+        canonical_path="/",
+    )
+    return _head(meta, root_prefix=root_prefix) + f'<body class="page-home">{body}</body></html>'
 
 
 def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
@@ -129,7 +127,14 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         + f'<main class="content"><h1>Experiment runs</h1>'
         f'<div class="run-grid">{cards}</div></main>'
     )
-    return _head("Runs", root_prefix=root_prefix) + f"<body>{body}</body></html>"
+    meta = PageMeta(
+        title="Runs",
+        description=(
+            "Index of Kytos experiment runs with cell-eval metrics, audit flags, and provenance."
+        ),
+        canonical_path="/runs/",
+    )
+    return _head(meta, root_prefix=root_prefix) + f"<body>{body}</body></html>"
 
 
 def render_run_detail(
@@ -163,31 +168,41 @@ def render_run_detail(
     prov = facts.get("provenance") or {}
     headline_m = facts.get("headline_metrics") or {}
     headline_c = facts.get("ceiling_headroom") or {}
-    metric_summary = " · ".join(
-        f"{k} {headline_m.get(k, '—')} / ceiling {headline_c.get(k, '—')}" for k in headline_m
-    )
+    csv_href = f"{root_prefix}metrics/agg_results.csv"
+    # Build the summary with markup, escaping only the dynamic parts — running
+    # the whole string through _h() would escape the drill-down links.
+    summary_bits = []
+    for k in headline_m:
+        summary_bits.append(
+            f'{_h(k)} <a class="metric-src" href="{csv_href}"'
+            f' title="opens metrics/agg_results.csv">{_h(str(headline_m.get(k, "—")))}</a>'
+            f" / ceiling {_h(str(headline_c.get(k, '—')))}"
+        )
+    metric_summary = " · ".join(summary_bits)
 
     body = f"""
     {_nav(run.run_id, runs, root_prefix=root_prefix)}
+    {_confession_banner(facts, run.run_id)}
     <main class="run-layout">
       <section class="stage-column">
         {hero_html}
         <div class="stage-caption">
           <p class="eyebrow">{_h(facts.get("created", ""))}</p>
           <h1>{_h(facts.get("headline", run.run_id))}</h1>
-          <p class="metric-summary">{_h(metric_summary)}</p>
+          <p class="metric-summary">{metric_summary}</p>
         </div>
       </section>
       <aside class="evidence-rail">
         <section class="panel">
-          <h2>Metrics vs ceiling</h2>
-          <p class="panel-note">From committed CSVs only — never LLM-generated.</p>
-          <div id="metrics-chart" class="chart"></div>
-          <script type="application/json" id="metrics-chart-data">{chart_json}</script>
-        </section>
-        <section class="panel">
           <h2>Audit flags</h2>
           {flags_html}
+        </section>
+        <section class="panel">
+          <h2>Metrics vs ceiling</h2>
+          <p class="panel-note">From committed CSVs only — never LLM-generated.
+          Click a headline value to open its source.</p>
+          <div id="metrics-chart" class="chart"></div>
+          <script type="application/json" id="metrics-chart-data">{chart_json}</script>
         </section>
         <section class="panel collapsible">
           <h2>Literature</h2>
@@ -219,9 +234,25 @@ def render_run_detail(
     <script src="{root_prefix}static/site.js" defer></script>
     """
 
-    return (
-        _head(run.run_id, root_prefix=root_prefix) + f"<body class='page-run'>{body}</body></html>"
+    headline = str(facts.get("headline", run.run_id))
+    desc_bits = [headline]
+    if headline_m:
+        desc_bits.append(" · ".join(f"{k} {headline_m.get(k)}" for k in headline_m))
+    run_desc = " ".join(desc_bits)[:300]
+    og_image = None
+    hero_path = visual.get("hero")
+    if hero_path and media_prefix:
+        og_image = f"{media_prefix}{hero_path}"
+
+    meta = PageMeta(
+        title=run.run_id,
+        description=run_desc or SITE_DESCRIPTION,
+        canonical_path=f"/runs/{run.run_id}/",
+        og_type="article",
+        og_image=og_image,
     )
+
+    return _head(meta, root_prefix=root_prefix) + f"<body class='page-run'>{body}</body></html>"
 
 
 def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
@@ -241,13 +272,78 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
           <img src="{_h(media_prefix + hero)}" alt="Run visual" class="hero-image">
         </div>
         """
-    return """
-    <div class="stage-hero vessel-placeholder" aria-hidden="true">
-      <div class="vessel-ring ring-a"></div>
-      <div class="vessel-ring ring-b"></div>
-      <div class="vessel-core"></div>
-      <p class="vessel-label">κύτος · awaiting Fabric briefing</p>
+    return _vessel_instrument(facts)
+
+
+def _vessel_instrument(facts: dict) -> str:
+    """The hollow vessel fills with evidence — a data-bound instrument.
+
+    Rendered deterministically from facts.json at build time (zero JS, zero
+    API): liquid fill = mean ceiling headroom, amber cracks = warn/error audit
+    flags, cyan droplets = info flags. The vessel's shape IS the run's state.
+    """
+    ceiling = facts.get("ceiling_headroom") or {}
+    values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
+    fill = int(round(100 * sum(values) / len(values))) if values else 0
+    fill = max(6, min(100, fill))  # keep a visible droplet even at 0 headroom
+
+    flags = facts.get("audit_flags") or []
+    warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
+    infos = sum(1 for f in flags if f.get("severity") == "info")
+    warn_plural = "warning" if warns == 1 else "warnings"
+    info_plural = "flag" if infos == 1 else "flags"
+
+    fill_y = 236 - int(fill / 100 * 190)  # liquid surface y (bottom = 236)
+    cracks = "".join(
+        f'<path class="vessel-crack" d="M {72 + i * 12} {150 + (i % 3) * 14} l {10 + i} {26 + i}"/>'
+        for i in range(min(warns, 6))
+    )
+    droplets = "".join(
+        f'<circle class="vessel-info" cx="{55 + i * 22}" cy="{46 + (i % 2) * 28}" r="3"/>'
+        for i in range(min(infos, 5))
+    )
+
+    return f"""
+    <div class="stage-hero vessel-instrument">
+      <svg class="vessel-svg" viewBox="0 0 200 250" role="img"
+           aria-label="Kytos vessel instrument: fill {fill} percent, {warns} audit warnings">
+        <defs>
+          <clipPath id="vessel-clip">
+            <path d="M 80 12 L 120 12 L 120 58 Q 120 92 156 132 Q 188 168 172 208
+                    Q 158 240 100 240 Q 42 240 28 208 Q 12 168 44 132 Q 80 92 80 58 Z"/>
+          </clipPath>
+        </defs>
+        <path class="vessel-glass" d="M 80 12 L 120 12 L 120 58 Q 120 92 156 132
+              Q 188 168 172 208 Q 158 240 100 240 Q 42 240 28 208 Q 12 168 44 132 Q 80 92 80 58 Z"/>
+        <rect class="vessel-liquid" x="10" y="{fill_y}" width="180" height="250"
+              clip-path="url(#vessel-clip)"/>
+        <line class="vessel-liquid-line" x1="30" y1="{fill_y}" x2="170" y2="{fill_y}"/>
+        <g class="vessel-cracks">{cracks}</g>
+        <g class="vessel-droplets">{droplets}</g>
+      </svg>
+      <p class="vessel-label">κύτος · the hollow vessel fills with evidence</p>
+      <p class="vessel-legend">
+        <span class="legend-item legend-fill">fill = {fill}% ceiling headroom</span>
+        <span class="legend-item legend-warn">{warns} {warn_plural}</span>
+        <span class="legend-item legend-info">{infos} info {info_plural}</span>
+      </p>
     </div>
+    """
+
+
+def _confession_banner(facts: dict, run_id: str) -> str:
+    """Self-own moment: our own run violating our own rules is the demo opener."""
+    flags = facts.get("audit_flags") or []
+    warns = [f for f in flags if f.get("severity") in ("warn", "error")]
+    if not warns:
+        return ""
+    rules = ", ".join(f"<code>{_h(f.get('rule', '?'))}</code>" for f in warns[:3])
+    return f"""
+    <section class="confession-banner">
+      <p class="eyebrow">Audit confession — k001 fails its own rules</p>
+      <p>{len(warns)} warning(s) raised against our own baseline: {rules}.
+      Reproduce: <code>python -m kytos.audit --run experiments/{_h(run_id)}</code></p>
+    </section>
     """
 
 

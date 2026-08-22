@@ -19,12 +19,20 @@ FIXTURE = ROOT / "tests" / "fixtures" / "k001-mean-shift-baseline"
 sys.path.insert(0, str(TOOLS))
 
 import enrich_literature  # noqa: E402
+import pioneer_ner  # noqa: E402
 import render_briefing  # noqa: E402
 import render_narrative  # noqa: E402
 import render_visuals  # noqa: E402
 from _enrich_common import load_facts, set_visual_paths  # noqa: E402
 
-API_ENV = ("OPENAI_API_KEY", "TAVILY_API_KEY", "FAL_KEY", "FAL_API_KEY")
+API_ENV = (
+    "OPENAI_API_KEY",
+    "TAVILY_API_KEY",
+    "FAL_KEY",
+    "FAL_API_KEY",
+    "PIONEER_API_KEY",
+    "PIONEER_KEY",
+)
 
 
 @pytest.fixture()
@@ -48,8 +56,20 @@ def test_narrative_fallback(run_dir: Path) -> None:
 
 
 def test_literature_degrades_empty(run_dir: Path) -> None:
+    # The fixture has a cached literature/ACTB.json; running with no key must
+    # not add new files or error.
+    existing = (
+        sorted(p.name for p in (run_dir / "literature").glob("*.json"))
+        if (run_dir / "literature").is_dir()
+        else []
+    )
     assert enrich_literature.main(["--run", str(run_dir)]) == 0
-    assert not (run_dir / "literature").exists()
+    after = (
+        sorted(p.name for p in (run_dir / "literature").glob("*.json"))
+        if (run_dir / "literature").is_dir()
+        else []
+    )
+    assert after == existing  # no new files added
 
 
 def test_visuals_degrades_empty(run_dir: Path) -> None:
@@ -62,6 +82,16 @@ def test_briefing_degrades_empty(run_dir: Path) -> None:
     # No hero.png in the fixture -> briefing must no-op cleanly.
     assert render_briefing.main(["--run", str(run_dir)]) == 0
     assert not (run_dir / "visual" / "briefing.mp4").exists()
+
+
+def test_pioneer_ner_degrades_without_key(run_dir: Path) -> None:
+    # No PIONEER_API_KEY in env (cleaned by fixture) → must no-op cleanly.
+    assert pioneer_ner.main(["--run", str(run_dir)]) == 0
+    assert not (run_dir / "pioneer").exists()
+
+
+def test_pioneer_train_degrades_without_key(run_dir: Path) -> None:
+    assert pioneer_ner.main(["--train"]) == 0
 
 
 def test_missing_facts_json_is_a_contract_error(

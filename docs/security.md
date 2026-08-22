@@ -57,6 +57,10 @@ false-positive-aware; test with a planted pattern before committing.
 
 ## When you add real infra (planned: post-challenge)
 - Keep credentials out of the repo indefinitely; inject via env at deploy.
+- **Local dev narration:** use Venice (`VENICE_INFERENCE_KEY` in `.env` only)
+  so experiment payloads in `facts.json` are not sent to OpenAI while iterating.
+  See [`docs/venice-dev.md`](venice-dev.md). Production uses OpenAI via Netlify
+  env vars.
 - If you ever commit `.env.example`, add it to the allowlist **by filename**
   only if the scanner's content patterns would otherwise hit its placeholder
   values — and never commit a real `.env`.

@@ -56,7 +56,8 @@ ships today and carries through to Nov 5. See
 
 | Partner | Role | Catalog pattern |
 |---|---|---|
-| **OpenAI** | Run script + digest — **from `facts.json` only**; TTS for Fabric audio | weft / matcha |
+| **OpenAI** | Run script + digest (prod) — **from `facts.json` only**; TTS for Fabric audio | weft / matcha |
+| **Venice** | Same narration path for **local dev** — private inference, saves hackathon OpenAI credits | — ([`venice-dev.md`](venice-dev.md)) |
 | **Tavily** | Literature sidebar for audit-flagged genes/pathways; empty on failure | famile |
 | **fal** | Hero stills, share cards, **VEED Fabric run briefings** | — |
 
@@ -161,10 +162,9 @@ experiments/<run-id>/
 python -m kytos.eval.facts --run experiments/k001-mean-shift-baseline
 
 # 3. Enrich (commits outputs for static deploy)
-python tools/render_narrative.py   --run experiments/k001-mean-shift-baseline
-python tools/enrich_literature.py  --run experiments/k001-mean-shift-baseline
-python tools/render_visuals.py     --run experiments/k001-mean-shift-baseline
-python tools/render_briefing.py    --run experiments/k001-mean-shift-baseline
+cp .env.example .env   # once; Venice for local narration — docs/venice-dev.md
+./tools/run_enrichment.sh experiments/k001-mean-shift-baseline
+# or run tools individually (see tools/README.md)
 
 # 4. Build Observatory
 python frontend/build.py --experiments experiments/ --out frontend/dist/
@@ -206,6 +206,7 @@ One gorgeous run page beats three half-finished pages.
 | Frontend (C) | ✅ `frontend/build.py` → `dist/` (home, runs index, k001 run detail); Playwright-verified desktop + mobile, zero console errors; briefing video autoplay; Netlify (`netlify.toml`) |
 | Deploy (B) | ✅ Netlify (`netlify.toml`) — auto-builds `frontend/dist/` on push; connect repo in Netlify dashboard |
 | Pioneer (C) | 🧪 `tools/enrich_pioneer.py` — fine-tuned narrative model for the side challenge (experimental) |
+| Demo primitives (B) | ✅ data-bound vessel instrument (fill = ceiling headroom, cracks = audit flags), audit confession banner, metric→CSV drill-down, planted-signal self-test (`tools/planted_signal.py`), [`demo-script.md`](demo-script.md) |
 | Integration | ⏳ real enrichment artifacts → rebuild `dist/` → redeploy → 2-min Loom |
 
 ### Later (Aug → Nov 2026)
@@ -228,6 +229,9 @@ Reorder for hackathon judges (VEED + fal front-loaded):
 5. **15s** — Public repo; roadmap to Nov 5; invite critique via Discussions.
 
 Full problem/evidence talking points: [`competitive-landscape.md §6`](competitive-landscape.md#6-presentation-crib-sheet).
+
+Second-by-second script with the self-own opening and 78-day closer:
+[`demo-script.md`](demo-script.md).
 
 ---
 

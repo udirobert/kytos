@@ -1,0 +1,23 @@
+{
+  "name": "Kytos Observatory",
+  "short_name": "Kytos",
+  "description": "Virtual Cell Challenge experiment tracker — metrics, audit flags, and provenance in public.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070b12",
+  "theme_color": "#070b12",
+  "icons": [
+    {
+      "src": "/static/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

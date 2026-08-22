@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Kytos">
+  <rect width="32" height="32" rx="7" fill="#070b12"/>
+  <path fill="none" stroke="#5eead4" stroke-width="1.4"
+        d="M 11 5 L 21 5 L 21 12 Q 21 16 25 19 Q 28 22 26 25 Q 24 28 16 28 Q 8 28 6 25 Q 4 22 7 19 Q 11 16 11 12 Z"/>
+  <rect x="5" y="20" width="22" height="14" fill="#5eead4" opacity="0.35" clip-path="url(#fav-clip)"/>
+  <defs>
+    <clipPath id="fav-clip">
+      <path d="M 11 5 L 21 5 L 21 12 Q 21 16 25 19 Q 28 22 26 25 Q 24 28 16 28 Q 8 28 6 25 Q 4 22 7 19 Q 11 16 11 12 Z"/>
+    </clipPath>
+  </defs>
+</svg>

@@ -17,6 +17,7 @@ from frontend.observatory.render import (  # noqa: E402 - after sys.path bootstr
     render_run_detail,
     render_runs_index,
 )
+from frontend.observatory.meta import render_robots_txt, render_sitemap_xml  # noqa: E402
 from frontend.observatory.runs import discover_runs  # noqa: E402
 
 
@@ -68,6 +69,11 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         run_out = runs_dir / run.run_id
         run_out.mkdir(parents=True)
         media_prefix = _copy_run_media(run.path, run_out)
+        # Provenance drill-down: ship the committed metrics CSVs next to the page
+        # so every headline value links to its actual source file.
+        metrics_src = run.path / "metrics"
+        if metrics_src.is_dir():
+            _copy_tree(metrics_src, run_out / "metrics")
         html = render_run_detail(
             run,
             runs,
@@ -75,6 +81,10 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
             media_prefix=media_prefix,
         )
         (run_out / "index.html").write_text(html, encoding="utf-8")
+
+    sitemap_paths = ["/", "/runs/"] + [f"/runs/{run.run_id}/" for run in runs]
+    (out_dir / "robots.txt").write_text(render_robots_txt(), encoding="utf-8")
+    (out_dir / "sitemap.xml").write_text(render_sitemap_xml(sitemap_paths), encoding="utf-8")
 
     print(f"Built {len(runs)} run(s) → {out_dir}")
 

@@ -21,7 +21,13 @@ python3 frontend/build.py --experiments experiments/ --out frontend/dist/
 python3 -m http.server 8080 --directory frontend/dist
 ```
 
-**Netlify** auto-deploys on every **push** to the connected branch (`netlify.toml` at repo root).
+**Site metadata:** each build emits per-page `<title>`, description, Open Graph /
+Twitter cards, canonical URLs, `robots.txt`, and `sitemap.xml`. Static assets live
+in `frontend/static/` (`favicon.svg`, `og-image.png`, `apple-touch-icon.png`,
+`site.webmanifest`). Set `KYTOS_SITE_URL` (or rely on Netlify's `URL` env var) so
+canonical and sitemap links use your production domain.
+
+**Live site:** [kytosapp.netlify.app](https://kytosapp.netlify.app)
 
 1. [Netlify](https://app.netlify.com) → **Add new site** → **Import from Git** → select `udirobert/kytos`
 2. Netlify reads `netlify.toml` (build command + `frontend/dist` publish dir) — no dashboard overrides needed

@@ -95,7 +95,17 @@ def scan_paths(paths: list[Path]) -> list[tuple[str, str, str, str]]:
 
 
 def all_repo_files() -> list[Path]:
-    return [p for p in sorted(REPO_ROOT.rglob("*")) if p.is_file() and ".git" not in p.parts]
+    """Every file in the repo except VCS/virtualenv/generated dirs.
+
+    Scanning `.venv/` (installed package metadata) or build output would drown
+    real signals in false positives.
+    """
+    skip_parts = {".git", ".venv", "venv", "node_modules", "__pycache__", ".ruff_cache", "dist"}
+    return [
+        p
+        for p in sorted(REPO_ROOT.rglob("*"))
+        if p.is_file() and not skip_parts.intersection(p.parts)
+    ]
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:

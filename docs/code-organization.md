@@ -60,14 +60,15 @@ kytos/
 │
 ├── tools/                # dev + enrichment tooling
 │   ├── scan_secrets.py
-│   ├── render_narrative.py   # OpenAI: facts → narrative/report.md (+ briefing script)
+│   ├── render_narrative.py   # OpenAI (prod) or Venice (dev): facts → narrative/report.md
 │   ├── enrich_literature.py  # Tavily: audit flags → literature/
 │   ├── render_visuals.py     # fal: facts + metrics → visual/hero, share-card
 │   ├── render_briefing.py    # fal veed/fabric-1.0: image + audio → visual/briefing.mp4
 │   ├── run_enrichment.sh     # one-shot: audit → facts → all enrichers → refresh
 │   ├── enrich_pioneer.py     # (experimental) Pioneer fine-tuned narrative — side challenge
 │
-│   (partner keys: `.env.example` → `.env` at repo root — gitignored)
+│   (partner keys: `.env.example` → `.env` at repo root — gitignored;
+│    local narration: Venice — see docs/venice-dev.md)
 │
 ├── submission/           # competition harness (the load-bearing contract)
 │   ├── script.py         # official inputs → cell-eval AnnData
@@ -131,7 +132,7 @@ from committed artifacts only; enrichment runs at build time and commits outputs
 | Static generator | Python `frontend/build.py` → HTML | now |
 | Charts | Plotly (from committed CSVs) | now |
 | Docs prose | MkDocs Material (optional sibling site) | now |
-| Narration | OpenAI via `tools/render_narrative.py` | now |
+| Narration | OpenAI (prod) or **Venice** (local dev) via `render_narrative.py` | now |
 | Literature | Tavily via `tools/enrich_literature.py` | now |
 | **Visuals** | **fal via `tools/render_visuals.py`** | **now — core to UX** |
 | Interactive SPA | React + Vite | only if a page needs it later |
@@ -143,7 +144,8 @@ MkDocs for long-form ADRs; Observatory for the visual experiment experience.
 
 | Partner | Integration point | Hard rule |
 |---|---|---|
-| **OpenAI** | `tools/render_narrative.py` → `narrative/report.md`; TTS for briefings | Output must cite `facts.json` fields |
+| **OpenAI** | `tools/render_narrative.py` (prod) + TTS for briefings | Output must cite `facts.json` fields |
+| **Venice** | Same script when `NARRATION_PROVIDER=venice` — **local dev only** | Private inference; see [`venice-dev.md`](venice-dev.md) |
 | **Tavily** | `tools/enrich_literature.py` → `literature/*.json` | Empty on failure; never blocks build |
 | **fal** | `tools/render_visuals.py` → `visual/hero.png`, `share-card.png` | Gen media for engagement; not metric source |
 | **fal + VEED** | `tools/render_briefing.py` → `visual/briefing.mp4` via `veed/fabric-1.0` | Image + audio → talking video; core demo moment |

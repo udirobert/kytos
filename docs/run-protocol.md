@@ -20,7 +20,7 @@ experiments/<run-id>/
   audit/
     flags.json        # lemma-style biological sanity flags
   narrative/
-    report.md         # OpenAI narration ONLY, rendered from facts + metrics
+    report.md         # LLM narration from facts + metrics (OpenAI prod; Venice dev)
   literature/         # cached Tavily JSON per audit flag (optional)
   visual/             # fal: hero.png, share-card.png, briefing.mp4 (Fabric)
 ```
@@ -107,7 +107,8 @@ Deliverables for **k001**:
 - `meta.json` with normalization + code hash + seed,
 - `results.csv` / `agg_results.csv` and `ceiling_results.csv` (from `run --ceiling`),
 - `facts.json` assembled from metrics + audit,
-- `narrative/report.md` rendered strictly from facts (OpenAI),
+- `narrative/report.md` rendered strictly from facts (OpenAI for demo commits;
+  Venice acceptable for local iteration — see [`docs/venice-dev.md`](venice-dev.md)),
 - `literature/` for any audit flags (Tavily, optional),
 - `visual/hero.png`, `visual/share-card.png` (fal),
 - `visual/briefing.mp4` (fal VEED Fabric, optional),

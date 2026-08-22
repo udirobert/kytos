@@ -38,6 +38,7 @@ first (hackathon Milestone 0, 2026-08-22). Full research and demarcation:
 | [`docs/architecture.md`](docs/architecture.md) | model-stack ADR: Layer A (gene transfer) + Layer B (cell sampler), gates |
 | [`docs/code-organization.md`](docs/code-organization.md) | repo layout, backend & Observatory frontend stack |
 | [`docs/phase0-environment.md`](docs/phase0-environment.md) | declared packages + install (`uv`) |
+| [`docs/venice-dev.md`](docs/venice-dev.md) | **local dev narration** — Venice AI (privacy, env, vs OpenAI prod) |
 | [`docs/run-protocol.md`](docs/run-protocol.md) | experiment run-IDs, `meta.json`, `facts.json`, provenance rules |
 | [`docs/security.md`](docs/security.md) | secrets policy + caveats |
 | [`NOTES.md`](NOTES.md) | task, motivation, catalog learnings |
@@ -49,7 +50,8 @@ Confirm usage in submission materials.
 
 | Partner | Script | Output | Role |
 |---|---|---|---|
-| **OpenAI** | `tools/render_narrative.py` | `narrative/report.md` | Grounded run digest + TTS script for briefings |
+| **OpenAI** | `tools/render_narrative.py`, TTS in `render_briefing.py` | `narrative/report.md`, briefing audio | Grounded run digest + Fabric voice (hackathon / prod) |
+| **Venice** | same script when `NARRATION_PROVIDER=venice` | `narrative/report.md` | **Local dev only** — private narration without burning OpenAI credits ([`docs/venice-dev.md`](docs/venice-dev.md)) |
 | **Tavily** | `tools/enrich_literature.py` | `literature/*.json` | Evidence for audit-flagged genes (degrades empty) |
 | **fal** | `tools/render_visuals.py`, `tools/render_briefing.py` | `visual/*` | Hero stills; **VEED Fabric** (`veed/fabric-1.0`) run briefings |
 
@@ -102,7 +104,7 @@ lint + `ruff` format (see [`docs/security.md`](docs/security.md)).
 - [x] **k001 seeded (Dev A)**: `facts.json` assembler, audit rules (`housekeeping_shift`, `pathway_coherence`), metrics + ceiling CSVs, committed run artifacts
 - [x] **Enrichment tools (Dev B)**: OpenAI narrative (+ deterministic fallback), Tavily literature, fal visuals, VEED Fabric briefing — degrade-empty verified against k001; one-shot `tools/run_enrichment.sh`; **live API run in progress** ([tools/README.md](tools/README.md))
 - [x] **Observatory frontend (Dev C)**: `frontend/build.py` → `dist/` (home, runs index, k001 run page); Playwright-verified desktop + mobile, zero console errors; briefing video autoplay
-- [x] **Deploy**: Netlify ([`netlify.toml`](netlify.toml)) — auto-builds `frontend/dist/` on push; connect the repo in the Netlify dashboard
+- [x] **Deploy**: [kytosapp.netlify.app](https://kytosapp.netlify.app) via Netlify ([`netlify.toml`](netlify.toml)) — auto-builds `frontend/dist/` on push
 - [ ] Integration: real enrichment artifacts → rebuilt `dist/` → redeploy → 2-min Loom
 - [ ] Install `cell-eval` + `anndata` (uv, **Python 3.12**) → H5AD write path
 - [ ] k001 through `cell-eval run --ceiling` — real metrics replace mock CSVs

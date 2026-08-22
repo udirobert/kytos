@@ -66,3 +66,21 @@ uv pip install -r requirements.txt   # once declared, see src release hygiene
 
 Verify the harness imports cleanly with no packages present (it must degrade,
 not crash, when `cell-eval` isn't installed).
+
+## Observatory enrichment (partner clients)
+
+The `.venv` for enrichment tools needs only lightweight API clients — not the
+full torch stack:
+
+```bash
+uv pip install openai tavily-python fal-client
+```
+
+**Local narration:** prefer [Venice AI](https://venice.ai) for chat completions
+during development — private inference, OpenAI-compatible API, keeps hackathon
+OpenAI credits for demo runs and TTS. Copy `.env.example` → `.env`, set
+`NARRATION_PROVIDER=venice` and `VENICE_INFERENCE_KEY`. Full setup:
+[`docs/venice-dev.md`](venice-dev.md).
+
+**Production / Netlify:** `NARRATION_PROVIDER=openai` plus hackathon keys for
+Tavily, fal, and `OPENAI_TTS_API_KEY` (Fabric briefings).

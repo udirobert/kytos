@@ -7,7 +7,7 @@ into `experiments/<run-id>/`. None of them touch the inference path.
 
 | Tool | Partner | Output | Spend cap (per run) |
 |---|---|---|---|
-| `render_narrative.py` | OpenAI (gpt-4o-mini) | `narrative/report.md` | 1 LLM call |
+| `render_narrative.py` | OpenAI (prod) or **Venice** (local dev) | `narrative/report.md` | 1 LLM call |
 | `enrich_literature.py` | Tavily | `literature/<gene>.json` | ≤ 5 searches |
 | `render_visuals.py` | fal (flux/dev) | `visual/hero.png`, `visual/share-card.png` | 2 image gens |
 | `render_briefing.py` | OpenAI TTS + fal `veed/fabric-1.0` | `visual/briefing.mp4` (+ `briefing-audio.mp3`) | 1 TTS + 1 Fabric |
@@ -53,25 +53,33 @@ cp .env.example .env
 
 Or export manually — see [`.env.example`](../.env.example).
 
-**Dev narration:** set `NARRATION_PROVIDER=venice` and `VENICE_INFERENCE_KEY` in
-`.env` to avoid burning hackathon OpenAI credits locally. Venice uses an
-OpenAI-compatible API (`VENICE_BASE_URL`, `VENICE_MODEL`). TTS for Fabric
-briefings still requires `OPENAI_TTS_API_KEY` (direct OpenAI) or fal-only hero
-without video.
+### Narration: Venice (dev) vs OpenAI (prod)
 
-**Production / hackathon:** set `NARRATION_PROVIDER=openai` and `OPENAI_API_KEY`
-in Netlify env vars (never commit).
+| Mode | When | Env |
+|---|---|---|
+| **Venice** | Local iteration; unreleased metrics/genes stay off OpenAI | `NARRATION_PROVIDER=venice`, `VENICE_INFERENCE_KEY` |
+| **OpenAI** | Hackathon demo, Netlify builds, committed demo artifacts | `NARRATION_PROVIDER=openai`, `OPENAI_API_KEY` |
+
+Venice uses an OpenAI-compatible chat API (`VENICE_BASE_URL`, `VENICE_MODEL`).
+When `NARRATION_PROVIDER=venice`, narration **does not** use a shell
+`OPENAI_API_KEY` — only Venice credentials.
+
+**Privacy:** Venice documents zero retention for normal inference and stronger
+TEE/E2EE modes on select models. See [`docs/venice-dev.md`](../docs/venice-dev.md).
+
+**TTS for Fabric briefings** still requires `OPENAI_TTS_API_KEY` (direct
+OpenAI) or skip video and ship hero stills only.
+
+**Hackathon note:** If `OPENAI_BASE_URL` points at a chat-only gateway (e.g.
+gitlawb), narration works there in openai mode but **TTS requires
+`OPENAI_TTS_API_KEY`** from the Luma OpenAI credits (direct `api.openai.com`).
+Top up gateway credits if you see `insufficient_credits`.
 
 **One-shot pipeline** (audit → facts → all enrichers → facts refresh):
 
 ```bash
 ./tools/run_enrichment.sh experiments/k001-mean-shift-baseline
 ```
-
-**Hackathon note:** If `OPENAI_BASE_URL` points at a chat-only gateway (e.g.
-gitlawb), narration works there but **TTS requires `OPENAI_TTS_API_KEY`** from
-the Luma OpenAI credits (direct `api.openai.com`). Top up gateway credits if
-you see `insufficient_credits`.
 
 `--run` accepts either a path or `experiments/<run-id>` relative to the repo
 root.

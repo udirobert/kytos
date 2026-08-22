@@ -12,7 +12,7 @@
     {
       "title": "Perturbation of housekeeping genes in single-cell CRISPRi screens",
       "url": "https://example.org/housekeeping-perturbation",
-      "content": "Housekeeping genes including ACTB, GAPDH, and B2M are frequently used as controls in CRISPRi experiments. Knockdown of these genes can activate the dna damage response pathway and induce apoptosis. Researchers observed interferon response activation when ACTB is perturbed in leukemia cell lines.",
+      "content": "Housekeeping genes including ACTB, GAPDH, and B2M are frequently used as controls in CRISPRi experiments. Knockdown of these genes can activate the dna damage response pathway and induce apoptosis. Researchers observed interferon response activation, including ISG15 and IFIT1 induction, when ACTB is perturbed in leukemia cell lines.",
       "score": 0.87
     }
   ]

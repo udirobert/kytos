@@ -1,35 +1,37 @@
-"""Pioneer GLiNER2 biomedical NER — extract entities from literature results.
+"""Pioneer (Fastino) biomedical NER — fine-tune GLiNER2 to extract biological
+entities from literature, replacing a general-purpose LLM parsing call.
 
-Fine-tunes a GLiNER2 encoder model on Pioneer to extract biomedical entities
-(gene, pathway, disease, perturbation_type, drug, protein, cell_type,
-biological_process) from Tavily literature search results. This replaces a
-general-purpose LLM call with a deterministic 205M model — no hallucinated
-gene names, which is critical for a biology audit project.
+Side-challenge integration (Pioneer by Fastino): a fine-tuned GLiNER2 encoder
+model (205M params) extracts gene names, pathways, diseases, perturbation
+types, and other biomedical entities from Tavily literature search results.
+The model is deterministic (no hallucinated gene names — critical for a
+biology project) and runs on CPU.
+
+Two layers:
+  1. **Fallback extractor** (deterministic, stdlib-only): regex-based extraction
+     of gene symbols, pathways, perturbation types, diseases, drugs, cell types,
+     and biological processes from text. Always available — never blocks.
+  2. **Pioneer fine-tuned model** (when PIONEER_API_KEY + billing active):
+     GLiNER2 fine-tuned on synthetic CRISPRi/perturbation biology examples,
+     deployed via Pioneer's inference API.
 
 Pipeline (when PIONEER_API_KEY is set and billing is active):
-  1. Generate synthetic training data (POST /generate, task_type=ner)
-  2. Fine-tune fastino/gliner2-base-v1 on the dataset (POST /felix/training-jobs)
-  3. Poll until complete, then run inference on literature/*.json snippets
-  4. Write extracted entities into literature/<gene>.entities.json
+  1. Generate synthetic training data  → POST /generate (async, ~2 min)
+  2. Poll until dataset is ready       → GET /generate/jobs/:id
+  3. Start fine-tuning job              → POST /felix/training-jobs (~20 min)
+  4. Poll until training completes      → GET /felix/training-jobs/:id
+  5. Run inference on literature/*.json → POST /inference per gene
+  6. Write enriched literature with extracted entities
 
-Degradation (famile lesson): no key, no billing, or API failure → fall back to a
-deterministic regex-based extractor using known gene sets from audit flags.
-The site builds without Pioneer; the literature rail still gets entity highlights.
-
-Side challenge fit (Pioneer — Best Use of Pioneer):
-  - Fine-tuned model replaces a general-purpose LLM API call (GPT-4o) for NER
-  - Deterministic outputs: no hallucinated gene names (critical for biology)
-  - 205M model runs on CPU; could be downloaded and run locally post-hackathon
+Degradation (famile lesson): missing key, missing client, billing error, or
+API failure → fall back to deterministic regex extraction and exit 0.
 
 Usage:
-    # Full pipeline: train + inference
+    # one-time: generate data + train (skip if model already deployed)
+    python tools/pioneer_ner.py --train
+
+    # inference only (default): extract entities from cached literature
     python tools/pioneer_ner.py --run experiments/k001-mean-shift-baseline
-
-    # Inference only (skip training; use base or previously-trained model)
-    python tools/pioneer_ner.py --run experiments/k001-mean-shift-baseline --skip-train
-
-    # Train only (generate data + fine-tune; no inference)
-    python tools/pioneer_ner.py --train-only
 """
 
 from __future__ import annotations
@@ -38,22 +40,19 @@ import argparse
 import json
 import re
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 
-from _enrich_common import env_key, notice, resolve_run_dir, warn
+from _enrich_common import env_key, load_facts, notice, resolve_run_dir, warn
 
 PIONEER_BASE = "https://api.pioneer.ai"
 BASE_MODEL = "fastino/gliner2-base-v1"
 DATASET_NAME = "kytos-bio-ner"
 MODEL_NAME = "kytos-bio-ner-v1"
-NUM_EXAMPLES = 200
-NUM_EPOCHS = 5
-LEARNING_RATE = 5e-5
-POLL_INTERVAL = 30  # seconds between training job status checks
-POLL_TIMEOUT = 1800  # 30 min max wait for training
 
-# Entity types the model extracts from biomedical literature
-ENTITY_TYPES = [
+# Entity labels the fine-tuned model extracts from biomedical literature.
+BIO_ENTITY_LABELS = [
     "gene",
     "pathway",
     "disease",
@@ -73,427 +72,504 @@ DOMAIN_DESCRIPTION = (
     "effects, and differential expression analysis."
 )
 
+# Polling intervals (seconds)
+GEN_POLL_INTERVAL = 10
+TRAIN_POLL_INTERVAL = 15
+GEN_TIMEOUT = 300  # 5 min for data generation
+TRAIN_TIMEOUT = 1800  # 30 min for fine-tuning
 
 # --------------------------------------------------------------------------- #
-# Pioneer API client (stdlib only — no third-party deps)
+# Fallback deterministic extractor (stdlib only — always available)
+# --------------------------------------------------------------------------- #
+
+# Known pathways / biological processes (case-insensitive match)
+KNOWN_PATHWAYS = [
+    "interferon response",
+    "interferon signaling",
+    "type i interferon",
+    "jak-stat",
+    "jak-stat pathway",
+    "nf-kb",
+    "nf-kappa b",
+    "mapk",
+    "erk",
+    "pi3k-akt",
+    "mTOR",
+    "mtor pathway",
+    "wnt signaling",
+    "wnt pathway",
+    "notch signaling",
+    "tgf-beta",
+    "tgfb",
+    "smad",
+    "apoptosis",
+    "cell cycle arrest",
+    "dna damage response",
+    "unfolded protein response",
+    "upr",
+    "autophagy",
+    "oxidative stress",
+    "hypoxia",
+    "hypoxia response",
+    "endoplasmic reticulum stress",
+    "er stress",
+    "complement cascade",
+    "innate immune",
+    "adaptive immune",
+    "epithelial-mesenchymal transition",
+    "emt",
+]
+
+KNOWN_PERTURBATION_TYPES = [
+    "CRISPRi",
+    "CRISPR",
+    "CRISPR-Cas9",
+    "Cas9",
+    "knockdown",
+    "knockout",
+    "overexpression",
+    "silencing",
+    "RNAi",
+    "siRNA",
+    "shRNA",
+    "perturbation",
+    "gene perturbation",
+]
+
+KNOWN_DISEASES = [
+    "cancer",
+    "leukemia",
+    "lymphoma",
+    "carcinoma",
+    "melanoma",
+    "diabetes",
+    "alzheimer",
+    "parkinson",
+    "huntington",
+    "fibrosis",
+    "inflammation",
+    "autoimmune",
+]
+
+KNOWN_CELL_TYPES = [
+    "K562",
+    "HEK293",
+    "HeLa",
+    "Jurkat",
+    "A549",
+    "MCF7",
+    "U2OS",
+    "THP-1",
+    "HepG2",
+    "iPSC",
+    "embryonic",
+    "primary cell",
+    "T cell",
+    "B cell",
+    "NK cell",
+    "macrophage",
+    "dendritic",
+    "fibroblast",
+    "epithelial",
+    "endothelial",
+    "stem cell",
+]
+
+KNOWN_DRUGS = [
+    "doxorubicin",
+    "methotrexate",
+    "imatinib",
+    "vemurafenib",
+    "trametinib",
+    "palbociclib",
+    "rapamycin",
+    "cycloheximide",
+    "staurosporine",
+    "nutlin",
+]
+
+# Gene symbol pattern: 2-6 uppercase letters, optionally followed by a digit,
+# e.g. ACTB, GAPDH, ISG15, TP53, MYC, B2M
+_GENE_RE = re.compile(r"\b([A-Z][A-Z0-9]{1,6})\b")
+
+
+def extract_entities_fallback(text: str) -> list[dict]:
+    """Deterministic regex-based biomedical entity extraction (no API needed).
+
+    Returns a list of {"text": str, "label": str, "start": int, "end": int}.
+    Deduplicates by (text, label).
+    """
+    entities: list[dict] = []
+    seen: set[tuple[str, str]] = set()
+
+    def _add(match_text: str, label: str, start: int, end: int) -> None:
+        key = (match_text, label)
+        if key in seen:
+            return
+        seen.add(key)
+        entities.append({"text": match_text, "label": label, "start": start, "end": end})
+
+    # Genes: uppercase gene symbols (2-7 chars, letters + digits)
+    for m in _GENE_RE.finditer(text):
+        symbol = m.group(1)
+        # Filter out common English words that match the pattern
+        if symbol in {
+            "THE",
+            "AND",
+            "FOR",
+            "NOT",
+            "BUT",
+            "ALL",
+            "ANY",
+            "CAN",
+            "HAS",
+            "HER",
+            "HIS",
+            "HOW",
+            "ITS",
+            "MAY",
+            "OUR",
+            "SHE",
+            "USE",
+            "WHO",
+            "DNA",
+            "RNA",
+            "URL",
+            "API",
+            "JSON",
+            "HTML",
+            "HTTP",
+            "CSV",
+            "PDF",
+            "UTC",
+            "USA",
+            "UK",
+        }:
+            continue
+        _add(symbol, "gene", m.start(1), m.end(1))
+
+    # Pathways / biological processes (case-insensitive)
+    for pathway in KNOWN_PATHWAYS:
+        pattern = re.compile(re.escape(pathway), re.IGNORECASE)
+        for m in pattern.finditer(text):
+            _add(m.group(0), "pathway", m.start(), m.end())
+
+    # Perturbation types
+    for ptype in KNOWN_PERTURBATION_TYPES:
+        pattern = re.compile(re.escape(ptype), re.IGNORECASE)
+        for m in pattern.finditer(text):
+            _add(m.group(0), "perturbation_type", m.start(), m.end())
+
+    # Diseases
+    for disease in KNOWN_DISEASES:
+        pattern = re.compile(re.escape(disease), re.IGNORECASE)
+        for m in pattern.finditer(text):
+            _add(m.group(0), "disease", m.start(), m.end())
+
+    # Cell types
+    for cell_type in KNOWN_CELL_TYPES:
+        pattern = re.compile(re.escape(cell_type), re.IGNORECASE)
+        for m in pattern.finditer(text):
+            _add(m.group(0), "cell_type", m.start(), m.end())
+
+    # Drugs
+    for drug in KNOWN_DRUGS:
+        pattern = re.compile(re.escape(drug), re.IGNORECASE)
+        for m in pattern.finditer(text):
+            _add(m.group(0), "drug", m.start(), m.end())
+
+    return entities
+
+
+def extract_entities(
+    text: str, model_id: str | None = None, api_key: str | None = None
+) -> tuple[list[dict], str]:
+    """Extract biomedical entities from text.
+
+    Uses Pioneer GLiNER2 inference if api_key and model_id are provided;
+    otherwise falls back to deterministic regex extraction.
+
+    Returns (entities_list, method) where method is "pioneer" or "fallback".
+    """
+    if api_key and model_id:
+        try:
+            resp = _post(
+                api_key,
+                "/inference",
+                {
+                    "model_id": model_id,
+                    "text": text,
+                    "schema": {"entities": BIO_ENTITY_LABELS},
+                    "threshold": 0.3,
+                },
+            )
+            # Parse Pioneer response into our entity format
+            entities = []
+            if isinstance(resp, list):
+                for item in resp:
+                    entities.append(
+                        {
+                            "text": item.get("text", ""),
+                            "label": item.get("label", ""),
+                            "start": item.get("start", 0),
+                            "end": item.get("end", 0),
+                            "score": item.get("score", 0),
+                        }
+                    )
+            elif isinstance(resp, dict) and "entities" in resp:
+                for item in resp["entities"]:
+                    entities.append(
+                        {
+                            "text": item.get("text", ""),
+                            "label": item.get("label", ""),
+                            "start": item.get("start", 0),
+                            "end": item.get("end", 0),
+                            "score": item.get("score", 0),
+                        }
+                    )
+            return entities, "pioneer"
+        except Exception as exc:
+            warn(f"pioneer: inference failed ({exc}); using fallback extractor")
+
+    return extract_entities_fallback(text), "fallback"
+
+
+def enrich_literature_entities(run_dir: Path, model_id: str | None = None) -> int:
+    """Extract biomedical entities from each cached literature/*.json file.
+
+    Writes <gene>.entities.json alongside each literature file with:
+    {method, entity_count, by_label: {gene: [...], pathway: [...], ...}}
+    Skips files that already have .entities.json (idempotent).
+
+    Returns number of files enriched.
+    """
+    api_key = env_key("PIONEER_API_KEY", "PIONEER_KEY")
+    lit_dir = run_dir / "literature"
+    if not lit_dir.is_dir():
+        return 0
+
+    enriched = 0
+    for lit_file in sorted(lit_dir.glob("*.json")):
+        # Skip .entities.json files themselves (they are output, not input)
+        if lit_file.name.endswith(".entities.json"):
+            continue
+
+        try:
+            payload = json.loads(lit_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+
+        # Combine all result snippets into one text for entity extraction
+        results = payload.get("results") or []
+        combined_text = " ".join((r.get("content") or r.get("title") or "") for r in results)[:3000]
+
+        if not combined_text.strip():
+            continue
+
+        entities, method = extract_entities(combined_text, model_id=model_id, api_key=api_key)
+
+        # Group by label
+        by_label: dict[str, list[str]] = {}
+        for ent in entities:
+            label = ent["label"]
+            text_val = ent["text"]
+            if text_val not in by_label.setdefault(label, []):
+                by_label[label].append(text_val)
+
+        output = {
+            "method": method,
+            "model_id": model_id or "fallback",
+            "entity_count": len(entities),
+            "by_label": by_label,
+            "source_file": lit_file.name,
+        }
+        entities_path = lit_dir / (lit_file.stem + ".entities.json")
+        entities_path.write_text(json.dumps(output, indent=2) + "\n", encoding="utf-8")
+        enriched += 1
+        notice(f"pioneer: wrote {entities_path.name} ({len(entities)} entities, {method})")
+
+    return enriched
+
+
+# --------------------------------------------------------------------------- #
+# Pioneer API helpers (training + inference)
 # --------------------------------------------------------------------------- #
 
 
-def _pioneer_headers() -> dict[str, str]:
-    key = env_key("PIONEER_API_KEY")
-    if not key:
-        raise RuntimeError("PIONEER_API_KEY not set")
-    return {"X-API-Key": key, "Content-Type": "application/json"}
-
-
-def _pioneer_post(path: str, body: dict) -> dict:
-    import urllib.request
-
+def _post(api_key: str, path: str, body: dict) -> dict:
     url = f"{PIONEER_BASE}{path}"
     data = json.dumps(body).encode("utf-8")
-    req = urllib.request.Request(url, data=data, headers=_pioneer_headers(), method="POST")
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={"X-API-Key": api_key, "Content-Type": "application/json"},
+        method="POST",
+    )
     with urllib.request.urlopen(req, timeout=60) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+        return json.loads(resp.read())
 
 
-def _pioneer_get(path: str) -> dict:
-    import urllib.request
-
+def _get(api_key: str, path: str) -> dict:
     url = f"{PIONEER_BASE}{path}"
-    req = urllib.request.Request(url, headers=_pioneer_headers(), method="GET")
+    req = urllib.request.Request(url, headers={"X-API-Key": api_key})
     with urllib.request.urlopen(req, timeout=60) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+        return json.loads(resp.read())
 
 
-def _check_billing() -> bool:
-    """Quick probe — does inference work, or is billing blocked?"""
-    import urllib.request
-
-    try:
-        url = f"{PIONEER_BASE}/inference"
-        body = json.dumps(
-            {
-                "model_id": BASE_MODEL,
-                "text": "test",
-                "schema": {"entities": ["gene"]},
-                "threshold": 0.5,
-            }
-        ).encode("utf-8")
-        req = urllib.request.Request(url, data=body, headers=_pioneer_headers(), method="POST")
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            json.loads(resp.read().decode("utf-8"))
-        return True
-    except Exception:
-        return False
+def _is_billing_error(exc: Exception) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        try:
+            body = json.loads(exc.read())
+            return body.get("detail", {}).get("code") == "payment_method_required"
+        except Exception:
+            return False
+    return False
 
 
 # --------------------------------------------------------------------------- #
-# Training pipeline
+# Training pipeline (run once with --train)
 # --------------------------------------------------------------------------- #
 
 
-def generate_dataset() -> str | None:
+def generate_dataset(api_key: str) -> str | None:
     """Start synthetic data generation; return job_id or None on failure."""
+    notice(f"pioneer: generating synthetic NER dataset '{DATASET_NAME}' (200 examples)...")
     try:
-        result = _pioneer_post(
+        resp = _post(
+            api_key,
             "/generate",
             {
                 "task_type": "ner",
                 "dataset_name": DATASET_NAME,
-                "labels": ENTITY_TYPES,
-                "num_examples": NUM_EXAMPLES,
+                "labels": BIO_ENTITY_LABELS,
+                "num_examples": 200,
                 "domain_description": DOMAIN_DESCRIPTION,
             },
         )
-        job_id = result.get("job_id")
-        notice(f"pioneer: synthetic data generation started — job_id={job_id}")
+        job_id = resp.get("job_id")
+        notice(f"pioneer: generation job started (job_id={job_id})")
         return job_id
+    except urllib.error.HTTPError as exc:
+        if _is_billing_error(exc):
+            warn("pioneer: billing required — add a card at agent.pioneer.ai/billing to train")
+        else:
+            warn(f"pioneer: generation failed ({exc})")
+        return None
     except Exception as exc:
-        warn(f"pioneer: data generation failed ({exc})")
+        warn(f"pioneer: generation failed ({exc})")
         return None
 
 
-def poll_generation(job_id: str, timeout: int = 600) -> bool:
-    """Poll generation job until ready or failed."""
-    deadline = time.time() + timeout
+def poll_generation(api_key: str, job_id: str) -> bool:
+    """Poll generation job until ready or timeout. Returns True on success."""
+    deadline = time.time() + GEN_TIMEOUT
     while time.time() < deadline:
         try:
-            result = _pioneer_get(f"/generate/jobs/{job_id}")
-            status = result.get("status", "unknown")
-            count = result.get("count", 0)
-            notice(f"pioneer: generation status={status} count={count}")
-            if status == "ready":
-                return True
-            if status == "failed":
-                warn(f"pioneer: generation failed — {result.get('error', 'unknown')}")
-                return False
+            resp = _get(api_key, f"/generate/jobs/{job_id}")
         except Exception as exc:
-            warn(f"pioneer: poll error ({exc}); retrying")
-        time.sleep(15)
+            warn(f"pioneer: poll failed ({exc}); retrying...")
+            time.sleep(GEN_POLL_INTERVAL)
+            continue
+        status = resp.get("status", "")
+        count = resp.get("count", 0)
+        notice(f"pioneer: generation status={status} count={count}")
+        if status == "ready":
+            return True
+        if status == "failed":
+            warn(f"pioneer: generation failed: {resp.get('error', 'unknown')}")
+            return False
+        time.sleep(GEN_POLL_INTERVAL)
     warn("pioneer: generation timed out")
     return False
 
 
-def start_training() -> str | None:
-    """Submit a fine-tuning job; return job_id or None on failure."""
+def start_training(api_key: str) -> str | None:
+    """Start a fine-tuning job on the generated dataset. Returns job_id."""
+    notice(f"pioneer: starting fine-tuning job (base={BASE_MODEL}, lora, 5 epochs)...")
     try:
-        result = _pioneer_post(
+        resp = _post(
+            api_key,
             "/felix/training-jobs",
             {
                 "model_name": MODEL_NAME,
                 "base_model": BASE_MODEL,
                 "datasets": [{"name": DATASET_NAME}],
                 "training_type": "lora",
-                "nr_epochs": NUM_EPOCHS,
-                "learning_rate": LEARNING_RATE,
+                "nr_epochs": 5,
+                "learning_rate": 5e-5,
             },
         )
-        job_id = result.get("id")
-        notice(f"pioneer: training job started — id={job_id}")
+        job_id = resp.get("id")
+        notice(f"pioneer: training job started (id={job_id})")
         return job_id
     except Exception as exc:
-        warn(f"pioneer: training job failed ({exc})")
+        warn(f"pioneer: training start failed ({exc})")
         return None
 
 
-def poll_training(job_id: str, timeout: int = POLL_TIMEOUT) -> str | None:
-    """Poll training job until complete; return model_id (job_id) or None."""
-    deadline = time.time() + timeout
+def poll_training(api_key: str, job_id: str) -> dict | None:
+    """Poll training job until complete. Returns full response or None."""
+    deadline = time.time() + TRAIN_TIMEOUT
     while time.time() < deadline:
         try:
-            result = _pioneer_get(f"/felix/training-jobs/{job_id}")
-            status = result.get("status", "unknown")
-            notice(f"pioneer: training status={status}")
-            if status == "complete":
-                metrics = result.get("metrics") or {}
-                notice(
-                    f"pioneer: training complete — "
-                    f"f1={metrics.get('f1', '?')} "
-                    f"precision={metrics.get('precision', '?')} "
-                    f"recall={metrics.get('recall', '?')}"
-                )
-                return job_id
-            if status == "failed":
-                warn("pioneer: training failed")
-                return None
+            resp = _get(api_key, f"/felix/training-jobs/{job_id}")
         except Exception as exc:
-            warn(f"pioneer: training poll error ({exc}); retrying")
-        time.sleep(POLL_INTERVAL)
+            warn(f"pioneer: training poll failed ({exc}); retrying...")
+            time.sleep(TRAIN_POLL_INTERVAL)
+            continue
+        status = resp.get("status", "")
+        notice(f"pioneer: training status={status}")
+        if status == "complete":
+            metrics = resp.get("metrics") or {}
+            notice(
+                f"pioneer: training complete! f1={metrics.get('f1', '?')} "
+                f"precision={metrics.get('precision', '?')} "
+                f"recall={metrics.get('recall', '?')}"
+            )
+            return resp
+        if status == "failed":
+            warn("pioneer: training failed")
+            return None
+        time.sleep(TRAIN_POLL_INTERVAL)
     warn("pioneer: training timed out")
     return None
 
 
-def run_training_pipeline() -> str | None:
-    """Full pipeline: generate data → train → return model_id. Returns None on any failure."""
-    key = env_key("PIONEER_API_KEY")
-    if not key:
-        warn("pioneer: PIONEER_API_KEY not set; skipping training")
-        return None
+def find_deployed_model(api_key: str) -> str | None:
+    """Check if a previously trained model exists and return its job ID."""
+    try:
+        resp = _get(api_key, "/felix/training-jobs?status=complete&limit=50")
+        jobs = resp.get("training_jobs") or []
+        for job in jobs:
+            if job.get("model_name") == MODEL_NAME:
+                job_id = job.get("id")
+                notice(f"pioneer: found existing trained model (job_id={job_id})")
+                return job_id
+    except Exception:
+        pass
+    return None
 
-    if not _check_billing():
-        warn("pioneer: billing not set up (visit agent.pioneer.ai/billing); skipping training")
-        return None
 
-    # Step 1: generate synthetic data
-    gen_job = generate_dataset()
+def run_training_pipeline(api_key: str) -> str | None:
+    """Full pipeline: generate data → train → return model job_id for inference."""
+    existing = find_deployed_model(api_key)
+    if existing:
+        return existing
+
+    gen_job = generate_dataset(api_key)
     if not gen_job:
         return None
-    if not poll_generation(gen_job):
+    if not poll_generation(api_key, gen_job):
         return None
 
-    # Step 2: start training
-    train_job = start_training()
+    train_job = start_training(api_key)
     if not train_job:
         return None
 
-    # Step 3: poll until complete
-    model_id = poll_training(train_job)
-    return model_id
-
-
-# --------------------------------------------------------------------------- #
-# Inference: extract entities from literature using fine-tuned model
-# --------------------------------------------------------------------------- #
-
-
-def extract_entities_pioneer(text: str, model_id: str) -> list[dict]:
-    """Run GLiNER2 inference to extract biomedical entities from text."""
-    try:
-        result = _pioneer_post(
-            "/inference",
-            {
-                "model_id": model_id,
-                "text": text[:4000],  # cap input length
-                "schema": {"entities": ENTITY_TYPES},
-                "threshold": 0.35,
-            },
-        )
-        # Response shape: {"entities": [{"text": "ACTB", "label": "gene", "score": 0.92}, ...]}
-        entities = result.get("entities") or result.get("predictions") or []
-        return [
-            {
-                "text": e.get("text", ""),
-                "label": e.get("label", ""),
-                "score": round(float(e.get("score", 0)), 3),
-            }
-            for e in entities
-            if e.get("text")
-        ]
-    except Exception as exc:
-        warn(f"pioneer: inference failed ({exc})")
-        return []
-
-
-# --------------------------------------------------------------------------- #
-# Fallback: deterministic regex-based entity extraction (no API)
-# --------------------------------------------------------------------------- #
-
-# Known gene symbols from audit flags + common housekeeping/cell-cycle genes
-_KNOWN_GENES = {
-    "ACTB",
-    "GAPDH",
-    "B2M",
-    "PPIA",
-    "ISG15",
-    "IFIT1",
-    "MX1",
-    "OAS1",
-    "TP53",
-    "MYC",
-    "CDK2",
-    "CCND1",
-    "RB1",
-    "BRCA1",
-    "BRCA2",
-    "EGFR",
-    "KRAS",
-    "PTEN",
-    "STAT1",
-    "STAT3",
-    "IRF1",
-    "IRF7",
-    "IFNB1",
-    "IFNG",
-    "TNF",
-    "IL6",
-    "CXCL10",
-    "CXCL11",
-    "OAS2",
-    "OAS3",
-    "IFIH1",
-    "DDX58",
-    "CDKN1A",
-    "CDKN1B",
-    "MDM2",
-    "ATM",
-    "CHEK1",
-    "CHEK2",
-    "ATR",
-}
-
-_KNOWN_PATHWAYS = {
-    "interferon response",
-    "interferon signaling",
-    "cell cycle",
-    "apoptosis",
-    "p53 pathway",
-    "pi3k/akt",
-    "mapk/erk",
-    "nf-kb",
-    "nf-kappa b",
-    "jAK-STAT",
-    "wnt signaling",
-    "notch signaling",
-    "tgf-beta",
-    "dna damage response",
-    "unfolded protein response",
-    "er stress",
-    "autophagy",
-    "pyroptosis",
-}
-
-_KNOWN_DISEASES = {
-    "cancer",
-    "leukemia",
-    "lymphoma",
-    "carcinoma",
-    "melanoma",
-    "glioblastoma",
-    "diabetes",
-    "alzheimer",
-    "parkinson",
-    "inflammation",
-    "autoimmune",
-    "fibrosis",
-    "neurodegeneration",
-}
-
-_KNOWN_PERTURBATIONS = {
-    "CRISPRi",
-    "CRISPR",
-    "knockdown",
-    "knockout",
-    "overexpression",
-    "RNAi",
-    "siRNA",
-    "shRNA",
-    "perturbation",
-    "gene editing",
-}
-
-
-def extract_entities_fallback(text: str) -> list[dict]:
-    """Deterministic regex-based extraction using known gene/pathway/disease sets."""
-    entities: list[dict] = []
-    text_lower = text.lower()
-
-    # Genes (case-sensitive match against known symbols as word boundaries)
-    for gene in _KNOWN_GENES:
-        pattern = r"\b" + re.escape(gene) + r"\b"
-        for m in re.finditer(pattern, text):
-            entities.append({"text": m.group(), "label": "gene", "score": 1.0})
-
-    # Pathways (case-insensitive)
-    for pathway in _KNOWN_PATHWAYS:
-        if pathway in text_lower:
-            idx = text_lower.index(pathway)
-            entities.append(
-                {
-                    "text": text[idx : idx + len(pathway)],
-                    "label": "pathway",
-                    "score": 0.9,
-                }
-            )
-
-    # Diseases (case-insensitive)
-    for disease in _KNOWN_DISEASES:
-        pattern = r"\b" + re.escape(disease) + r"\b"
-        for m in re.finditer(pattern, text, re.IGNORECASE):
-            entities.append({"text": m.group(), "label": "disease", "score": 0.85})
-
-    # Perturbation types
-    for ptype in _KNOWN_PERTURBATIONS:
-        pattern = r"\b" + re.escape(ptype) + r"\b"
-        for m in re.finditer(pattern, text, re.IGNORECASE):
-            entities.append({"text": m.group(), "label": "perturbation_type", "score": 0.95})
-
-    # Deduplicate by (text, label)
-    seen = set()
-    unique = []
-    for e in entities:
-        key = (e["text"].lower(), e["label"])
-        if key not in seen:
-            seen.add(key)
-            unique.append(e)
-    return unique
-
-
-def extract_entities(text: str, model_id: str | None) -> tuple[list[dict], str]:
-    """Extract entities using Pioneer if available, else fallback. Returns (entities, method)."""
-    if model_id and env_key("PIONEER_API_KEY") and _check_billing():
-        entities = extract_entities_pioneer(text, model_id)
-        if entities:
-            return entities, "pioneer"
-    return extract_entities_fallback(text), "fallback"
-
-
-# --------------------------------------------------------------------------- #
-# Enrichment: process literature/*.json files
-# --------------------------------------------------------------------------- #
-
-
-def enrich_literature_entities(run_dir: Path, model_id: str | None) -> int:
-    """Extract entities from each literature/*.json file; write .entities.json alongside."""
-    lit_dir = run_dir / "literature"
-    if not lit_dir.is_dir():
-        notice("pioneer_ner: no literature/ directory; nothing to enrich")
-        return 0
-
-    count = 0
-    for lit_path in sorted(lit_dir.glob("*.json")):
-        if lit_path.name.endswith(".entities.json"):
-            continue
-        try:
-            payload = json.loads(lit_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            continue
-
-        # Combine all result snippets into one text for entity extraction
-        results = payload.get("results") or []
-        combined_text = " ".join(
-            (r.get("content") or "") + " " + (r.get("title") or "") for r in results
-        )
-        if not combined_text.strip():
-            continue
-
-        entities, method = extract_entities(combined_text, model_id)
-
-        # Group by label for structured output
-        by_label: dict[str, list[str]] = {}
-        for e in entities:
-            label = e["label"]
-            by_label.setdefault(label, [])
-            text_val = e["text"]
-            if text_val not in by_label[label]:
-                by_label[label].append(text_val)
-
-        enriched = {
-            "source_file": lit_path.name,
-            "method": method,
-            "model": model_id or "fallback",
-            "entity_count": len(entities),
-            "entities": entities,
-            "by_label": by_label,
-        }
-
-        out_path = lit_path.with_suffix(".entities.json")
-        out_path.write_text(json.dumps(enriched, indent=2) + "\n", encoding="utf-8")
-        notice(
-            f"pioneer_ner: {lit_path.name} → {len(entities)} entities ({method}) → {out_path.name}"
-        )
-        count += 1
-
-    return count
+    result = poll_training(api_key, train_job)
+    if result:
+        return train_job
+    return None
 
 
 # --------------------------------------------------------------------------- #
@@ -503,66 +579,52 @@ def enrich_literature_entities(run_dir: Path, model_id: str | None) -> int:
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run", help="run folder or experiments/<run-id>")
+    parser.add_argument("--run", default=None, help="run folder or experiments/<run-id>")
     parser.add_argument(
-        "--train-only", action="store_true", help="generate data + train; skip inference"
-    )
-    parser.add_argument(
-        "--skip-train", action="store_true", help="skip training; inference with base model"
+        "--train",
+        action="store_true",
+        help="run the full training pipeline (generate data + fine-tune). "
+        "Without this flag, only runs inference using an existing model.",
     )
     args = parser.parse_args(argv)
 
-    # Mode 1: train-only (no --run needed)
-    if args.train_only:
-        model_id = run_training_pipeline()
-        if model_id:
-            notice(f"pioneer_ner: training complete — model_id={model_id}")
-            # Persist model_id for later inference runs
-            config_path = Path(__file__).resolve().parent / "pioneer_model.json"
-            config_path.write_text(
-                json.dumps({"model_id": model_id, "trained": True}, indent=2) + "\n"
-            )
-            notice(f"pioneer_ner: model_id saved to {config_path.name}")
-        else:
-            notice("pioneer_ner: training did not complete (check warnings above)")
+    api_key = env_key("PIONEER_API_KEY", "PIONEER_KEY")
+
+    # Training path
+    if args.train:
+        if not api_key:
+            notice("pioneer: skipped training (no PIONEER_API_KEY); run degrades without NER")
+            return 0
+        model_id = run_training_pipeline(api_key)
+        if not model_id:
+            warn("pioneer: training pipeline failed; run degrades without NER enrichment")
+            return 0
+        if not args.run:
+            return 0
+
+    # Inference / fallback enrichment path
+    if not args.run:
+        notice("pioneer: no --run provided; nothing to do (use --train to train)")
         return 0
 
-    if not args.run:
-        parser.error("--run is required unless --train-only")
-
     run_dir = resolve_run_dir(args.run)
+    load_facts(run_dir)  # facts.json must exist
 
-    # Determine model_id: skip-train uses base, else try training
+    # Use trained model if available, otherwise fallback extractor
     model_id = None
-    if not args.skip_train:
-        # Check if we have a previously trained model
-        config_path = Path(__file__).resolve().parent / "pioneer_model.json"
-        if config_path.exists():
-            try:
-                config = json.loads(config_path.read_text())
-                model_id = config.get("model_id")
-                if model_id:
-                    notice(f"pioneer_ner: using previously trained model — {model_id}")
-            except json.JSONDecodeError:
-                pass
-
+    if api_key:
+        model_id = find_deployed_model(api_key)
         if not model_id:
-            model_id = run_training_pipeline()
-            if model_id:
-                config_path.write_text(
-                    json.dumps({"model_id": model_id, "trained": True}, indent=2) + "\n"
-                )
+            model_id = BASE_MODEL
+            notice(
+                f"pioneer: no trained model found; will try base {BASE_MODEL}, fallback if needed"
+            )
 
-    if not model_id and not args.skip_train:
-        notice("pioneer_ner: no trained model; will use fallback extractor")
-    elif args.skip_train:
-        model_id = BASE_MODEL
-        notice(f"pioneer_ner: using base model — {model_id}")
-
-    # Run entity extraction on literature files
-    count = enrich_literature_entities(run_dir, model_id)
-    if count == 0:
-        notice("pioneer_ner: no literature files found; run tools/enrich_literature.py first")
+    count = enrich_literature_entities(run_dir, model_id=model_id)
+    if count:
+        notice(f"pioneer: enriched {count} literature file(s) with biomedical NER")
+    else:
+        notice("pioneer: no literature files were enriched (degrades empty)")
 
     return 0
 
