@@ -1,0 +1,30 @@
+{
+  "method": "pioneer",
+  "model_id": "fastino/gliner2-base-v1",
+  "entity_count": 21,
+  "by_label": {
+    "gene": [
+      "OAS1 gene",
+      "OAS1",
+      "gene",
+      "Gene",
+      "genome"
+    ],
+    "perturbation_type": [
+      "perturbation",
+      "Perturbation"
+    ],
+    "drug": [
+      "drug"
+    ],
+    "protein": [
+      "RNase L",
+      "OAS1",
+      "2-5A synthetase"
+    ],
+    "cell_type": [
+      "cytoplasm"
+    ]
+  },
+  "source_file": "OAS1.json"
+}

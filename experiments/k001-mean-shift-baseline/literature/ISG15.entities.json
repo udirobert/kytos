@@ -1,0 +1,37 @@
+{
+  "method": "pioneer",
+  "model_id": "fastino/gliner2-base-v1",
+  "entity_count": 20,
+  "by_label": {
+    "gene": [
+      "ISG15",
+      "sgRNA",
+      "DNA"
+    ],
+    "pathway": [
+      "endogenous pathways"
+    ],
+    "disease": [
+      "ISG15 deficient patients",
+      "tumor biology"
+    ],
+    "protein": [
+      "dCas9 fusion protein"
+    ],
+    "cell_type": [
+      "iPSC cells"
+    ],
+    "biological_process": [
+      "autophagy",
+      "cellular stress",
+      "immune responses",
+      "aging",
+      "protein quality control",
+      "inflammatory outcomes",
+      "tumor biology",
+      "mechanisms",
+      "CRISPRi gene repression"
+    ]
+  },
+  "source_file": "ISG15.json"
+}

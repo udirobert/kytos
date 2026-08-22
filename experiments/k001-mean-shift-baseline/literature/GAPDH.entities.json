@@ -1,0 +1,31 @@
+{
+  "method": "pioneer",
+  "model_id": "fastino/gliner2-base-v1",
+  "entity_count": 22,
+  "by_label": {
+    "gene": [
+      "sgRNAs",
+      "GAPDH",
+      "target gene",
+      "housekeeping gene"
+    ],
+    "disease": [
+      "breast cancer"
+    ],
+    "perturbation_type": [
+      "Isoform-Specific Perturb-Seq approach",
+      "dual guide RNA strategy"
+    ],
+    "protein": [
+      "dCas9-CRISPRi"
+    ],
+    "cell_type": [
+      "MCF-7",
+      "MCF7"
+    ],
+    "biological_process": [
+      "CRISPRi-mediated target gene repression"
+    ]
+  },
+  "source_file": "GAPDH.json"
+}

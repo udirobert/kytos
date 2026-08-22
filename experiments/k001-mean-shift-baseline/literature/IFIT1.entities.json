@@ -1,0 +1,43 @@
+{
+  "method": "pioneer",
+  "model_id": "fastino/gliner2-base-v1",
+  "entity_count": 28,
+  "by_label": {
+    "gene": [
+      "genes",
+      "IFIT1"
+    ],
+    "pathway": [
+      "Unfolded Protein Response",
+      "unfolded protein response",
+      "UPR",
+      "CRISPR"
+    ],
+    "disease": [
+      "cancer"
+    ],
+    "perturbation_type": [
+      "Perturb-seq",
+      "CRISPR perturbation"
+    ],
+    "protein": [
+      "R187",
+      "TPR4",
+      "RNA",
+      "L193",
+      "IFIT1",
+      "key proteins"
+    ],
+    "cell_type": [
+      "Huh7.5 cells",
+      "control cells",
+      "single-cells"
+    ],
+    "biological_process": [
+      "unfolded protein response",
+      "Unfolded Protein Response",
+      "stress"
+    ]
+  },
+  "source_file": "IFIT1.json"
+}

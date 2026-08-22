@@ -1,0 +1,47 @@
+{
+  "method": "pioneer",
+  "model_id": "fastino/gliner2-base-v1",
+  "entity_count": 30,
+  "by_label": {
+    "gene": [
+      "endogenous genes",
+      "gene expression",
+      "sgRNA",
+      "genes",
+      "genome"
+    ],
+    "pathway": [
+      "unfolded protein response",
+      "endogenous pathways"
+    ],
+    "disease": [
+      "cancer"
+    ],
+    "perturbation_type": [
+      "CRISPR interference",
+      "CRISPRi",
+      "sequence-specific repression",
+      "genetic perturbation technique",
+      "CRISPR"
+    ],
+    "protein": [
+      "dCas9 fusion protein",
+      "key proteins"
+    ],
+    "cell_type": [
+      "iPSC cells",
+      "eukaryotic cells",
+      "prokaryotic",
+      "impaired cells"
+    ],
+    "biological_process": [
+      "CRISPR activation",
+      "unfolded protein response",
+      "self-destruct",
+      "stress",
+      "protein-production machinery",
+      "gene expression"
+    ]
+  },
+  "source_file": "MX1.json"
+}

@@ -1,34 +1,29 @@
 {
-  "method": "fallback",
+  "method": "pioneer",
   "model_id": "fastino/gliner2-base-v1",
-  "entity_count": 17,
+  "entity_count": 18,
   "by_label": {
-    "gene": [
-      "ACTB",
-      "K562",
-      "GAPDH",
-      "B2M",
-      "ISG15",
-      "IFIT1"
-    ],
-    "pathway": [
-      "interferon response",
-      "apoptosis",
-      "cell cycle arrest",
-      "dna damage response"
+    "disease": [
+      "MOI"
     ],
     "perturbation_type": [
       "CRISPRi",
-      "CRISPR",
-      "knockdown",
-      "Knockdown",
-      "Perturbation"
+      "CRISPR interference"
     ],
-    "disease": [
-      "leukemia"
+    "protein": [
+      "CRISPR",
+      "CRISPRa"
     ],
     "cell_type": [
-      "K562"
+      "prokaryotic",
+      "eukaryotic",
+      "bacteria"
+    ],
+    "biological_process": [
+      "CRISPR activation",
+      "gene expression",
+      "gene knockdown",
+      "sequence-specific repression"
     ]
   },
   "source_file": "ACTB.json"
