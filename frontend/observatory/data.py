@@ -134,6 +134,43 @@ def summarize_entity_extractions(items: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def load_holo_audit(run_dir: Path) -> dict[str, Any] | None:
+    """Load the Holo independent-verification result (holo_audit.json)."""
+    path = run_dir / "holo_audit.json"
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def load_planted_signal(run_dir: Path) -> dict[str, Any] | None:
+    """Load the planted-signal self-test result (verification/planted_signal.json)."""
+    path = run_dir / "verification" / "planted_signal.json"
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def load_newsroom_research(run_dir: Path) -> list[dict[str, Any]]:
+    """Load the newsroom field research (newsroom/research.json) — top results."""
+    path = run_dir / "newsroom" / "research.json"
+    if not path.is_file():
+        return []
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+    results = payload.get("results") if isinstance(payload, dict) else None
+    return results if isinstance(results, list) else []
+
+
 def markdown_to_html(text: str) -> str:
     """Minimal markdown → HTML (headings, paragraphs, links, bold)."""
     lines = text.strip().splitlines()

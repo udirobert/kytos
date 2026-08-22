@@ -93,11 +93,36 @@ def run_matrix() -> list[tuple[str, bool, str]]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    import argparse
+    import json
+    from datetime import datetime, timezone
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--json",
+        metavar="PATH",
+        help="write a machine-readable result to PATH (e.g. verification/planted_signal.json)",
+    )
+    args = parser.parse_args(argv)
+
     results = run_matrix()
     for name, ok, detail in results:
         print(f"[{'PASS' if ok else 'FAIL'}] {name:<28} {detail}")
     failed = sum(1 for _, ok, _ in results if not ok)
-    print(f"\nplanted-signal self-test: {len(results) - failed}/{len(results)} caught")
+    summary = f"{len(results) - failed}/{len(results)} caught"
+    print(f"\nplanted-signal self-test: {summary}")
+
+    if args.json:
+        out = Path(args.json)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "status": "pass" if failed == 0 else "fail",
+            "summary": summary,
+            "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "cases": [{"name": name, "ok": ok, "detail": detail} for name, ok, detail in results],
+        }
+        out.write_text(json.dumps(payload, indent=2) + "\n")
+        print(f"wrote {out}")
     return 1 if failed else 0
 
 

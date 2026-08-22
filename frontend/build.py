@@ -74,6 +74,11 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         metrics_src = run.path / "metrics"
         if metrics_src.is_dir():
             _copy_tree(metrics_src, run_out / "metrics")
+        # Verification layer: ship the Holo agent's screenshot so the
+        # independent-audit panel can show what the agent actually saw.
+        holo_shot = run.path / "holo_screenshot.png"
+        if holo_shot.is_file():
+            shutil.copy2(holo_shot, run_out / "holo_screenshot.png")
         html = render_run_detail(
             run,
             runs,

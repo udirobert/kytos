@@ -1,0 +1,37 @@
+{
+  "status": "pass",
+  "summary": "6/6 caught",
+  "generated_at": "2026-08-22T14:31:45+00:00",
+  "cases": [
+    {
+      "name": "hk_clear",
+      "ok": true,
+      "detail": "expected clean \u2014 caught"
+    },
+    {
+      "name": "hk_warn_planted_k001",
+      "ok": true,
+      "detail": "expected [('housekeeping_shift', 'warn')] \u2014 caught"
+    },
+    {
+      "name": "hk_threshold_boundary",
+      "ok": true,
+      "detail": "expected [('housekeeping_shift', 'warn')] \u2014 caught"
+    },
+    {
+      "name": "pathway_clear_coherent",
+      "ok": true,
+      "detail": "expected clean \u2014 caught"
+    },
+    {
+      "name": "pathway_mixed_planted_k001",
+      "ok": true,
+      "detail": "expected [('pathway_coherence', 'warn')] \u2014 caught"
+    },
+    {
+      "name": "pathway_wrong_direction",
+      "ok": true,
+      "detail": "expected [('pathway_coherence', 'warn')] \u2014 caught"
+    }
+  ]
+}

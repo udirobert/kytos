@@ -16,6 +16,10 @@ SITE_TITLE = "Kytos Observatory"
 # The 78-day public build (Aug 20 → Nov 5). The demo's closer — "run #1 of 78"
 # — is stamped on the surface so the long-game story survives a silent scroll.
 VCC_DAYS = 78
+VCC_START = "2026-08-20T00:00:00Z"
+VCC_TEST_SET = "2026-10-22T00:00:00Z"
+VCC_END = "2026-11-05T23:59:59Z"
+HACKATHON_END = "2026-08-22T18:00:00Z"  # 19:00 London (BST) opt-in deadline
 
 
 def _h(text: str) -> str:
@@ -137,6 +141,11 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
                 Run #{_run_index(latest, runs)} of {VCC_DAYS} — {_h(latest.run_id)}: {headline}.
                 Headline metrics {_h(metric_bits)}.
               </p>
+              <p class="vessel-legend-inline">
+                <span class="legend-item legend-fill">fill = ceiling headroom</span>
+                <span class="legend-item legend-warn">cracks = audit warnings</span>
+                <span class="legend-item legend-info">droplets = info flags</span>
+              </p>
               <div class="home-cta-row">
                 <a class="button" href="{run_href}">Open run detail →</a>
                 <a class="home-chip" href="{root_prefix}runs/index.html">
@@ -157,8 +166,13 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
             </span>
             <span class="data-strip-sep"></span>
             <span class="data-strip-item">
-              <span class="data-strip-label">vcc</span>
-              {_count_span("data-strip-value", VCC_DAYS, " days left", "0 days left")}
+              <span class="data-strip-label">build</span>
+              <span class="data-strip-value" id="home-build-day" data-vcc-days="{VCC_DAYS}">…</span>
+            </span>
+            <span class="data-strip-sep"></span>
+            <span class="data-strip-item">
+              <span class="data-strip-label">nov 5</span>
+              <span class="data-strip-value" id="home-vcc-left">…</span>
             </span>
           </div>
           <div class="home-scroll-hint">scroll ↓</div>
@@ -173,30 +187,71 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         </section>
         """
 
-    timeline = """
+    timeline = f"""
     <section class="panel timeline-panel">
-      <h2>2026 Virtual Cell Challenge</h2>
-      <div class="vcc-track" role="img" aria-label="Competition timeline progress">
-        <div class="vcc-inner">
-          <div class="vcc-line"></div>
-          <div class="vcc-fill" id="vcc-fill"></div>
-          <div class="vcc-needle" id="vcc-needle"></div>
-          <div class="vcc-marker" data-date="2026-08-20T00:00:00Z">
-            <time>Aug 20</time><span>validation live</span>
+      <div class="timeline-hackathon">
+        <p class="timeline-eyebrow">🔥 Today · London</p>
+        <h2>{{Tech: Europe}} × VEED Summer Lock-In</h2>
+        <p class="timeline-tagline">
+          Observatory Milestone 0 goes live today — same repo, same public build,
+          all the way to VCC finals 🧬
+        </p>
+        <p class="hackathon-deadline">
+          ⏰ Opt-in closes <strong id="hackathon-countdown">…</strong>
+          <span class="muted">· 19:00 London</span>
+        </p>
+      </div>
+
+      <div class="timeline-vcc">
+        <p class="timeline-eyebrow">📡 78-day public build</p>
+        <h3 class="timeline-subhead">Virtual Cell Challenge 2026</h3>
+        <div class="vcc-track" role="img" aria-label="Virtual Cell Challenge timeline"
+             data-vcc-start="{VCC_START}"
+             data-vcc-end="{VCC_END}"
+             data-vcc-test="{VCC_TEST_SET}"
+             data-hackathon-end="{HACKATHON_END}"
+             data-vcc-days="{VCC_DAYS}">
+          <div class="vcc-inner">
+            <div class="vcc-line"></div>
+            <div class="vcc-fill" id="vcc-fill"></div>
+            <div class="vcc-needle" id="vcc-needle"></div>
+            <div class="vcc-marker" data-date="{VCC_START}">
+              <span class="vcc-marker-emoji" aria-hidden="true">🚀</span>
+              <time>Aug 20</time><span>we ship</span>
+            </div>
+            <div class="vcc-marker vcc-marker-hackathon" data-date="2026-08-22T12:00:00Z">
+              <span class="vcc-marker-emoji" aria-hidden="true">🏆</span>
+              <time>Aug 22</time><span>you are here</span>
+            </div>
+            <div class="vcc-marker" data-date="{VCC_TEST_SET}">
+              <span class="vcc-marker-emoji" aria-hidden="true">🎯</span>
+              <time>Oct 22</time><span>test set</span>
+            </div>
+            <div class="vcc-marker" data-date="{VCC_END}">
+              <span class="vcc-marker-emoji" aria-hidden="true">🏁</span>
+              <time>Nov 5</time><span>finale</span>
+            </div>
           </div>
-          <div class="vcc-marker" data-date="2026-10-22T00:00:00Z">
-            <time>Oct 22</time><span>test set</span>
+        </div>
+        <div class="vcc-stats">
+          <div class="vcc-stat">
+            <span class="vcc-stat-label">🏁 Submit by Nov 5</span>
+            <strong class="vcc-stat-value" id="vcc-countdown">…</strong>
+            <span class="vcc-stat-note">Arc scores the hidden test set</span>
           </div>
-          <div class="vcc-marker" data-date="2026-11-05T23:59:59Z">
-            <time>Nov 5</time><span>submissions due</span>
+          <div class="vcc-stat">
+            <span class="vcc-stat-label">📡 Build day</span>
+            <strong class="vcc-stat-value"><span id="vcc-day">…</span>"
+            "<span class="vcc-stat-of">/{VCC_DAYS}</span></strong>
+            <span class="vcc-stat-note">Publishing every run in the open</span>
+          </div>
+          <div class="vcc-stat">
+            <span class="vcc-stat-label">🎯 Test set drops</span>
+            <strong class="vcc-stat-value" id="vcc-testsets">…</strong>
+            <span class="vcc-stat-note">New perturbations to predict</span>
           </div>
         </div>
       </div>
-      <p class="vcc-countdown">Final submissions in <strong id="vcc-countdown">…</strong></p>
-      <p class="vcc-day">
-        Day <strong id="vcc-day">…</strong> of {VCC_DAYS} · test set in
-        <strong id="vcc-testsets">…</strong>
-      </p>
     </section>
     """
 
@@ -371,6 +426,11 @@ def render_run_detail(
         <p class="panel-note">Tavily enrichment · auxiliary evidence</p>
         {lit_html}
       </section>
+      <section class="panel collapsible" id="newsroom">
+        <h2>What the field is saying</h2>
+        <p class="panel-note">Tavily field research · woven into the newsroom broadcast</p>
+        {_newsroom_rail(run.path)}
+      </section>
       <section class="panel collapsible" id="biomedical-ner">
         <h2>Biomedical NER</h2>
         <p class="panel-note">{_entity_panel_note(entity_summary)}</p>
@@ -385,6 +445,7 @@ def render_run_detail(
         <h2>Pre-registered hypotheses</h2>
         <ul class="hyp-list">{hyp_html or "<li class='muted'>None</li>"}</ul>
       </section>
+      {_verification_section(run.path, run.run_id)}
       <footer class="provenance">
         <h2>Provenance</h2>
         <dl>
@@ -440,6 +501,8 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
           <video class="briefing-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}" preload="none"></video>
           <span class="briefing-stamp">kytos newsroom · run #1 of 78 · the oracle speaks</span>
+          <button class="briefing-unmute" type="button" hidden
+                  aria-label="Unmute the oracle briefing">♪ unmute — the oracle sings</button>
         </div>
         """
     if hero:
@@ -658,6 +721,122 @@ def _entity_method_badge(item: dict[str, Any]) -> str:
     else:
         cls = "pioneer-badge pioneer-badge-base"
     return f'<span class="{cls}">{_h(label)}</span>'
+
+
+def _verification_section(run_dir: Any, run_id: str) -> str:
+    """The trust layer: we test our own pipeline, and an agent verifies the surface.
+
+    Renders whatever committed verification artifacts exist; each card degrades
+    to a muted 'pending' note when the artifact is absent (site builds offline).
+    """
+    planted = data_mod.load_planted_signal(run_dir)
+    holo = data_mod.load_holo_audit(run_dir)
+    holo_shot = "holo_screenshot.png"
+
+    cards = []
+
+    if planted:
+        ok = planted.get("status") == "pass"
+        summary = planted.get("summary") or "—"
+        cases = planted.get("cases") or []
+        passed = sum(1 for c in cases if c.get("ok"))
+        cards.append(
+            f"""
+            <article class="verify-card {"verify-pass" if ok else "verify-fail"}">
+              <header>
+                <span class="verify-badge">{"PASS" if ok else "FAIL"}</span>
+                <span class="verify-title">Planted-signal self-test</span>
+              </header>
+              <p>We plant known-answer failures through our own audit rules. If it
+              can't catch what we planted, it can't be trusted to catch what we
+              didn't. <strong>{summary}</strong> ({passed}/{len(cases)} cases).</p>
+              <p class="verify-cmd"><code>python tools/planted_signal.py</code></p>
+            </article>
+            """
+        )
+    else:
+        cards.append(
+            """
+            <article class="verify-card verify-pending">
+              <header>
+                <span class="verify-badge">PENDING</span>
+                <span class="verify-title">Planted-signal self-test</span>
+              </header>
+              <p>Run <code>python tools/planted_signal.py --json "
+            "…/verification/planted_signal.json</code>.</p>
+            </article>
+            """
+        )
+
+    if holo:
+        ok = holo.get("status") == "pass"
+        model = holo.get("model") or "h/web-surfer-flash"
+        summary = holo.get("summary") or "—"
+        results = holo.get("results") or []
+        passed = sum(1 for r in results if r.get("ok"))
+        shot = (
+            f'<img class="verify-shot" src="{_h(holo_shot)}" '
+            f'alt="Holo agent screenshot of the live run page">'
+            if (run_dir / holo_shot).is_file()
+            else ""
+        )
+        cards.append(
+            f"""
+            <article class="verify-card {"verify-pass" if ok else "verify-fail"}">
+              <header>
+                <span class="verify-badge">{"PASS" if ok else "FAIL"}</span>
+                <span class="verify-title">Independent agent audit</span>
+              </header>
+              <p>An autonomous agent (<code>{_h(model)}</code>) browsed the live page
+              and verified <strong>{summary}</strong> ({passed}/{len(results)} fields)
+              against facts.json — the surface is honest, not just claimed.</p>
+              {shot}
+              <p class="verify-cmd"><code>python tools/holo_audit.py "
+            f"--run experiments/{_h(run_id)}</code></p>
+            </article>
+            """
+        )
+    else:
+        cards.append(
+            """
+            <article class="verify-card verify-pending">
+              <header>
+                <span class="verify-badge">PENDING</span>
+                <span class="verify-title">Independent agent audit</span>
+              </header>
+              <p>Run <code>python tools/holo_audit.py --run experiments/&lt;run-id&gt;</code>.</p>
+            </article>
+            """
+        )
+
+    return f"""
+    <section class="panel verification-panel">
+      <h2>Verification</h2>
+      <p class="panel-note">We test our own pipeline — and an independent agent "
+      "verifies the surface is honest.</p>
+      <div class="verify-grid">{"".join(cards)}</div>
+    </section>
+    """
+
+
+def _newsroom_rail(run_dir: Any) -> str:
+    """'What the field is saying' — Tavily field research woven into the broadcast."""
+    results = data_mod.load_newsroom_research(run_dir)
+    if not results:
+        return (
+            '<p class="muted">Field research pending — run '
+            "<code>tools/enrich_newsroom.py</code>.</p>"
+        )
+    lis = []
+    for hit in results[:4]:
+        title = _h(hit.get("title", "Untitled"))
+        url = _h(hit.get("url", "#"))
+        snippet = _h(hit.get("snippet", ""))
+        lis.append(
+            f'<li><a href="{url}" rel="noopener">{title}</a>'
+            f'<span class="lit-snippet">{snippet}</span></li>'
+        )
+    return '<ul class="lit-list newsroom-list">' + "".join(lis) + "</ul>"
 
 
 def _entity_rail(items: list[dict[str, Any]], summary: dict[str, Any]) -> str:

@@ -76,21 +76,28 @@
     });
   }
 
-  // ── VCC timeline rail: live needle + countdowns (submissions + test set) ──
+  // ── VCC timeline rail + hackathon countdown + home strip ───────────────
   function initVccRail() {
     var track = document.querySelector(".vcc-track");
     if (!track) {
       return;
     }
-    var start = new Date("2026-08-20T00:00:00Z").getTime();
-    var end = new Date("2026-11-05T23:59:59Z").getTime();
-    var testSet = new Date("2026-10-22T00:00:00Z").getTime();
+    var start = new Date(track.getAttribute("data-vcc-start") || "2026-08-20T00:00:00Z").getTime();
+    var end = new Date(track.getAttribute("data-vcc-end") || "2026-11-05T23:59:59Z").getTime();
+    var testSet = new Date(track.getAttribute("data-vcc-test") || "2026-10-22T00:00:00Z").getTime();
+    var hackathonEnd = new Date(
+      track.getAttribute("data-hackathon-end") || "2026-08-22T18:00:00Z"
+    ).getTime();
+    var vccDays = parseInt(track.getAttribute("data-vcc-days") || "78", 10);
     var markers = Array.prototype.slice.call(track.querySelectorAll(".vcc-marker"));
     var needle = document.getElementById("vcc-needle");
     var fill = document.getElementById("vcc-fill");
     var countdown = document.getElementById("vcc-countdown");
     var dayEl = document.getElementById("vcc-day");
     var testEl = document.getElementById("vcc-testsets");
+    var hackathonEl = document.getElementById("hackathon-countdown");
+    var homeBuild = document.getElementById("home-build-day");
+    var homeLeft = document.getElementById("home-vcc-left");
     if (!needle || !fill || !countdown) {
       return;
     }
@@ -110,9 +117,15 @@
       return d + "d " + pad(h) + ":" + pad(m) + ":" + pad(s);
     }
 
+    function fmtShort(ms) {
+      var d = Math.ceil(ms / 86400000);
+      return d + "d";
+    }
+
     function tick() {
       var now = Date.now();
       var progress = pct(now);
+      var buildDay = Math.min(vccDays, Math.max(1, Math.floor((now - start) / 86400000) + 1));
 
       markers.forEach(function (marker) {
         var date = new Date(marker.getAttribute("data-date")).getTime();
@@ -124,10 +137,21 @@
 
       countdown.textContent = fmt(Math.max(0, end - now));
       if (dayEl) {
-        dayEl.textContent = String(Math.floor((now - start) / 86400000) + 1);
+        dayEl.textContent = String(buildDay);
       }
       if (testEl) {
         testEl.textContent = fmt(Math.max(0, testSet - now));
+      }
+      if (hackathonEl) {
+        var hackLeft = hackathonEnd - now;
+        hackathonEl.textContent =
+          hackLeft > 0 ? fmt(hackLeft) : "closed ✅ keep building";
+      }
+      if (homeBuild) {
+        homeBuild.textContent = "day " + buildDay;
+      }
+      if (homeLeft) {
+        homeLeft.textContent = fmtShort(Math.max(0, end - now));
       }
     }
 
@@ -252,6 +276,26 @@
     });
   }
 
+  function initBriefingUnmute() {
+    // The oracle broadcast autoplays muted (browser policy). Surface the
+    // 'unmute — the oracle sings' affordance so the anthem isn't invisible.
+    document.querySelectorAll(".hero-video").forEach(function (wrap) {
+      var video = wrap.querySelector("video.briefing-video");
+      var btn = wrap.querySelector(".briefing-unmute");
+      if (!video || !btn) return;
+      var update = function () {
+        btn.hidden = !video.muted;
+      };
+      video.addEventListener("volumechange", update);
+      btn.addEventListener("click", function () {
+        video.muted = false;
+        video.controls = true;
+        update();
+      });
+      update();
+    });
+  }
+
   function onReady() {
     initPlotly();
     initVccRail();
@@ -259,6 +303,7 @@
     initCountUp();
     initCopyButtons();
     initScrollReveal();
+    initBriefingUnmute();
     setTimeout(animateVesselFallback, 2000);
   }
 
