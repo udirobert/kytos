@@ -5,18 +5,50 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  // ── Metrics chart (Plotly) ────────────────────────────────────────────────
+  // ── Metrics chart (Plotly) — lazy loaded when scrolled into view ────────
+  // Plotly is 1.3 MB. Instead of loading it in <head>, we inject the script
+  // only when the metrics-chart section enters the viewport. This saves
+  // ~1.3 MB of render-blocking JS on the run detail page.
   function initPlotly() {
     var el = document.getElementById("metrics-chart");
     var dataEl = document.getElementById("metrics-chart-data");
-    if (!el || !dataEl || typeof Plotly === "undefined") {
+    if (!el || !dataEl) {
       return;
     }
+    // If Plotly is already loaded (e.g. from a cached page), just render.
+    if (typeof Plotly !== "undefined") {
+      _renderPlotly(el, dataEl);
+      return;
+    }
+    // Lazy-load: inject the Plotly script when the chart scrolls into view.
+    if (typeof IntersectionObserver === "undefined") {
+      _loadPlotly(el, dataEl);
+      return;
+    }
+    var observer = new IntersectionObserver(
+      function (entries) {
+        if (entries.some(function (e) { return e.isIntersecting; })) {
+          observer.disconnect();
+          _loadPlotly(el, dataEl);
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(el);
+  }
+
+  function _loadPlotly(el, dataEl) {
+    var script = document.createElement("script");
+    script.src = "https://cdn.plot.ly/plotly-2.35.2.min.js";
+    script.onload = function () { _renderPlotly(el, dataEl); };
+    document.head.appendChild(script);
+  }
+
+  function _renderPlotly(el, dataEl) {
+    if (typeof Plotly === "undefined") return;
     try {
       var spec = JSON.parse(dataEl.textContent || "{}");
-      if (!spec.data || !spec.data.length) {
-        return;
-      }
+      if (!spec.data || !spec.data.length) return;
       Plotly.newPlot(el, spec.data, spec.layout || {}, spec.config || {});
     } catch (err) {
       console.warn("Plotly init failed", err);

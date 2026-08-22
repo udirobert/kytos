@@ -63,6 +63,9 @@ def load_literature(run_dir: Path) -> list[dict[str, Any]]:
     return items
 
 
+PIONEER_BASE_MODEL = "fastino/gliner2-base-v1"
+
+
 def load_entity_extractions(run_dir: Path) -> list[dict[str, Any]]:
     """Load Pioneer GLiNER2 entity extraction results from literature/*.entities.json."""
     lit_dir = run_dir / "literature"
@@ -78,6 +81,57 @@ def load_entity_extractions(run_dir: Path) -> list[dict[str, Any]]:
             payload.setdefault("source_gene", path.stem.replace(".entities", ""))
             items.append(payload)
     return items
+
+
+def entity_model_label(item: dict[str, Any]) -> str:
+    """Human-readable label for how entities were extracted."""
+    method = str(item.get("method") or "")
+    model_id = str(item.get("model_id") or "")
+    if method == "fallback" or model_id == "fallback":
+        return "regex fallback"
+    if model_id == PIONEER_BASE_MODEL:
+        return "base GLiNER2"
+    if method == "pioneer" and model_id and model_id not in ("fallback", PIONEER_BASE_MODEL):
+        return "fine-tuned LoRA"
+    return method or "unknown"
+
+
+def summarize_entity_extractions(items: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate NER stats for the run-detail panel header and hero strip."""
+    if not items:
+        return {
+            "total_entities": 0,
+            "gene_count": 0,
+            "model_label": None,
+            "model_id": None,
+            "method": None,
+            "label_totals": {},
+            "is_fine_tuned": False,
+        }
+
+    total_entities = sum(int(item.get("entity_count") or 0) for item in items)
+    model_ids = {str(item.get("model_id")) for item in items if item.get("model_id")}
+    methods = {str(item.get("method")) for item in items if item.get("method")}
+    label_totals: dict[str, int] = {}
+    for item in items:
+        for label, texts in (item.get("by_label") or {}).items():
+            label_totals[str(label)] = label_totals.get(str(label), 0) + len(texts)
+
+    primary_model_id = next(iter(model_ids)) if len(model_ids) == 1 else None
+    primary_method = "pioneer" if "pioneer" in methods else next(iter(methods), None)
+    probe = {"method": primary_method, "model_id": primary_model_id}
+    model_label = entity_model_label(probe) if primary_model_id else None
+    is_fine_tuned = model_label == "fine-tuned LoRA"
+
+    return {
+        "total_entities": total_entities,
+        "gene_count": len(items),
+        "model_label": model_label,
+        "model_id": primary_model_id,
+        "method": primary_method,
+        "label_totals": label_totals,
+        "is_fine_tuned": is_fine_tuned,
+    }
 
 
 def markdown_to_html(text: str) -> str:

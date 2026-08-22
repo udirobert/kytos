@@ -438,7 +438,7 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
         return f"""
         <div class="hero-fullscreen hero-video">
           <video class="briefing-video" src="{src}" autoplay muted loop playsinline
-                 controls poster="{poster}" preload="metadata"></video>
+                 controls poster="{poster}" preload="none"></video>
           <span class="briefing-stamp">kytos newsroom · run #1 of 78 · the oracle speaks</span>
         </div>
         """

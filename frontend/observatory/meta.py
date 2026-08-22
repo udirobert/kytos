@@ -120,10 +120,9 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
   <link rel="stylesheet" href="{root_prefix}static/style.css">"""
 
     # ── Conditional heavy scripts ──────────────────────────────────────────
-    # Plotly: 1.3 MB — only on run detail pages with the metrics chart.
-    if meta.needs_plotly:
-        head += '\n  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>'
-
+    # Plotly is now lazy-loaded by site.js when the chart scrolls into view
+    # (saves 1.3 MB of render-blocking JS). No <script> tag needed in <head>.
+    #
     # Three.js + vessel3d.js: ~270 KB — only on pages with the 3D vessel.
     # Home + run detail have it; runs index does not.
     if meta.needs_vessel:

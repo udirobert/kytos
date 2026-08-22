@@ -20,7 +20,7 @@ Optional: **5-second title card** before 0:00 (`Kytos Observatory · κύτος 
 | Fabric | 20 | VEED moment early — video is the host's language |
 | Self-own | 25 | Credibility — we flag our own baseline |
 | Provenance | 35 | Technical depth — numbers by code, drill-down |
-| Partners | 25 | Tavily + OpenAI rails — not decoration |
+| Partners | 25 | Tavily + OpenAI + Pioneer NER rails — not decoration |
 | Trust | 15 | Planted-signal self-test |
 | Closer | 10 | 78-day build-in-public ask |
 
@@ -92,14 +92,18 @@ close. Do not talk over the opening frame.
 
 ---
 
-## 1:30–1:55 — Literature + narrative (partner rails)
+## 1:30–1:55 — Literature + narrative + NER (partner rails)
 
-> "Each flag gets literature — Tavily pulls evidence for flagged genes. The
+> "Each flag gets literature — Tavily pulls evidence for flagged genes. Pioneer
+> fine-tuned GLiNER2 extracts biomedical entities from that text — genes,
+> pathways, cell types — deterministically, no hallucinated symbols. The
 > narrative digest is rendered *from* facts only; every sentence cites its
-> source field. Numbers by code; prose by LLM; never the other way around.
-> We pre-registered hypotheses before touching the leaderboard."
+> source field. Numbers by code; prose by LLM; entities by encoder; never the
+> other way around. We pre-registered hypotheses before touching the leaderboard."
 
-**On screen:** Literature rail → narrative block (or fallback digest — say "deterministic fallback if API is down; site still builds") → hypotheses list.
+**On screen:** Literature rail → scroll to **Biomedical NER** (fine-tuned LoRA badge,
+entity chips per gene, entity count in hero strip) → narrative block (or fallback
+digest — say "deterministic fallback if API is down; site still builds") → hypotheses list.
 
 ---
 

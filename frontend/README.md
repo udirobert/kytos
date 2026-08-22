@@ -45,4 +45,4 @@ python tools/render_briefing.py    --run experiments/<run-id>
 ```
 
 **Milestone 0 target (2026-08-22):** Run detail page (P0) with Plotly, Fabric
-briefing, OpenAI narrative, Tavily literature rail. Thin Home; defer Runs polish.
+briefing, OpenAI narrative, Tavily literature rail, Pioneer NER entity chips. Thin Home; defer Runs polish.

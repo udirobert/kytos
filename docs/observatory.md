@@ -227,8 +227,11 @@ Skip for Milestone 0: gamification (XP, quizzes, flashcards) from Cell Architect
 2. **Metrics panel** — Plotly from committed CSVs only (bar vs ceiling).
 3. **Audit flags** — lemma-style cards: severity, rule, genes; link to Critique.
 4. **Literature rail** — Tavily for flagged entities; collapsible, labeled auxiliary.
-5. **Narrative block** — OpenAI digest with **inline source links** to `facts.json`.
-6. **Provenance footer** — commit, seed, hashes, reproduce command.
+5. **Biomedical NER** — Pioneer GLiNER2 entity chips per flagged gene (fine-tuned LoRA
+   when trained; base model or regex fallback otherwise); label-colored chips, aggregate
+   stats in hero strip.
+6. **Narrative block** — OpenAI digest with **inline source links** to `facts.json`.
+7. **Provenance footer** — commit, seed, hashes, reproduce command.
 
 All evidence panels are glassmorphism cards (`backdrop-filter: blur`, translucent
 background) that fade in via IntersectionObserver as they enter the viewport.
@@ -316,13 +319,40 @@ One gorgeous run page beats three half-finished pages.
 | Enrich (B) | ✅ four `tools/render_*.py` + one-shot `tools/run_enrichment.sh` + `env.example`; degrade-empty verified against k001; **live API run in progress** (venv unblocked: Python 3.12 + partner clients) |
 | Frontend (C) | ✅ `frontend/build.py` → `dist/` (home, runs index, k001 run detail); Playwright-verified desktop + mobile, zero console errors; briefing video autoplay; Netlify (`netlify.toml`) |
 | Deploy (B) | ✅ Netlify (`netlify.toml`) — auto-builds `frontend/dist/` on push; connect repo in Netlify dashboard |
-| Pioneer (C) | ✅ `tools/pioneer_ner.py` — fine-tuned GLiNER2 biomedical NER (deterministic fallback always available; side challenge) |
+| Pioneer (C) | ✅ `tools/pioneer_ner.py` — **fine-tuned GLiNER2 LoRA deployed** (`kytos-bio-ner-v1_2`, 18 silver-label samples from k001 Tavily literature); base inference + regex fallback; Observatory **Biomedical NER** panel live on k001 |
 | Demo primitives (B) | ✅ data-bound vessel instrument (fill = ceiling headroom, cracks = audit flags), audit confession banner, metric→CSV drill-down, planted-signal self-test (`tools/planted_signal.py`), [`demo-script.md`](demo-script.md) |
 | UX polish (B) | ✅ instrument-panel metaphor: live VCC timeline rail + countdown to Nov 5, vessel fill animation on load, run-strip severity dots + scroll-snap, flag severity badges, breadcrumb, copy-to-clipboard provenance, `prefers-reduced-motion` support; mobile overflow fixed (grid `min-width:0`, narrative/provenance wrapping) — Playwright-verified desktop + mobile, zero console errors |
 | 3D vessel (C) | ✅ **Three.js real-time 3D κύτος vessel** — glass with transmission/refraction, animated liquid fill, rising bubbles, emissive crack halos, cyan droplets, reflective floor, UnrealBloomPass, mouse parallax, scroll-driven camera, auto-rotate + drag; SVG fallback if WebGL unavailable (`frontend/static/vessel3d.js`, 527 lines) |
 | Full-bleed immersive layout (C) | ✅ home + run detail pages rebuilt as full-viewport vessel hero with overlaid glass content; evidence panels flow in centered column with scroll-reveal (IntersectionObserver); glass data readout strip; runs index cards show severity dot + fill % badge |
 | Holo auditor (C) | ✅ `tools/holo_audit.py` — H Computer-use Agent (`h/web-surfer-flash`) navigates the deployed Observatory in a cloud browser, returns schema-validated typed answer via `answer_schema` (Pydantic); VLM screenshot fallback (holo3-1-35b-a3b); diffs against `facts.json`; degrades to skip without `HAI_API_KEY`; same PASS/FAIL pattern as `planted_signal.py` |
-| Integration | ⏳ real enrichment artifacts → rebuild `dist/` → redeploy → 2-min Loom |
+| Integration | ⏳ rebuild `dist/` after enrichment → redeploy → 2-min Loom |
+
+#### Pioneer biomedical NER (side challenge) — 2026-08-22
+
+Fine-tune is **live** on k001:
+
+| Step | Status | Notes |
+|---|---|---|
+| Base inference | ✅ | `fastino/gliner2-base-v1` on all 6 literature files |
+| `/generate/ner/label-existing` | ❌ | Platform returns empty `{}` per input (even docs examples) — escalated workaround |
+| JSONL upload + preview | ✅ | Hand-crafted + silver-label rows validate with non-empty `entities` |
+| Training pipeline | ✅ | 18 Tavily snippets → silver labels → `kytos-bio-ner-silver` → LoRA 5 epochs (~98s) |
+| Deployed model | ✅ | `kytos-bio-ner-v1_2` · job `4225fc3e-3839-42fb-9cfb-e41d7c08dfe2` |
+| Observatory UI | ✅ | Run detail **Biomedical NER** panel + entity count in hero strip |
+
+Commands:
+
+```bash
+# one-time train (skips if model already deployed)
+python tools/pioneer_ner.py --train
+
+# inference on a run's literature/*.json → writes *.entities.json
+python tools/pioneer_ner.py --run experiments/k001-mean-shift-baseline
+```
+
+Training strategy in code (in order): reuse deployed model → label-existing → silver
+labels from base GLiNER2 + regex fallback → upload JSONL → synthetic `/generate`
+(last resort).
 
 ### Later (Aug → Nov 2026)
 
@@ -353,6 +383,6 @@ Presentation talking points: [`competitive-landscape.md §6`](competitive-landsc
 1. ~~Deploy target for `frontend/dist/`~~ → **Netlify** (`netlify.toml`) — decided 2026-08-22
 2. Font / palette final choice (avoid cloning Plant DNA's Space Mono verbatim)?
 3. fal model for hero still vs Fabric source frame (same image or separate)?
-4. Pioneer fine-tune for critique classification — post-hackathon?
+4. Pioneer fine-tune for critique classification — post-hackathon? (NER fine-tune shipped for side challenge.)
 
 *Next: implement Run detail skeleton, `facts.json` assembler, k001 seed, enrichment stubs.*

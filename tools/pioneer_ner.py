@@ -586,17 +586,15 @@ def label_existing_texts(api_key: str, texts: list[str]) -> list[dict]:
     elif isinstance(resp, dict):
         result = resp.get("result") or resp
         data = result.get("data") if isinstance(result, dict) else None
+        if not isinstance(data, list) and isinstance(resp.get("data"), list):
+            data = resp["data"]
         if isinstance(data, list):
             for i, item in enumerate(data):
                 if isinstance(item, dict):
-                    ents = _parse_label_existing_item(item, texts[i] if i < len(texts) else "")
+                    text_val = item.get("text") or (texts[i] if i < len(texts) else "")
+                    ents = _parse_label_existing_item(item, text_val)
                     if ents:
-                        labeled.append(
-                            {
-                                "text": texts[i] if i < len(texts) else "",
-                                "entities": ents,
-                            }
-                        )
+                        labeled.append({"text": text_val, "entities": ents})
 
     notice(f"pioneer: label-existing produced {len(labeled)} labeled examples")
     return labeled
@@ -705,7 +703,7 @@ def upload_dataset(
             method="PUT",
             headers={"Content-Type": "application/octet-stream"},
         )
-        with urllib.request.urlopen(req, timeout=120) as r:
+        with urllib.request.urlopen(req, timeout=120, context=_ssl_context()) as r:
             if r.status not in (200, 204):
                 warn(f"pioneer: S3 upload returned status {r.status}")
                 return None
@@ -757,6 +755,92 @@ def _dataset_ready(api_key: str, dataset_name: str) -> dict | None:
         if version.get("status") == "ready" and (version.get("sample_size") or 0) > 0:
             return version
     return None
+
+
+DATASET_READY_TIMEOUT = 300
+DATASET_READY_POLL = 5
+
+
+def poll_dataset_ready(api_key: str, dataset_name: str) -> dict | None:
+    """Poll until an uploaded dataset version is ready, or timeout."""
+    deadline = time.time() + DATASET_READY_TIMEOUT
+    while time.time() < deadline:
+        version = _dataset_ready(api_key, dataset_name)
+        if version:
+            notice(
+                f"pioneer: dataset '{dataset_name}' ready "
+                f"(v{version.get('version_number')}, n={version.get('sample_size')})"
+            )
+            return version
+        time.sleep(DATASET_READY_POLL)
+    warn(f"pioneer: dataset '{dataset_name}' not ready after {DATASET_READY_TIMEOUT}s")
+    return None
+
+
+def _entities_to_training_pairs(entities: list[dict]) -> list[list[str]]:
+    """Convert inference spans to NER JSONL entity pairs [[text, label], ...]."""
+    pairs: list[list[str]] = []
+    seen: set[tuple[str, str]] = set()
+    for ent in entities:
+        text_val = ent.get("text") or ""
+        label = ent.get("label") or ""
+        if not text_val or not label:
+            continue
+        key = (text_val, label)
+        if key in seen:
+            continue
+        seen.add(key)
+        pairs.append([text_val, label])
+    return pairs
+
+
+def build_training_rows_from_inference(
+    api_key: str, texts: list[str], model_id: str = BASE_MODEL
+) -> list[dict]:
+    """Silver-label texts with base GLiNER2 when /generate/label-existing is empty."""
+    rows: list[dict] = []
+    for text in texts:
+        if not text.strip():
+            continue
+        try:
+            resp = _post(
+                api_key,
+                "/inference",
+                {
+                    "model_id": model_id,
+                    "text": text,
+                    "schema": _entity_schema(),
+                    "threshold": 0.3,
+                },
+            )
+            entities = parse_pioneer_inference_response(resp)
+        except Exception as exc:
+            warn(f"pioneer: inference labeling failed ({exc})")
+            entities = []
+        if not entities:
+            entities = extract_entities_fallback(text)
+        pairs = _entities_to_training_pairs(entities)
+        if pairs:
+            rows.append({"text": text, "entities": pairs})
+    notice(f"pioneer: built {len(rows)} training row(s) from inference/fallback labels")
+    return rows
+
+
+def _upload_train_validate(api_key: str, dataset_name: str, rows: list[dict]) -> str | None:
+    """Upload JSONL rows, wait for ready, validate entities, start training."""
+    if not upload_dataset(api_key, dataset_name, rows):
+        return None
+    version = poll_dataset_ready(api_key, dataset_name)
+    if not version:
+        return None
+    version_no = str(version.get("version_number") or "1")
+    if not _validate_ner_dataset(api_key, dataset_name, version_no):
+        return None
+    train_job = start_training(api_key, dataset_name)
+    if not train_job:
+        return None
+    result = poll_training(api_key, train_job)
+    return train_job if result else None
 
 
 def _dataset_preview(api_key: str, dataset_name: str, version: str, limit: int = 10) -> dict | None:
@@ -871,84 +955,80 @@ def poll_training(api_key: str, job_id: str) -> dict | None:
 
 
 def find_deployed_model(api_key: str) -> str | None:
-    """Check if a previously trained model exists and return its job ID."""
+    """Check if a previously trained model exists and return its job ID for inference."""
     try:
         resp = _get(api_key, "/felix/training-jobs?status=complete&limit=50")
         jobs = resp.get("training_jobs") or []
-        for job in jobs:
-            if job.get("model_name") == MODEL_NAME:
-                job_id = job.get("id")
-                notice(f"pioneer: found existing trained model (job_id={job_id})")
-                return job_id
+        prefix = MODEL_NAME
+        candidates = [
+            j
+            for j in jobs
+            if (j.get("model_name") or "").startswith(prefix)
+            and j.get("status") in ("complete", "deployed")
+            and j.get("is_deployable", True)
+        ]
+        if not candidates:
+            return None
+        # Prefer latest suffix (e.g. kytos-bio-ner-v1_2 over v1)
+        candidates.sort(key=lambda j: j.get("model_name") or "", reverse=True)
+        job = candidates[0]
+        job_id = job.get("id")
+        notice(f"pioneer: found existing trained model ({job.get('model_name')}, job_id={job_id})")
+        return job_id
     except Exception:
         pass
     return None
 
 
 def run_training_pipeline(api_key: str) -> str | None:
-    """Full pipeline: generate data → train → return model job_id for inference.
+    """Full pipeline: label data → upload → train → return model job_id.
 
     Strategy (tried in order):
-    1. If a trained model already exists, reuse it.
-    2. Try synthetic /generate. If the dataset has empty entities (known issue
-       with niche domains + many labels), fall back to:
-    3. label-existing on real Tavily literature text → upload as JSONL → train.
+    1. Reuse an existing trained model if present.
+    2. label-existing on Tavily literature → upload JSONL → train.
+    3. Base GLiNER2 inference (silver labels) → upload → train.
+    4. Synthetic /generate (last resort; often empty entities for niche domains).
     """
     existing = find_deployed_model(api_key)
     if existing:
         return existing
 
-    # Path A: synthetic generation
+    texts = _collect_literature_texts()
+    if not texts:
+        warn("pioneer: no literature text found for training")
+        return None
+
+    # Path B: label-existing (Fastino recommended when synthetic fails)
+    notice("pioneer: trying label-existing on real Tavily literature text...")
+    labeled = label_existing_texts(api_key, texts[:50])
+    if labeled:
+        job_id = _upload_train_validate(api_key, f"{DATASET_NAME}-labeled", labeled)
+        if job_id:
+            return job_id
+    else:
+        warn("pioneer: label-existing returned empty — trying inference silver labels")
+
+    # Path C: silver labels from base GLiNER2 + regex fallback
+    silver = build_training_rows_from_inference(api_key, texts)
+    if silver:
+        job_id = _upload_train_validate(api_key, f"{DATASET_NAME}-silver", silver)
+        if job_id:
+            return job_id
+
+    # Path A: synthetic generation (slow; often empty entities)
+    notice("pioneer: falling back to synthetic /generate...")
     gen_job = generate_dataset(api_key)
     if gen_job and poll_generation(api_key, gen_job):
-        version = _dataset_ready(api_key, DATASET_NAME)
+        version = poll_dataset_ready(api_key, DATASET_NAME) or _dataset_ready(api_key, DATASET_NAME)
         if version:
             version_no = str(version.get("version_number") or "1")
             if _validate_ner_dataset(api_key, DATASET_NAME, version_no):
-                # Synthetic data has real entity labels — proceed to training
                 train_job = start_training(api_key, DATASET_NAME)
                 if train_job:
                     result = poll_training(api_key, train_job)
                     if result:
                         return train_job
-            else:
-                warn(
-                    "pioneer: synthetic dataset has empty entities — falling back to label-existing"
-                )
 
-    # Path B: auto-label real literature text → upload → train
-    notice("pioneer: trying label-existing on real Tavily literature text...")
-    texts = _collect_literature_texts()
-    if not texts:
-        warn("pioneer: no literature text found for label-existing")
-        return None
-
-    labeled = label_existing_texts(api_key, texts)
-    if not labeled:
-        warn("pioneer: label-existing produced no labeled examples — cannot train")
-        return None
-
-    upload_dataset_name = f"{DATASET_NAME}-labeled"
-    dataset_id = upload_dataset(api_key, upload_dataset_name, labeled)
-    if not dataset_id:
-        return None
-
-    # Wait for the uploaded dataset to be ready (processing → validating → ready)
-    version = _dataset_ready(api_key, upload_dataset_name)
-    if not version:
-        warn(f"pioneer: uploaded dataset '{upload_dataset_name}' not ready — cannot train")
-        return None
-    version_no = str(version.get("version_number") or "1")
-    if not _validate_ner_dataset(api_key, upload_dataset_name, version_no):
-        return None
-
-    train_job = start_training(api_key, upload_dataset_name)
-    if not train_job:
-        return None
-
-    result = poll_training(api_key, train_job)
-    if result:
-        return train_job
     return None
 
 

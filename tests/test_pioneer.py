@@ -217,3 +217,34 @@ def test_collect_literature_texts_gathers_content(run_dir: Path) -> None:
 def test_collect_literature_texts_missing_dir(tmp_path: Path) -> None:
     """No literature/ dir → empty list (degrade)."""
     assert pioneer_ner._collect_literature_texts(tmp_path) == []
+
+
+def test_entities_to_training_pairs_deduplicates() -> None:
+    entities = [
+        {"text": "ACTB", "label": "gene"},
+        {"text": "ACTB", "label": "gene"},
+        {"text": "K562", "label": "cell_type"},
+    ]
+    assert pioneer_ner._entities_to_training_pairs(entities) == [
+        ["ACTB", "gene"],
+        ["K562", "cell_type"],
+    ]
+
+
+def test_find_deployed_model_matches_versioned_name(monkeypatch) -> None:
+    def fake_get(_key: str, path: str) -> dict:
+        assert "training-jobs" in path
+        return {
+            "training_jobs": [
+                {"id": "old", "model_name": "kytos-bio-ner-v1", "status": "errored"},
+                {
+                    "id": "new-job",
+                    "model_name": "kytos-bio-ner-v1_2",
+                    "status": "deployed",
+                    "is_deployable": True,
+                },
+            ]
+        }
+
+    monkeypatch.setattr(pioneer_ner, "_get", fake_get)
+    assert pioneer_ner.find_deployed_model("key") == "new-job"

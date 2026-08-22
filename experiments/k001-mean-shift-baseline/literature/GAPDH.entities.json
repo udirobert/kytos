@@ -1,20 +1,17 @@
 {
   "method": "pioneer",
-  "model_id": "fastino/gliner2-base-v1",
-  "entity_count": 22,
+  "model_id": "4225fc3e-3839-42fb-9cfb-e41d7c08dfe2",
+  "entity_count": 19,
   "by_label": {
     "gene": [
       "sgRNAs",
       "GAPDH",
       "target gene",
-      "housekeeping gene"
+      "housekeeping gene",
+      "alternative promoter"
     ],
     "disease": [
       "breast cancer"
-    ],
-    "perturbation_type": [
-      "Isoform-Specific Perturb-Seq approach",
-      "dual guide RNA strategy"
     ],
     "protein": [
       "dCas9-CRISPRi"

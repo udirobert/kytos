@@ -1,17 +1,16 @@
 {
   "method": "pioneer",
-  "model_id": "fastino/gliner2-base-v1",
-  "entity_count": 28,
+  "model_id": "4225fc3e-3839-42fb-9cfb-e41d7c08dfe2",
+  "entity_count": 27,
   "by_label": {
     "gene": [
-      "genes",
-      "IFIT1"
+      "IFIT1",
+      "genes"
     ],
     "pathway": [
       "Unfolded Protein Response",
       "unfolded protein response",
-      "UPR",
-      "CRISPR"
+      "UPR"
     ],
     "disease": [
       "cancer"
@@ -22,10 +21,10 @@
     ],
     "protein": [
       "R187",
-      "TPR4",
-      "RNA",
       "L193",
+      "TPR4",
       "IFIT1",
+      "RNA",
       "key proteins"
     ],
     "cell_type": [

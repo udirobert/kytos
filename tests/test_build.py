@@ -36,6 +36,9 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     html = run_page.read_text(encoding="utf-8")
     assert "k001-mean-shift-baseline" in html
     assert "Audit flags" in html
+    assert "Biomedical NER" in html
+    assert "fine-tuned LoRA" in html
+    assert "entity-summary" in html
     assert "metrics-chart-data" in html
     assert "hk-stability" in html or "housekeeping_shift" in html
     assert (dist / "static" / "style.css").is_file()
