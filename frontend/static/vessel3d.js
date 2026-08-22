@@ -132,6 +132,11 @@ function initVessel3D() {
   var vessel = new THREE.Mesh(vesselGeo, vesselMat);
   vesselGroup.add(vessel);
 
+  // Entrance choreography: glass fades in first, then liquid rises,
+  // then bubbles/cracks/droplets appear. Each stage scales opacity.
+  vesselMat.opacity = 0;
+  vesselMat.transparent = true;
+
   // ── Liquid ───────────────────────────────────────────────────────────────
   var liquidPts = [];
   for (var i = 0; i < profilePts.length; i++) {
@@ -353,6 +358,9 @@ function initVessel3D() {
   scene.add(rimLight);
 
   // ── Controls ─────────────────────────────────────────────────────────────
+  // Interactive: judges can drag to rotate and scroll to zoom. Auto-rotate
+  // pauses on interaction and resumes after 3s of idle — this makes the
+  // vessel feel alive without fighting the user.
   var controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
@@ -363,23 +371,36 @@ function initVessel3D() {
   controls.minDistance = 9;
   controls.maxDistance = 18;
   controls.enablePan = false;
-  controls.enableZoom = false;
+  controls.enableZoom = true;
   controls.target.set(0, 0, 0);
 
-  // ── Mouse parallax ──────────────────────────────────────────────────────
+  // Idle detection — resume auto-rotate after 3s of no user interaction
+  var idleTimer = null;
+  function onUserInteraction() {
+    controls.autoRotate = false;
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(function () {
+      if (!reducedMotion) controls.autoRotate = true;
+    }, 3000);
+  }
+  renderer.domElement.addEventListener("pointerdown", onUserInteraction);
+  renderer.domElement.addEventListener("wheel", onUserInteraction, { passive: true });
+  renderer.domElement.addEventListener("touchstart", onUserInteraction, { passive: true });
+
+  // ── Pointer parallax (mouse + touch) ─────────────────────────────────────
   var mouseX = 0,
     mouseY = 0;
   var targetMouseX = 0,
     targetMouseY = 0;
 
-  function onMouseMove(e) {
+  function onPointerMove(e) {
     var rect = container.getBoundingClientRect();
     var x = (e.clientX - rect.left) / rect.width;
     var y = (e.clientY - rect.top) / rect.height;
     targetMouseX = (x - 0.5) * 2;
     targetMouseY = (y - 0.5) * 2;
   }
-  container.addEventListener("mousemove", onMouseMove);
+  container.addEventListener("pointermove", onPointerMove);
 
   // ── Scroll-driven camera (home page only) ────────────────────────────────
   var scrollProgress = 0;
@@ -431,20 +452,86 @@ function initVessel3D() {
   var fillDuration = 1.8;
   var running = true;
 
+  // Staggered entrance: glass → liquid → bubbles → cracks → droplets
+  // Each element has a start time and fade-in duration.
+  var entranceT = 0;
+  var ENTRANCE = {
+    glass: { start: 0.0, dur: 0.8 },
+    liquid: { start: 0.4, dur: 1.2 },
+    bubbles: { start: 1.2, dur: 0.6 },
+    cracks: { start: 1.5, dur: 0.8 },
+    droplets: { start: 1.8, dur: 0.6 },
+    particles: { start: 0.2, dur: 1.0 },
+  };
+  var entranceDone = reducedMotion;
+  if (entranceDone) {
+    vesselMat.opacity = 1;
+    vesselMat.transparent = false;
+  }
+
+  function fadeFactor(stage) {
+    if (entranceDone) return 1;
+    var s = ENTRANCE[stage];
+    if (entranceT < s.start) return 0;
+    var p = Math.min(1, (entranceT - s.start) / s.dur);
+    return p * p * (3 - 2 * p); // smoothstep
+  }
+
   function animate() {
     if (!running) return;
     requestAnimationFrame(animate);
     var dt = Math.min(clock.getDelta(), 0.05);
     var t = clock.getElapsedTime();
 
+    // Entrance timeline advances in real time
+    if (!entranceDone) {
+      entranceT += dt;
+      if (entranceT > 3.0) entranceDone = true;
+    }
+
+    // Glass fade-in
+    var glassA = fadeFactor("glass");
+    vesselMat.opacity = glassA;
+    vesselMat.transparent = glassA < 1;
+
+    // Particle fade-in
+    particleMat.opacity = 0.4 * fadeFactor("particles");
+
     // Fill animation — clipping plane rises from bottom to fillLevel
-    if (fillT < 1) {
+    // Delayed until glass is partially visible
+    if (fillT < 1 && entranceT >= ENTRANCE.liquid.start) {
       fillT = Math.min(1, fillT + dt / fillDuration);
       var eased = fillT * fillT * (3 - 2 * fillT); // smoothstep
       fillPlane.constant = VESSEL_BOTTOM + eased * (fillLevel - VESSEL_BOTTOM);
     }
+    liquidMat.opacity = 0.82 * fadeFactor("liquid");
 
-    // Wave animation on the liquid surface
+    // Bubble opacity — fade in after liquid starts rising
+    var bubbleA = fadeFactor("bubbles");
+    if (bubbleA < 1) {
+      bubbles.forEach(function (b) { b.material.opacity = 0.6 * bubbleA; });
+    }
+
+    // Crack opacity — fade in after bubbles
+    var crackA = fadeFactor("cracks");
+    cracksGroup.children.forEach(function (c, ci) {
+      if (ci % 2 === 0) {
+        c.material.opacity = (0.8 + Math.sin(t * 2 + ci) * 0.2) * crackA;
+        c.material.transparent = true;
+      } else {
+        c.material.opacity = 0.15 * crackA;
+      }
+    });
+
+    // Droplet opacity — fade in last
+    var dropletA = fadeFactor("droplets");
+    dropletsGroup.children.forEach(function (d) {
+      d.material.opacity = (d.userData.parent ? 0.15 : 1) * dropletA;
+      d.material.transparent = true;
+    });
+
+    // Wave animation on the liquid surface — dual sine waves + ripples
+    // that expand outward from random points, simulating droplet impacts
     if (!reducedMotion && fillT >= 1) {
       for (var wi = 0; wi <= LIQUID_SEGMENTS; wi++) {
         var angle = (wi / LIQUID_SEGMENTS) * Math.PI * 2;
@@ -473,7 +560,7 @@ function initVessel3D() {
         }
       }
 
-      // Droplet float
+      // Droplet float — movement only, opacity handled by entrance fade above
       dropletsGroup.children.forEach(function (d) {
         if (d.userData.parent) {
           d.position.copy(d.userData.parent.position);
@@ -481,16 +568,6 @@ function initVessel3D() {
         } else {
           d.position.y =
             d.userData.baseY + Math.sin(t * 1.5 + d.userData.phase) * 0.12;
-        }
-      });
-
-      // Crack pulse
-      cracksGroup.children.forEach(function (c, ci) {
-        if (ci % 2 === 0) {
-          // Main crack — pulse opacity slightly
-          var pulse = 0.8 + Math.sin(t * 2 + ci) * 0.2;
-          c.material.opacity = pulse;
-          c.material.transparent = true;
         }
       });
 
