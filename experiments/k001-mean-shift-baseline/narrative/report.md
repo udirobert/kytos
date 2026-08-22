@@ -1,8 +1,8 @@
-<!-- kytos narrative · generated_by=fallback · 2026-08-22T22:43:05+00:00 UTC -->
+<!-- kytos narrative · generated_by=fallback · 2026-08-22T22:52:56+00:00 UTC -->
 
 # k001-mean-shift-baseline — run digest
 
-> Fallback digest rendered deterministically from `facts.json` (no LLM call). Generated 2026-08-22T22:43:05+00:00 UTC.
+> Fallback digest rendered deterministically from `facts.json` (no LLM call). Generated 2026-08-22T22:52:56+00:00 UTC.
 
 ## Headline
 Basal mean-shift baseline — ceiling headroom probe
