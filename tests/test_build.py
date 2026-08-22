@@ -18,11 +18,19 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     result = subprocess.run(
         [sys.executable, str(FRONTEND / "build.py"), "--out", str(dist)],
         cwd=ROOT,
-        check=True,
+        check=False,
         capture_output=True,
         text=True,
         env={**__import__("os").environ, "KYTOS_SITE_URL": "https://kytos.example"},
     )
+    if result.returncode != 0:
+        # Surface stderr so CI failures are debuggable instead of a bare
+        # CalledProcessError with captured-but-unprinted output.
+        raise AssertionError(
+            f"build.py exited {result.returncode}\n"
+            f"--- stdout ---\n{result.stdout}\n"
+            f"--- stderr ---\n{result.stderr}"
+        )
     assert "Built" in result.stdout
 
     home = dist / "index.html"
