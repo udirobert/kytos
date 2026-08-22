@@ -34,8 +34,12 @@ function initVessel3D() {
   var infoCount = params.infos || 0;
 
   // ── Constants ───────────────────────────────────────────────────────────
-  var VESSEL_SEGMENTS = 80;
-  var LIQUID_SEGMENTS = 56;
+  // Reduce geometry segments on mobile/low-DPI for better performance.
+  // Mobile devices have smaller screens so lower poly count is imperceptible.
+  var isMobile = window.matchMedia("(max-width: 768px)").matches;
+  var lowPerf = isMobile || (window.devicePixelRatio || 1) < 1.5;
+  var VESSEL_SEGMENTS = lowPerf ? 48 : 80;
+  var LIQUID_SEGMENTS = lowPerf ? 32 : 56;
   var VESSEL_H = 5.0;
   var VESSEL_BOTTOM = -VESSEL_H / 2;
   var LIQUID_SCALE = 0.93;
@@ -86,7 +90,7 @@ function initVessel3D() {
   var w = container.clientWidth || 400;
   var h = container.clientHeight || 400;
 
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPerf ? 1.5 : 2));
   renderer.setSize(w, h);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
@@ -295,7 +299,7 @@ function initVessel3D() {
   vesselGroup.add(causticsLight.target);
 
   // ── Ambient particles (atmosphere) ────────────────────────────────────────
-  var particleCount = 120;
+  var particleCount = lowPerf ? 40 : 120;
   var particleGeo = new THREE.BufferGeometry();
   var particlePos = new Float32Array(particleCount * 3);
   var particleVel = new Float32Array(particleCount);
@@ -389,16 +393,21 @@ function initVessel3D() {
   window.addEventListener("scroll", onScroll, { passive: true });
 
   // ── Post-processing (bloom) ───────────────────────────────────────────────
+  // Bloom is the most expensive pass. Skip it on mobile/low-perf — the emissive
+  // materials still glow, just without the blooming halo.
   var composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
-  var bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(w, h),
-    0.5, // strength
-    0.45, // radius
-    0.78, // threshold — only bright things bloom
-  );
-  composer.addPass(bloomPass);
+  var bloomPass = null;
+  if (!lowPerf) {
+    bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(w, h),
+      0.5, // strength
+      0.45, // radius
+      0.78, // threshold — only bright things bloom
+    );
+    composer.addPass(bloomPass);
+  }
   composer.addPass(new OutputPass());
 
   // ── Resize ────────────────────────────────────────────────────────────────
@@ -409,7 +418,7 @@ function initVessel3D() {
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
     composer.setSize(w, h);
-    bloomPass.setSize(w, h);
+    if (bloomPass) bloomPass.setSize(w, h);
   }
   window.addEventListener("resize", resize);
   if (typeof ResizeObserver !== "undefined") {
@@ -420,8 +429,10 @@ function initVessel3D() {
   var clock = new THREE.Clock();
   var fillT = reducedMotion ? 1 : 0;
   var fillDuration = 1.8;
+  var running = true;
 
   function animate() {
+    if (!running) return;
     requestAnimationFrame(animate);
     var dt = Math.min(clock.getDelta(), 0.05);
     var t = clock.getElapsedTime();
@@ -520,6 +531,17 @@ function initVessel3D() {
     controls.update();
     composer.render();
   }
+
+  // ── Pause rendering when the tab is hidden (saves GPU/CPU) ───────────────
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      running = false;
+    } else if (!running) {
+      running = true;
+      clock.getDelta(); // reset delta so we don't jump after resuming
+      animate();
+    }
+  });
 
   animate();
 }

@@ -255,6 +255,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
             "Index of Kytos experiment runs with cell-eval metrics, audit flags, and provenance."
         ),
         canonical_path="/runs/",
+        needs_vessel=False,
     )
     return _head(meta, root_prefix=root_prefix) + f'<body class="page-runs">{body}</body></html>'
 
@@ -403,6 +404,7 @@ def render_run_detail(
         canonical_path=f"/runs/{run.run_id}/",
         og_type="article",
         og_image=og_image,
+        needs_plotly=True,
     )
 
     return _head(meta, root_prefix=root_prefix) + f"<body class='page-run'>{body}</body></html>"

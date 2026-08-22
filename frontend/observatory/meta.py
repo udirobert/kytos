@@ -16,7 +16,7 @@ SITE_DESCRIPTION = (
 SITE_AUTHOR = "Kytos"
 THEME_COLOR = "#070b12"
 TWITTER_HANDLE = ""  # optional @handle without @
-DEFAULT_OG_IMAGE = "static/og-image.png"
+DEFAULT_OG_IMAGE = "static/og-image.jpg"
 FAVICON_PATH = "static/favicon.svg"
 APPLE_TOUCH_ICON = "static/apple-touch-icon.png"
 MANIFEST_PATH = "static/site.webmanifest"
@@ -49,6 +49,13 @@ class PageMeta:
     og_type: str = "website"
     og_image: str | None = None
     robots: str = "index, follow"
+    # Only run detail pages have the Plotly metrics chart.
+    # When False, the Plotly script tag is omitted entirely (saves 1.3 MB).
+    needs_plotly: bool = False
+    # Home + run detail pages have the 3D vessel; runs index does not.
+    # When False, the Three.js import map and vessel3d.js module are omitted
+    # (saves ~270 KB of JS that would never execute).
+    needs_vessel: bool = True
 
 
 def _h(text: str) -> str:
@@ -56,7 +63,12 @@ def _h(text: str) -> str:
 
 
 def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
-    """HTML fragment for <head> — title, icons, description, OG, Twitter, canonical."""
+    """HTML fragment for <head> — title, icons, description, OG, Twitter, canonical.
+
+    Heavy scripts (Plotly 1.3 MB, Three.js 270 KB) are conditionally included
+    only on pages that need them. This is the single biggest performance lever:
+    the home page and runs index don't load Plotly at all.
+    """
     origin = site_url()
     canonical = _abs_url(meta.canonical_path, origin=origin)
     og_image_rel = meta.og_image or DEFAULT_OG_IMAGE
@@ -78,7 +90,7 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
         handle = TWITTER_HANDLE.lstrip("@")
         twitter_site = f'\n  <meta name="twitter:site" content="@{_h(handle)}">'
 
-    return f"""  <meta charset="utf-8">
+    head = f"""  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{_h(full_title)}</title>
   <meta name="description" content="{_h(meta.description)}">
@@ -102,10 +114,20 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
   <meta name="twitter:image" content="{_h(og_image)}">{twitter_site}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap"
         rel="stylesheet">
-  <link rel="stylesheet" href="{root_prefix}static/style.css">
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+  <link rel="stylesheet" href="{root_prefix}static/style.css">"""
+
+    # ── Conditional heavy scripts ──────────────────────────────────────────
+    # Plotly: 1.3 MB — only on run detail pages with the metrics chart.
+    if meta.needs_plotly:
+        head += '\n  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>'
+
+    # Three.js + vessel3d.js: ~270 KB — only on pages with the 3D vessel.
+    # Home + run detail have it; runs index does not.
+    if meta.needs_vessel:
+        head += f"""
   <script type="importmap">
   {{
     "imports": {{
@@ -115,6 +137,8 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
   }}
   </script>
   <script type="module" src="{root_prefix}static/vessel3d.js"></script>"""
+
+    return head
 
 
 def render_robots_txt() -> str:
