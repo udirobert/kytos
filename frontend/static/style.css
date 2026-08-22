@@ -449,6 +449,123 @@ html.no-webgl .vessel-loading {
   display: none;
 }
 
+/* ── Vessel callout — floating label on hover ─────────────────────────── */
+.vessel-callout {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -100%) scale(0.9);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  background: rgba(8, 20, 30, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  max-width: 280px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: #f0f7fa;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  white-space: normal;
+}
+
+.vessel-callout.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -100%) scale(1);
+}
+
+.vessel-callout strong {
+  display: block;
+  color: var(--accent, #2dd4bf);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  margin-bottom: 0.2rem;
+}
+
+.vessel-callout-sub {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.vessel-callout-msg {
+  display: block;
+  margin-top: 0.25rem;
+  color: rgba(240, 247, 250, 0.8);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.vessel-callout-action {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(45, 212, 191, 0.7);
+}
+
+/* ── Vessel onboarding tooltip — first-visit explainer ─────────────────── */
+.vessel-onboard {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  z-index: 11;
+  max-width: min(380px, 80vw);
+  background: rgba(8, 20, 30, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #f0f7fa;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.vessel-onboard.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.vessel-onboard p {
+  margin: 0 0 0.4rem;
+}
+
+.vessel-onboard strong {
+  color: var(--accent, #2dd4bf);
+}
+
+.vessel-onboard-hint {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--mono);
+}
+
+.vessel-onboard-close {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(45, 212, 191, 0.4);
+  background: rgba(45, 212, 191, 0.12);
+  color: var(--accent, #2dd4bf);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.vessel-onboard-close:hover {
+  background: rgba(45, 212, 191, 0.22);
+}
+
 /* Overlay: gradient scrim + centered content */
 .home-overlay {
   position: relative;
@@ -1470,7 +1587,27 @@ a.run-insight-card:hover {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   overflow: hidden;
+  position: relative;
 }
+
+/* Accent bar ties each panel to a part of the 3D vessel:
+   amber=cracks(audit), teal=organelles(evidence), violet=DNA(narrative),
+   cyan=nucleus(trust). A 3px colored stripe on the left edge. */
+.disclosure-panel[data-accent]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent-color, transparent);
+  z-index: 3;
+}
+
+.disclosure-panel[data-accent="amber"] { --accent-color: #fbbf24; }
+.disclosure-panel[data-accent="teal"] { --accent-color: #2dd4bf; }
+.disclosure-panel[data-accent="violet"] { --accent-color: #a78bfa; }
+.disclosure-panel[data-accent="cyan"] { --accent-color: #22d3ee; }
 
 .disclosure-summary {
   display: flex;

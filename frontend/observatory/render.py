@@ -31,6 +31,20 @@ METRIC_LABELS: dict[str, str] = {
 }
 
 
+# First-visit vessel onboarding tooltip — shared by home + run detail.
+_VESSEL_ONBOARD_HTML = """\
+        <div class="vessel-onboard" id="vessel-onboard" hidden>
+          <p>This is the κύτος vessel — <strong>liquid fill</strong> = how much room
+          our prediction has to improve, <strong>amber cracks</strong> = where our
+          audit caught us failing.</p>
+          <p class="vessel-onboard-hint">Drag to rotate · click the cracks to see
+          what went wrong</p>
+          <button class="vessel-onboard-close" type="button"
+                  aria-label="Dismiss">Got it</button>
+        </div>
+"""
+
+
 def _metric_label(key: str) -> str:
     if key in METRIC_LABELS:
         return METRIC_LABELS[key]
@@ -305,6 +319,8 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
                 {hero_img}
                 <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
                 <div class="vessel-svg-fallback">{svg}</div>
+                <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
+                {_VESSEL_ONBOARD_HTML}
                 <script type="application/json" id="vessel-data">{vessel_json}</script>
               </div>
               {vessel_legend}
@@ -802,6 +818,8 @@ def render_run_detail(
       <div class="vessel-fullscreen vessel-3d-container vessel-run" id="vessel-canvas">
         <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
         <div class="vessel-svg-fallback">{_vessel_svg(facts, clip_id="vessel-clip-run")}</div>
+        <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
+        {_VESSEL_ONBOARD_HTML}
         <script type="application/json" id="vessel-data">{json.dumps(vd)}</script>
       </div>
       <div class="run-hero-overlay">
@@ -829,6 +847,7 @@ def render_run_detail(
             audit_inner,
             open_default=True,
             section_id="audit",
+            accent="amber",
         )
     }
       {
@@ -838,6 +857,7 @@ def render_run_detail(
             evidence_body,
             open_default=False,
             section_id="evidence",
+            accent="teal",
         )
     }
       {
@@ -847,6 +867,7 @@ def render_run_detail(
             narrative_html,
             open_default=False,
             section_id="narrative",
+            accent="violet",
         )
     }
       {
@@ -856,6 +877,7 @@ def render_run_detail(
             trust_body,
             open_default=False,
             section_id="trust",
+            accent="cyan",
         )
     }
     </main>
@@ -916,16 +938,51 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
 
 
 def _vessel_data(facts: dict) -> dict:
-    """Extract the data that drives the 3D vessel from facts.json."""
+    """Extract the data that drives the 3D vessel from facts.json.
+
+    The vessel is an interactive instrument — organelles link to metrics,
+    cracks link to audit flags. We pass the structured data so the 3D scene
+    can wire up click handlers and hover callouts.
+    """
     ceiling = facts.get("ceiling_headroom") or {}
+    metrics = facts.get("headline_metrics") or {}
     values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
     fill = int(round(100 * sum(values) / len(values))) if values else 0
     fill = max(6, min(100, fill))
     flags = facts.get("audit_flags") or []
+    warn_flags = [f for f in flags if f.get("severity") in ("warn", "error")]
+    info_flags = [f for f in flags if f.get("severity") == "info"]
+
+    # Organelles map to headline metrics — each gets a label + target element
+    organelle_metrics = []
+    metric_items = list(metrics.items())[:6]  # max 6 organelles
+    for name, value in metric_items:
+        ceiling_val = ceiling.get(name)
+        organelle_metrics.append(
+            {
+                "label": f"{name}: {value:.2f}",
+                "ceiling": f"/ {ceiling_val:.2f}" if isinstance(ceiling_val, (int, float)) else "",
+                "target": "audit",  # scroll to the audit panel
+            }
+        )
+
+    # Cracks map to audit flags — each links to its flag in the audit panel
+    crack_flags = []
+    for fl in warn_flags[:6]:
+        crack_flags.append(
+            {
+                "rule": fl.get("rule", "audit"),
+                "message": fl.get("message", ""),
+                "target": "audit",
+            }
+        )
+
     return {
         "fill_pct": fill,
-        "warns": sum(1 for f in flags if f.get("severity") in ("warn", "error")),
-        "infos": sum(1 for f in flags if f.get("severity") == "info"),
+        "warns": len(warn_flags),
+        "infos": len(info_flags),
+        "metrics": organelle_metrics,
+        "cracks": crack_flags,
     }
 
 
@@ -1040,12 +1097,18 @@ def _disclosure_section(
     *,
     open_default: bool = False,
     section_id: str | None = None,
+    accent: str = "",
 ) -> str:
-    """Progressive disclosure panel — one section, collapsed by default unless asked."""
+    """Progressive disclosure panel — one section, collapsed by default unless asked.
+
+    The accent class ties each panel to a part of the 3D vessel:
+    audit=amber (cracks), evidence=teal (organelles), trust=cyan (nucleus).
+    """
     open_attr = " open" if open_default else ""
     id_attr = f' id="{_h(section_id)}"' if section_id else ""
+    accent_attr = f' data-accent="{_h(accent)}"' if accent else ""
     return f"""
-    <details class="disclosure-panel"{id_attr}{open_attr}>
+    <details class="disclosure-panel"{id_attr}{open_attr}{accent_attr}>
       <summary class="disclosure-summary">
         <span class="disclosure-title">{_h(title)}</span>
         <span class="disclosure-hint">{hint}</span>

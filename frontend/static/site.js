@@ -497,6 +497,69 @@
     });
   }
 
+  // ── Vessel onboarding tooltip — shown once, dismissed by the user ─────────
+  // Appears after the 3D scene loads, explains what the vessel means.
+  function initVesselOnboard() {
+    var onboard = document.getElementById("vessel-onboard");
+    if (!onboard) return;
+    var key = "kytos-vessel-onboard-dismissed";
+    try {
+      if (sessionStorage.getItem(key)) return;
+    } catch (e) {
+      // sessionStorage may be blocked — show the tooltip anyway
+    }
+
+    function show() {
+      onboard.hidden = false;
+      requestAnimationFrame(function () {
+        onboard.classList.add("is-visible");
+      });
+    }
+
+    // Wait for 3D to load, then show after a brief delay
+    var container = document.getElementById("vessel-canvas");
+    if (container && container.classList.contains("is-3d")) {
+      setTimeout(show, 1200);
+    } else if (container) {
+      // Watch for the is-3d class
+      var observer = new MutationObserver(function () {
+        if (container.classList.contains("is-3d")) {
+          observer.disconnect();
+          setTimeout(show, 1200);
+        }
+      });
+      observer.observe(container, { attributes: true, attributeFilter: ["class"] });
+      // Fallback: show after 5s even if 3D hasn't loaded (SVG mode)
+      setTimeout(function () {
+        if (!onboard.hidden) return;
+        show();
+      }, 5000);
+    }
+
+    function dismiss() {
+      onboard.classList.remove("is-visible");
+      try {
+        sessionStorage.setItem(key, "1");
+      } catch (e) {}
+      setTimeout(function () {
+        onboard.hidden = true;
+      }, 400);
+    }
+
+    var closeBtn = onboard.querySelector(".vessel-onboard-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", dismiss);
+    }
+    // Also dismiss on scroll
+    var dismissed = false;
+    window.addEventListener("scroll", function () {
+      if (!dismissed && !onboard.hidden) {
+        dismissed = true;
+        dismiss();
+      }
+    }, { passive: true, once: true });
+  }
+
   function onReady() {
     initPlotly();
     initVccRail();
@@ -509,6 +572,7 @@
     initGeneEvidenceLinks();
     initHashDisclosure();
     initNoWebGLDetect();
+    initVesselOnboard();
   }
 
   if (document.readyState === "loading") {

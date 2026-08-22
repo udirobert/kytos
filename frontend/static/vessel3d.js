@@ -270,7 +270,9 @@ function initVessel3D() {
   var nucleusLight = new THREE.PointLight(0x22d3ee, 0.5 + cellHealth * 0.8, 5);
   cellGroup.add(nucleusLight);
 
-  // Organelles — 6 color-coded, orbiting the nucleus. Each represents a metric.
+  // Organelles — color-coded, orbiting the nucleus. Each represents a metric.
+  // Clickable: clicking an organelle scrolls to the audit panel.
+  var metricData = params.metrics || [];
   var organelleColors = [
     0x2dd4bf, // teal — primary
     0x22d3ee, // cyan
@@ -282,22 +284,29 @@ function initVessel3D() {
   var organellesGroup = new THREE.Group();
   cellGroup.add(organellesGroup);
   var organelles = [];
-  for (var oi = 0; oi < 6; oi++) {
-    var orgGeo = new THREE.SphereGeometry(0.08 + Math.random() * 0.04, 12, 12);
+  var organelleCount = Math.max(2, Math.min(6, metricData.length || 2));
+  for (var oi = 0; oi < organelleCount; oi++) {
+    var orgGeo = new THREE.SphereGeometry(0.09, 14, 14);
     var orgMat = new THREE.MeshBasicMaterial({
-      color: organelleColors[oi],
+      color: organelleColors[oi % organelleColors.length],
       transparent: true,
       opacity: 0,
     });
     var organelle = new THREE.Mesh(orgGeo, orgMat);
-    var orgAngle = (oi / 6) * Math.PI * 2;
+    var orgAngle = (oi / organelleCount) * Math.PI * 2;
     var orgTilt = (oi % 2 === 0 ? 1 : -1) * 0.3;
+    var md = metricData[oi] || {};
     organelle.userData = {
       angle: orgAngle,
       tilt: orgTilt,
       radius: 0.55 + Math.random() * 0.15,
       speed: 0.3 + Math.random() * 0.2,
       phase: Math.random() * Math.PI * 2,
+      interactive: true,
+      type: "organelle",
+      label: md.label || ("metric " + (oi + 1)),
+      ceiling: md.ceiling || "",
+      target: md.target || "audit",
     };
     organelle.position.set(
       Math.cos(orgAngle) * organelle.userData.radius,
@@ -308,9 +317,9 @@ function initVessel3D() {
     organellesGroup.add(organelle);
 
     // Glow halo for each organelle
-    var orgGlowGeo = new THREE.SphereGeometry(0.14, 8, 8);
+    var orgGlowGeo = new THREE.SphereGeometry(0.15, 8, 8);
     var orgGlowMat = new THREE.MeshBasicMaterial({
-      color: organelleColors[oi],
+      color: organelleColors[oi % organelleColors.length],
       transparent: true,
       opacity: 0,
       blending: THREE.AdditiveBlending,
@@ -352,10 +361,13 @@ function initVessel3D() {
     vesselGroup.add(bubble);
   }
 
-  // ── Cracks (warn/error audit flags) — emissive glow ──────────────────────
+  // ── Cracks (warn/error audit flags) — emissive glow, clickable ──────────────
+  var crackData = params.cracks || [];
   var cracksGroup = new THREE.Group();
-  for (var ci = 0; ci < Math.min(warnCount, 6); ci++) {
-    var baseAngle = (ci / Math.min(warnCount, 6)) * Math.PI * 2 + 0.3;
+  var crackMeshes = [];
+  var numCracks = Math.min(warnCount, 6);
+  for (var ci = 0; ci < numCracks; ci++) {
+    var baseAngle = (ci / numCracks) * Math.PI * 2 + 0.3;
     var baseY = -0.8 + (ci % 3) * 0.6;
     var crackPts = [];
     for (var cj = 0; cj <= 8; cj++) {
@@ -369,22 +381,36 @@ function initVessel3D() {
       );
     }
     var curve = new THREE.CatmullRomCurve3(crackPts);
-    var tubeGeo = new THREE.TubeGeometry(curve, 24, 0.028, 8, false);
+    // Make cracks slightly thicker so they're easier to click
+    var tubeGeo = new THREE.TubeGeometry(curve, 24, 0.04, 8, false);
     var tubeMat = new THREE.MeshBasicMaterial({
       color: 0xfbbf24,
+      transparent: true,
+      opacity: 0,
     });
     var crackMesh = new THREE.Mesh(tubeGeo, tubeMat);
-    crackMesh.userData = { baseY: baseY };
+    var cd = crackData[ci] || {};
+    crackMesh.userData = {
+      baseY: baseY,
+      interactive: true,
+      type: "crack",
+      label: cd.rule || "audit warning",
+      message: cd.message || "",
+      target: cd.target || "audit",
+    };
+    crackMeshes.push(crackMesh);
     cracksGroup.add(crackMesh);
 
     // Glow halo for each crack
-    var glowGeo = new THREE.TubeGeometry(curve, 24, 0.06, 8, false);
+    var glowGeo = new THREE.TubeGeometry(curve, 24, 0.07, 8, false);
     var glowMat = new THREE.MeshBasicMaterial({
       color: 0xfbbf24,
       transparent: true,
       opacity: 0.15,
     });
-    cracksGroup.add(new THREE.Mesh(glowGeo, glowMat));
+    var glowMesh = new THREE.Mesh(glowGeo, glowMat);
+    glowMesh.userData = { parent: crackMesh };
+    cracksGroup.add(glowMesh);
   }
   vesselGroup.add(cracksGroup);
 
@@ -605,16 +631,115 @@ function initVessel3D() {
   }
   container.addEventListener("pointermove", onPointerMove);
 
-  // ── Scroll-driven camera (home page only) ────────────────────────────────
+  // ── Scroll-driven camera (home + run detail) ──────────────────────────────
   var scrollProgress = 0;
   function onScroll() {
-    if (!isHome) return;
     var rect = container.getBoundingClientRect();
     var viewportH = window.innerHeight;
     // 0 at top of page, 1 when container is fully scrolled past
     scrollProgress = Math.min(1, Math.max(0, -rect.top / viewportH));
   }
   window.addEventListener("scroll", onScroll, { passive: true });
+
+  // ── Raycasting: clickable organelles + cracks ──────────────────────────────
+  // The vessel is an instrument, not decoration. Organelles link to metrics,
+  // cracks link to audit flags. Hover shows a floating callout; click navigates.
+  var raycaster = new THREE.Raycaster();
+  var pointer = new THREE.Vector2();
+  var calloutEl = document.getElementById("vessel-callout");
+  var hoveredObj = null;
+  var interactables = [];
+  // Build the interactable list once entrance is well underway (objects visible)
+  var interactablesReady = false;
+  function buildInteractables() {
+    interactables = [];
+    organelles.forEach(function (o) { interactables.push(o); });
+    crackMeshes.forEach(function (c) { interactables.push(c); });
+    interactablesReady = true;
+  }
+
+  function worldToScreen(obj) {
+    var v = new THREE.Vector3();
+    obj.getWorldPosition(v);
+    v.project(camera);
+    var rect = container.getBoundingClientRect();
+    return {
+      x: (v.x * 0.5 + 0.5) * rect.width,
+      y: (-v.y * 0.5 + 0.5) * rect.height,
+    };
+  }
+
+  function showCallout(obj, x, y) {
+    if (!calloutEl || !obj.userData.label) return;
+    var html = "<strong>" + obj.userData.label + "</strong>";
+    if (obj.userData.ceiling) {
+      html += " <span class='vessel-callout-sub'>" + obj.userData.ceiling + "</span>";
+    }
+    if (obj.userData.message) {
+      html += "<span class='vessel-callout-msg'>" + obj.userData.message + "</span>";
+    }
+    html += "<span class='vessel-callout-action'>click to view →</span>";
+    calloutEl.innerHTML = html;
+    calloutEl.style.left = x + "px";
+    calloutEl.style.top = y + "px";
+    calloutEl.classList.add("is-visible");
+    calloutEl.setAttribute("aria-hidden", "false");
+  }
+
+  function hideCallout() {
+    if (!calloutEl) return;
+    calloutEl.classList.remove("is-visible");
+    calloutEl.setAttribute("aria-hidden", "true");
+  }
+
+  function navigateToTarget(target) {
+    if (!target) return;
+    var el = document.getElementById(target);
+    if (el && el.tagName === "DETAILS") {
+      el.open = true;
+    }
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (target === "audit") {
+      // Fall back to the main content
+      var main = document.querySelector(".run-evidence");
+      if (main) main.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
+  function onPointerMoveRay(e) {
+    if (!interactablesReady) return;
+    var rect = container.getBoundingClientRect();
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    var hits = raycaster.intersectObjects(interactables, false);
+    if (hits.length > 0) {
+      var hit = hits[0].object;
+      if (hoveredObj !== hit) {
+        hoveredObj = hit;
+        container.style.cursor = "pointer";
+      }
+      var screen = worldToScreen(hit);
+      // Offset callout above the object
+      showCallout(hit, screen.x, screen.y - 20);
+    } else {
+      if (hoveredObj) {
+        hoveredObj = null;
+        container.style.cursor = "";
+        hideCallout();
+      }
+    }
+  }
+
+  function onClickRay(e) {
+    if (!interactablesReady || !hoveredObj) return;
+    navigateToTarget(hoveredObj.userData.target);
+    hideCallout();
+  }
+
+  container.addEventListener("pointermove", onPointerMoveRay);
+  container.addEventListener("click", onClickRay);
 
   // ── Post-processing (bloom) ───────────────────────────────────────────────
   // Bloom is the most expensive pass. Skip it on mobile/low-perf — the emissive
@@ -693,7 +818,10 @@ function initVessel3D() {
     // Entrance timeline advances in real time
     if (!entranceDone) {
       entranceT += dt;
-      if (entranceT > 3.5) entranceDone = true;
+      if (entranceT > 3.5) {
+        entranceDone = true;
+        buildInteractables();
+      }
     }
 
     // Glass fade-in
@@ -734,13 +862,21 @@ function initVessel3D() {
       nucleusLight.intensity = (0.5 + cellHealth * 0.8) * nucleusA * (0.8 + Math.sin(t * 1.8) * 0.2);
     }
 
-    // Organelles fade-in + orbit
+    // Organelles fade-in + orbit + hover scale
     var orgA = fadeFactor("organelles");
-    organelles.forEach(function (org) { org.material.opacity = orgA; });
+    organelles.forEach(function (org) {
+      org.material.opacity = orgA;
+      // Hover scale — smooth grow on hover
+      var targetScale = (hoveredObj === org) ? 1.5 : 1.0;
+      if (!org.userData.curScale) org.userData.curScale = 1.0;
+      org.userData.curScale += (targetScale - org.userData.curScale) * 0.15;
+      org.scale.setScalar(org.userData.curScale);
+    });
     organellesGroup.children.forEach(function (og) {
       if (og.userData.parent) {
-        // Glow halo follows its organelle
-        og.material.opacity = 0.25 * orgA;
+        // Glow halo follows its organelle, brighter on hover
+        var hoverBoost = (hoveredObj === og.userData.parent) ? 0.4 : 0.25;
+        og.material.opacity = hoverBoost * orgA;
       }
     });
     if (!reducedMotion) {
@@ -763,14 +899,22 @@ function initVessel3D() {
       cellGroup.position.y = fillLevel + 0.3 + Math.sin(t * 0.6) * 0.05;
     }
 
-    // Crack opacity — fade in after bubbles
+    // Crack opacity — fade in after bubbles, pulse brighter on hover
     var crackA = fadeFactor("cracks");
     cracksGroup.children.forEach(function (c, ci) {
-      if (ci % 2 === 0) {
+      var isParent = ci % 2 === 0;
+      var parentMesh = isParent ? c : c.userData.parent;
+      var isHovered = parentMesh && hoveredObj === parentMesh;
+      if (isParent) {
         c.material.opacity = (0.8 + Math.sin(t * 2 + ci) * 0.2) * crackA;
         c.material.transparent = true;
+        // Hover scale on crack tubes
+        var targetScale = isHovered ? 1.4 : 1.0;
+        if (!c.userData.curScale) c.userData.curScale = 1.0;
+        c.userData.curScale += (targetScale - c.userData.curScale) * 0.15;
+        c.scale.setScalar(c.userData.curScale);
       } else {
-        c.material.opacity = 0.15 * crackA;
+        c.material.opacity = (isHovered ? 0.45 : 0.15) * crackA;
       }
     });
 
@@ -864,9 +1008,8 @@ function initVessel3D() {
     mouseX += (targetMouseX - mouseX) * 0.04;
     mouseY += (targetMouseY - mouseY) * 0.04;
 
-    // Scroll-driven camera (home page)
-    if (isHome) {
-      // Pull camera back and slightly up as user scrolls
+    // Scroll-driven camera (home + run detail) — pull back as user scrolls past
+    if (isHome || container.classList.contains("vessel-run")) {
       var scrollZ = 13 + scrollProgress * 5;
       var scrollY = 1.0 - scrollProgress * 1.5;
       camera.position.z += (scrollZ - camera.position.z) * 0.05;

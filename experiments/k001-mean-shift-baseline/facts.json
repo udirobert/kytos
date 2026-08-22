@@ -46,7 +46,6 @@
   "visual": {
     "hero": "visual/hero.png",
     "share_card": "visual/share-card.png",
-    "bulletin": "visual/bulletin.mp4",
     "briefing": "visual/briefing.mp4"
   }
 }
