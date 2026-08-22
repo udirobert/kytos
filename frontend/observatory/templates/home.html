@@ -26,28 +26,39 @@
           We publish every prediction — and
           <em>every time biology says we&rsquo;re wrong.</em>
         </h1>
-        <div class="home-prelude">
-          <p class="home-prelude-lead">
-            Imagine a student takes a test and gets every question
-            &ldquo;correctly formatted&rdquo; — right structure, no blank answers,
-            nothing flagged by the grading software.
-          </p>
-          <p class="home-prelude-punch">
-            Imagine the answers are all wrong.
-          </p>
-          <p class="home-prelude-bridge">
-            That&rsquo;s what most AI model evals miss: they check if the output
-            looks right, not if it <em>is</em> right. It&rsquo;s like spell-check
-            passing a grammatically perfect essay that says nothing true.
-          </p>
-          <p class="home-prelude-stakes">
-            We&rsquo;re building tools that predict how cells react to drugs —
-            before you test them in a real lab. So &ldquo;looks right but is
-            wrong&rdquo; isn&rsquo;t a typo, it&rsquo;s a drug that doesn&rsquo;t
-            work, discovered a year too late.
-          </p>
-        </div>
         <p class="home-subline">
+          The Virtual Cell Challenge: predict how any cell responds to any
+          perturbation — testing drugs in a computer instead of a lab.
+        </p>
+        <p class="home-subline">
+          The Virtual Cell Challenge: predict how any cell responds to any
+          perturbation — testing drugs in a computer instead of a lab.
+        </p>
+        <div class="home-catch-carousel" id="home-catch-carousel"
+             role="region" aria-label="Why this matters" aria-live="polite">
+          <div class="home-catch-track">
+            <p class="home-catch-slide is-active" data-slide="0">
+              Models that score well can still be biologically wrong.
+            </p>
+            <p class="home-catch-slide" data-slide="1" aria-hidden="true">
+              Most evals check if the output looks right &mdash; not if it
+              <em>is</em> right.
+            </p>
+            <p class="home-catch-slide" data-slide="2" aria-hidden="true">
+              In drug prediction, &ldquo;looks right but is wrong&rdquo; is a
+              drug that doesn&rsquo;t work, discovered a year too late.
+            </p>
+          </div>
+          <div class="home-catch-dots" role="tablist" aria-label="Carousel navigation">
+            <button class="home-catch-dot is-active" role="tab"
+                    aria-selected="true" aria-label="Slide 1"></button>
+            <button class="home-catch-dot" role="tab"
+                    aria-selected="false" aria-label="Slide 2"></button>
+            <button class="home-catch-dot" role="tab"
+                    aria-selected="false" aria-label="Slide 3"></button>
+          </div>
+        </div>
+        <p class="home-subline home-subline-run">
           Run #{{ run_index }} of {{ vcc_days }} · Virtual Cell Challenge 2026
         </p>
         {{ proof | safe }}

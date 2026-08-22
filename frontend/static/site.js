@@ -906,6 +906,83 @@
     } catch (e) {}
   }
 
+  // ── Home catch carousel ──────────────────────────────────────────────────
+  // Auto-rotating 3-slide argument on the hero. Pauses on hover, click dots
+  // to jump. Falls back to static first slide under reduced-motion.
+  function initHomeCatchCarousel() {
+    var carousel = document.getElementById("home-catch-carousel");
+    if (!carousel) return;
+
+    var slides = carousel.querySelectorAll(".home-catch-slide");
+    var dots = carousel.querySelectorAll(".home-catch-dot");
+    if (slides.length <= 1) return;
+
+    if (prefersReducedMotion()) return; // CSS shows only active slide
+
+    var current = 0;
+    var timer = null;
+    var interval = 4500;
+
+    function show(idx) {
+      slides.forEach(function (s, i) {
+        if (i === idx) {
+          s.classList.add("is-active");
+          s.setAttribute("aria-hidden", "false");
+        } else {
+          s.classList.remove("is-active");
+          s.setAttribute("aria-hidden", "true");
+        }
+      });
+      dots.forEach(function (d, i) {
+        if (i === idx) {
+          d.classList.add("is-active");
+          d.setAttribute("aria-selected", "true");
+        } else {
+          d.classList.remove("is-active");
+          d.setAttribute("aria-selected", "false");
+        }
+      });
+      current = idx;
+    }
+
+    function next() {
+      show((current + 1) % slides.length);
+    }
+
+    function start() {
+      stop();
+      timer = setInterval(next, interval);
+    }
+
+    function stop() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    dots.forEach(function (dot, idx) {
+      dot.addEventListener("click", function () {
+        show(idx);
+        start(); // restart timer from the clicked slide
+      });
+    });
+
+    carousel.addEventListener("mouseenter", stop);
+    carousel.addEventListener("mouseleave", start);
+
+    // Pause when tab is hidden
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        stop();
+      } else {
+        start();
+      }
+    });
+
+    start();
+  }
+
   function onReady() {
     initPlotly();
     initVccRail();
@@ -924,6 +1001,7 @@
     initVesselOnboard();
     initSvgVesselInteractivity();
     initViewModeToggle();
+    initHomeCatchCarousel();
   }
 
   if (document.readyState === "loading") {
