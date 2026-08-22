@@ -672,6 +672,38 @@ def _runs_insight_cards(runs: list[RunSummary], *, root_prefix: str = "../") -> 
     return "".join(cards[: max(0, 4 - n)])
 
 
+def _analogy_about_html() -> str:
+    """The full student-test analogy — why 'looks right but is wrong' matters."""
+    return """
+    <section class="panel analogy-panel" id="why">
+      <p class="timeline-eyebrow">Why this matters</p>
+      <h2>Looks right. Is wrong.</h2>
+      <div class="analogy-body prose">
+        <p>
+          Imagine a student takes a test and gets every question
+          &ldquo;correctly formatted&rdquo; — right structure, no blank answers,
+          nothing flagged by the grading software.
+        </p>
+        <p class="analogy-punch">
+          Imagine the answers are all wrong.
+        </p>
+        <p>
+          That&rsquo;s what most AI model evals miss: they check if the output
+          <em>looks</em> right, not if it <em>is</em> right. It&rsquo;s like
+          spell-check passing a grammatically perfect essay that says nothing
+          true.
+        </p>
+        <p>
+          We&rsquo;re building tools that predict how cells react to drugs —
+          before you test them in a real lab. So &ldquo;looks right but is
+          wrong&rdquo; isn&rsquo;t a typo, it&rsquo;s a drug that doesn&rsquo;t
+          work, discovered a year too late.
+        </p>
+      </div>
+    </section>
+    """
+
+
 def _substantiation_about_html(runs: list[RunSummary]) -> str:
     """Evidence-backed 'Why the Observatory' — stats without wall-of-citations."""
     k001_line = ""
@@ -763,6 +795,7 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         "body_class": "page-about",
         "root_prefix": root_prefix,
         "nav": _nav("about", runs, root_prefix=root_prefix),
+        "analogy_html": _analogy_about_html(),
         "timeline_html": _timeline_html(),
         "vessel_about_panel": _vessel_about_panel(runs),
         "substantiation_about_html": _substantiation_about_html(runs),

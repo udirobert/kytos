@@ -1199,6 +1199,31 @@ html.no-webgl .vessel-loading {
   color: var(--ink);
 }
 
+/* ── Analogy panel (About page opener) ────────────────────────────────── */
+.analogy-panel {
+  text-align: left;
+}
+
+.analogy-panel h2 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  margin: 0.3rem 0 1rem;
+}
+
+.analogy-body p {
+  margin: 0 0 0.8rem;
+  line-height: 1.7;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.analogy-body .analogy-punch {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0.4rem 0 1rem;
+}
+
 /* ════════════════════════════════════════════════════════════════════════
    RUNS INDEX
    ════════════════════════════════════════════════════════════════════════ */
