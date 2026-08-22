@@ -76,22 +76,41 @@ def _head(meta: PageMeta, *, root_prefix: str) -> str:
 
 def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     latest = runs[-1] if runs else None
-    hero = ""
     if latest:
         run_href = f"{root_prefix}runs/{_h(latest.run_id)}/index.html"
         metrics = latest.facts.get("headline_metrics") or {}
         metric_bits = ", ".join(f"{k} {v}" for k, v in metrics.items())
-        hero = f"""
-        <section class="hero-card">
-          <p class="eyebrow">Latest run</p>
-          <h1>{_h(latest.facts.get("headline", latest.run_id))}</h1>
-          <p class="lede">Headline metrics: {_h(metric_bits)}. Biological audit flags and ceiling
-          headroom published for public scrutiny — not just leaderboard scores.</p>
-          <a class="button" href="{run_href}">Open run detail →</a>
+        headline = _h(latest.facts.get("headline", latest.run_id))
+        # Home vessel uses a fresh clip-id to avoid colliding with the run page.
+        vessel_svg = _vessel_svg(latest.facts, svg_class="home-vessel", clip_id="vessel-clip-home")
+        stage = f"""
+        <section class="home-stage">
+          {vessel_svg}
+          <h1 class="home-headline">
+            Predict how an unseen cell responds —<br>
+            and <em>show when the model is biologically wrong.</em>
+          </h1>
+          <p class="home-lede">
+            Latest run {_h(latest.run_id)}: {headline}. Headline metrics {_h(metric_bits)}.
+            Audit flags, literature, and provenance published for public scrutiny —
+            not just leaderboard scores.
+          </p>
+          <div class="home-cta-row">
+            <a class="button" href="{run_href}">Open run detail →</a>
+            <a class="home-chip" href="{root_prefix}runs/index.html">
+              Browse all <strong>{len(runs)}</strong> runs
+            </a>
+          </div>
         </section>
         """
     else:
-        hero = '<section class="hero-card"><h1>Waiting for first run</h1></section>'
+        stage = """
+        <section class="home-stage">
+          <h1 class="home-headline">Waiting for the first run</h1>
+          <p class="home-lede">The Observatory lights up when the first experiment
+          lands.</p>
+        </section>
+        """
 
     timeline = """
     <section class="panel timeline-panel">
@@ -126,7 +145,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     </section>
     """
 
-    body = _nav("home", runs, root_prefix=root_prefix) + hero + timeline + problem
+    body = _nav("home", runs, root_prefix=root_prefix) + stage + timeline + problem
     meta = PageMeta(
         title="Home",
         description=SITE_DESCRIPTION,
@@ -316,12 +335,11 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
     return _vessel_instrument(facts)
 
 
-def _vessel_instrument(facts: dict) -> str:
-    """The hollow vessel fills with evidence — a data-bound instrument.
+def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "vessel-clip") -> str:
+    """The κύτος vessel as an SVG — a data-bound instrument, zero JS.
 
-    Rendered deterministically from facts.json at build time (zero JS, zero
-    API): liquid fill = mean ceiling headroom, amber cracks = warn/error audit
-    flags, cyan droplets = info flags. The vessel's shape IS the run's state.
+    Liquid fill = mean ceiling headroom, amber cracks = warn/error audit flags,
+    cyan droplets = info flags. The vessel's shape IS the run's state.
     """
     ceiling = facts.get("ceiling_headroom") or {}
     values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
@@ -331,8 +349,6 @@ def _vessel_instrument(facts: dict) -> str:
     flags = facts.get("audit_flags") or []
     warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
     infos = sum(1 for f in flags if f.get("severity") == "info")
-    warn_plural = "warning" if warns == 1 else "warnings"
-    info_plural = "flag" if infos == 1 else "flags"
 
     fill_y = 236 - int(fill / 100 * 190)  # liquid surface y (bottom = 236)
     cracks = "".join(
@@ -343,25 +359,45 @@ def _vessel_instrument(facts: dict) -> str:
         f'<circle class="vessel-info" cx="{55 + i * 22}" cy="{46 + (i % 2) * 28}" r="3"/>'
         for i in range(min(infos, 5))
     )
+    glass_path = (
+        "M 80 12 L 120 12 L 120 58 Q 120 92 156 132 Q 188 168 172 208"
+        " Q 158 240 100 240 Q 42 240 28 208 Q 12 168 44 132 Q 80 92 80 58 Z"
+    )
 
     return f"""
-    <div class="stage-hero vessel-instrument">
-      <svg class="vessel-svg" viewBox="0 0 200 250" role="img"
+      <svg class="{svg_class}" viewBox="0 0 200 250" role="img"
            aria-label="Kytos vessel instrument: fill {fill} percent, {warns} audit warnings">
         <defs>
-          <clipPath id="vessel-clip">
-            <path d="M 80 12 L 120 12 L 120 58 Q 120 92 156 132 Q 188 168 172 208
-                    Q 158 240 100 240 Q 42 240 28 208 Q 12 168 44 132 Q 80 92 80 58 Z"/>
+          <clipPath id="{clip_id}">
+            <path d="{glass_path}"/>
           </clipPath>
         </defs>
-        <path class="vessel-glass" d="M 80 12 L 120 12 L 120 58 Q 120 92 156 132
-              Q 188 168 172 208 Q 158 240 100 240 Q 42 240 28 208 Q 12 168 44 132 Q 80 92 80 58 Z"/>
+        <path class="vessel-glass" d="{glass_path}"/>
         <rect class="vessel-liquid" x="10" y="{fill_y}" width="180" height="250"
-              clip-path="url(#vessel-clip)"/>
+              clip-path="url(#{clip_id})"/>
         <line class="vessel-liquid-line" x1="30" y1="{fill_y}" x2="170" y2="{fill_y}"/>
         <g class="vessel-cracks">{cracks}</g>
         <g class="vessel-droplets">{droplets}</g>
-      </svg>
+      </svg>"""
+
+
+def _vessel_instrument(facts: dict) -> str:
+    """The hollow vessel fills with evidence — the run-detail stage centerpiece."""
+    ceiling = facts.get("ceiling_headroom") or {}
+    values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
+    fill = int(round(100 * sum(values) / len(values))) if values else 0
+    fill = max(6, min(100, fill))
+
+    flags = facts.get("audit_flags") or []
+    warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
+    infos = sum(1 for f in flags if f.get("severity") == "info")
+    warn_plural = "warning" if warns == 1 else "warnings"
+    info_plural = "flag" if infos == 1 else "flags"
+
+    svg = _vessel_svg(facts)
+    return f"""
+    <div class="stage-hero vessel-instrument">
+      {svg}
       <p class="vessel-label">κύτος · the hollow vessel fills with evidence</p>
       <p class="vessel-legend">
         <span class="legend-item legend-fill">fill = {fill}% ceiling headroom</span>
