@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-08-22T14:04:17+00:00",
+  "results": [
+    {
+      "title": "Arc Institute Launches Virtual Cell Challenge to Accelerate AI Model Development",
+      "url": "https://www.genengnews.com/topics/artificial-intelligence/arc-institute-launches-virtual-cell-challenge-to-accelerate-ai-model-development",
+      "snippet": "STATE is a transformer-based model for predicting perturbation effects across sets of cells. [Arc Institute]\n\n#### Data-bound progress\n\nVirtual Cell Challenge competitors are invited to train models on gene expression from public databases, including over half a billion cells included in the Arc Virtual Cell Atlas, which is composed of large single-cell datasets, scBaseCount, and Tahoe-100M. [...]",
+      "score": 0.82728493
+    },
+    {
+      "title": "NeurIPS Competition Single-cell perturbation prediction: generalizing experimental interventions to unseen contexts",
+      "url": "https://neurips.cc/virtual/2023/competition/66586",
+      "snippet": "Single-cell sequencing technologies have revolutionized our understanding of the heterogeneity and dynamics of cells and tissues. However, single-cell data analysis faces challenges such as high dimensionality, sparsity, noise, and limited ground truth. In this 3rd installment in the Open Problems in Single-Cell Analysis competitions at NeurIPS, we challenge competitors to develop algorithms capab",
+      "score": 0.8058924
+    },
+    {
+      "title": "The 2026 Virtual Cell Challenge: predicting perturbation responses in cell contexts a model has never seen | Arc Institute",
+      "url": "https://arcinstitute.org/news/virtual-cell-challenge-2026",
+      "snippet": "Stack \u2014 A single-cell foundation model that uses in-context learning to predict cellular responses to perturbations never directly measured.\n\nscBaseCount \u2014 AI agents that find, clean, and uniformly process single-cell data for model training, part of Arc's Virtual Cell Atlas.\n\nProto \u2014 A framework that integrates disparate AI tools for protein, RNA, and gene-regulation design into a single pipeline",
+      "score": 0.78866494
+    },
+    {
+      "title": "Awesome Foundation Models for Single-Cell",
+      "url": "https://github.com/OmicsML/awesome-foundation-model-single-cell-papers",
+      "snippet": "1. [2026 ICLR] scDFM: Distributional Flow Matching for Robust Single-Cell Perturbation Prediction (\n2. [2026 arXiv] PRiMeFlow: Capturing Complex Expression Heterogeneity in Perturbation Response Modelling (\n3. [2026 bioRxiv] AetherCell: A generative engine for virtual cell perturbation and in vivo drug discovery (\n4. [2026 bioRxiv] MAP: A Knowledge-driven Framework for Predicting Single-cell Respo",
+      "score": 0.8978479
+    },
+    {
+      "title": "Benchmarking foundation cell models for post-perturbation RNA-seq prediction",
+      "url": "https://link.springer.com/article/10.1186/s12864-025-11600-2",
+      "snippet": "Our results highlight important limitations in current benchmarking approaches and provide insights into more effectively evaluating post-perturbation gene expression prediction models.\n\nView this article's peer review reports\n\n### Similar content being viewed by others\n\nImage 3\n\n### Evaluating the learnability of single-cell large language models on multiple tasks\n\nArticle Open access 05 June 202",
+      "score": 0.7323053
+    },
+    {
+      "title": "Single-Cell Foundation Models \u2013 The Life Sciences AI Handbook",
+      "url": "https://lifesciencesaihandbook.com/cells/single-cell-models.html",
+      "snippet": "Single-cell biology produced its foundation-model wave between 2022 and 2024. scGPT, Geneformer, scFoundation, scBERT, UCE (Rosen et al., 2026), and tGPT each trained on tens of millions of single cells with the explicit goal of producing general-purpose cell representations that transfer to many downstream tasks. Nicheformer extends the frame by pretraining on both dissociated single-cell and tar",
+      "score": 0.7253574
+    }
+  ]
+}

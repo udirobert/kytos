@@ -84,12 +84,17 @@ def openai_chat_client():
 
 
 def openai_tts_client():
-    """OpenAI client for TTS — requires api.openai.com (not chat-only gateways)."""
+    """OpenAI client for TTS — pinned to api.openai.com (not chat-only gateways).
+
+    The OpenAI SDK auto-reads OPENAI_BASE_URL from the environment, so a chat
+    gateway in .env silently hijacks the audio endpoint (404). Pin the direct
+    path explicitly so TTS always reaches the real API.
+    """
     import openai  # lazy
 
     direct = env_key("OPENAI_TTS_API_KEY", "OPENAI_DIRECT_API_KEY")
     if direct:
-        return openai.OpenAI(api_key=direct)
+        return openai.OpenAI(api_key=direct, base_url="https://api.openai.com/v1")
     base = env_key("OPENAI_BASE_URL", "OPENAI_API_BASE") or ""
     if base and "api.openai.com" not in base:
         raise RuntimeError(

@@ -40,7 +40,7 @@ from _enrich_common import (
 FABRIC_MODEL = "veed/fabric-1.0"
 TTS_MODEL = "tts-1"
 TTS_VOICE = "onyx"
-MAX_SCRIPT_CHARS = 900  # ≈ 45 s of speech — bounds video length and spend
+MAX_SCRIPT_CHARS = 950  # ≈ 70 s of speech — bounds video length and spend
 
 
 def strip_markdown(text: str) -> str:
@@ -59,10 +59,16 @@ def strip_markdown(text: str) -> str:
 
 
 def briefing_script(run_dir: Path, facts: dict) -> str:
-    """Spoken script traced to committed artifacts; fallback to facts fields."""
-    report = run_dir / "narrative" / "report.md"
-    if report.exists():
-        text = strip_markdown(report.read_text())
+    """Spoken script traced to committed artifacts; fallback to facts fields.
+
+    Prefers the newsroom broadcast script (newsroom/script.md) when present,
+    else the LLM narrative digest (narrative/report.md).
+    """
+    for candidate in ("newsroom/script.md", "narrative/report.md"):
+        report = run_dir / candidate
+        if report.exists():
+            text = strip_markdown(report.read_text())
+            break
     else:
         metrics = facts.get("headline_metrics") or {}
         summary = ", ".join(f"{k} {v}" for k, v in metrics.items()) or "no metrics yet"
@@ -109,14 +115,19 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", required=True, help="run folder or experiments/<run-id>")
     parser.add_argument("--resolution", default="480p", choices=["480p", "720p"])
+    parser.add_argument(
+        "--image",
+        default="visual/hero.png",
+        help="source frame (default visual/hero.png; e.g. visual/oracle.png for the anchor)",
+    )
     args = parser.parse_args(argv)
 
     run_dir = resolve_run_dir(args.run)
     facts = load_facts(run_dir)
 
-    hero = run_dir / "visual" / "hero.png"
+    hero = run_dir / args.image
     if not hero.exists():
-        notice("briefing: no visual/hero.png — run render_visuals.py first; degrading")
+        notice(f"briefing: no {args.image} — run render_visuals.py first; degrading")
         return 0
     if not env_key("FAL_KEY", "FAL_API_KEY"):
         notice("briefing: skipped (no FAL_KEY); run degrades without video")
