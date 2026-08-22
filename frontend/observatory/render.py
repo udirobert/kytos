@@ -976,8 +976,11 @@ def render_run_detail(
         )
     )
 
-    trust_body = _verification_section(run.path, run.run_id, embedded=True) + _provenance_block(
-        prov, run.run_id
+    agent_trace_html = render_template("components/agent_trace.html")
+    trust_body = (
+        agent_trace_html
+        + _verification_section(run.path, run.run_id, embedded=True)
+        + _provenance_block(prov, run.run_id)
     )
 
     hyp_list = hyp_html or '<li class="muted">None</li>'

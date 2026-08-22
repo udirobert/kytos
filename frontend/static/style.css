@@ -2534,6 +2534,150 @@ a.run-insight-card:hover {
   margin-top: 1rem;
 }
 
+/* ── Beautiful UI Inspired: Agent Trace & Task Rows ──────────────────── */
+.agent-trace-box {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: linear-gradient(145deg, rgba(14, 30, 48, 0.75) 0%, rgba(8, 18, 30, 0.85) 100%);
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.agent-trace-top {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.agent-avatar-wrap {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: rgba(45, 212, 191, 0.1);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: 50%;
+  font-size: 1.1rem;
+}
+
+.agent-pulse-dot {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #34d399;
+}
+
+.agent-top-copy {
+  flex: 1;
+}
+
+.agent-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.agent-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink-bright);
+}
+
+.agent-status-pill {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  background: rgba(45, 212, 191, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+.agent-summary-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.agent-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.task-item:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(45, 212, 191, 0.25);
+}
+
+.task-bullet {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: bold;
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  margin-top: 2px;
+}
+
+.task-content {
+  flex: 1;
+}
+
+.task-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.task-tool {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.task-timing {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.task-detail {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 /* ── Performance & Rendering Optimization ────────────────────────────── */
 .disclosure-panel:not([open]) .disclosure-body {
   display: none;
@@ -4279,11 +4423,25 @@ html.no-webgl .site-header {
 }
 
 html.no-webgl .disclosure-panel {
-  background: rgba(17, 48, 74, 0.94);
+  background: linear-gradient(145deg, rgba(14, 30, 48, 0.95) 0%, rgba(8, 18, 30, 0.98) 100%);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 html.no-webgl .home-proof {
-  background: rgba(22, 59, 92, 0.85);
+  background: linear-gradient(135deg, rgba(16, 42, 66, 0.9) 0%, rgba(10, 24, 40, 0.95) 100%);
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+html.no-webgl .run-card {
+  background: linear-gradient(145deg, rgba(14, 30, 48, 0.92) 0%, rgba(8, 18, 30, 0.96) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+html.no-webgl .run-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 6px 24px rgba(45, 212, 191, 0.12);
 }
 
 /* ════════════════════════════════════════════════════════════════════════

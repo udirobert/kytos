@@ -21,6 +21,7 @@
   "seed": 0,
   "normalization": "normalize_total(1e4) + log1p",
   "artifact_retention": "prediction + normalized h5ads live under gitignored data/raw (369MB+); committed artifacts are metrics/audit/facts/enrichment only (docs/release-infrastructure.md)",
+  "scoring_subsample": "score matrix subsampled (seed 0): 200 cells/perturbation, 3000 controls (~13k cells) — full-depth 51-group DE ran ~12h ETA on this hardware; k003 will score full depth. Scripts: data/raw/vcc2025/subsample_k002.py, score_k002_sub.sh",
   "hypotheses_preregistered": [
     "Zero-shift floor: DESigGenesRecall lands at or near zero — a constant prediction has no DE genes to recall",
     "Mean absolute error will beat replicate-naive intuition but pearson_delta will sit far below the computed ceiling"

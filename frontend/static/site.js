@@ -36,12 +36,13 @@
     }
     if (!probeWebGL()) {
       markNoWebGL();
+      return;
     }
     setTimeout(function () {
       if (!container.classList.contains("is-3d")) {
         markNoWebGL();
       }
-    }, 3000);
+    }, 1200);
   }
 
   // ── Text states swap (transitions.dev pattern) ──────────────────────────
@@ -302,16 +303,51 @@
         return;
       }
 
-      // m: toggle 3D membrane
-      if ((e.key === "m" || e.key === "M") && window.kytosVessel && typeof window.kytosVessel.toggleMembrane === "function") {
-        window.kytosVessel.toggleMembrane();
-        return;
+      // m: toggle membrane (3D or SVG)
+      if (e.key === "m" || e.key === "M") {
+        if (
+          window.kytosVessel &&
+          typeof window.kytosVessel.toggleMembrane === "function"
+        ) {
+          window.kytosVessel.toggleMembrane();
+          return;
+        }
+        var svgMembrane =
+          document.querySelector(".cell-membrane") ||
+          document.querySelector(".vessel-glass");
+        if (svgMembrane) {
+          var curOp = parseFloat(
+            window.getComputedStyle(svgMembrane).opacity || "1",
+          );
+          svgMembrane.style.opacity = curOp < 0.5 ? "1" : "0.2";
+          return;
+        }
       }
 
-      // c: focus next crack
-      if ((e.key === "c" || e.key === "C") && window.kytosVessel && typeof window.kytosVessel.focusCrack === "function") {
-        window.kytosVessel.focusCrack(0);
-        return;
+      // c: focus next crack (3D or SVG)
+      if (e.key === "c" || e.key === "C") {
+        if (
+          window.kytosVessel &&
+          typeof window.kytosVessel.focusCrack === "function"
+        ) {
+          window.kytosVessel.focusCrack(0);
+          return;
+        }
+        var firstCrack = document.querySelector(".vessel-crack");
+        if (firstCrack) {
+          firstCrack.style.transform = "scale(1.4)";
+          firstCrack.style.filter = "drop-shadow(0 0 8px #fb923c)";
+          setTimeout(function () {
+            firstCrack.style.transform = "";
+            firstCrack.style.filter = "";
+          }, 800);
+          openDisclosure("audit");
+          var auditEl = document.getElementById("audit");
+          if (auditEl) {
+            auditEl.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+          return;
+        }
       }
     });
   }
@@ -700,6 +736,10 @@
     }
 
     function show() {
+      var hint = onboard.querySelector(".vessel-onboard-hint");
+      if (hint && isNoWebGL()) {
+        hint.textContent = "Liquid fill = headroom · hover or click cracks for audit details";
+      }
       onboard.hidden = false;
       requestAnimationFrame(function () {
         onboard.classList.add("is-visible");
@@ -719,11 +759,11 @@
         }
       });
       observer.observe(container, { attributes: true, attributeFilter: ["class"] });
-      // Fallback: show after 5s even if 3D hasn't loaded (SVG mode)
+      // Fallback: show after 1.5s in SVG mode
       setTimeout(function () {
         if (!onboard.hidden) return;
         show();
-      }, 5000);
+      }, 1500);
     }
 
     function dismiss() {
@@ -742,12 +782,76 @@
     }
     // Also dismiss on scroll
     var dismissed = false;
-    window.addEventListener("scroll", function () {
-      if (!dismissed && !onboard.hidden) {
-        dismissed = true;
-        dismiss();
-      }
-    }, { passive: true, once: true });
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!dismissed && !onboard.hidden) {
+          dismissed = true;
+          dismiss();
+        }
+      },
+      { passive: true, once: true },
+    );
+  }
+
+  // ── SVG Vessel Interactivity (No-WebGL mode) ─────────────────────────────
+  function initSvgVesselInteractivity() {
+    var svg = document.querySelector(".vessel-svg");
+    var callout = document.getElementById("vessel-callout");
+    if (!svg || !callout) return;
+
+    var cracks = svg.querySelectorAll(".vessel-crack");
+    var droplets = svg.querySelectorAll(".vessel-info");
+    var nucleus = svg.querySelector(".cell-nucleus");
+
+    function showSvgCallout(text, e) {
+      callout.textContent = text;
+      callout.style.opacity = "1";
+      callout.style.transform = "none";
+      var rect = svg.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      callout.style.left = x + "px";
+      callout.style.top = y - 30 + "px";
+    }
+
+    function hideSvgCallout() {
+      callout.style.opacity = "0";
+    }
+
+    cracks.forEach(function (crack) {
+      crack.style.cursor = "pointer";
+      crack.addEventListener("mouseenter", function (e) {
+        showSvgCallout("⚠️ Audit Warning: Rule violation detected", e);
+      });
+      crack.addEventListener("mousemove", function (e) {
+        showSvgCallout("⚠️ Audit Warning: Rule violation detected", e);
+      });
+      crack.addEventListener("mouseleave", hideSvgCallout);
+      crack.addEventListener("click", function () {
+        openDisclosure("audit");
+        var auditEl = document.getElementById("audit");
+        if (auditEl) {
+          auditEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+
+    droplets.forEach(function (droplet) {
+      droplet.style.cursor = "pointer";
+      droplet.addEventListener("mouseenter", function (e) {
+        showSvgCallout("ℹ️ Audit Info: Biological observation", e);
+      });
+      droplet.addEventListener("mouseleave", hideSvgCallout);
+    });
+
+    if (nucleus) {
+      nucleus.style.cursor = "pointer";
+      nucleus.addEventListener("mouseenter", function (e) {
+        showSvgCallout("🧬 Cellular Core: Headroom & baseline state", e);
+      });
+      nucleus.addEventListener("mouseleave", hideSvgCallout);
+    }
   }
 
   function initViewModeToggle() {
@@ -818,6 +922,7 @@
     initHashDisclosure();
     initNoWebGLDetect();
     initVesselOnboard();
+    initSvgVesselInteractivity();
     initViewModeToggle();
   }
 
