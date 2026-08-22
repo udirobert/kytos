@@ -42,6 +42,7 @@ kytos/
 │   ├── milestone-0-worksplit.md  # three-dev parallel split (hackathon day)
 │   ├── architecture.md        # model-stack ADR (Layer A/B, gates)
 │   ├── code-organization.md   # THIS FILE
+│   ├── release-infrastructure.md # GitHub / HF / Kaggle / VPS artifact map
 │   ├── phase0-environment.md  # declared packages + install
 │   ├── run-protocol.md        # run-IDs, meta.json, facts.json, provenance
 │   └── security.md            # secrets policy + caveats
@@ -118,27 +119,50 @@ from committed artifacts only; enrichment runs at build time and commits outputs
 
 ### Pages
 
-| Page | Content source |
+| Page | Layout |
 |---|---|
-| Home | Latest run hero (`visual/hero`), VCC timeline, build log |
-| Runs | Index of `experiments/*/facts.json` — card layout |
-| Run detail | Metrics (Plotly), audit flags, literature rail, narrative, provenance |
+| Home | Full-bleed 3D vessel fills viewport; headline + lede + CTA float over it with glass scrim; data readout strip; scroll hint |
+| Runs | Card grid — severity dot + fill % badge + headline + metrics |
+| Run detail | Full-bleed 3D vessel hero (min-height 100vh) with title + metric summary + data strip overlay; evidence panels flow in centered 760px column with scroll-reveal |
 | Critique | Links to GitHub Discussions; pre-registered hypotheses per run |
 
 ### Stack
 
-| Layer | Stack | When |
+| Layer | Stack | Status |
 |---|---|---|
-| Static generator | Python `frontend/build.py` → HTML | now |
-| Charts | Plotly (from committed CSVs) | now |
-| Docs prose | MkDocs Material (optional sibling site) | now |
-| Narration | OpenAI (prod) or **Venice** (local dev) via `render_narrative.py` | now |
-| Literature | Tavily via `tools/enrich_literature.py` | now |
-| **Visuals** | **fal via `tools/render_visuals.py`** | **now — core to UX** |
+| Static generator | Python `frontend/build.py` → HTML | shipped |
+| **3D vessel** | **Three.js r169** (import map, jsDelivr CDN) — `frontend/static/vessel3d.js` | **shipped — core to UX** |
+| Charts | Plotly (from committed CSVs) | shipped |
+| Post-processing | UnrealBloomPass, EffectComposer (Three.js addons) | shipped |
+| Narration | OpenAI (prod) or **Venice** (local dev) via `render_narrative.py` | shipped |
+| Literature | Tavily via `tools/enrich_literature.py` | shipped |
+| **Visuals** | **fal via `tools/render_visuals.py`** | shipped |
 | Interactive SPA | React + Vite | only if a page needs it later |
 
-**Default:** custom static generator + Plotly + **fal hero/share assets** per run.
-MkDocs for long-form ADRs; Observatory for the visual experiment experience.
+**Default:** custom static generator + **real-time 3D vessel** + Plotly + fal
+hero/share assets per run.
+
+### Frontend file layout
+
+```
+frontend/
+├── build.py                # static generator → dist/
+├── observatory/
+│   ├── render.py           # HTML rendering — home, runs index, run detail
+│   ├── data.py             # loads facts.json, metrics, narrative, literature, NER
+│   ├── charts.py           # Plotly bar chart (metrics vs ceiling)
+│   ├── meta.py             # <head> tags, SEO, social, import map for Three.js
+│   └── runs.py             # RunSummary dataclass, run discovery
+├── static/
+│   ├── vessel3d.js         # Three.js κύτος vessel — 3D scene (527 lines)
+│   ├── site.js             # Plotly init, VCC rail, copy buttons, scroll reveal, SVG fallback
+│   ├── style.css           # full design system (1300+ lines)
+│   ├── favicon.svg          # κύτος vessel icon
+│   ├── og-image.png         # social share image
+│   ├── site.webmanifest     # PWA manifest
+│   └── apple-touch-icon.png
+└── dist/                   # built output (committed or CI-built)
+```
 
 ### Partner technology map (hackathon + ongoing)
 
@@ -149,20 +173,21 @@ MkDocs for long-form ADRs; Observatory for the visual experiment experience.
 | **Tavily** | `tools/enrich_literature.py` → `literature/*.json` | Empty on failure; never blocks build |
 | **fal** | `tools/render_visuals.py` → `visual/hero.png`, `share-card.png` | Gen media for engagement; not metric source |
 | **fal + VEED** | `tools/render_briefing.py` → `visual/briefing.mp4` via `veed/fabric-1.0` | Image + audio → talking video; core demo moment |
+| **Three.js** | `frontend/static/vessel3d.js` — 3D vessel instrument | Renders from `facts.json` only; SVG fallback if WebGL unavailable |
 
 Optional: Pioneer (critique classification), h (computer-use agents) — post-Milestone 0.
 
 Problem / wedge / adjacent projects: [`competitive-landscape.md`](competitive-landscape.md).
 
-### Visual design (Milestone 0)
+### Visual design
 
-Quality bar: immersive center stage, editorial typography, detail panels —
-inspired by [cell-architecture-studio](https://github.com/cclank/cell-architecture-studio)
+Quality bar: full-bleed 3D vessel hero, editorial typography, glassmorphism
+evidence panels — inspired by [cell-architecture-studio](https://github.com/cclank/cell-architecture-studio)
 and [plant-dna](https://github.com/thebuggeddev/plant-dna), with Kytos identity
 (observatory / instrument-panel metaphor, κύτος vessel centerpiece). Spec:
 [`observatory.md §3`](observatory.md#3-experience-design--visual-first).
 
-Layout grammar: `Header · Run strip · Stage (vessel + Fabric video) · Evidence rail`.
+Layout grammar: `Header · Run strip · Full-bleed vessel hero · Glass evidence column`.
 
 ### Frontend rules (hard)
 
@@ -171,6 +196,7 @@ Layout grammar: `Header · Run strip · Stage (vessel + Fabric video) · Evidenc
 2. Pre-render enrichment; static `frontend/dist/` must build with zero API keys.
 3. Every narrative sentence links to its source fact field.
 4. fal / Fabric media are **first-class** — briefing on run detail, hero + share card.
+5. The 3D vessel renders from the same `facts.json` data — zero API calls at view time.
 
 ---
 

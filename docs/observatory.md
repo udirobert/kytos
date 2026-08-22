@@ -86,8 +86,8 @@ demo can include a Fabric-generated briefing as the centerpiece.
 
 ## 3. Experience design — visual first
 
-Quality bar: immersive center stage, editorial typography, specimen/run selection,
-detail panels — inspired by [cell-architecture-studio](https://github.com/cclank/cell-architecture-studio)
+Quality bar: full-bleed 3D vessel hero, editorial typography, glassmorphism
+evidence panels — inspired by [cell-architecture-studio](https://github.com/cclank/cell-architecture-studio)
 and [plant-dna](https://github.com/thebuggeddev/plant-dna), with our own spin.
 
 ### Design references (primitives, not clones)
@@ -95,32 +95,62 @@ and [plant-dna](https://github.com/thebuggeddev/plant-dna), with our own spin.
 | Reference | Primitive we borrow | Kytos spin |
 |---|---|---|
 | Cell Architecture Studio | Stage + sidebar + specimen strip; 3D center; comparison modal | **Run strip**; **vessel stage**; metrics vs **ceiling** comparison |
-| Plant DNA | Full-viewport stage; mono editorial type; Three.js sculpture hero | **Observatory instrument panel**; procedural **κύτος** vessel, not DNA helix |
-| Both | Detail panels, loading overlays, responsive layout | **Audit flag cards**; provenance footer as instrument readout |
+| Plant DNA | Full-viewport stage; mono editorial type; Three.js sculpture hero | **Real-time 3D κύτος vessel** — glass with transmission/refraction, animated liquid fill, emissive crack halos, rising bubbles, floor reflection, bloom post-processing |
+| Both | Detail panels, loading overlays, responsive layout | **Glass evidence cards** with scroll-reveal; instrument data strip |
 
 **Identity:** observatory / mission-control metaphor — dark lab palette, phosphor
 accents (gene-up, flag-amber, ceiling-cyan). The hollow vessel (κύτος) is the
 3D centerpiece: an empty context waiting to be perturbed.
 
+**The 3D vessel instrument** (`frontend/static/vessel3d.js`, 527 lines):
+
+The vessel is a real-time Three.js scene, not a flat SVG. It renders from the
+same `facts.json` data as everything else — zero API calls at view time.
+
+| Visual element | Data binding |
+|---|---|
+| Glass vessel | LatheGeometry from κύτος flask profile; MeshPhysicalMaterial with transmission, IOR 1.5, clearcoat |
+| Liquid fill level | Mean ceiling headroom (`ceiling_headroom` averaged across metrics) |
+| Liquid surface wave | Procedural ripple (two-frequency sine, per-frame vertex displacement) |
+| Rising bubbles | Transmissive spheres inside the liquid, wobble + reset |
+| Amber cracks | Warn/error audit flags — TubeGeometry along CatmullRom curves, emissive glow halos that pulse |
+| Cyan droplets | Info audit flags — emissive spheres with scale-pulsing halos, floating above the liquid |
+| Ambient particles | Custom circular sprite (canvas texture, additive blending) drifting upward |
+| Floor reflection | Metalness 0.9 floor with caustics spotlight projecting the glow |
+| Bloom | UnrealBloomPass — emissive liquid and droplets glow against the dark background |
+| Camera | OrbitControls (auto-rotate + drag), mouse parallax, scroll-driven pull-back on home page |
+
+**SVG fallback:** if WebGL is unavailable, `vessel3d.js` returns early and the
+SVG vessel (baked at build time) stays visible. `site.js` animates the SVG fill
+after a 2s timeout.
+
+**Tech stack:** Three.js r169 via import map (jsDelivr CDN), RoomEnvironment for
+glass reflections, EffectComposer pipeline (RenderPass → UnrealBloomPass →
+OutputPass). No bundler — ES module loaded directly in the browser.
+
 Skip for Milestone 0: gamification (XP, quizzes, flashcards) from Cell Architecture Studio.
 
 ### Pages
 
-| Page | Purpose | Milestone 0 |
+| Page | Layout | Vessel |
 |---|---|---|
-| **Home** | Mission, VCC timeline, latest run hero, Fabric briefing | Ship |
-| **Runs** | Experiment index — cards, not rows | Thin / defer polish |
-| **Run detail** | Core demo surface | **Ship (P0)** |
-| **Critique** | Discussions + pre-registered hypotheses | Link-only |
+| **Home** | Full-bleed 3D vessel fills the viewport; headline + lede + CTA float over it with radial gradient scrim; glass data readout strip (fill %, audit, days left) pinned at bottom; scroll hint | Full-screen background, scroll-driven camera pull-back |
+| **Runs** | Card grid — each card shows severity dot + fill % badge + headline + metrics | — |
+| **Run detail** | Full-bleed 3D vessel hero (min-height 100vh) with title + metric summary + data strip overlay; evidence panels flow in a centered 760px column below with scroll-reveal | Full-screen background, auto-rotate + parallax |
+| **Critique** | Links to GitHub Discussions; pre-registered hypotheses per run | — |
 
 ### Run detail (the load-bearing view)
 
-1. **Hero band** — Fabric briefing loop (or fal still) + run ID + headline metric vs ceiling.
+1. **Full-bleed vessel hero** — 3D κύτος vessel fills the viewport; run ID, headline,
+   metric summary, and instrument data strip (fill / audit / info) float over it.
 2. **Metrics panel** — Plotly from committed CSVs only (bar vs ceiling).
 3. **Audit flags** — lemma-style cards: severity, rule, genes; link to Critique.
 4. **Literature rail** — Tavily for flagged entities; collapsible, labeled auxiliary.
 5. **Narrative block** — OpenAI digest with **inline source links** to `facts.json`.
 6. **Provenance footer** — commit, seed, hashes, reproduce command.
+
+All evidence panels are glassmorphism cards (`backdrop-filter: blur`, translucent
+background) that fade in via IntersectionObserver as they enter the viewport.
 
 UMAP / distribution strip when Layer B emits them (post-Milestone 0).
 
@@ -208,6 +238,8 @@ One gorgeous run page beats three half-finished pages.
 | Pioneer (C) | ✅ `tools/pioneer_ner.py` — fine-tuned GLiNER2 biomedical NER (deterministic fallback always available; side challenge) |
 | Demo primitives (B) | ✅ data-bound vessel instrument (fill = ceiling headroom, cracks = audit flags), audit confession banner, metric→CSV drill-down, planted-signal self-test (`tools/planted_signal.py`), [`demo-script.md`](demo-script.md) |
 | UX polish (B) | ✅ instrument-panel metaphor: live VCC timeline rail + countdown to Nov 5, vessel fill animation on load, run-strip severity dots + scroll-snap, flag severity badges, breadcrumb, copy-to-clipboard provenance, `prefers-reduced-motion` support; mobile overflow fixed (grid `min-width:0`, narrative/provenance wrapping) — Playwright-verified desktop + mobile, zero console errors |
+| 3D vessel (C) | ✅ **Three.js real-time 3D κύτος vessel** — glass with transmission/refraction, animated liquid fill, rising bubbles, emissive crack halos, cyan droplets, reflective floor, UnrealBloomPass, mouse parallax, scroll-driven camera, auto-rotate + drag; SVG fallback if WebGL unavailable (`frontend/static/vessel3d.js`, 527 lines) |
+| Full-bleed immersive layout (C) | ✅ home + run detail pages rebuilt as full-viewport vessel hero with overlaid glass content; evidence panels flow in centered column with scroll-reveal (IntersectionObserver); glass data readout strip; runs index cards show severity dot + fill % badge |
 | Integration | ⏳ real enrichment artifacts → rebuild `dist/` → redeploy → 2-min Loom |
 
 ### Later (Aug → Nov 2026)

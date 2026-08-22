@@ -156,6 +156,13 @@ the inference path. Problem, evidence, and wedge:
 {Tech: Europe} × VEED Hackathon entry — initial milestone toward Nov 5, not a
 detour from the science track.
 
+**Frontend status (post-hackathon, 2026-08-22):** the Observatory is now a
+full-bleed immersive experience — real-time Three.js 3D κύτος vessel (glass
+with transmission/refraction, animated liquid fill, rising bubbles, emissive
+crack halos, floor reflection, UnrealBloomPass) on both home and run detail
+pages, with glassmorphism evidence cards and scroll-reveal. SVG fallback if
+WebGL is unavailable. 36 tests green, ruff clean, Netlify auto-deploys on push.
+
 ---
 
 ## 6. Phase-0 sequencing to deadline (Nov 5, 2026)

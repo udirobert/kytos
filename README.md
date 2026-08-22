@@ -37,6 +37,7 @@ first (hackathon Milestone 0, 2026-08-22). Full research and demarcation:
 | [`docs/milestone-0-worksplit.md`](docs/milestone-0-worksplit.md) | three-developer parallel split for Milestone 0 |
 | [`docs/architecture.md`](docs/architecture.md) | model-stack ADR: Layer A (gene transfer) + Layer B (cell sampler), gates |
 | [`docs/code-organization.md`](docs/code-organization.md) | repo layout, backend & Observatory frontend stack |
+| [`docs/release-infrastructure.md`](docs/release-infrastructure.md) | where artifacts live: GitHub, Hugging Face, Kaggle, VPS |
 | [`docs/phase0-environment.md`](docs/phase0-environment.md) | declared packages + install (`uv`) |
 | [`docs/venice-dev.md`](docs/venice-dev.md) | **local dev narration** — Venice AI (privacy, env, vs OpenAI prod) |
 | [`docs/run-protocol.md`](docs/run-protocol.md) | experiment run-IDs, `meta.json`, `facts.json`, provenance rules |
@@ -105,6 +106,8 @@ lint + `ruff` format (see [`docs/security.md`](docs/security.md)).
 - [x] **k001 seeded (Dev A)**: `facts.json` assembler, audit rules (`housekeeping_shift`, `pathway_coherence`), metrics + ceiling CSVs, committed run artifacts
 - [x] **Enrichment tools (Dev B)**: OpenAI narrative (+ deterministic fallback), Tavily literature, fal visuals, VEED Fabric briefing — degrade-empty verified against k001; one-shot `tools/run_enrichment.sh`; **live API run in progress** ([tools/README.md](tools/README.md))
 - [x] **Observatory frontend (Dev C)**: `frontend/build.py` → `dist/` (home, runs index, k001 run page); Playwright-verified desktop + mobile, zero console errors; briefing video autoplay
+- [x] **3D vessel instrument**: Three.js r169 real-time scene — glass with transmission/refraction, animated liquid fill, rising bubbles, emissive crack halos, floor reflection, UnrealBloomPass, mouse parallax, scroll-driven camera; SVG fallback if WebGL unavailable ([`frontend/static/vessel3d.js`](frontend/static/vessel3d.js))
+- [x] **Full-bleed immersive layout**: home + run detail pages rebuilt as full-viewport vessel hero with overlaid glass content; evidence panels flow in centered column with scroll-reveal; glass data readout strip; runs index cards show severity dot + fill % badge
 - [x] **Deploy**: [kytosapp.netlify.app](https://kytosapp.netlify.app) via Netlify ([`netlify.toml`](netlify.toml)) — auto-builds `frontend/dist/` on push
 - [ ] Integration: real enrichment artifacts → rebuilt `dist/` → redeploy → 2-min Loom
 - [ ] Install `cell-eval` + `anndata` (uv, **Python 3.12**) → H5AD write path
