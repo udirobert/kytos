@@ -4,8 +4,6 @@ Extracts per-gene statistics and covariance priors required by Layer A (gene-lev
 transfer) and Layer B (single-cell sampling) without using any post-perturbation data.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 import numpy as np
@@ -35,30 +33,50 @@ class BasalContext:
 
 
 def extract_basal_context(
-    X: np.ndarray,
+    X: Any,
     genes: list[str],
 ) -> BasalContext:
     """Extract context statistics from basal cell-by-gene expression matrix.
 
+    Optimized for both dense numpy arrays and scipy.sparse matrices without densification.
+
     Args:
-        X: 2D numpy array of shape (N_cells, G_genes), log1p normalized or counts.
+        X: 2D array-like or sparse matrix of shape (N_cells, G_genes).
         genes: list of gene symbols matching columns of X.
 
     Returns:
         BasalContext dataclass.
     """
-    if X.ndim != 2:
-        raise ValueError(f"Expected 2D matrix, got shape {X.shape}")
-    if X.shape[1] != len(genes):
-        raise ValueError(f"Matrix columns ({X.shape[1]}) do not match gene list ({len(genes)})")
+    is_sparse = hasattr(X, "tocsr") or hasattr(X, "getnnz")
 
-    n_cells = X.shape[0]
-    if n_cells == 0:
-        raise ValueError("Cannot extract context from empty cell matrix")
+    if is_sparse:
+        n_cells, n_genes = X.shape
+        if n_genes != len(genes):
+            raise ValueError(f"Matrix columns ({n_genes}) do not match gene list ({len(genes)})")
+        if n_cells == 0:
+            raise ValueError("Cannot extract context from empty cell matrix")
 
-    mean_expr = np.asarray(X.mean(axis=0)).ravel()
-    var_expr = np.asarray(X.var(axis=0)).ravel()
-    nonzero_frac = np.asarray((X > 0).mean(axis=0)).ravel()
+        mean_expr = np.asarray(X.mean(axis=0)).ravel()
+        # Fast sparse sample variance: E[X^2] - (E[X])^2
+        sq_mean = np.asarray(X.power(2).mean(axis=0)).ravel()
+        var_expr = np.maximum(0.0, sq_mean - np.square(mean_expr))
+        nonzero_frac = np.asarray(X.getnnz(axis=0) / n_cells).ravel()
+    else:
+        X_arr = np.asarray(X)
+        if X_arr.ndim != 2:
+            raise ValueError(f"Expected 2D matrix, got shape {X_arr.shape}")
+        if X_arr.shape[1] != len(genes):
+            raise ValueError(
+                f"Matrix columns ({X_arr.shape[1]}) do not match gene list ({len(genes)})"
+            )
+
+        n_cells = X_arr.shape[0]
+        if n_cells == 0:
+            raise ValueError("Cannot extract context from empty cell matrix")
+
+        mean_expr = np.asarray(X_arr.mean(axis=0)).ravel()
+        var_expr = np.asarray(X_arr.var(axis=0)).ravel()
+        nonzero_frac = np.asarray((X_arr > 0).mean(axis=0)).ravel()
 
     # Percentile rank (0.0 to 1.0)
     order = np.argsort(mean_expr)

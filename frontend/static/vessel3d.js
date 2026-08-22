@@ -1115,8 +1115,46 @@ function initVessel3D() {
         var current = cellMembrane.material.opacity;
         cellMembrane.material.opacity = current > 0.4 ? 0.15 : 0.85;
       }
-    }
+    },
   };
+
+  // ── Resource Management: Pause render loop when offscreen or hidden ──
+  function resumeLoop() {
+    if (!running) {
+      running = true;
+      clock.getDelta();
+      animate();
+    }
+  }
+
+  function pauseLoop() {
+    running = false;
+  }
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      pauseLoop();
+    } else {
+      resumeLoop();
+    }
+  });
+
+  if (typeof IntersectionObserver !== "undefined") {
+    var viewObserver = new IntersectionObserver(
+      function (entries) {
+        var isVisible = entries.some(function (e) {
+          return e.isIntersecting;
+        });
+        if (isVisible) {
+          resumeLoop();
+        } else {
+          pauseLoop();
+        }
+      },
+      { rootMargin: "150px" },
+    );
+    viewObserver.observe(container);
+  }
 
   animate();
 }

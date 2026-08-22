@@ -2534,6 +2534,23 @@ a.run-insight-card:hover {
   margin-top: 1rem;
 }
 
+/* ── Performance & Rendering Optimization ────────────────────────────── */
+.disclosure-panel:not([open]) .disclosure-body {
+  display: none;
+}
+
+.run-card,
+.run-insight-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 240px;
+}
+
+.newsroom-rail,
+.entity-rail-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 180px;
+}
+
 .evidence-block {
   margin-top: 0.85rem;
   padding-top: 0.75rem;
