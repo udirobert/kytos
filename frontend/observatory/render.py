@@ -396,7 +396,7 @@ def _home_vessel_legend_html(vd: dict[str, Any], *, about_href: str) -> str:
     )
 
 
-def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
+def render_home(runs: list[RunSummary], *, root_prefix: str = "", js_version: str = "") -> str:
     meta = PageMeta(
         title="Home",
         description=SITE_DESCRIPTION,
@@ -408,6 +408,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         "head_tags": render_head_tags(meta, root_prefix=root_prefix),
         "body_class": "page-home",
         "root_prefix": root_prefix,
+        "js_version": js_version,
         "nav": _nav("home", runs, root_prefix=root_prefix),
         "latest": latest is not None,
     }
@@ -778,7 +779,7 @@ def _substantiation_about_html(runs: list[RunSummary]) -> str:
     """
 
 
-def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
+def render_about(runs: list[RunSummary], *, root_prefix: str = "", js_version: str = "") -> str:
     meta = PageMeta(
         title="About",
         description=(
@@ -792,6 +793,7 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         "head_tags": render_head_tags(meta, root_prefix=root_prefix),
         "body_class": "page-about",
         "root_prefix": root_prefix,
+        "js_version": js_version,
         "nav": _nav("about", runs, root_prefix=root_prefix),
         "analogy_html": _analogy_about_html(),
         "timeline_html": _timeline_html(),
@@ -801,7 +803,9 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     return render_template("about.html", **context)
 
 
-def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
+def render_runs_index(
+    runs: list[RunSummary], *, root_prefix: str = "../", js_version: str = ""
+) -> str:
     cards = ""
     for run in reversed(runs):
         href = f"{_h(run.run_id)}/index.html"
@@ -869,6 +873,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         "head_tags": render_head_tags(meta, root_prefix=root_prefix),
         "body_class": "page-runs",
         "root_prefix": root_prefix,
+        "js_version": js_version,
         "nav": _nav("runs", runs, root_prefix=root_prefix),
         "header": header,
         "matrix": matrix,
@@ -970,6 +975,7 @@ def render_run_detail(
     *,
     root_prefix: str = "../../",
     media_prefix: str = "",
+    js_version: str = "",
 ) -> str:
     facts = run.facts
     metrics_names, scores, ceilings = data_mod.load_metrics(run.path / "metrics")
@@ -1077,6 +1083,7 @@ def render_run_detail(
         "head_tags": render_head_tags(meta, root_prefix=root_prefix),
         "body_class": "page-run",
         "root_prefix": root_prefix,
+        "js_version": js_version,
         "bio_atmosphere": _bio_atmosphere(variant="detail", density="light"),
         "vessel_svg": _vessel_svg(facts, clip_id="vessel-clip-run"),
         "vessel_json": json.dumps(vd),

@@ -801,6 +801,11 @@ html.no-webgl .vessel-loading {
   transition: opacity 0.4s ease;
 }
 
+/* display: flex would override the hidden attribute — restore it */
+.home-phase[hidden] {
+  display: none !important;
+}
+
 .home-phase.is-active {
   position: relative;
   opacity: 1;

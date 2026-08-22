@@ -5,6 +5,6 @@
 </head>
 <body class="{{ body_class }}">
   {% block content %}{% endblock %}
-  <script src="{{ root_prefix }}static/site.js" defer></script>
+  <script src="{{ root_prefix }}static/site.js{% if js_version %}?v={{ js_version }}{% endif %}" defer></script>
 </body>
 </html>

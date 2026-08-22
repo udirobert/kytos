@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import shutil
 import sys
 from pathlib import Path
@@ -59,17 +60,25 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
     static_dest = out_dir / "static"
     _copy_tree(static_src, static_dest)
 
+    # Cache-busting: content-hash site.js so a new deploy always fetches fresh
+    # JS instead of serving the previous immutable-cached version.
+    js_hash = hashlib.md5((static_src / "site.js").read_bytes()).hexdigest()[:8]
+
     runs = discover_runs(experiments_dir)
-    (out_dir / "index.html").write_text(render_home(runs, root_prefix=""), encoding="utf-8")
+    (out_dir / "index.html").write_text(
+        render_home(runs, root_prefix="", js_version=js_hash), encoding="utf-8"
+    )
 
     about_dir = out_dir / "about"
     about_dir.mkdir()
-    (about_dir / "index.html").write_text(render_about(runs, root_prefix="../"), encoding="utf-8")
+    (about_dir / "index.html").write_text(
+        render_about(runs, root_prefix="../", js_version=js_hash), encoding="utf-8"
+    )
 
     runs_dir = out_dir / "runs"
     runs_dir.mkdir()
     (runs_dir / "index.html").write_text(
-        render_runs_index(runs, root_prefix="../"), encoding="utf-8"
+        render_runs_index(runs, root_prefix="../", js_version=js_hash), encoding="utf-8"
     )
 
     for run in runs:
@@ -91,6 +100,7 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
             runs,
             root_prefix="../../",
             media_prefix=media_prefix,
+            js_version=js_hash,
         )
         (run_out / "index.html").write_text(html, encoding="utf-8")
 
