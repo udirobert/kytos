@@ -39,6 +39,7 @@ fi
 
 cd "$ROOT/tools"
 "$PY" render_narrative.py --run "../$RUN"
+"$PY" check_narrative.py --run "../$RUN" || true
 "$PY" enrich_literature.py --run "../$RUN"
 "$PY" pioneer_ner.py --run "../$RUN"
 "$PY" render_visuals.py --run "../$RUN"

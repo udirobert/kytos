@@ -1,0 +1,28 @@
+{
+  "run_id": "k002-vcc2025-validation-mean-shift",
+  "created": "2026-08-22",
+  "task": "baseline",
+  "headline": "First real cell-eval run — mean-shift floor vs VCC 2025 validation (H1 hESC, 50 targets)",
+  "data_status": "real",
+  "inputs": {
+    "source_url": "https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/validation/adata_Validation.h5ad",
+    "source_note": "Arc Institute public bucket; 98,927 cells × 18,080 genes, 50 perturbations + non-targeting",
+    "basal_anndata": "data/raw/vcc2025/basal_lognorm.h5ad (derived, gitignored)",
+    "real_anndata": "data/raw/vcc2025/real_lognorm.h5ad (derived, gitignored)",
+    "gene_list": "data/raw/vcc2025/targets.txt",
+    "expected_genelist": "data/raw/vcc2025/gene_order.txt",
+    "prep_script": "tools/prep_vcc2025_validation.py"
+  },
+  "code": {
+    "commit": "86a5b5b0f23c294216ecc0bf2513ed7c10af2eac",
+    "hash": "k002-mean-shift-vcc2025-v0"
+  },
+  "seed": 0,
+  "normalization": "normalize_total(1e4) + log1p",
+  "artifact_retention": "prediction + normalized h5ads live under gitignored data/raw (369MB+); committed artifacts are metrics/audit/facts/enrichment only (docs/release-infrastructure.md)",
+  "hypotheses_preregistered": [
+    "Zero-shift floor: DESigGenesRecall lands at or near zero — a constant prediction has no DE genes to recall",
+    "Mean absolute error will beat replicate-naive intuition but pearson_delta will sit far below the computed ceiling"
+  ],
+  "notes": "First run scored by the REAL cell-eval 0.8.2 (k001 was mock/probe). Mean-shift baseline predicts the lognorm control mean for every target, 100 cells per group."
+}

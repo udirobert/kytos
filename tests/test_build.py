@@ -65,9 +65,12 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "evidence-block" in html
     assert "run-score-line" in html
     assert "evidence-journey" in html
+    assert "journey-live" in html
     assert "bio-atmosphere" in html
     assert "narrative-more" in html
     assert "briefing-play" in html
+    assert "bulletin-next" in html
+    assert 'data-copy-label="copy"' in html
     assert "run-header-media-briefing" in html
     assert "visual/briefing.mp4" in html
     assert (dist / "runs" / "k001-mean-shift-baseline" / "visual" / "briefing.mp4").is_file()

@@ -2,6 +2,7 @@
   "run_id": "k001-mean-shift-baseline",
   "created": "2026-08-22",
   "headline": "Basal mean-shift baseline \u2014 ceiling headroom probe",
+  "data_status": "probe",
   "headline_metrics": {
     "DESigGenesRecall": 0.12,
     "pearson_delta": 0.08

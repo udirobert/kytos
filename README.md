@@ -11,6 +11,25 @@ literature context, and video briefings ([`docs/observatory.md`](docs/observator
 
 This README is the entry point. **All prose lives in [`docs/`](docs/)**.
 
+## Start here (60 seconds)
+
+Kytos is a **2026 Virtual Cell Challenge** entry. The predictor models how an
+unseen cellular context responds to CRISPRi perturbation from basal state alone.
+But the product that ships first is the **Observatory** — a build-in-public layer
+that publishes metrics, biological audit flags, literature, provenance, and video
+briefings alongside every experiment run. Leaderboards score 18,000-dimensional
+predictions; the Observatory shows *why* a model is biologically wrong.
+
+**k001** is our own baseline. It deliberately fails its own audit (housekeeping
+gene ACTB shifted +2.10 log2FC; interferon pathway shows mixed directionality).
+The metrics are **mock** — a ceiling probe, not leaderboard claims. Real
+`cell-eval` output replaces them before Oct 22.
+
+**If you read one doc**: [`docs/competitive-landscape.md`](docs/competitive-landscape.md)
+(the wedge, evidence, and adjacent projects). **If you want the pitch**:
+[`docs/demo-script.md`](docs/demo-script.md) (7-beat table for a 2-min Loom).
+**If you want to run it**: [Quick start](#quick-start) below.
+
 ## Problem and wedge
 
 Virtual cell competitions score 18,000-dimensional predictions on a live
@@ -47,16 +66,24 @@ first (hackathon Milestone 0, 2026-08-22). Full research and demarcation:
 ## Partner technologies
 
 Used in the Observatory enrichment pipeline (hackathon: min. 3 required).
-Confirm usage in submission materials.
+**Core** partners are load-bearing in every run; **auxiliary** partners add
+depth or local-only convenience. Confirm usage in submission materials.
+
+**Core pipeline** (every run):
 
 | Partner | Script | Output | Role |
 |---|---|---|---|
 | **OpenAI** | `tools/render_narrative.py`, TTS in `render_briefing.py` | `narrative/report.md`, briefing audio | Grounded run digest + Fabric voice (hackathon / prod) |
-| **Venice** | same script when `NARRATION_PROVIDER=venice` | `narrative/report.md` | **Local dev only** — private narration without burning OpenAI credits ([`docs/venice-dev.md`](docs/venice-dev.md)) |
 | **Tavily** | `tools/enrich_literature.py` | `literature/*.json` | Evidence for audit-flagged genes (degrades empty) |
 | **fal** | `tools/render_visuals.py`, `tools/render_briefing.py` | `visual/*` | Hero stills; **VEED Fabric** (`veed/fabric-1.0`) run briefings |
-| **Pioneer** | `tools/pioneer_ner.py` | `literature/*.entities.json` | Fine-tuned GLiNER2 biomedical NER — deterministic entity extraction from literature (side challenge) |
-| **H (Holo)** | `tools/holo_audit.py` | PASS/FAIL report | Independent render verification — Holo vision-language model screenshots the built Observatory and verifies visible values match `facts.json` |
+
+**Auxiliary** (dev-only or side-challenge):
+
+| Partner | Script | Output | Role |
+|---|---|---|---|
+| **Venice** | same narrative script when `NARRATION_PROVIDER=venice` | `narrative/report.md` | **Local dev only** — private narration without burning OpenAI credits ([`docs/venice-dev.md`](docs/venice-dev.md)) |
+| **Pioneer** | `tools/pioneer_ner.py` | `literature/*.entities.json` | Fine-tuned GLiNER2 biomedical NER — deterministic entity extraction (side challenge) |
+| **H (Holo)** | `tools/holo_audit.py` | PASS/FAIL report | Independent render verification — Holo VLM screenshots the built Observatory and verifies visible values match `facts.json` |
 
 Metrics and charts come **only** from committed CSVs — never from LLM or gen-media APIs.
 

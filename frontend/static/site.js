@@ -334,10 +334,15 @@
         if (!text) {
           return;
         }
+        var original = btn.getAttribute("data-copy-label") || btn.textContent;
         var done = function () {
-          btn.textContent = "copied ✓";
+          btn.textContent = "copied";
+          btn.setAttribute("aria-label", "Reproduce command copied");
+          btn.classList.add("is-copied");
           setTimeout(function () {
-            btn.textContent = "copy";
+            btn.textContent = original;
+            btn.setAttribute("aria-label", "Copy reproduce command");
+            btn.classList.remove("is-copied");
           }, 1600);
         };
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -393,7 +398,9 @@
     }
 
     function setActive(section) {
-      var state = section.getAttribute("data-accent") || section.id;
+      var accent = section.getAttribute("data-accent") || section.id;
+      var stateMap = { amber: "audit", teal: "evidence", violet: "narrative", cyan: "trust" };
+      var state = stateMap[accent] || accent;
       document.documentElement.setAttribute("data-journey-state", state);
       var atmosphere = document.querySelector(".bio-atmosphere");
       if (atmosphere) atmosphere.setAttribute("data-journey-state", state);
@@ -411,6 +418,18 @@
       if (fill) {
         fill.style.height = Math.round(progress * 100) + "%";
       }
+      var liveTitle = rail.querySelector(".journey-live-title");
+      var liveHint = rail.querySelector(".journey-live-hint");
+      var activeLink = links[index];
+      if (liveTitle && activeLink) {
+        var title = activeLink.querySelector("strong");
+        liveTitle.textContent = title ? title.textContent : section.id;
+      }
+      if (liveHint && activeLink) {
+        var hint = activeLink.querySelector("small");
+        liveHint.textContent = hint ? hint.textContent : "reading";
+      }
+      rail.setAttribute("data-active-state", state);
     }
 
     links.forEach(function (link) {
@@ -543,9 +562,6 @@
     }
     var slug = hash.slice("evidence-gene-".length);
     openDisclosure("evidence");
-    document.querySelectorAll(".evidence-sub-panel").forEach(function (panel) {
-      panel.open = true;
-    });
     var blocks = geneBlocksForSlug(slug);
     blocks.forEach(function (block) {
       block.open = true;
@@ -573,6 +589,7 @@
       }
       playBtn.addEventListener("click", function () {
         video.controls = true;
+        wrap.classList.add("is-playing");
         var playPromise = video.play();
         if (playPromise && typeof playPromise.catch === "function") {
           playPromise.catch(function () {});
@@ -582,12 +599,41 @@
           unmuteBtn.hidden = false;
         }
       });
+      video.addEventListener("ended", function () {
+        wrap.classList.remove("is-playing");
+        playBtn.hidden = false;
+        playBtn.innerHTML = '<span aria-hidden="true">↻</span> replay bulletin';
+        playBtn.setAttribute("aria-label", "Replay bulletin");
+        wrap.setAttribute("data-bulletin-seen", "true");
+      });
       if (unmuteBtn) {
         unmuteBtn.addEventListener("click", function () {
           video.muted = false;
           unmuteBtn.hidden = true;
         });
       }
+    });
+  }
+
+  function initBulletinNext() {
+    document.querySelectorAll(".bulletin-next").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var targetId = button.getAttribute("data-bulletin-target");
+        var target = targetId && document.getElementById(targetId);
+        var journeyLink = targetId && document.querySelector(
+          '[data-journey-target="' + targetId + '"]'
+        );
+        if (!target) return;
+        target.open = true;
+        if (journeyLink) {
+          journeyLink.click();
+          return;
+        }
+        target.scrollIntoView({
+          behavior: prefersReducedMotion() ? "auto" : "smooth",
+          block: "start",
+        });
+      });
     });
   }
 
@@ -665,6 +711,7 @@
     initEvidenceJourney();
     initBriefingUnmute();
     initBriefingPlay();
+    initBulletinNext();
     initGeneEvidenceLinks();
     initHashDisclosure();
     initNoWebGLDetect();

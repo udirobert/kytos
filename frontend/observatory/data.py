@@ -162,6 +162,18 @@ def load_planted_signal(run_dir: Path) -> dict[str, Any] | None:
     return payload if isinstance(payload, dict) else None
 
 
+def load_narrative_check(run_dir: Path) -> dict[str, Any] | None:
+    """Load the narrative grounding check (verification/narrative_check.json)."""
+    path = run_dir / "verification" / "narrative_check.json"
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
 def load_newsroom_research(run_dir: Path) -> list[dict[str, Any]]:
     """Load the newsroom field research (newsroom/research.json) — top results."""
     path = run_dir / "newsroom" / "research.json"

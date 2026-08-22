@@ -64,11 +64,6 @@ def _run_index(run: RunSummary, runs: list[RunSummary]) -> int:
         return len(runs)
 
 
-def _count_span(cls: str, value: Any, suffix: str = "", text: str = "0") -> str:
-    """A data-strip value span that counts up to `value` on load."""
-    return f'<span class="{cls}" data-count-to="{value}" data-suffix="{suffix}">{text}</span>'
-
-
 def _narrative_label(narrative: str | None) -> str:
     """Label the narrative panel from its own provenance comment — never guess."""
     first = (narrative or "").splitlines()[0] if narrative else ""
@@ -218,6 +213,39 @@ def _run_severity(facts: dict) -> str:
     return "none"
 
 
+# Data-status labels for non-final metrics. meta.json declares data_status
+# (e.g. "probe" for mock/placeholder values); without this the Observatory
+# would present mock numbers as if they were real cell-eval output.
+_DATA_STATUS_LABELS: dict[str, str] = {
+    "probe": "probe · mock data",
+    "mock": "mock data",
+    "draft": "draft · unverified",
+}
+
+
+def _data_status_badge(facts: dict, meta: dict | None = None) -> str:
+    """Small badge that distinguishes placeholder metrics from real cell-eval output.
+
+    ``data_status`` is declared in ``meta.json`` (not ``facts.json``), so this
+    reads ``meta`` first and falls back to ``facts`` for compatibility. Returns
+    "" when data_status is absent or 'final' — honest by default: the badge only
+    appears when the run's own meta/facts admit it is not real.
+    """
+    status = ""
+    if meta:
+        status = str(meta.get("data_status") or "").strip().lower()
+    if not status:
+        status = str(facts.get("data_status") or "").strip().lower()
+    if not status or status == "final":
+        return ""
+    label = _DATA_STATUS_LABELS.get(status, f"{status} · unverified")
+    title = "Metrics are placeholders, not real cell-eval output"
+    return (
+        f'<span class="data-status-badge" title="{_h(title)}" '
+        f'data-status="{_h(status)}">{_h(label)}</span>'
+    )
+
+
 def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
     links = [
         ("Home", f"{root_prefix}index.html", active == "home"),
@@ -265,12 +293,15 @@ def _head(meta: PageMeta, *, root_prefix: str) -> str:
 """
 
 
-def _home_proof_pill(facts: dict) -> str:
+def _home_proof_pill(facts: dict, meta: dict | None = None) -> str:
     """One-line live stat from the latest run — optional social proof on the hero."""
     flags = facts.get("audit_flags") or []
     warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
     metrics = facts.get("headline_metrics") or {}
     parts: list[str] = []
+    badge = _data_status_badge(facts, meta)
+    if badge:
+        parts.append(badge)
     if warns:
         parts.append(f"{warns} audit warning{'s' if warns != 1 else ''}")
     if metrics:
@@ -278,7 +309,16 @@ def _home_proof_pill(facts: dict) -> str:
         parts.append(f"{_metric_label(key)} {val}")
     if not parts:
         return ""
-    return f'<p class="home-proof">{_h(" · ".join(parts))}</p>'
+    # The badge is already-safe HTML; the text parts need escaping separately
+    # so the join doesn't pass raw markup through _h() (which would escape the
+    # badge's own tags into visible &lt;span&gt; text).
+    escaped: list[str] = []
+    for part in parts:
+        if part.startswith("<"):
+            escaped.append(part)
+        else:
+            escaped.append(_h(part))
+    return f'<p class="home-proof">{" · ".join(escaped)}</p>'
 
 
 def _bio_atmosphere(*, variant: str = "stage", density: str = "light") -> str:
@@ -353,7 +393,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         svg = _vessel_svg(latest.facts, clip_id="vessel-clip-home")
 
         run_index = _run_index(latest, runs)
-        proof = _home_proof_pill(latest.facts)
+        proof = _home_proof_pill(latest.facts, latest.meta)
         about_href = f"{root_prefix}about/index.html"
         vessel_legend = _home_vessel_legend_html(vd, about_href=about_href)
         visual = latest.facts.get("visual") or {}
@@ -722,9 +762,9 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     )
     return (
         _head(meta, root_prefix=root_prefix)
-        + f'<body class="page-about">{body}</body>'
+        + f'<body class="page-about">{body}'
         + f'<script src="{root_prefix}static/site.js" defer></script>'
-        + "</html>"
+        + "</body></html>"
     )
 
 
@@ -740,6 +780,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         prev = chron[run_pos - 1] if run_pos > 0 else None
         delta = _run_card_delta(run, prev)
         mini_svg = _vessel_svg(run.facts, svg_class="vessel-mini")
+        status_badge = _data_status_badge(run.facts, run.meta)
         cards += f"""
         <a class="run-card" href="{href}">
           <div class="run-card-vessel">{mini_svg}</div>
@@ -751,6 +792,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
           </span>
           <span class="run-card-headline">{_h(run.facts.get("headline", ""))}</span>
           <span class="run-card-metrics">{_h(m)}</span>
+          {status_badge}
           {delta}
         </a>
         """
@@ -817,6 +859,13 @@ def _evidence_journey() -> str:
       <span class="journey-label">specimen trail</span>
       <div class="journey-steps">{items}</div>
       <span class="journey-progress" aria-hidden="true"><span></span></span>
+      <span class="journey-live" aria-live="polite">
+        <span class="journey-live-dot" aria-hidden="true"></span>
+        <span class="journey-live-copy">
+          <strong class="journey-live-title">Audit</strong>
+          <small class="journey-live-hint">stress detected</small>
+        </span>
+      </span>
     </nav>
     """
 
@@ -853,7 +902,10 @@ def render_run_detail(
 
     prov = facts.get("provenance") or {}
     headline_m = facts.get("headline_metrics") or {}
-    csv_href = f"{root_prefix}metrics/agg_results.csv"
+    # Metrics CSVs ship next to the run page (build.py copies run/metrics/
+    # to runs/<run-id>/metrics/) — link relative to the run page, not the
+    # site root, or the score link 404s.
+    csv_href = "metrics/agg_results.csv"
     score_line = _run_score_line(facts, csv_href)
 
     evidence_hint = _evidence_hint(literature, entity_summary)
@@ -1241,6 +1293,7 @@ def _run_header_compact(
 ) -> str:
     media = _run_header_media(visual, facts)
     jk = '<span class="jk-hint">j/k · switch runs</span>' if len(runs) > 1 else ""
+    status_badge = _data_status_badge(facts, run.meta)
     return f"""
     <header class="run-header">
       <nav class="breadcrumb">
@@ -1253,6 +1306,7 @@ def _run_header_compact(
             Run #{_run_index(run, runs)} of {VCC_DAYS} · {_h(facts.get("created", ""))}
           </p>
           <h1 class="run-header-title">{_h(facts.get("headline", run.run_id))}</h1>
+          {status_badge}
           {score_line}
         </div>
         {media}
@@ -1305,6 +1359,9 @@ def _run_header_media(visual: dict, facts: dict) -> str:
           <button class="briefing-play" type="button" aria-label="Play {label}">
             <span aria-hidden="true">▶</span> {label}
           </button>
+          <button class="bulletin-next" type="button" data-bulletin-target="audit">
+            <span aria-hidden="true">↓</span> inspect audit
+          </button>
           <span class="briefing-stamp briefing-stamp-compact">{label}</span>
           <button class="briefing-unmute" type="button" hidden
                   aria-label="Unmute bulletin">♪ unmute</button>
@@ -1331,7 +1388,8 @@ def _provenance_block(prov: dict, run_id: str) -> str:
       <p class="reproduce">Reproduce:
       <code id="reproduce-cmd">python -m kytos.audit --run experiments/{_h(run_id)}
       &amp;&amp; python -m kytos.eval.facts --run experiments/{_h(run_id)}</code>
-      <button class="copy-btn" type="button" data-copy="#reproduce-cmd">copy</button></p>
+      <button class="copy-btn" type="button" data-copy="#reproduce-cmd"
+              data-copy-label="copy" aria-label="Copy reproduce command">copy</button></p>
     </footer>
     """
 
@@ -1374,28 +1432,20 @@ def _confession_banner(facts: dict, run_id: str) -> str:
     """
 
 
-def _audit_flags(flags: list[dict[str, Any]]) -> str:
-    if not flags:
-        return '<p class="muted">No audit flags.</p>'
-    badge = {"warn": "!", "error": "✕", "info": "i"}
-    cards = []
-    for flag in flags:
-        genes = ", ".join(flag.get("genes") or [])
-        severity = flag.get("severity", "info")
-        cards.append(
-            f"""
-            <article class="flag-card severity-{_h(severity)}">
-              <header>
-                <span class="flag-rule"><span class="flag-badge">{badge.get(severity, "i")}</span>
-                {_h(flag.get("rule", ""))}</span>
-                <span class="flag-severity">{_h(severity)}</span>
-              </header>
-              <p>{_h(flag.get("message", ""))}</p>
-              <p class="flag-genes"><strong>Genes:</strong> {_h(genes)}</p>
-            </article>
-            """
-        )
-    return "".join(cards)
+def _clean_snippet(text: str) -> str:
+    """Strip markdown/scrape residue from Tavily snippets for display.
+
+    Raw search results arrive with markdown headers (``####``), stray table
+    pipes, image/link syntax, and emphasis markers — none of which render in
+    our plain-text cards, so they read as noise in an evidence panel whose
+    entire job is trust.
+    """
+    text = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", text)  # images
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1", text)  # links → link text
+    text = re.sub(r"^#+\s*", "", text, flags=re.MULTILINE)  # markdown headers
+    text = re.sub(r"[*_~`]+", "", text)  # emphasis / code markers
+    text = re.sub(r"\|", " ", text)  # stray table pipes
+    return re.sub(r"\s+", " ", text).strip(" -#")
 
 
 def _literature_rail(
@@ -1417,13 +1467,29 @@ def _literature_rail(
         if not results:
             blocks.append(f"<p class='muted'>No results for {_h(str(flag_id))}.</p>")
             continue
+        # Dedupe repeated sources (search APIs regularly return the same page
+        # with different snippets) before slicing to max_results.
+        seen_titles: set[str] = set()
+        deduped: list[dict[str, Any]] = []
+        for hit in results:
+            key = re.sub(r"\s+", " ", (hit.get("title") or "").strip().lower()) or hit.get("url")
+            if key in seen_titles:
+                continue
+            seen_titles.add(key)
+            deduped.append(hit)
+        results = deduped
         lis = []
         total = len(results)
         for hit in results[:max_results]:
-            title = _h(hit.get("title", "Untitled"))
+            # Titles keep pipes ("… | eLife") — they are real separators;
+            # snippets get the full residue scrub.
+            clean_title = re.sub(r"[*_~`]+", "", hit.get("title") or "")
+            clean_title = re.sub(r"\s+", " ", clean_title).strip(" -#")
+            clean_snip = _clean_snippet(hit.get("snippet") or "")
+            title = _h(clean_title or "Untitled")
             url = _h(hit.get("url", "#"))
-            snippet = _h((hit.get("snippet") or "")[:snippet_chars])
-            if len(hit.get("snippet") or "") > snippet_chars:
+            snippet = _h(clean_snip[:snippet_chars])
+            if len(clean_snip) > snippet_chars:
                 snippet += "…"
             lis.append(
                 f'<li><a href="{url}" rel="noopener">{title}</a>'
@@ -1484,9 +1550,10 @@ def _entity_method_badge(item: dict[str, Any]) -> str:
 
 
 def _verification_section(run_dir: Any, run_id: str, *, embedded: bool = False) -> str:
-    """The trust layer: planted-signal + Holo agent audit cards."""
+    """The trust layer: planted-signal, Holo agent audit, narrative grounding cards."""
     planted = data_mod.load_planted_signal(run_dir)
     holo = data_mod.load_holo_audit(run_dir)
+    narrative_check = data_mod.load_narrative_check(run_dir)
     holo_shot = "holo_screenshot.png"
 
     cards = []
@@ -1625,6 +1692,74 @@ def _verification_section(run_dir: Any, run_id: str, *, embedded: bool = False) 
               <header>
                 <span class="verify-badge">PENDING</span>
                 <span class="verify-title">Independent agent audit</span>
+              </header>
+              """
+                + pending
+                + """
+            </article>
+            """
+            )
+
+    if narrative_check and narrative_check.get("status") != "skip":
+        ok = narrative_check.get("status") == "pass"
+        summary = narrative_check.get("summary") or "—"
+        cases = narrative_check.get("cases") or []
+        passed = sum(1 for c in cases if c.get("ok"))
+        badge = "PASS" if ok else "FAIL"
+        card_class = "verify-pass" if ok else "verify-fail"
+        body = (
+            f"<p>The LLM digest is grounded by construction: every number in it must "
+            f"trace back to facts.json, verified deterministically. "
+            f"<strong>{_h(summary)}</strong> ({passed}/{len(cases)} checks).</p>"
+            f'<p class="verify-cmd"><code>python tools/check_narrative.py '
+            f"--run experiments/{_h(run_id)}</code></p>"
+        )
+        if embedded:
+            cards.append(
+                f'<details class="verify-compact {card_class}">'
+                f"<summary>"
+                f'<span class="verify-badge">{badge}</span>'
+                f'<span class="verify-title">Narrative grounding check</span>'
+                f'<span class="verify-compact-hint">{_h(summary)} · {passed}/{len(cases)}</span>'
+                f"</summary>"
+                f'<div class="verify-compact-body">{body}</div>'
+                f"</details>"
+            )
+        else:
+            cards.append(
+                f"""
+            <article class="verify-card {card_class}">
+              <header>
+                <span class="verify-badge">{badge}</span>
+                <span class="verify-title">Narrative grounding check</span>
+              </header>
+              {body}
+            </article>
+            """
+            )
+    else:
+        pending = (
+            "<p>Run <code>python tools/check_narrative.py --run experiments/&lt;run-id&gt;</code> "
+            "after the digest is generated.</p>"
+        )
+        if embedded:
+            cards.append(
+                f'<details class="verify-compact verify-pending">'
+                f"<summary>"
+                f'<span class="verify-badge">PENDING</span>'
+                f'<span class="verify-title">Narrative grounding check</span>'
+                f'<span class="verify-compact-hint">not run yet</span>'
+                f"</summary>"
+                f'<div class="verify-compact-body">{pending}</div>'
+                f"</details>"
+            )
+        else:
+            cards.append(
+                """
+            <article class="verify-card verify-pending">
+              <header>
+                <span class="verify-badge">PENDING</span>
+                <span class="verify-title">Narrative grounding check</span>
               </header>
               """
                 + pending

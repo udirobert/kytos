@@ -18,5 +18,6 @@
     "Basal co-expression alone explains <20% of cross-context transfer on DESigGenesRecall",
     "Mean-shift baseline will sit below 50% of ceiling on pearson_delta"
   ],
-  "notes": "Milestone 0 mock metrics for Observatory demo; replace with cell-eval run output."
+  "notes": "Milestone 0 mock metrics for Observatory demo; replace with cell-eval run output.",
+  "data_status": "probe"
 }

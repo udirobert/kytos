@@ -64,6 +64,7 @@ def assemble_facts(run_dir: Path) -> dict[str, Any]:
         "run_id": meta.get("run_id", run_dir.name),
         "created": meta.get("created", ""),
         "headline": meta.get("headline", ""),
+        "data_status": meta.get("data_status", "real"),
         "headline_metrics": headline,
         "ceiling_headroom": ceiling_headline,
         "audit_flags": load_audit_flags(run_dir),

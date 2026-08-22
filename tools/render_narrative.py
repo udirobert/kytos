@@ -2,7 +2,9 @@
 
 Hard rules (docs/observatory.md §5, docs/run-protocol.md):
 - reads facts.json only; never invents metrics or claims
-- every LLM claim must trace to a facts.json field (citations in parentheses)
+- every number in the digest must trace to facts.json — enforced by
+  tools/check_narrative.py (deterministic, offline; writes
+  verification/narrative_check.json that the Trust panel renders)
 - on missing key / client / API failure: write a DETERMINISTIC fallback digest
   and exit 0 — the site must build with zero API keys at view time
 
@@ -16,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 
 from _enrich_common import (
     chat_model,
@@ -36,11 +39,25 @@ OUT = "narrative/report.md"
 SYSTEM_PROMPT = (
     "You write a short scientific run digest for a virtual-cell competition. "
     "GROUND EVERY CLAIM in the facts JSON provided. "
-    "Cite the source field inline in parentheses, e.g. (facts: headline_metrics.DESigGenesRecall). "
     "Never invent numbers, genes, thresholds, or conclusions. "
+    "Do not assign direction (up/down), magnitude, or significance to any "
+    "individual gene unless the facts JSON states it for that gene verbatim — "
+    "flag messages describe pathways and thresholds, not per-gene direction. "
+    "The digest is public prose for humans: do NOT include internal JSON key "
+    "paths, '(facts: …)' citations, or debug annotations of any kind. "
+    "Grounding is enforced separately by tools/check_narrative.py. "
     "Output GitHub-flavored markdown, max ~250 words. "
     "Start with one sentence on the run's headline result."
 )
+
+
+_FACTS_ANNOTATION_RE = re.compile(r"\s*\(facts:\s*[^)]*\)")
+
+
+def _strip_debug_annotations(text: str) -> str:
+    """Remove any '(facts: key.path)' annotations the model emits despite the
+    prompt — they are internal grounding breadcrumbs, not public prose."""
+    return _FACTS_ANNOTATION_RE.sub("", text)
 
 
 def fallback_digest(facts: dict) -> str:
@@ -105,6 +122,7 @@ def render_with_openai(facts: dict) -> str:
     text = (response.choices[0].message.content or "").strip()
     if not text:
         raise RuntimeError("OpenAI returned an empty narrative")
+    text = _strip_debug_annotations(text)
     header = (
         f"<!-- kytos narrative · generated_by=llm · provider={narration_provider()} "
         f"· model={MODEL} · {utcnow()} UTC -->"

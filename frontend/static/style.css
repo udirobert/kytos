@@ -1,25 +1,39 @@
 :root {
-  --bg: #0d1f2d;
-  --bg-panel: #11304a;
-  --bg-elevated: #163b5c;
-  --bg-glass: rgba(17, 48, 74, 0.68);
-  --ink: #eaf4f9;
-  --muted: #9fc4d6;
-  --line: rgba(159, 196, 214, 0.16);
-  --line-bright: rgba(159, 196, 214, 0.28);
+  /* ── Neutral Obsidian / Zinc Canvas (Replaces saturated deep-teal) ─── */
+  --bg: #090c10;
+  --bg-panel: #111620;
+  --bg-elevated: #18202d;
+  --bg-glass: rgba(17, 22, 32, 0.75);
+
+  --ink: #f0f6fc;
+  --ink-bright: #ffffff;
+  --muted: #8b9bb4;
+  --line: rgba(240, 246, 252, 0.09);
+  --line-bright: rgba(240, 246, 252, 0.18);
+
+  /* ── Semantic Accents ─── */
   --accent: #2dd4bf;
-  --ceiling: #22d3ee;
-  --warn: #fbbf24;
-  --error: #f87171;
+  --accent-dim: rgba(45, 212, 191, 0.14);
+  --ceiling: #38bdf8;
+  --warn: #f59e0b;
+  --warn-dim: rgba(245, 158, 11, 0.15);
+  --error: #f43f5e;
+  --error-dim: rgba(244, 63, 94, 0.15);
+  --success: #10b981;
+  --success-dim: rgba(16, 185, 129, 0.15);
+
+  /* ── Typography Tokens ─── */
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --serif: "Instrument Serif", Georgia, serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
+
   --radius: 14px;
   --radius-lg: 22px;
   --radius-xl: 32px;
-  --glow-accent: 0 0 40px rgba(45, 212, 191, 0.2);
-  --glow-warn: 0 0 30px rgba(251, 191, 36, 0.18);
-  --shadow-float: 0 24px 60px rgba(13, 31, 45, 0.4), 0 2px 8px rgba(13, 31, 45, 0.2);
-  --shadow-glass: 0 20px 50px rgba(13, 31, 45, 0.3), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  --glow-accent: 0 0 35px rgba(45, 212, 191, 0.16);
+  --glow-warn: 0 0 30px rgba(245, 158, 11, 0.18);
+  --shadow-float: 0 24px 60px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-glass: 0 20px 50px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
 
   /* ── Motion tokens (transitions.dev scale) ────────────────────────────── */
   /* Shared semantic durations / easings so every transition feels cohesive. */
@@ -67,15 +81,15 @@ body {
 
 body {
   background:
-    radial-gradient(1600px 800px at 15% -8%, rgba(45, 212, 191, 0.12), transparent 60%),
-    radial-gradient(1200px 700px at 92% 8%, rgba(103, 232, 249, 0.08), transparent 60%),
-    radial-gradient(1000px 1000px at 50% 110%, rgba(45, 212, 191, 0.06), transparent 50%),
+    radial-gradient(1200px 700px at 15% -8%, rgba(45, 212, 191, 0.08), transparent 65%),
+    radial-gradient(1000px 600px at 90% 12%, rgba(56, 189, 248, 0.06), transparent 60%),
+    radial-gradient(900px 900px at 50% 110%, rgba(45, 212, 191, 0.04), transparent 50%),
     var(--bg);
   background-attachment: fixed;
   color: var(--ink);
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
@@ -125,8 +139,9 @@ button:focus-visible,
 
 code {
   font-family: var(--mono);
-  font-size: 0.92em;
-  background: rgba(159, 196, 214, 0.1);
+  font-size: 0.9em;
+  background: rgba(240, 246, 252, 0.08);
+  border: 1px solid var(--line);
   padding: 0.1em 0.35em;
   border-radius: 4px;
 }
@@ -142,9 +157,9 @@ code {
   gap: 1.5rem;
   padding: 1rem 2rem;
   border-bottom: 1px solid var(--line);
-  background: rgba(17, 48, 74, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(9, 12, 16, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -415,7 +430,19 @@ code {
 
 .bio-atmosphere-light { opacity: 0.46; }
 .bio-atmosphere-medium { opacity: 0.7; }
-.bio-atmosphere-archive { position: absolute; }
+.bio-atmosphere-archive { position: absolute; z-index: -1; }
+
+/* The specimen state follows the evidence journey even without WebGL. */
+html[data-journey-state="audit"] .bio-atmosphere::before { border-color: rgba(251, 191, 36, 0.18); }
+html[data-journey-state="audit"] .bio-atmosphere::after { border-color: rgba(251, 191, 36, 0.14); }
+html[data-journey-state="evidence"] .bio-atmosphere::before { border-color: rgba(45, 212, 191, 0.18); }
+html[data-journey-state="narrative"] .bio-atmosphere::before { border-color: rgba(196, 181, 253, 0.18); }
+html[data-journey-state="trust"] .bio-atmosphere::before { border-color: rgba(34, 211, 238, 0.18); }
+html[data-journey-state="audit"] .journey-progress span { background: var(--warn); }
+html[data-journey-state="evidence"] .journey-progress span { background: var(--accent); }
+html[data-journey-state="narrative"] .journey-progress span { background: #c4b5fd; }
+html[data-journey-state="trust"] .journey-progress span { background: var(--ceiling); }
+
 
 /* ════════════════════════════════════════════════════════════════════════
    HOME PAGE — full-viewport stage
@@ -779,6 +806,49 @@ html.no-webgl .vessel-loading {
   text-shadow: 0 0 12px rgba(45, 212, 191, 0.4);
 }
 
+/* ── Data-status badge: distinguishes placeholder/probe metrics from real
+   cell-eval output. Uses --warn (amber) for caution, not --error (red). */
+.data-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.08);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--warn);
+  text-shadow: none;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.data-status-badge::before {
+  content: "⚠";
+  font-size: 0.7em;
+  line-height: 1;
+}
+
+/* Inside the home-proof pill: badge sits inline before the stats. */
+.home-proof .data-status-badge {
+  margin-right: 0.3rem;
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+/* Inside run cards: badge is a standalone pill below the headline. */
+.run-card .data-status-badge {
+  align-self: flex-start;
+  margin-top: 0.15rem;
+}
+
+/* Inside the run header: badge sits between title and score line. */
+.run-header .data-status-badge {
+  margin: 0.4rem 0 0;
+}
+
 .home-lede {
   color: var(--muted);
   font-size: 1rem;
@@ -1010,6 +1080,8 @@ html.no-webgl .vessel-loading {
 
 /* Compact header — SVG only; no WebGL (canvas was blocking card clicks) */
 .runs-header {
+  position: relative;
+  isolation: isolate;
   max-width: 1100px;
   margin: 0 auto;
   padding: 2.5rem 2rem 0.5rem;
@@ -1836,8 +1908,62 @@ a.run-insight-card:hover {
   height: 0;
   border-radius: inherit;
   background: linear-gradient(var(--warn), var(--ceiling));
-  transition: height 220ms ease;
+  transition: height 220ms ease, background 220ms ease;
 }
+
+.journey-live {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 0.42rem;
+  min-width: 7.6rem;
+  padding: 0.25rem 0.45rem;
+  border-left: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.journey-live-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px currentColor;
+  animation: journey-live-pulse 2.1s ease-in-out infinite;
+}
+
+.journey-live-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.journey-live-title,
+.journey-live-hint {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.journey-live-title {
+  font-size: 0.66rem;
+  font-weight: 500;
+}
+
+.journey-live-hint {
+  color: var(--muted);
+  font-size: 0.56rem;
+}
+
+@keyframes journey-live-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.evidence-journey[data-active-state="audit"] .journey-live-dot { color: var(--warn); background: var(--warn); }
+.evidence-journey[data-active-state="evidence"] .journey-live-dot { color: var(--accent); background: var(--accent); }
+.evidence-journey[data-active-state="narrative"] .journey-live-dot { color: #c4b5fd; background: #c4b5fd; }
+.evidence-journey[data-active-state="trust"] .journey-live-dot { color: var(--ceiling); background: var(--ceiling); }
 
 .disclosure-panel {
   border-radius: var(--radius-lg);
@@ -2195,6 +2321,38 @@ a.run-insight-card:hover {
   right: 0.5rem;
   left: auto;
   bottom: 0.55rem;
+}
+
+.bulletin-next {
+  position: absolute;
+  right: 0.55rem;
+  top: 2.15rem;
+  z-index: 4;
+  padding: 0.25rem 0.42rem;
+  border: 1px solid rgba(234, 244, 249, 0.22);
+  border-radius: 5px;
+  background: rgba(5, 18, 28, 0.72);
+  color: rgba(234, 244, 249, 0.82);
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.run-header-media-bulletin:hover .bulletin-next,
+.run-header-media-bulletin:focus-within .bulletin-next,
+.run-header-media-bulletin.is-playing .bulletin-next {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bulletin-next:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .briefing-play {
@@ -2721,9 +2879,15 @@ details summary {
   transition: color 0.2s, border-color 0.2s;
 }
 
-.copy-btn:hover {
+.copy-btn:hover,
+.copy-btn.is-copied {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+.copy-btn.is-copied {
+  background: rgba(45, 212, 191, 0.12);
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.14);
 }
 
 .muted {
@@ -3241,6 +3405,15 @@ details summary {
 
   .journey-label,
   .journey-step-copy small {
+    display: none;
+  }
+
+  .journey-live {
+    min-width: 4.2rem;
+    padding-left: 0.35rem;
+  }
+
+  .journey-live-hint {
     display: none;
   }
 

@@ -1,0 +1,77 @@
+name: observatory-publish
+
+# The autonomy loop: a push touching experiments/ runs the deterministic core
+# (audit → facts), the partner enrichment (narrative → grounding check →
+# literature → NER → visuals → Fabric briefing), verification, and a build
+# smoke test — then commits the artifacts back so Netlify deploys them.
+#
+# Secrets (all optional — every tool degrades to exit 0 without them):
+#   OPENAI_API_KEY, TAVILY_API_KEY, FAL_KEY, HAI_API_KEY
+on:
+  push:
+    branches: [main]
+    paths:
+      - "experiments/**"
+      - "tools/**"
+      - "src/**"
+      - "frontend/**"
+      - ".github/workflows/observatory.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # weekly cadence, Mondays 06:00 UTC
+
+concurrency:
+  group: observatory-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  enrich-and-publish:
+    # Never retrigger on our own bot commits.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install lightweight enrichment environment
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --quiet --upgrade pip
+          .venv/bin/pip install --quiet pytest openai tavily-python fal-client playwright certifi
+          .venv/bin/playwright install --with-deps chromium || true
+
+      - name: Test gate (stdlib suite; heavy science env stays local)
+        run: .venv/bin/python -m pytest tests/ -q --ignore=tests/test_harness.py
+
+      - name: Enrich every experiment run
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          HAI_API_KEY: ${{ secrets.HAI_API_KEY }}
+        run: |
+          for d in experiments/*/; do
+            if [ -f "$d/meta.json" ]; then
+              ./tools/run_enrichment.sh "$d" || echo "[ci] enrichment degraded for $d (non-fatal)"
+            fi
+          done
+
+      - name: Build smoke test (site must build with enrichment outputs)
+        run: .venv/bin/python frontend/build.py --experiments experiments --out /tmp/kytos-dist-ci
+
+      - name: Commit enrichment artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments
+          if git diff --cached --quiet; then
+            echo "no enrichment changes to commit"
+          else
+            git commit -m "[observatory-bot] enrichment artifacts ($GITHUB_SHA)"
+            git push
+          fi

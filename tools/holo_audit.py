@@ -508,7 +508,11 @@ def run_audit(
                     "run_id": run_id,
                 }
 
-        notice(f"holo_audit: screenshot saved to {screenshot_path.relative_to(REPO_ROOT)}")
+        try:
+            shot_rel = str(screenshot_path.relative_to(REPO_ROOT))
+        except ValueError:
+            shot_rel = str(screenshot_path)
+        notice(f"holo_audit: screenshot saved to {shot_rel}")
         observed = _ask_holo_vlm(vlm_client, screenshot_path)
         audit_mode = "vlm" if observed else "vlm_failed"
 

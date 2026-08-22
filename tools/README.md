@@ -8,15 +8,20 @@ into `experiments/<run-id>/`. None of them touch the inference path.
 | Tool | Partner | Output | Spend cap (per run) |
 |---|---|---|---|
 | `render_narrative.py` | OpenAI (prod) or **Venice** (local dev) | `narrative/report.md` | 1 LLM call |
+| `check_narrative.py` | — (deterministic, offline) | `verification/narrative_check.json` | 0 |
 | `enrich_literature.py` | Tavily | `literature/<gene>.json` | ≤ 5 searches |
 | `render_visuals.py` | fal (flux/dev) | `visual/hero.png`, `visual/share-card.png` | 2 image gens |
 | `render_briefing.py` | OpenAI TTS + fal `veed/fabric-1.0` | `visual/briefing.mp4` (+ `briefing-audio.mp3`) | 1 TTS + 1 Fabric |
 | `holo_audit.py` | **H / Holo** | `holo_screenshot.png`, `holo_audit.json` | 1 VLM call |
+| `prep_vcc2025_validation.py` | — (.venv-science) | `data/raw/vcc2025/` norm-log h5ads + targets/gene axis | 0 |
+| `build_audit_context.py` | — (.venv-science) | `audit/context.json` from prediction h5ad | 0 |
 
 ## Rules (hard)
 
-1. **Read `facts.json` only** — never invent metrics or claims; narrative cites
-   facts fields inline.
+1. **Read `facts.json` only** — never invent metrics or claims. Grounding is
+   enforced by `check_narrative.py`: every number and per-gene direction claim
+   in the digest must trace to facts.json (result renders as a Trust panel
+   card on the run page).
 2. **Degrade empty, never block** — missing API key, missing client, or API
    failure ⇒ write fallback/no artifacts and **exit 0**. The site must build
    with zero API keys at view time.
