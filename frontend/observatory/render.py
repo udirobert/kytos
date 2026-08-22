@@ -454,15 +454,176 @@ def _vessel_about_panel(runs: list[RunSummary]) -> str:
     """
 
 
-def _why_html() -> str:
-    """The 'Why the Observatory' essay — shared between pages."""
-    return """
-    <section class="panel">
+def _run_card_metrics_line(run: RunSummary) -> str:
+    """Human-readable run card metrics: ceiling % and audit warns."""
+    facts = run.facts
+    metrics = facts.get("headline_metrics") or {}
+    ceilings = facts.get("ceiling_headroom") or {}
+    parts: list[str] = []
+    for key, val in list(metrics.items())[:2]:
+        label = _metric_label(key)
+        ceil = ceilings.get(key)
+        if ceil is not None and float(ceil) > 0:
+            pct = int(round(100 * float(val) / float(ceil)))
+            parts.append(f"{label} {pct}% ceiling")
+        else:
+            parts.append(f"{label} {val}")
+    warns = sum(1 for f in facts.get("audit_flags") or [] if f.get("severity") in ("warn", "error"))
+    if warns:
+        parts.append(f"{warns} audit warn{'s' if warns != 1 else ''}")
+    extra = len(metrics) - 2
+    if extra > 0:
+        parts.append(f"+{extra} more")
+    return " · ".join(parts) if parts else "—"
+
+
+def _insight_card(
+    eyebrow: str,
+    title: str,
+    body: str,
+    *,
+    foot: str = "",
+    href: str | None = None,
+) -> str:
+    """Non-clickable context card on the runs index while the grid is sparse."""
+    tag = "a" if href else "div"
+    href_attr = f' href="{_h(href)}"' if href else ""
+    foot_html = f'<span class="run-insight-foot">{_h(foot)}</span>' if foot else ""
+    return f"""
+    <{tag} class="run-card run-insight-card"{href_attr}>
+      <span class="run-insight-eyebrow">{_h(eyebrow)}</span>
+      <span class="run-insight-title">{_h(title)}</span>
+      <span class="run-insight-body">{body}</span>
+      {foot_html}
+    </{tag}>
+    """
+
+
+def _runs_insight_cards(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
+    """Fill the runs grid with substantiation until enough real runs exist."""
+    n = len(runs)
+    if n >= 4:
+        return ""
+    about = f"{root_prefix}about/index.html#substantiation"
+    cards = [
+        _insight_card(
+            "Virtual Cell Challenge",
+            "Six metrics in 2026",
+            "Arc expanded scoring because <strong>no single metric captures model quality</strong> "
+            "and narrow leaderboards invite optimization against the score — not the biology.",
+            foot="5,000+ registrants · 114 countries in 2025",
+            href=about,
+        ),
+        _insight_card(
+            "Arc Institute",
+            "Biological vs numerical",
+            "The 2026 challenge calls for people who know when a model is wrong for "
+            "<strong>biological rather than numerical reasons</strong>. "
+            "Rankings alone don't show that.",
+            foot="Official scores stay in cell-eval — we add audit + provenance",
+            href=about,
+        ),
+        _insight_card(
+            "Kytos Observatory",
+            "What we publish per run",
+            "<strong>cell-eval metrics</strong> and ceiling headroom, "
+            "<strong>audit flags</strong> (separate from score), "
+            "literature, provenance, and briefings — for all "
+            f"<strong>{VCC_DAYS} days</strong> of the public build.",
+            foot="Run #1 of 78 is live",
+            href=f"{root_prefix}index.html" if runs else None,
+        ),
+    ]
+    if n == 1:
+        run = runs[0]
+        line = _run_card_metrics_line(run)
+        cards.insert(
+            0,
+            _insight_card(
+                "Run snapshot",
+                "Why scores aren't enough",
+                f"Our first baseline scores well on paper but fails its own audit rules — "
+                f"<strong>{_h(line)}</strong>. "
+                f"That tension is the point.",
+                foot="Open the run → confession banner → gene evidence",
+                href=f"{_h(run.run_id)}/index.html",
+            ),
+        )
+    return "".join(cards[: max(0, 4 - n)])
+
+
+def _substantiation_about_html(runs: list[RunSummary]) -> str:
+    """Evidence-backed 'Why the Observatory' — stats without wall-of-citations."""
+    k001_line = ""
+    if runs:
+        line = _run_card_metrics_line(runs[-1])
+        k001_line = f"""
+        <p class="substantiation-live prose">
+          <strong>Live example (run #{_run_index(runs[-1], runs)}):</strong> {_h(line)} —
+          plus audit flags the headline metrics never name.
+        </p>"""
+    return f"""
+    <section class="panel substantiation-panel" id="substantiation">
       <h2>Why the Observatory</h2>
-      <p class="prose">Arc expanded to six metrics because narrow scoring invites optimization
-      against the metric, not the biology. We publish every run's scores <em>and</em> biological
-      audit flags, literature, and provenance so failure modes are visible while the competition
-      runs.</p>
+      <p class="prose">The Virtual Cell Challenge produces high-dimensional predictions
+      and leaderboard scores. It does not publish <em>when a model is biologically wrong
+      while still scoring acceptably</em>. We do — run by run, in the open, for the full
+      competition window.</p>
+
+      <div class="evidence-strip">
+        <div class="evidence-stat">
+          <span class="evidence-stat-value">6</span>
+          <span class="evidence-stat-label">scored metrics in 2026</span>
+          <span class="evidence-stat-note">Arc aggregate — 0 = mean baseline, 1 = replicate</span>
+        </div>
+        <div class="evidence-stat">
+          <span class="evidence-stat-value">5k+</span>
+          <span class="evidence-stat-label">VCC 2025 registrants</span>
+          <span class="evidence-stat-note">114 countries · 300+ final teams</span>
+        </div>
+        <div class="evidence-stat">
+          <span class="evidence-stat-value">{VCC_DAYS}</span>
+          <span class="evidence-stat-label">days public build</span>
+          <span class="evidence-stat-note">Aug 20 → Nov 5, 2026</span>
+        </div>
+      </div>
+
+      {k001_line}
+
+      <div class="substantiation-grid">
+        <div class="substantiation-col">
+          <h3 class="substantiation-subhead">Official infrastructure</h3>
+          <ul class="substantiation-list">
+            <li>Leaderboard + <code>cell-eval</code> six-metric scoring</li>
+            <li>Zero-shot across six unseen cell contexts (2026)</li>
+            <li>High-quality Perturb-seq ground truth (~1k cells / perturbation)</li>
+          </ul>
+        </div>
+        <div class="substantiation-col">
+          <h3 class="substantiation-subhead">Observatory adds</h3>
+          <ul class="substantiation-list">
+            <li>Ceiling headroom (% of best achievable per metric)</li>
+            <li>Biological audit flags <em>separate from</em> score</li>
+            <li>Literature + NER + provenance + reproduce commands</li>
+          </ul>
+        </div>
+      </div>
+
+      <details class="sources-details">
+        <summary>Sources &amp; further reading</summary>
+        <ul class="sources-list">
+          <li><a href="https://arcinstitute.org/news/virtual-cell-challenge-2026" rel="noopener">
+              Arc — Virtual Cell Challenge 2026</a> (six metrics, biological vs numerical)</li>
+          <li><a href="https://arcinstitute.org/news/virtual-cell-challenge-2025-wrap-up"
+              rel="noopener">
+              Arc — 2025 wrap-up</a> (5,000+ registrants, Generalist Prize)</li>
+          <li><a href="https://pypi.org/project/cell-eval2/" rel="noopener">
+              cell-eval2</a> (2026 metric scale 0–1)</li>
+          <li><a href="https://www.nature.com/articles/s41592-025-02772-6" rel="noopener">
+              Nature Methods 2025</a> — perturbation models vs linear baselines</li>
+          <li>Repo: <code>docs/substantiation.md</code> (maintainer crib sheet)</li>
+        </ul>
+      </details>
     </section>
     """
 
@@ -473,7 +634,7 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         + '<main class="content about-content">'
         + _timeline_html()
         + _vessel_about_panel(runs)
-        + _why_html()
+        + _substantiation_about_html(runs)
         + "</main>"
     )
     meta = PageMeta(
@@ -496,8 +657,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
     cards = ""
     for run in reversed(runs):
         href = f"{_h(run.run_id)}/index.html"
-        metrics = run.facts.get("headline_metrics") or {}
-        m = _card_metrics_summary(metrics)
+        m = _run_card_metrics_line(run)
         severity = _run_severity(run.facts)
         vd = _vessel_data(run.facts)
         chron = list(runs)
@@ -529,7 +689,8 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
           <div class="runs-header-vessel-wrap">{header_vessel}</div>
           <h1>Experiment runs</h1>
           <p class="runs-header-sub">
-            Metrics, audit flags, and provenance for every experiment — click a card to open.
+            Metrics, ceiling headroom, and audit flags for every experiment.
+            Insight cards fill the grid until more runs ship.
           </p>
           <p class="runs-header-count">{run_count}</p>
         </section>
@@ -542,10 +703,11 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         </section>
         """
 
+    insight_cards = _runs_insight_cards(runs, root_prefix=root_prefix)
     body = (
         _nav("runs", runs, root_prefix=root_prefix)
         + header
-        + f'<main class="content"><div class="run-grid">{cards}</div></main>'
+        + f'<main class="content"><div class="run-grid">{cards}{insight_cards}</div></main>'
     )
     meta = PageMeta(
         title="Runs",
@@ -1011,20 +1173,54 @@ def _run_header_compact(
 
 
 def _run_header_media(visual: dict, facts: dict) -> str:
+    bulletin = visual.get("bulletin")
     briefing = visual.get("briefing")
     hero = visual.get("hero")
-    if briefing:
+    media = bulletin or briefing
+    if media:
         poster = f' poster="{_h(hero)}"' if hero else ""
+        is_bulletin = bool(bulletin)
+        media_class = "run-header-media-bulletin" if is_bulletin else "run-header-media-briefing"
+        label = "8s run bulletin" if is_bulletin else "full broadcast"
+        kicker = "RUN BULLETIN" if is_bulletin else "FULL BROADCAST"
+        run_label = _h(str(facts.get("run_id", "run"))).upper()
+        metrics = facts.get("headline_metrics") or {}
+        ceilings = facts.get("ceiling_headroom") or {}
+        score_bits = []
+        for key, value in list(metrics.items())[:1]:
+            ceiling = ceilings.get(key)
+            if ceiling not in (None, 0):
+                score_bits.append(f"{round(100 * float(value) / float(ceiling))}%")
+            else:
+                score_bits.append(str(value))
+        audit_flags = facts.get("audit_flags") or []
+        audit_genes = next(
+            (gene for flag in audit_flags for gene in flag.get("genes") or []),
+            "audit",
+        )
+        score_display = _h(score_bits[0] if score_bits else "score pending")
         return f"""
-        <div class="run-header-media run-header-media-video">
-          <video class="briefing-video briefing-video-compact" src="{_h(briefing)}"
+        <div class="run-header-media run-header-media-video {media_class}">
+          <div class="bulletin-bio-lines" aria-hidden="true"></div>
+          <div class="bulletin-orbit bulletin-orbit-a" aria-hidden="true"></div>
+          <div class="bulletin-orbit bulletin-orbit-b" aria-hidden="true"></div>
+          <video class="briefing-video briefing-video-compact" src="{_h(media)}"
                  muted playsinline preload="metadata"{poster}></video>
-          <button class="briefing-play" type="button" aria-label="Play newsroom briefing">
-            ▶ briefing
+          <div class="bulletin-overlay" aria-hidden="true">
+            <span class="bulletin-kicker">{kicker}</span>
+            <span class="bulletin-run">KYTOS · {_h(run_label)} · {label}</span>
+            <span class="bulletin-state">AUDIT ACTIVE</span>
+          </div>
+          <div class="bulletin-data-rail" aria-label="Run bulletin facts">
+            <span><strong>{score_display}</strong> ceiling</span>
+            <span><strong>{_h(str(audit_genes))}</strong> flagged</span>
+          </div>
+          <button class="briefing-play" type="button" aria-label="Play {label}">
+            <span aria-hidden="true">▶</span> {label}
           </button>
-          <span class="briefing-stamp briefing-stamp-compact">newsroom</span>
+          <span class="briefing-stamp briefing-stamp-compact">{label}</span>
           <button class="briefing-unmute" type="button" hidden
-                  aria-label="Unmute briefing">♪ unmute</button>
+                  aria-label="Unmute bulletin">♪ unmute</button>
         </div>"""
     if hero:
         return f"""

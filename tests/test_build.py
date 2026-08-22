@@ -53,6 +53,8 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "vcc-stats" in about_html
     assert "hackathon-countdown" in about_html
     assert "Why the Observatory" in about_html
+    assert "substantiation-panel" in about_html
+    assert "evidence-strip" in about_html
 
     assert "k001-mean-shift-baseline" in html
     assert "confession-banner" in html
@@ -63,6 +65,10 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "evidence-sub-panel" in html
     assert "narrative-more" in html
     assert "briefing-play" in html
+    assert "run-header-media-bulletin" in html
+    assert "bulletin-data-rail" in html
+    assert "visual/bulletin.mp4" in html
+    assert (dist / "runs" / "k001-mean-shift-baseline" / "visual" / "bulletin.mp4").is_file()
     assert "chart-details" in html
     assert "run-header" in html
     assert "vessel3d.js" in html  # run detail now has full-bleed vessel
@@ -70,6 +76,8 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "metrics-chart-data" in html
     assert "vessel3d.js" not in runs_html
     assert "runs-header" in runs_html
+    assert "run-insight-card" in runs_html
+    assert "% ceiling" in runs_html
     assert "hk-stability" in html or "housekeeping_shift" in html
     assert (dist / "static" / "style.css").is_file()
     assert (dist / "static" / "favicon.svg").is_file()
