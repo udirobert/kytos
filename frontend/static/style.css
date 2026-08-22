@@ -2416,7 +2416,7 @@ a.run-insight-card:hover {
   border: 1px solid rgba(148, 163, 184, 0.2);
   color: var(--muted);
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out;
   grid-column: 2 / -1;
   justify-self: start;
   margin-top: 0.25rem;
@@ -2455,7 +2455,7 @@ a.run-insight-card:hover {
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease-out, background 0.15s ease-out, border-color 0.15s ease-out;
 }
 
 .btn-mode:hover {
