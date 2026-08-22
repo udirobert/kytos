@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 from typing import Any
 
 from frontend.observatory import data as data_mod
@@ -54,6 +55,100 @@ def _narrative_label(narrative: str | None) -> str:
     if "generated_by=fallback" in first:
         return "deterministic digest · no LLM · site builds offline"
     return "run digest · traces to facts.json"
+
+
+def _prepare_narrative_markdown(text: str) -> str:
+    """Drop audit/hypothesis sections already shown in other panels."""
+    lines = text.splitlines()
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        lower = stripped.lower()
+        if re.match(r"^#{2,3}\s+audit", lower):
+            i += 1
+            while i < len(lines) and not re.match(r"^#{1,3}\s", lines[i].strip()):
+                i += 1
+            continue
+        if re.match(r"^#{2,3}\s+hypothes", lower):
+            i += 1
+            while i < len(lines):
+                s = lines[i].strip()
+                if re.match(r"^#{1,3}\s", s):
+                    break
+                if not s:
+                    i += 1
+                    break
+                i += 1
+            continue
+        out.append(line)
+        i += 1
+    return "\n".join(out).strip()
+
+
+def _narrative_display_html(narrative: str | None) -> str:
+    if not narrative:
+        return (
+            '<p class="muted">Narrative pending — run <code>tools/render_narrative.py</code>.</p>'
+        )
+    cleaned = _prepare_narrative_markdown(narrative)
+    full = data_mod.markdown_to_html(cleaned)
+    match = re.search(r"(<p>.*?</p>)", full, re.DOTALL | re.IGNORECASE)
+    if not match:
+        return f'<div class="narrative-body narrative-compact">{full}</div>'
+    lead = match.group(1)
+    rest = full[match.end() :].strip()
+    if not rest:
+        return f'<div class="narrative-body narrative-lead">{lead}</div>'
+    return (
+        f'<div class="narrative-body narrative-lead">{lead}</div>'
+        f'<details class="narrative-more">'
+        f"<summary>Full digest</summary>"
+        f'<div class="narrative-rest">{rest}</div>'
+        f"</details>"
+    )
+
+
+def _gene_evidence_slug(gene: str) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9_-]+", "-", gene.strip()).strip("-").lower()
+    return slug or "gene"
+
+
+def _gene_links_html(genes: list[str]) -> str:
+    if not genes:
+        return ""
+    links = []
+    for gene in genes:
+        slug = _gene_evidence_slug(gene)
+        links.append(
+            f'<a class="gene-evidence-link" href="#evidence-gene-{_h(slug)}" '
+            f'data-gene="{_h(gene)}">#{_h(gene)}</a>'
+        )
+    return " ".join(links)
+
+
+def _card_metrics_summary(metrics: dict[str, Any], limit: int = 2) -> str:
+    if not metrics:
+        return "—"
+    items = list(metrics.items())
+    head = ", ".join(f"{k}={v}" for k, v in items[:limit])
+    extra = len(items) - limit
+    if extra > 0:
+        head += f" +{extra} more"
+    return head
+
+
+def _evidence_sub_panel(title: str, hint: str, body: str) -> str:
+    return f"""
+    <details class="evidence-sub-panel">
+      <summary class="evidence-sub-summary">
+        <span class="evidence-sub-title">{_h(title)}</span>
+        <span class="disclosure-hint">{_h(hint)}</span>
+      </summary>
+      <div class="evidence-sub-body">{body}</div>
+    </details>
+    """
 
 
 def _run_severity(facts: dict) -> str:
@@ -313,7 +408,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
     for run in reversed(runs):
         href = f"{_h(run.run_id)}/index.html"
         metrics = run.facts.get("headline_metrics") or {}
-        m = ", ".join(f"{k}={v}" for k, v in metrics.items())
+        m = _card_metrics_summary(metrics)
         severity = _run_severity(run.facts)
         vd = _vessel_data(run.facts)
         # Mini SVG vessel on each card — visual identity without WebGL on this page
@@ -389,14 +484,7 @@ def render_run_detail(
     hyp_html = "".join(f"<li>{_h(item)}</li>" for item in hypotheses)
 
     narrative = data_mod.load_narrative(run.path)
-    narrative_html = (
-        (
-            f'<div class="narrative-body narrative-compact">'
-            f"{data_mod.markdown_to_html(narrative)}</div>"
-        )
-        if narrative
-        else '<p class="muted">Narrative pending — run <code>tools/render_narrative.py</code>.</p>'
-    )
+    narrative_html = _narrative_display_html(narrative)
 
     literature = data_mod.load_literature(run.path)
     lit_html = _literature_rail(literature, max_results=2, snippet_chars=120, default_open=False)
@@ -414,22 +502,24 @@ def render_run_detail(
     metric_pills = _metric_pills(headline_m, headline_c, csv_href)
 
     evidence_hint = _evidence_hint(literature, entity_summary)
-    evidence_body = f"""
-      <div class="evidence-sub">
-        <h3 class="evidence-subhead">Per-flag literature</h3>
-        <p class="panel-note">Tavily · auxiliary, not scored</p>
-        {lit_html}
-      </div>
-      <div class="evidence-sub">
-        <h3 class="evidence-subhead">Field context</h3>
-        {_newsroom_rail(run.path, max_results=3, snippet_chars=120)}
-      </div>
-      <div class="evidence-sub">
-        <h3 class="evidence-subhead">Biomedical NER</h3>
-        <p class="panel-note">{_entity_panel_note(entity_summary)}</p>
-        {entity_html}
-      </div>
-    """
+    lit_count = len(literature)
+    evidence_body = (
+        _evidence_sub_panel(
+            "Literature",
+            f"{lit_count} gene{'s' if lit_count != 1 else ''}",
+            f'<p class="panel-note">Tavily · auxiliary, not scored</p>{lit_html}',
+        )
+        + _evidence_sub_panel(
+            "Field context",
+            "VCC / perturbation research",
+            _newsroom_rail(run.path, max_results=3, snippet_chars=120),
+        )
+        + _evidence_sub_panel(
+            "Biomedical NER",
+            f"{entity_summary.get('total_entities', 0)} entities",
+            f'<p class="panel-note">{_entity_panel_note(entity_summary)}</p>{entity_html}',
+        )
+    )
 
     trust_body = _verification_section(run.path, run.run_id, embedded=True) + _provenance_block(
         prov, run.run_id
@@ -439,8 +529,11 @@ def render_run_detail(
     audit_inner = (
         _run_verdict(facts, run.run_id)
         + flags_html
+        + '<details class="chart-details">'
+        + "<summary>Metrics chart (all scores vs ceiling)</summary>"
         + '<div id="metrics-chart" class="chart chart-compact"></div>'
         + f'<script type="application/json" id="metrics-chart-data">{chart_json}</script>'
+        + "</details>"
         + '<details class="hyp-details">'
         + f"<summary>Pre-registered hypotheses ({len(hypotheses)})</summary>"
         + '<ul class="hyp-list">'
@@ -815,10 +908,13 @@ def _run_header_media(visual: dict, facts: dict) -> str:
     if briefing:
         poster = f' poster="{_h(hero)}"' if hero else ""
         return f"""
-        <div class="run-header-media">
+        <div class="run-header-media run-header-media-video">
           <video class="briefing-video briefing-video-compact" src="{_h(briefing)}"
-                 autoplay muted loop playsinline controls preload="none"{poster}></video>
-          <span class="briefing-stamp briefing-stamp-compact">newsroom briefing</span>
+                 muted playsinline preload="metadata"{poster}></video>
+          <button class="briefing-play" type="button" aria-label="Play newsroom briefing">
+            ▶ briefing
+          </button>
+          <span class="briefing-stamp briefing-stamp-compact">newsroom</span>
           <button class="briefing-unmute" type="button" hidden
                   aria-label="Unmute briefing">♪ unmute</button>
         </div>"""
@@ -855,7 +951,7 @@ def _audit_flags_compact(flags: list[dict[str, Any]]) -> str:
     badge = {"warn": "!", "error": "✕", "info": "i"}
     rows = []
     for flag in flags:
-        genes = ", ".join(flag.get("genes") or [])
+        genes_html = _gene_links_html(flag.get("genes") or [])
         severity = flag.get("severity", "info")
         msg = flag.get("message", "")
         if len(msg) > 120:
@@ -865,7 +961,7 @@ def _audit_flags_compact(flags: list[dict[str, Any]]) -> str:
             f'<span class="flag-badge">{badge.get(severity, "i")}</span>'
             f'<span class="flag-row-rule">{_h(flag.get("rule", ""))}</span>'
             f'<span class="flag-row-msg">{_h(msg)}</span>'
-            f'<span class="flag-row-genes">{_h(genes)}</span>'
+            f'<span class="flag-row-genes">{genes_html}</span>'
             f"</li>"
         )
     return f'<ul class="flag-list-compact">{"".join(rows)}</ul>'
@@ -948,7 +1044,9 @@ def _literature_rail(
             else ""
         )
         blocks.append(
-            f"<details{open_attr}><summary>{_h(str(flag_id))}"
+            f'<details{open_attr} data-evidence-gene="{_h(str(flag_id))}" '
+            f'class="evidence-gene-block evidence-gene-lit">'
+            f"<summary>{_h(str(flag_id))}"
             f'<span class="lit-count">{min(max_results, total)}/{total}</span></summary>'
             f"<ul class='lit-list'>{''.join(lis)}{more}</ul></details>"
         )
@@ -1007,33 +1105,67 @@ def _verification_section(run_dir: Any, run_id: str, *, embedded: bool = False) 
         summary = planted.get("summary") or "—"
         cases = planted.get("cases") or []
         passed = sum(1 for c in cases if c.get("ok"))
-        cards.append(
-            f"""
-            <article class="verify-card {"verify-pass" if ok else "verify-fail"}">
+        badge = "PASS" if ok else "FAIL"
+        card_class = "verify-pass" if ok else "verify-fail"
+        body = (
+            f"<p>We plant known-answer failures through our own audit rules. If it "
+            f"can't catch what we planted, it can't be trusted to catch what we "
+            f"didn't. <strong>{_h(summary)}</strong> ({passed}/{len(cases)} cases).</p>"
+            f'<p class="verify-cmd"><code>python tools/planted_signal.py</code></p>'
+        )
+        if embedded:
+            cards.append(
+                f'<details class="verify-compact {card_class}">'
+                f"<summary>"
+                f'<span class="verify-badge">{badge}</span>'
+                f'<span class="verify-title">Planted-signal self-test</span>'
+                f'<span class="verify-compact-hint">{_h(summary)} · {passed}/{len(cases)}</span>'
+                f"</summary>"
+                f'<div class="verify-compact-body">{body}</div>'
+                f"</details>"
+            )
+        else:
+            cards.append(
+                f"""
+            <article class="verify-card {card_class}">
               <header>
-                <span class="verify-badge">{"PASS" if ok else "FAIL"}</span>
+                <span class="verify-badge">{badge}</span>
                 <span class="verify-title">Planted-signal self-test</span>
               </header>
-              <p>We plant known-answer failures through our own audit rules. If it
-              can't catch what we planted, it can't be trusted to catch what we
-              didn't. <strong>{summary}</strong> ({passed}/{len(cases)} cases).</p>
-              <p class="verify-cmd"><code>python tools/planted_signal.py</code></p>
+              {body}
             </article>
             """
-        )
+            )
     else:
-        cards.append(
-            """
+        pending = (
+            "<p>Run <code>python tools/planted_signal.py --json "
+            "…/verification/planted_signal.json</code>.</p>"
+        )
+        if embedded:
+            cards.append(
+                f'<details class="verify-compact verify-pending">'
+                f"<summary>"
+                f'<span class="verify-badge">PENDING</span>'
+                f'<span class="verify-title">Planted-signal self-test</span>'
+                f'<span class="verify-compact-hint">not run yet</span>'
+                f"</summary>"
+                f'<div class="verify-compact-body">{pending}</div>'
+                f"</details>"
+            )
+        else:
+            cards.append(
+                """
             <article class="verify-card verify-pending">
               <header>
                 <span class="verify-badge">PENDING</span>
                 <span class="verify-title">Planted-signal self-test</span>
               </header>
-              <p>Run <code>python tools/planted_signal.py --json "
-            "…/verification/planted_signal.json</code>.</p>
+              """
+                + pending
+                + """
             </article>
             """
-        )
+            )
 
     if holo:
         ok = holo.get("status") == "pass"
@@ -1041,40 +1173,74 @@ def _verification_section(run_dir: Any, run_id: str, *, embedded: bool = False) 
         summary = holo.get("summary") or "—"
         results = holo.get("results") or []
         passed = sum(1 for r in results if r.get("ok"))
+        badge = "PASS" if ok else "FAIL"
+        card_class = "verify-pass" if ok else "verify-fail"
         shot = (
             f'<img class="verify-shot" src="{_h(holo_shot)}" '
             f'alt="Holo agent screenshot of the live run page">'
             if (run_dir / holo_shot).is_file()
             else ""
         )
-        cards.append(
-            f"""
-            <article class="verify-card {"verify-pass" if ok else "verify-fail"}">
+        body = (
+            f"<p>An autonomous agent (<code>{_h(model)}</code>) browsed the live page "
+            f"and verified <strong>{_h(summary)}</strong> ({passed}/{len(results)} fields) "
+            f"against facts.json — the surface is honest, not just claimed.</p>"
+            f"{shot}"
+            f'<p class="verify-cmd"><code>python tools/holo_audit.py '
+            f"--run experiments/{_h(run_id)}</code></p>"
+        )
+        if embedded:
+            cards.append(
+                f'<details class="verify-compact {card_class}">'
+                f"<summary>"
+                f'<span class="verify-badge">{badge}</span>'
+                f'<span class="verify-title">Independent agent audit</span>'
+                f'<span class="verify-compact-hint">{_h(summary)} · {passed}/{len(results)}</span>'
+                f"</summary>"
+                f'<div class="verify-compact-body">{body}</div>'
+                f"</details>"
+            )
+        else:
+            cards.append(
+                f"""
+            <article class="verify-card {card_class}">
               <header>
-                <span class="verify-badge">{"PASS" if ok else "FAIL"}</span>
+                <span class="verify-badge">{badge}</span>
                 <span class="verify-title">Independent agent audit</span>
               </header>
-              <p>An autonomous agent (<code>{_h(model)}</code>) browsed the live page
-              and verified <strong>{summary}</strong> ({passed}/{len(results)} fields)
-              against facts.json — the surface is honest, not just claimed.</p>
-              {shot}
-              <p class="verify-cmd"><code>python tools/holo_audit.py "
-            f"--run experiments/{_h(run_id)}</code></p>
+              {body}
             </article>
             """
-        )
+            )
     else:
-        cards.append(
-            """
+        pending = (
+            "<p>Run <code>python tools/holo_audit.py --run experiments/&lt;run-id&gt;</code>.</p>"
+        )
+        if embedded:
+            cards.append(
+                f'<details class="verify-compact verify-pending">'
+                f"<summary>"
+                f'<span class="verify-badge">PENDING</span>'
+                f'<span class="verify-title">Independent agent audit</span>'
+                f'<span class="verify-compact-hint">not run yet</span>'
+                f"</summary>"
+                f'<div class="verify-compact-body">{pending}</div>'
+                f"</details>"
+            )
+        else:
+            cards.append(
+                """
             <article class="verify-card verify-pending">
               <header>
                 <span class="verify-badge">PENDING</span>
                 <span class="verify-title">Independent agent audit</span>
               </header>
-              <p>Run <code>python tools/holo_audit.py --run experiments/&lt;run-id&gt;</code>.</p>
+              """
+                + pending
+                + """
             </article>
             """
-        )
+            )
 
     grid = f'<div class="verify-grid">{"".join(cards)}</div>'
     if embedded:
@@ -1172,7 +1338,9 @@ def _entity_rail(
         extra_html = f'<span class="entity-more muted">+ {extra} more</span>' if extra > 0 else ""
         empty = '<span class="muted">none</span>'
         blocks.append(
-            f'<details{open_attr}><summary>{_h(gene)} <span class="entity-meta">'
+            f'<details{open_attr} data-evidence-gene="{_h(gene)}" '
+            f'class="evidence-gene-block evidence-gene-ner">'
+            f"<summary>{_h(gene)} <span class='entity-meta'>"
             f"{count} entities · {_entity_method_badge(item)}</span></summary>"
             f'<div class="entity-grid">'
             f"{' '.join(shown) if shown else empty}{extra_html}</div></details>"

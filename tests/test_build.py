@@ -48,6 +48,11 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "k001-mean-shift-baseline" in html
     assert "disclosure-panel" in html
     assert "Audit &amp; metrics" in html
+    assert "gene-evidence-link" in html
+    assert "evidence-sub-panel" in html
+    assert "narrative-more" in html
+    assert "briefing-play" in html
+    assert "chart-details" in html
     assert "run-header" in html
     assert "vessel3d.js" not in html
     assert "metrics-chart-data" in html

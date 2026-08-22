@@ -15,26 +15,39 @@
     if (!el || !dataEl) {
       return;
     }
-    // If Plotly is already loaded (e.g. from a cached page), just render.
-    if (typeof Plotly !== "undefined") {
-      _renderPlotly(el, dataEl);
-      return;
+
+    function boot() {
+      if (typeof Plotly !== "undefined") {
+        _renderPlotly(el, dataEl);
+        return;
+      }
+      if (typeof IntersectionObserver === "undefined") {
+        _loadPlotly(el, dataEl);
+        return;
+      }
+      var observer = new IntersectionObserver(
+        function (entries) {
+          if (entries.some(function (e) { return e.isIntersecting; })) {
+            observer.disconnect();
+            _loadPlotly(el, dataEl);
+          }
+        },
+        { rootMargin: "200px" },
+      );
+      observer.observe(el);
     }
-    // Lazy-load: inject the Plotly script when the chart scrolls into view.
-    if (typeof IntersectionObserver === "undefined") {
-      _loadPlotly(el, dataEl);
-      return;
-    }
-    var observer = new IntersectionObserver(
-      function (entries) {
-        if (entries.some(function (e) { return e.isIntersecting; })) {
-          observer.disconnect();
-          _loadPlotly(el, dataEl);
+
+    var chartDetails = el.closest("details.chart-details");
+    if (chartDetails && !chartDetails.open) {
+      chartDetails.addEventListener("toggle", function onToggle() {
+        if (chartDetails.open) {
+          chartDetails.removeEventListener("toggle", onToggle);
+          boot();
         }
-      },
-      { rootMargin: "200px" },
-    );
-    observer.observe(el);
+      });
+      return;
+    }
+    boot();
   }
 
   function _loadPlotly(el, dataEl) {
@@ -296,6 +309,103 @@
     });
   }
 
+  function slugifyGene(gene) {
+    return String(gene || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "gene";
+  }
+
+  function openDisclosure(id) {
+    var el = document.getElementById(id);
+    if (el && el.tagName === "DETAILS") {
+      el.open = true;
+    }
+  }
+
+  function geneBlocksForSlug(slug) {
+    return Array.prototype.slice
+      .call(document.querySelectorAll(".evidence-gene-block"))
+      .filter(function (block) {
+        return slugifyGene(block.getAttribute("data-evidence-gene")) === slug;
+      });
+  }
+
+  function initGeneEvidenceLinks() {
+    document.querySelectorAll(".gene-evidence-link").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        var href = link.getAttribute("href") || "";
+        if (href.charAt(0) === "#") {
+          window.location.hash = href.slice(1);
+        }
+      });
+    });
+  }
+
+  function applyHashDisclosure() {
+    var hash = (window.location.hash || "").replace(/^#/, "");
+    if (!hash) {
+      return;
+    }
+    if (hash === "audit" || hash === "evidence" || hash === "narrative" || hash === "trust") {
+      openDisclosure(hash);
+      return;
+    }
+    if (hash.indexOf("evidence-gene-") !== 0) {
+      return;
+    }
+    var slug = hash.slice("evidence-gene-".length);
+    openDisclosure("evidence");
+    document.querySelectorAll(".evidence-sub-panel").forEach(function (panel) {
+      panel.open = true;
+    });
+    var blocks = geneBlocksForSlug(slug);
+    blocks.forEach(function (block) {
+      block.open = true;
+      block.classList.add("evidence-gene-highlight");
+    });
+    if (blocks[0]) {
+      setTimeout(function () {
+        blocks[0].scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 60);
+    }
+  }
+
+  function initHashDisclosure() {
+    applyHashDisclosure();
+    window.addEventListener("hashchange", applyHashDisclosure);
+  }
+
+  function initBriefingPlay() {
+    document.querySelectorAll(".run-header-media-video").forEach(function (wrap) {
+      var video = wrap.querySelector("video.briefing-video");
+      var playBtn = wrap.querySelector(".briefing-play");
+      var unmuteBtn = wrap.querySelector(".briefing-unmute");
+      if (!video || !playBtn) {
+        return;
+      }
+      playBtn.addEventListener("click", function () {
+        video.controls = true;
+        var playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(function () {});
+        }
+        playBtn.hidden = true;
+        if (unmuteBtn) {
+          unmuteBtn.hidden = false;
+        }
+      });
+      if (unmuteBtn) {
+        unmuteBtn.addEventListener("click", function () {
+          video.muted = false;
+          unmuteBtn.hidden = true;
+        });
+      }
+    });
+  }
+
   function onReady() {
     initPlotly();
     initVccRail();
@@ -304,6 +414,9 @@
     initCopyButtons();
     initScrollReveal();
     initBriefingUnmute();
+    initBriefingPlay();
+    initGeneEvidenceLinks();
+    initHashDisclosure();
     setTimeout(animateVesselFallback, 2000);
   }
 
