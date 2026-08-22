@@ -80,3 +80,117 @@ def metrics_bar_chart(metrics: list[str], scores: list[float], ceilings: list[fl
         "config": {"displayModeBar": False, "responsive": True},
     }
     return json.dumps(figure)
+
+
+def volcano_plot_chart(
+    genes: list[str],
+    log2fc: list[float],
+    neg_log10_pval: list[float],
+    *,
+    flagged_genes: set[str] | None = None,
+    target_genes: set[str] | None = None,
+) -> str:
+    """Generate Plotly interactive Volcano plot for differential expression."""
+    flagged_set = flagged_genes or set()
+    target_set = target_genes or set()
+
+    # Split into category traces
+    traces_data: dict[str, dict[str, list[Any]]] = {
+        "Normal": {"x": [], "y": [], "text": []},
+        "Significant DE": {"x": [], "y": [], "text": []},
+        "Audit Flagged": {"x": [], "y": [], "text": []},
+        "Target Gene": {"x": [], "y": [], "text": []},
+    }
+
+    for g, fc, p in zip(genes, log2fc, neg_log10_pval):
+        hover = f"<b>{g}</b><br>log2FC: {fc:+.2f}<br>-log10(p): {p:.2f}"
+        if g in target_set:
+            cat = "Target Gene"
+            hover += "<br><i>[CRISPRi Target]</i>"
+        elif g in flagged_set:
+            cat = "Audit Flagged"
+            hover += "<br><i>[Biological Audit Flag]</i>"
+        elif abs(fc) >= 1.0 and p >= 1.3:
+            cat = "Significant DE"
+        else:
+            cat = "Normal"
+
+        traces_data[cat]["x"].append(fc)
+        traces_data[cat]["y"].append(p)
+        traces_data[cat]["text"].append(hover)
+
+    colors = {
+        "Normal": "#64748b",
+        "Significant DE": "#2dd4bf",
+        "Audit Flagged": "#fb923c",
+        "Target Gene": "#c084fc",
+    }
+    sizes = {
+        "Normal": 5,
+        "Significant DE": 7,
+        "Audit Flagged": 10,
+        "Target Gene": 11,
+    }
+
+    data = []
+    for cat in ["Normal", "Significant DE", "Audit Flagged", "Target Gene"]:
+        td = traces_data[cat]
+        if td["x"]:
+            data.append(
+                {
+                    "type": "scatter",
+                    "mode": "markers",
+                    "name": cat,
+                    "x": td["x"],
+                    "y": td["y"],
+                    "hovertext": td["text"],
+                    "hoverinfo": "text",
+                    "marker": {
+                        "color": colors[cat],
+                        "size": sizes[cat],
+                        "opacity": 0.85 if cat != "Normal" else 0.45,
+                        "line": {"width": 1, "color": "rgba(255,255,255,0.2)"},
+                    },
+                }
+            )
+
+    figure: dict[str, Any] = {
+        "data": data,
+        "layout": {
+            "paper_bgcolor": "rgba(0,0,0,0)",
+            "plot_bgcolor": "rgba(0,0,0,0)",
+            "font": {"color": "#cbd5e1", "family": "IBM Plex Mono, monospace", "size": 11},
+            "margin": {"l": 48, "r": 16, "t": 28, "b": 48},
+            "xaxis": {
+                "title": "log2 Fold Change (Effect Size)",
+                "gridcolor": "rgba(148,163,184,0.12)",
+                "linecolor": "rgba(148,163,184,0.2)",
+                "zerolinecolor": "rgba(148,163,184,0.3)",
+            },
+            "yaxis": {
+                "title": "-log10(p-value)",
+                "gridcolor": "rgba(148,163,184,0.12)",
+                "linecolor": "rgba(148,163,184,0.2)",
+            },
+            "legend": {
+                "orientation": "h",
+                "y": 1.15,
+                "x": 0,
+                "bgcolor": "rgba(0,0,0,0)",
+            },
+            "shapes": [
+                # -log10(p)=1.3 (p=0.05) threshold line
+                {
+                    "type": "line",
+                    "x0": min(log2fc, default=-3),
+                    "x1": max(log2fc, default=3),
+                    "y0": 1.3,
+                    "y1": 1.3,
+                    "line": {"color": "rgba(148,163,184,0.25)", "dash": "dot", "width": 1},
+                }
+            ],
+            "height": 280,
+        },
+        "config": {"displayModeBar": False, "responsive": True},
+    }
+    return json.dumps(figure)

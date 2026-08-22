@@ -78,50 +78,70 @@
   // only when the metrics-chart section enters the viewport. This saves
   // ~1.3 MB of render-blocking JS on the run detail page.
   function initPlotly() {
-    var el = document.getElementById("metrics-chart");
-    var dataEl = document.getElementById("metrics-chart-data");
-    if (!el || !dataEl) {
+    var targets = [
+      {
+        el: document.getElementById("metrics-chart"),
+        dataEl: document.getElementById("metrics-chart-data"),
+        details: "details.chart-details",
+      },
+      {
+        el: document.getElementById("volcano-chart"),
+        dataEl: document.getElementById("volcano-chart-data"),
+        details: "details.volcano-details",
+      },
+    ];
+    var activeTargets = targets.filter(function (t) {
+      return t.el && t.dataEl;
+    });
+    if (!activeTargets.length) {
       return;
+    }
+
+    function renderTargets() {
+      activeTargets.forEach(function (t) {
+        _renderPlotly(t.el, t.dataEl);
+      });
     }
 
     function boot() {
       if (typeof Plotly !== "undefined") {
-        _renderPlotly(el, dataEl);
+        renderTargets();
         return;
       }
-      if (typeof IntersectionObserver === "undefined") {
-        _loadPlotly(el, dataEl);
-        return;
-      }
-      var observer = new IntersectionObserver(
-        function (entries) {
-          if (entries.some(function (e) { return e.isIntersecting; })) {
-            observer.disconnect();
-            _loadPlotly(el, dataEl);
-          }
-        },
-        { rootMargin: "200px" },
-      );
-      observer.observe(el);
+      _loadPlotly(renderTargets);
     }
 
-    var chartDetails = el.closest("details.chart-details");
-    if (chartDetails && !chartDetails.open) {
-      chartDetails.addEventListener("toggle", function onToggle() {
-        if (chartDetails.open) {
-          chartDetails.removeEventListener("toggle", onToggle);
-          boot();
-        }
-      });
-      return;
+    activeTargets.forEach(function (t) {
+      var d = t.el.closest(t.details);
+      if (d) {
+        d.addEventListener("toggle", function () {
+          if (d.open) {
+            boot();
+          }
+        });
+      }
+    });
+
+    if (
+      activeTargets.some(function (t) {
+        var d = t.el.closest(t.details);
+        return !d || d.open;
+      })
+    ) {
+      boot();
     }
-    boot();
   }
 
-  function _loadPlotly(el, dataEl) {
+  function _loadPlotly(callback) {
+    if (typeof Plotly !== "undefined") {
+      if (callback) callback();
+      return;
+    }
     var script = document.createElement("script");
     script.src = "https://cdn.plot.ly/plotly-2.35.2.min.js";
-    script.onload = function () { _renderPlotly(el, dataEl); };
+    script.onload = function () {
+      if (callback) callback();
+    };
     document.head.appendChild(script);
   }
 
@@ -730,6 +750,58 @@
     }, { passive: true, once: true });
   }
 
+  function initViewModeToggle() {
+    var toggle = document.getElementById("view-mode-toggle");
+    if (!toggle) return;
+
+    var btns = toggle.querySelectorAll(".btn-mode");
+    var panels = document.querySelectorAll(".disclosure-panel");
+
+    function setMode(mode) {
+      btns.forEach(function (b) {
+        if (b.getAttribute("data-mode") === mode) {
+          b.classList.add("active");
+        } else {
+          b.classList.remove("active");
+        }
+      });
+      document.body.setAttribute("data-view-mode", mode);
+      if (mode === "science") {
+        panels.forEach(function (p) {
+          p.open = true;
+        });
+        var metricsDetails = document.querySelector(".chart-details");
+        if (metricsDetails) metricsDetails.open = true;
+        var volcanoDetails = document.querySelector(".volcano-details");
+        if (volcanoDetails) volcanoDetails.open = true;
+      } else {
+        panels.forEach(function (p, idx) {
+          if (idx !== 0) p.open = false;
+        });
+      }
+      try {
+        localStorage.setItem("kytos-view-mode", mode);
+      } catch (e) {}
+    }
+
+    btns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.getAttribute("data-mode");
+        setMode(mode);
+      });
+    });
+
+    try {
+      var saved = localStorage.getItem("kytos-view-mode");
+      if (
+        saved === "science" ||
+        window.location.hash.indexOf("mode=science") !== -1
+      ) {
+        setMode("science");
+      }
+    } catch (e) {}
+  }
+
   function onReady() {
     initPlotly();
     initVccRail();
@@ -746,6 +818,7 @@
     initHashDisclosure();
     initNoWebGLDetect();
     initVesselOnboard();
+    initViewModeToggle();
   }
 
   if (document.readyState === "loading") {

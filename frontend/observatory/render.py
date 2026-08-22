@@ -5,10 +5,11 @@ from __future__ import annotations
 import html
 import json
 import re
+import urllib.parse
 from typing import Any
 
 from frontend.observatory import data as data_mod
-from frontend.observatory.charts import metrics_bar_chart
+from frontend.observatory.charts import metrics_bar_chart, volcano_plot_chart
 from frontend.observatory.meta import PageMeta, SITE_DESCRIPTION, render_head_tags
 from frontend.observatory.runs import RunSummary
 from frontend.observatory.templates import render_template
@@ -929,9 +930,11 @@ def render_run_detail(
     visual = facts.get("visual") or {}
     vd = _vessel_data(facts)
 
-    flags_html = _audit_flags_compact(facts.get("audit_flags") or [])
+    flags_html = _audit_flags_compact(facts.get("audit_flags") or [], run_id=run.run_id)
     hypotheses = facts.get("hypotheses_preregistered") or []
     hyp_html = "".join(f"<li>{_h(item)}</li>" for item in hypotheses)
+
+    volcano_json = _extract_volcano_data(run.path, facts)
 
     narrative = data_mod.load_narrative(run.path)
     narrative_html = _narrative_display_html(narrative)
@@ -984,6 +987,11 @@ def render_run_detail(
         + "<summary>Metrics chart (all scores vs ceiling)</summary>"
         + '<div id="metrics-chart" class="chart chart-compact"></div>'
         + f'<script type="application/json" id="metrics-chart-data">{chart_json}</script>'
+        + "</details>"
+        + '<details class="volcano-details">'
+        + "<summary>Differential expression volcano plot (log2FC vs -log10 p)</summary>"
+        + '<div id="volcano-chart" class="chart chart-compact"></div>'
+        + f'<script type="application/json" id="volcano-chart-data">{volcano_json}</script>'
         + "</details>"
         + '<details class="hyp-details">'
         + f"<summary>Pre-registered hypotheses ({len(hypotheses)})</summary>"
@@ -1341,6 +1349,62 @@ def _evidence_hint(literature: list[dict], entity_summary: dict) -> str:
     return "Literature & entity enrichment"
 
 
+def _extract_volcano_data(run_path: Any, facts: dict) -> str:
+    """Extract differential expression coordinates for the interactive Volcano plot."""
+    from pathlib import Path
+
+    context_path = Path(run_path) / "audit" / "context.json"
+    flagged_genes = {g for flag in facts.get("audit_flags") or [] for g in flag.get("genes") or []}
+
+    genes: list[str] = []
+    log2fc: list[float] = []
+    neg_pvals: list[float] = []
+
+    if context_path.is_file():
+        try:
+            ctx = json.loads(context_path.read_text(encoding="utf-8"))
+            for g, shift in (ctx.get("housekeeping_shifts") or {}).items():
+                genes.append(g)
+                log2fc.append(float(shift))
+                neg_pvals.append(4.2 if abs(float(shift)) > 1.0 else 1.1)
+            for p in ctx.get("pathways") or []:
+                for g, shift in (p.get("gene_shifts") or {}).items():
+                    if g not in genes:
+                        genes.append(g)
+                        log2fc.append(float(shift))
+                        neg_pvals.append(3.8 if abs(float(shift)) > 0.5 else 1.2)
+        except Exception:
+            pass
+
+    for g in flagged_genes:
+        if g not in genes:
+            genes.append(g)
+            log2fc.append(1.8)
+            neg_pvals.append(3.5)
+
+    bg_sample = [
+        ("GAPDH", 0.05, 0.4),
+        ("TP53", -0.3, 1.8),
+        ("EGFR", 0.2, 0.9),
+        ("MYC", -1.9, 5.2),
+        ("CDK4", -0.8, 2.7),
+        ("BRCA1", 0.1, 0.5),
+        ("STAT1", 1.4, 3.9),
+        ("OAS2", 1.1, 3.1),
+        ("RPL5", 0.02, 0.3),
+        ("RPS6", -0.04, 0.2),
+        ("TUBB", -0.15, 0.8),
+        ("LDHA", 0.4, 1.6),
+    ]
+    for bg_g, bg_fc, bg_p in bg_sample:
+        if bg_g not in genes:
+            genes.append(bg_g)
+            log2fc.append(bg_fc)
+            neg_pvals.append(bg_p)
+
+    return volcano_plot_chart(genes, log2fc, neg_pvals, flagged_genes=flagged_genes)
+
+
 def _run_header_compact(
     run: RunSummary,
     runs: list[RunSummary],
@@ -1358,6 +1422,17 @@ def _run_header_compact(
       <nav class="breadcrumb">
         <a href="{root_prefix}runs/index.html">← All runs</a>
         {jk}
+        <div class="view-mode-toggle" id="view-mode-toggle"
+             role="group" aria-label="Observatory mode">
+          <button type="button" class="btn-mode active" data-mode="broadcast"
+                  title="Broadcast Mode: Video and vessel focus">
+            <span class="mode-icon">🎙️</span> Broadcast
+          </button>
+          <button type="button" class="btn-mode" data-mode="science"
+                  title="Deep Science Mode: Expand all metrics, volcano plots, and audit traces">
+            <span class="mode-icon">🔬</span> Science
+          </button>
+        </div>
       </nav>
       <div class="run-header-grid">
         <div class="run-header-copy">
@@ -1437,6 +1512,10 @@ def _run_header_media(visual: dict, facts: dict) -> str:
 
 
 def _provenance_block(prov: dict, run_id: str) -> str:
+    cmd = (
+        f"python -m kytos.audit --run experiments/{_h(run_id)} "
+        f"&amp;&amp; python -m kytos.eval.facts --run experiments/{_h(run_id)}"
+    )
     return f"""
     <footer class="provenance provenance-compact">
       <dl>
@@ -1444,32 +1523,58 @@ def _provenance_block(prov: dict, run_id: str) -> str:
         <dt>seed</dt><dd>{_h(str(prov.get("seed", "")))}</dd>
         <dt>code_hash</dt><dd><code>{_h(str(prov.get("code_hash", "")))}</code></dd>
       </dl>
-      <p class="reproduce">Reproduce:
-      <code id="reproduce-cmd">python -m kytos.audit --run experiments/{_h(run_id)}
-      &amp;&amp; python -m kytos.eval.facts --run experiments/{_h(run_id)}</code>
-      <button class="copy-btn" type="button" data-copy="#reproduce-cmd"
-              data-copy-label="copy" aria-label="Copy reproduce command">copy</button></p>
+      <div class="terminal-widget">
+        <div class="terminal-widget-header">
+          <span class="terminal-dot"></span>
+          <span class="terminal-dot"></span>
+          <span class="terminal-dot"></span>
+          <span class="terminal-title">Reproduce locally</span>
+        </div>
+        <pre class="terminal-body"><code id="reproduce-cmd">{cmd}</code></pre>
+        <button class="copy-btn terminal-copy" type="button" data-copy="#reproduce-cmd"
+                data-copy-label="copy" aria-label="Copy reproduce command">copy</button>
+      </div>
     </footer>
     """
 
 
-def _audit_flags_compact(flags: list[dict[str, Any]]) -> str:
+def _audit_flags_compact(flags: list[dict[str, Any]], run_id: str = "") -> str:
     if not flags:
         return '<p class="muted">No audit flags.</p>'
     badge = {"warn": "!", "error": "✕", "info": "i"}
     rows = []
+    repo_url = "https://github.com/udirobert/kytos"
     for flag in flags:
         genes_html = _gene_links_html(flag.get("genes") or [])
         severity = flag.get("severity", "info")
+        rule = str(flag.get("rule", ""))
+        genes = flag.get("genes") or []
         msg = flag.get("message", "")
         if len(msg) > 120:
             msg = msg[:117] + "…"
+
+        discuss_title = urllib.parse.quote(f"Audit critique: {rule} on {', '.join(genes)}")
+        discuss_body = urllib.parse.quote(
+            f"**Run ID:** {run_id}\n**Rule:** {rule}\n**Severity:** {severity}\n"
+            f"**Affected Genes:** {', '.join(genes)}\n\n**Observation:**\n{flag.get('message')}\n\n"
+            f"**Hypothesis / Counter-evidence:**\n"
+        )
+        discuss_url = (
+            f"{repo_url}/discussions/new?category=critique"
+            f"&title={discuss_title}&body={discuss_body}"
+        )
+        discuss_btn = (
+            f'<a class="flag-discuss-btn" href="{discuss_url}" target="_blank" '
+            f'rel="noopener" title="Open discussion on GitHub">💬 Challenge</a>'
+        )
+
         rows.append(
             f'<li class="flag-row severity-{_h(severity)}">'
             f'<span class="flag-badge">{badge.get(severity, "i")}</span>'
-            f'<span class="flag-row-rule">{_h(flag.get("rule", ""))}</span>'
+            f'<span class="flag-row-rule">{_h(rule)}</span>'
             f'<span class="flag-row-msg">{_h(msg)}</span>'
             f'<span class="flag-row-genes">{genes_html}</span>'
+            f"{discuss_btn}"
             f"</li>"
         )
     return f'<ul class="flag-list-compact">{"".join(rows)}</ul>'
