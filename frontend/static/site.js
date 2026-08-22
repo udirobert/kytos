@@ -239,16 +239,14 @@
     setInterval(tick, 1000);
   }
 
-  // ── Run navigation: j/k between runs + auto-scroll the active pill ───────
-  function initRunNav() {
+  // ── Keyboard shortcuts: j/k runs, 1-4 sections, m membrane, c cracks ────
+  function initKeyboardShortcuts() {
     var pills = Array.prototype.slice.call(document.querySelectorAll(".run-strip .run-pill"));
-    if (pills.length < 2) {
-      return;
-    }
     var active = document.querySelector(".run-strip .run-pill.is-active");
     if (active && active.scrollIntoView) {
       active.scrollIntoView({ block: "nearest", inline: "center" });
     }
+
     document.addEventListener("keydown", function (e) {
       if (e.metaKey || e.ctrlKey || e.altKey) {
         return;
@@ -257,15 +255,43 @@
       if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
         return;
       }
-      var idx = pills.indexOf(active);
-      var next = null;
-      if (e.key === "j" || e.key === "J") {
-        next = pills[(idx + 1) % pills.length];
-      } else if (e.key === "k" || e.key === "K") {
-        next = pills[(idx - 1 + pills.length) % pills.length];
+
+      // j/k: next/prev run
+      if (pills.length > 1) {
+        var idx = pills.indexOf(active);
+        var next = null;
+        if (e.key === "j" || e.key === "J") {
+          next = pills[(idx + 1) % pills.length];
+        } else if (e.key === "k" || e.key === "K") {
+          next = pills[(idx - 1 + pills.length) % pills.length];
+        }
+        if (next && next.href) {
+          window.location.href = next.href;
+          return;
+        }
       }
-      if (next && next.href) {
-        window.location.href = next.href;
+
+      // 1-4: jump to journey sections
+      var sectionMap = { "1": "audit", "2": "evidence", "3": "narrative", "4": "trust" };
+      if (sectionMap[e.key]) {
+        openDisclosure(sectionMap[e.key]);
+        var targetEl = document.getElementById(sectionMap[e.key]);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        return;
+      }
+
+      // m: toggle 3D membrane
+      if ((e.key === "m" || e.key === "M") && window.kytosVessel && typeof window.kytosVessel.toggleMembrane === "function") {
+        window.kytosVessel.toggleMembrane();
+        return;
+      }
+
+      // c: focus next crack
+      if ((e.key === "c" || e.key === "C") && window.kytosVessel && typeof window.kytosVessel.focusCrack === "function") {
+        window.kytosVessel.focusCrack(0);
+        return;
       }
     });
   }
@@ -541,6 +567,10 @@
       link.addEventListener("click", function (event) {
         event.preventDefault();
         var href = link.getAttribute("href") || "";
+        var gene = link.getAttribute("data-gene") || "";
+        if (window.kytosVessel && typeof window.kytosVessel.focusCrack === "function" && gene) {
+          window.kytosVessel.focusCrack(gene);
+        }
         if (href.charAt(0) === "#") {
           window.location.hash = href.slice(1);
         }
@@ -703,7 +733,7 @@
   function onReady() {
     initPlotly();
     initVccRail();
-    initRunNav();
+    initKeyboardShortcuts();
     initCountUp();
     initCopyButtons();
     initScrollReveal();

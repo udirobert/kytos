@@ -1,0 +1,9 @@
+{
+  "run_id": "k002-vcc2025-validation-mean-shift",
+  "code": "nohash",
+  "strategy": "mean-shift",
+  "normalization": "log1p",
+  "n_per_group": 100,
+  "n_targets": 50,
+  "gene_order_sha": "e29ff3512b4c"
+}

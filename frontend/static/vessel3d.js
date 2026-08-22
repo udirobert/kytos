@@ -1072,16 +1072,51 @@ function initVessel3D() {
     composer.render();
   }
 
-  // ── Pause rendering when the tab is hidden (saves GPU/CPU) ───────────────
-  document.addEventListener("visibilitychange", function () {
-    if (document.hidden) {
-      running = false;
-    } else if (!running) {
-      running = true;
-      clock.getDelta(); // reset delta so we don't jump after resuming
-      animate();
+  // ── Global API for cross-component interactions (from Cell Studio / Plant DNA) ──
+  window.kytosVessel = {
+    focusCrack: function (indexOrLabel) {
+      if (typeof indexOrLabel === "string") {
+        for (var i = 0; i < crackMeshes.length; i++) {
+          if (crackMeshes[i].userData.label === indexOrLabel || (crackMeshes[i].userData.message && crackMeshes[i].userData.message.indexOf(indexOrLabel) !== -1)) {
+            indexOrLabel = i;
+            break;
+          }
+        }
+      }
+      var crack = crackMeshes[indexOrLabel];
+      if (!crack) return;
+      var wp = new THREE.Vector3();
+      crack.getWorldPosition(wp);
+      // Smoothly orbit camera towards crack position
+      var targetAngle = Math.atan2(wp.x, wp.z);
+      controls.autoRotate = false;
+      var targetPos = new THREE.Vector3(
+        Math.sin(targetAngle) * 12,
+        wp.y + 1.2,
+        Math.cos(targetAngle) * 12
+      );
+      var startPos = camera.position.clone();
+      var tweenT = 0;
+      function tweenCam() {
+        tweenT += 0.04;
+        camera.position.lerpVectors(startPos, targetPos, Math.min(1, tweenT * (2 - tweenT)));
+        controls.target.set(0, wp.y * 0.5, 0);
+        controls.update();
+        if (tweenT < 1) {
+          requestAnimationFrame(tweenCam);
+        }
+      }
+      tweenCam();
+      var screen = worldToScreen(crack);
+      showCallout(crack, screen.x, screen.y - 20);
+    },
+    toggleMembrane: function () {
+      if (cellMembrane && cellMembrane.material) {
+        var current = cellMembrane.material.opacity;
+        cellMembrane.material.opacity = current > 0.4 ? 0.15 : 0.85;
+      }
     }
-  });
+  };
 
   animate();
 }
