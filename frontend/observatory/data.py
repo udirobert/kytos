@@ -50,12 +50,32 @@ def load_literature(run_dir: Path) -> list[dict[str, Any]]:
         return []
     items: list[dict[str, Any]] = []
     for path in sorted(lit_dir.glob("*.json")):
+        # Skip .entities.json files — loaded separately
+        if path.stem.endswith(".entities"):
+            continue
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             continue
         if isinstance(payload, dict):
             payload.setdefault("flag_id", path.stem)
+            items.append(payload)
+    return items
+
+
+def load_entity_extractions(run_dir: Path) -> list[dict[str, Any]]:
+    """Load Pioneer GLiNER2 entity extraction results from literature/*.entities.json."""
+    lit_dir = run_dir / "literature"
+    if not lit_dir.is_dir():
+        return []
+    items: list[dict[str, Any]] = []
+    for path in sorted(lit_dir.glob("*.entities.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            payload.setdefault("source_gene", path.stem.replace(".entities", ""))
             items.append(payload)
     return items
 

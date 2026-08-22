@@ -1,0 +1,35 @@
+{
+  "method": "fallback",
+  "model_id": "fastino/gliner2-base-v1",
+  "entity_count": 17,
+  "by_label": {
+    "gene": [
+      "ACTB",
+      "K562",
+      "GAPDH",
+      "B2M",
+      "ISG15",
+      "IFIT1"
+    ],
+    "pathway": [
+      "interferon response",
+      "apoptosis",
+      "cell cycle arrest",
+      "dna damage response"
+    ],
+    "perturbation_type": [
+      "CRISPRi",
+      "CRISPR",
+      "knockdown",
+      "Knockdown",
+      "Perturbation"
+    ],
+    "disease": [
+      "leukemia"
+    ],
+    "cell_type": [
+      "K562"
+    ]
+  },
+  "source_file": "ACTB.json"
+}

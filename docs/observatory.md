@@ -61,7 +61,7 @@ ships today and carries through to Nov 5. See
 | **Tavily** | Literature sidebar for audit-flagged genes/pathways; empty on failure | famile |
 | **fal** | Hero stills, share cards, **VEED Fabric run briefings** | — |
 
-Optional later: **Pioneer** (critique classification), **h** (computer-use agents).
+Optional later: **h** (computer-use agents).
 
 ### VEED Fabric (`veed/fabric-1.0` on fal)
 
@@ -205,8 +205,9 @@ One gorgeous run page beats three half-finished pages.
 | Enrich (B) | ✅ four `tools/render_*.py` + one-shot `tools/run_enrichment.sh` + `env.example`; degrade-empty verified against k001; **live API run in progress** (venv unblocked: Python 3.12 + partner clients) |
 | Frontend (C) | ✅ `frontend/build.py` → `dist/` (home, runs index, k001 run detail); Playwright-verified desktop + mobile, zero console errors; briefing video autoplay; Netlify (`netlify.toml`) |
 | Deploy (B) | ✅ Netlify (`netlify.toml`) — auto-builds `frontend/dist/` on push; connect repo in Netlify dashboard |
-| Pioneer (C) | 🧪 `tools/enrich_pioneer.py` — fine-tuned narrative model for the side challenge (experimental) |
+| Pioneer (C) | ✅ `tools/pioneer_ner.py` — fine-tuned GLiNER2 biomedical NER (deterministic fallback always available; side challenge) |
 | Demo primitives (B) | ✅ data-bound vessel instrument (fill = ceiling headroom, cracks = audit flags), audit confession banner, metric→CSV drill-down, planted-signal self-test (`tools/planted_signal.py`), [`demo-script.md`](demo-script.md) |
+| UX polish (B) | ✅ instrument-panel metaphor: live VCC timeline rail + countdown to Nov 5, vessel fill animation on load, run-strip severity dots + scroll-snap, flag severity badges, breadcrumb, copy-to-clipboard provenance, `prefers-reduced-motion` support; mobile overflow fixed (grid `min-width:0`, narrative/provenance wrapping) — Playwright-verified desktop + mobile, zero console errors |
 | Integration | ⏳ real enrichment artifacts → rebuild `dist/` → redeploy → 2-min Loom |
 
 ### Later (Aug → Nov 2026)
@@ -220,18 +221,16 @@ One gorgeous run page beats three half-finished pages.
 
 ## 7. Demo script (2 minutes)
 
-Reorder for hackathon judges (VEED + fal front-loaded):
+**Canonical script:** [`demo-script.md`](demo-script.md) — merged VEED/Fabric
+front-load + self-own + planted-signal + 78-day closer. No PowerPoint; live site
+only.
 
-1. **10s** — Problem: models score well but fail biologically; leaderboard hides why.
-2. **25s** — **Fabric briefing**: vessel explains k001; generated from `facts.json`.
-3. **35s** — Metrics vs ceiling → audit flag → Tavily literature rail.
-4. **25s** — OpenAI digest with source links; provenance + reproduce command.
-5. **15s** — Public repo; roadmap to Nov 5; invite critique via Discussions.
+Beat order: hook (10s) → Fabric autoplay (20s) → self-own (25s) → provenance
+(35s) → partner rails (25s) → planted-signal (15s) → GitHub closer (10s).
 
-Full problem/evidence talking points: [`competitive-landscape.md §6`](competitive-landscape.md#6-presentation-crib-sheet).
+Build-in-public posts for hackathon day: [`build-in-public.md`](build-in-public.md).
 
-Second-by-second script with the self-own opening and 78-day closer:
-[`demo-script.md`](demo-script.md).
+Presentation talking points: [`competitive-landscape.md §6`](competitive-landscape.md#6-presentation-crib-sheet).
 
 ---
 
