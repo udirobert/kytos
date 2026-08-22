@@ -52,7 +52,7 @@ class PageMeta:
     # Only run detail pages have the Plotly metrics chart.
     # When False, the Plotly script tag is omitted entirely (saves 1.3 MB).
     needs_plotly: bool = False
-    # Home + run detail pages have the 3D vessel; runs index does not.
+    # Home + run detail pages have the 3D vessel; runs index uses SVG only.
     # When False, the Three.js import map and vessel3d.js module are omitted
     # (saves ~270 KB of JS that would never execute).
     needs_vessel: bool = True
@@ -123,8 +123,7 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
     # Plotly is now lazy-loaded by site.js when the chart scrolls into view
     # (saves 1.3 MB of render-blocking JS). No <script> tag needed in <head>.
     #
-    # Three.js + vessel3d.js: ~270 KB — only on pages with the 3D vessel.
-    # Home, runs index, and run detail all include it for visual consistency.
+    # Three.js + vessel3d.js: ~270 KB — home + run detail only (not runs index).
     if meta.needs_vessel:
         head += f"""
   <script type="importmap">

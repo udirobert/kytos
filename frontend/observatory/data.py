@@ -40,7 +40,11 @@ def _metric_map(path: Path, value_col: str) -> dict[str, float]:
 def load_narrative(run_dir: Path) -> str | None:
     path = run_dir / "narrative" / "report.md"
     if path.is_file():
-        return path.read_text(encoding="utf-8")
+        text = path.read_text(encoding="utf-8")
+        # Strip generator provenance comment — not for display
+        if text.lstrip().startswith("<!--"):
+            text = re.sub(r"^\s*<!--.*?-->\s*", "", text, count=1, flags=re.DOTALL)
+        return text
     return None
 
 

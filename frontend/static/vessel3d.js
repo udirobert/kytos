@@ -93,7 +93,7 @@ function initVessel3D() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPerf ? 1.5 : 2));
   renderer.setSize(w, h);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.25;
+  renderer.toneMappingExposure = 1.4;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.localClippingEnabled = true;
   container.appendChild(renderer.domElement);
@@ -126,7 +126,7 @@ function initVessel3D() {
     clearcoatRoughness: 0.03,
     envMapIntensity: 1.8,
     side: THREE.DoubleSide,
-    attenuationColor: new THREE.Color(0x5eead4),
+    attenuationColor: new THREE.Color(0x2dd4bf),
     attenuationDistance: 3.0,
   });
   var vessel = new THREE.Mesh(vesselGeo, vesselMat);
@@ -159,8 +159,8 @@ function initVessel3D() {
 
   var liquidGeo = new THREE.LatheGeometry(liquidPts, LIQUID_SEGMENTS);
   var liquidMat = new THREE.MeshPhysicalMaterial({
-    color: 0x5eead4,
-    emissive: 0x5eead4,
+    color: 0x2dd4bf,
+    emissive: 0x2dd4bf,
     emissiveIntensity: 0.4,
     roughness: 0.08,
     metalness: 0,
@@ -175,7 +175,7 @@ function initVessel3D() {
   vesselGroup.add(liquid);
 
   // Inner glow at the liquid surface
-  var liquidLight = new THREE.PointLight(0x5eead4, 2.5, 9);
+  var liquidLight = new THREE.PointLight(0x2dd4bf, 2.5, 9);
   liquidLight.position.set(0, fillLevel + 0.4, 0);
   vesselGroup.add(liquidLight);
 
@@ -212,8 +212,8 @@ function initVessel3D() {
   // A sick cell (low fill) glows dim. This is biologically literal.
   var cellHealth = fillPct / 100;
   var cellMat = new THREE.MeshPhysicalMaterial({
-    color: 0x5eead4,
-    emissive: 0x5eead4,
+    color: 0x2dd4bf,
+    emissive: 0x2dd4bf,
     emissiveIntensity: 0.3 + cellHealth * 0.5,
     roughness: 0.12,
     metalness: 0,
@@ -234,7 +234,7 @@ function initVessel3D() {
   // Nucleus — the prediction core, brightest point
   var nucleusGeo = new THREE.SphereGeometry(0.35, 24, 24);
   var nucleusMat = new THREE.MeshBasicMaterial({
-    color: 0x67e8f9,
+    color: 0x22d3ee,
     transparent: true,
     opacity: 0,
   });
@@ -244,7 +244,7 @@ function initVessel3D() {
   // Nucleus glow
   var nucleusGlowGeo = new THREE.SphereGeometry(0.55, 16, 16);
   var nucleusGlowMat = new THREE.MeshBasicMaterial({
-    color: 0x67e8f9,
+    color: 0x22d3ee,
     transparent: true,
     opacity: 0,
     blending: THREE.AdditiveBlending,
@@ -253,13 +253,13 @@ function initVessel3D() {
   cellGroup.add(nucleusGlow);
 
   // Nucleus point light — illuminates the cell interior
-  var nucleusLight = new THREE.PointLight(0x67e8f9, 0.5 + cellHealth * 0.8, 5);
+  var nucleusLight = new THREE.PointLight(0x22d3ee, 0.5 + cellHealth * 0.8, 5);
   cellGroup.add(nucleusLight);
 
   // Organelles — 6 color-coded, orbiting the nucleus. Each represents a metric.
   var organelleColors = [
-    0x5eead4, // teal — primary
-    0x67e8f9, // cyan
+    0x2dd4bf, // teal — primary
+    0x22d3ee, // cyan
     0xa78bfa, // violet
     0xfbbf24, // amber
     0xf472b6, // pink
@@ -312,7 +312,7 @@ function initVessel3D() {
   for (var bi = 0; bi < bubbleCount; bi++) {
     var bGeo = new THREE.SphereGeometry(0.04 + Math.random() * 0.05, 8, 8);
     var bMat = new THREE.MeshPhysicalMaterial({
-      color: 0xcffafe,
+      color: 0xa5f3fc,
       transmission: 0.9,
       roughness: 0.0,
       ior: 1.0,
@@ -378,7 +378,7 @@ function initVessel3D() {
   var dropletsGroup = new THREE.Group();
   for (var di = 0; di < Math.min(infoCount, 5); di++) {
     var sphereGeo = new THREE.SphereGeometry(0.1, 16, 16);
-    var sphereMat = new THREE.MeshBasicMaterial({ color: 0x67e8f9 });
+    var sphereMat = new THREE.MeshBasicMaterial({ color: 0x22d3ee });
     var droplet = new THREE.Mesh(sphereGeo, sphereMat);
     var da = (di / Math.min(infoCount, 5)) * Math.PI * 2;
     droplet.position.set(
@@ -392,7 +392,7 @@ function initVessel3D() {
     // Glow halo
     var dGlowGeo = new THREE.SphereGeometry(0.2, 12, 12);
     var dGlowMat = new THREE.MeshBasicMaterial({
-      color: 0x67e8f9,
+      color: 0x22d3ee,
       transparent: true,
       opacity: 0.15,
     });
@@ -406,7 +406,7 @@ function initVessel3D() {
   // ── Reflective floor — catches and scatters the teal glow ─────────────────
   var floorGeo = new THREE.CircleGeometry(8, 64);
   var floorMat = new THREE.MeshStandardMaterial({
-    color: 0x121e2a,
+    color: 0x11304a,
     roughness: 0.08,
     metalness: 0.85,
     envMapIntensity: 1.0,
@@ -417,7 +417,7 @@ function initVessel3D() {
   scene.add(floor);
 
   // Caustics light projection on the floor — brighter, warmer spread
-  var causticsLight = new THREE.SpotLight(0x5eead4, 4.5, 14, Math.PI / 4.5, 0.6);
+  var causticsLight = new THREE.SpotLight(0x2dd4bf, 4.5, 14, Math.PI / 4.5, 0.6);
   causticsLight.position.set(0, fillLevel + 2, 0);
   causticsLight.target.position.set(0, VESSEL_BOTTOM - 0.3, 0);
   vesselGroup.add(causticsLight);
@@ -442,16 +442,16 @@ function initVessel3D() {
   particleCanvas.height = 64;
   var pctx = particleCanvas.getContext("2d");
   var pgrad = pctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-  pgrad.addColorStop(0, "rgba(94, 234, 212, 1)");
-  pgrad.addColorStop(0.4, "rgba(94, 234, 212, 0.4)");
-  pgrad.addColorStop(1, "rgba(94, 234, 212, 0)");
+  pgrad.addColorStop(0, "rgba(45, 212, 191, 1)");
+  pgrad.addColorStop(0.4, "rgba(45, 212, 191, 0.4)");
+  pgrad.addColorStop(1, "rgba(45, 212, 191, 0)");
   pctx.fillStyle = pgrad;
   pctx.fillRect(0, 0, 64, 64);
   var particleTexture = new THREE.CanvasTexture(particleCanvas);
 
   var particleMat = new THREE.PointsMaterial({
     map: particleTexture,
-    color: 0x5eead4,
+    color: 0x2dd4bf,
     size: 0.08,
     transparent: true,
     opacity: 0.4,
@@ -462,18 +462,18 @@ function initVessel3D() {
   var particles = new THREE.Points(particleGeo, particleMat);
   scene.add(particles);
 
-  // ── Lighting — twilight chamber, not black void ──────────────────────────
-  scene.add(new THREE.AmbientLight(0x2a3a4a, 0.5));
+  // ── Lighting — bright biological medium, not dark void ───────────────────
+  scene.add(new THREE.AmbientLight(0x3a6b8c, 0.8));
 
-  var belowLight = new THREE.PointLight(0x5eead4, 3.0, 16);
+  var belowLight = new THREE.PointLight(0x2dd4bf, 3.5, 16);
   belowLight.position.set(0, -3.5, 0);
   scene.add(belowLight);
 
-  var aboveLight = new THREE.PointLight(0xfff0d4, 0.8, 20);
+  var aboveLight = new THREE.PointLight(0xfff0d4, 1.2, 20);
   aboveLight.position.set(3, 5, 4);
   scene.add(aboveLight);
 
-  var rimLight = new THREE.DirectionalLight(0x67e8f9, 0.6);
+  var rimLight = new THREE.DirectionalLight(0x22d3ee, 0.8);
   rimLight.position.set(-5, 2, -3);
   scene.add(rimLight);
 

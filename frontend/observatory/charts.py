@@ -46,7 +46,7 @@ def metrics_bar_chart(metrics: list[str], scores: list[float], ceilings: list[fl
                 "x": 0,
                 "bgcolor": "rgba(0,0,0,0)",
             },
-            "height": 320,
+            "height": 240,
         },
         "config": {"displayModeBar": False, "responsive": True},
     }

@@ -34,7 +34,7 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert 'property="og:image"' in home_html
     assert 'name="twitter:card"' in home_html
     assert "https://kytos.example/" in home_html
-    assert "Open run detail" in home_html
+    assert "View run" in home_html
     assert "About the build" in home_html
 
     about_html = about.read_text(encoding="utf-8")
@@ -44,12 +44,15 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "Why the Observatory" in about_html
 
     html = run_page.read_text(encoding="utf-8")
+    runs_html = (dist / "runs" / "index.html").read_text(encoding="utf-8")
     assert "k001-mean-shift-baseline" in html
-    assert "Audit flags" in html
-    assert "Biomedical NER" in html
-    assert "fine-tuned LoRA" in html
-    assert "entity-summary" in html
+    assert "disclosure-panel" in html
+    assert "Audit &amp; metrics" in html
+    assert "run-header" in html
+    assert "vessel3d.js" not in html
     assert "metrics-chart-data" in html
+    assert "vessel3d.js" not in runs_html
+    assert "runs-header" in runs_html
     assert "hk-stability" in html or "housekeeping_shift" in html
     assert (dist / "static" / "style.css").is_file()
     assert (dist / "static" / "favicon.svg").is_file()
