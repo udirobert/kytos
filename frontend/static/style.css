@@ -1019,20 +1019,24 @@ html.no-webgl .vessel-loading {
   margin-bottom: 0.75rem;
 }
 
-.home-about-link {
-  margin: 0;
-  font-size: 0.82rem;
+/* Proof pill: hidden on load, fades in after the user has had time to
+   read the headline + carousel. The delay is a progressive-disclosure
+   nudge — the evidence arrives after the pitch, not competing with it. */
+.home-proof-delayed {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  text-align: center;
+  margin-top: 0.5rem;
 }
 
-.home-about-link a {
-  color: var(--muted);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+.home-proof-delayed.is-shown {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.home-about-link a:hover {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
+@media (prefers-reduced-motion: reduce) {
+  .home-proof-delayed { transition: none; opacity: 1; transform: none; }
 }
 
 .home-chip {

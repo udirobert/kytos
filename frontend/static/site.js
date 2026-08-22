@@ -977,6 +977,22 @@
     start();
   }
 
+  // ── Home proof pill: delayed reveal ────────────────────────────────────────
+  // Fades in the evidence pill 3s after load, after the user has had time to
+  // absorb the headline + carousel pitch. Progressive disclosure: the
+  // evidence arrives after the argument, not competing with it.
+  function initHomeProofDelayed() {
+    var el = document.getElementById("home-proof-delayed");
+    if (!el) return;
+    if (prefersReducedMotion()) {
+      el.classList.add("is-shown");
+      return;
+    }
+    setTimeout(function () {
+      el.classList.add("is-shown");
+    }, 3000);
+  }
+
   function onReady() {
     initPlotly();
     initVccRail();
@@ -996,6 +1012,7 @@
     initSvgVesselInteractivity();
     initViewModeToggle();
     initHomeCatchCarousel();
+    initHomeProofDelayed();
   }
 
   if (document.readyState === "loading") {

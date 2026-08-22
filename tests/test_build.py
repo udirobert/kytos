@@ -50,7 +50,6 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert 'name="twitter:card"' in home_html
     assert "https://kytos.example/" in home_html
     assert "View run" in home_html
-    assert "About the 78-day build" in home_html
     assert "home-scroll-hint" not in home_html
     assert "home-data-strip" not in home_html
     assert "home-hero-grid" in home_html

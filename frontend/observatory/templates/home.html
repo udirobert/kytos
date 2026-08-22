@@ -54,19 +54,12 @@
                     aria-selected="false" aria-label="Slide 3"></button>
           </div>
         </div>
-        <p class="home-subline home-subline-run t-stagger-line t-stagger-line--4">
-          Run #{{ run_index }} of {{ vcc_days }}
-        </p>
-        <div class="t-stagger-line t-stagger-line--5">
+        <div class="home-cta-row t-stagger-line t-stagger-line--4">
+          <a class="button" href="{{ run_href }}">View run #{{ run_index }} of {{ vcc_days }} →</a>
+        </div>
+        <div class="home-proof-delayed" id="home-proof-delayed">
           {{ proof | safe }}
         </div>
-        <div class="home-cta-row t-stagger-line t-stagger-line--6">
-          <a class="button" href="{{ run_href }}">View run #{{ run_index }} →</a>
-          <a class="button button-secondary" href="{{ runs_href }}">All runs →</a>
-        </div>
-        <p class="home-about-link t-stagger-line t-stagger-line--7">
-          <a href="{{ about_href }}">About the 78-day build</a>
-        </p>
       </div>
     </div>
   </div>
