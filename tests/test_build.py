@@ -32,6 +32,9 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert 'property="og:image"' in home_html
     assert 'name="twitter:card"' in home_html
     assert "https://kytos.example/" in home_html
+    assert "VEED Summer Lock-In" in home_html
+    assert "vcc-stats" in home_html
+    assert "hackathon-countdown" in home_html
 
     html = run_page.read_text(encoding="utf-8")
     assert "k001-mean-shift-baseline" in html
