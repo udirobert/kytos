@@ -17,5 +17,8 @@ Local copies were deleted 2026-08-22 to free 12.9GB; everything regenerates:
   verification, docs of the subsample) live in the repo under
   `experiments/k002-vcc2025-validation-mean-shift/`.
 
-k003 (full-depth scoring) = re-download source → prep → `run_k002.sh` variant
-without the subsample step (version included in the HF bundle).
+k003 (full-depth scoring) = re-download source → prep with
+`--purge-source --expect-source-sha256 376f0bab27d9f22e` (deletes the source
+after verified outputs; writes `prep_manifest.json` with all hashes) →
+`run_k002.sh` variant without the subsample step (version included in the HF
+bundle).

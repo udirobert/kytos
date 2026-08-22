@@ -59,9 +59,12 @@ which renders the same philosophy on the Trust panel.
 
 ## k003 changes (and the disk plan)
 
-1. **Stream, don't stage.** Prep in a single pass: download → write
-   `real_lognorm`/`basal` → delete the source *immediately*. Peak local
-   footprint drops from ~12.9GB to ~5.5GB.
+1. **Stream, don't stage. *(shipped 2026-08-22 pre-k003)*** Prep deletes the
+   source immediately after verified outputs:
+   `tools/prep_vcc2025_validation.py --purge-source --expect-source-sha256 <hash>`
+   refuses to delete unless the on-disk file matches the recorded hash, and
+   always hashes every output into `prep_manifest.json` first. Post-prep
+   footprint: ~5.5GB instead of 12.9GB.
 2. **Decide depth before compute.** k003 is full-depth in the scoring matrix:
    overnight, `nohup`-ed, launched only after confirming the disk budget
    (~13GB peak during prep; 46Gi free at time of writing is fine).

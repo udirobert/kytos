@@ -13,7 +13,7 @@ into `experiments/<run-id>/`. None of them touch the inference path.
 | `render_visuals.py` | fal (flux/dev) | `visual/hero.png`, `visual/share-card.png` | 2 image gens |
 | `render_briefing.py` | OpenAI TTS + fal `veed/fabric-1.0` | `visual/briefing.mp4` (+ `briefing-audio.mp3`) | 1 TTS + 1 Fabric |
 | `holo_audit.py` | **H / Holo** | `holo_screenshot.png`, `holo_audit.json` | 1 VLM call |
-| `prep_vcc2025_validation.py` | — (.venv-science) | `data/raw/vcc2025/` norm-log h5ads + targets/gene axis | 0 |
+| `prep_vcc2025_validation.py` | — (.venv-science) | `data/raw/vcc2025/` norm-log h5ads + targets/gene axis + `prep_manifest.json`; `--purge-source` frees the 6.9GB source after a hash check | 0 |
 | `build_audit_context.py` | — (.venv-science) | `audit/context.json` from prediction h5ad | 0 |
 
 ## Rules (hard)
