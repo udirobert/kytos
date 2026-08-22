@@ -5,7 +5,7 @@
 > how an unseen cellular context responds to perturbation, from its unperturbed
 > state alone.
 
-Created 2026-08-21. This file is the foundation: what we're building, why the
+Created **2026-08-22**. This file is the foundation: what we're building, why the
 name, what the challenge demands, and — most importantly — the distilled
 learnings from every project in this catalog that feeds into it.
 
@@ -71,7 +71,15 @@ own vocabulary (State, Stack, Evo, Atlas, Proto).
 
 No project in this catalog is a virtual cell model. Kytos is a **fresh build**.
 What the catalog contributes is infrastructure, workflow patterns, and hard-won
-operational lessons — cataloged below. The realistic path:
+operational lessons — cataloged below.
+
+**Problem and wedge (researched 2026-08-22):** Virtual cell competitions score
+high-dimensional predictions on a leaderboard but provide no public layer for
+biological interpretability of failure modes. Kytos Observatory fills that gap;
+the predictor is the Nov 5 deliverable. Full demarcation:
+[`docs/competitive-landscape.md`](docs/competitive-landscape.md).
+
+The realistic path:
 
 1. Baselines first (mean-shift / linear transfer from basal state) — establish
    the floor and wire up `cell-eval` locally.
@@ -80,6 +88,11 @@ operational lessons — cataloged below. The realistic path:
 3. An agentic sanity layer (lemma-derived) that flags predictions that are
    numerically plausible but biologically implausible.
 4. Disciplined submission cadence against the live leaderboard.
+5. **Build in public via the Kytos Observatory** (`docs/observatory.md`) — a
+   visual, engaging surface for experiment progress, audit flags, literature
+   context, and external critique. Ships **day 1** (2026-08-22) as Milestone 0;
+   partner enrichment (OpenAI narration, Tavily literature, fal visuals) wraps
+   the deterministic core without touching the inference path.
 
 ---
 
@@ -237,6 +250,6 @@ operational lessons — cataloged below. The realistic path:
 
 ---
 
-*Next: Phase 0 — register, download Atlas 2025, read the Altos preprint, stand
-up the repo skeleton (data/, src/, submission/, experiments/<run-id>/meta.json),
-and get cell-eval running locally on a toy prediction.*
+*Next: Observatory Milestone 0 (2026-08-22) — see `docs/observatory.md` and
+`docs/competitive-landscape.md`. Then register, download Atlas 2025, read the
+Altos preprint, run k001 through cell-eval, and publish the first run page.*

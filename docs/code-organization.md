@@ -1,9 +1,11 @@
 # Kytos — Code organization & stack
 
-This is the layout and framework decision record. It answers two questions:
-(1) how is the repository organized, (2) what goes in the "backend" vs the
-"frontend", and with which stacks. It is a **proposal**, not a contract —
-annotate with the date you deviate and why.
+Started: **2026-08-22**. This is the layout and framework decision record. It
+answers two questions: (1) how is the repository organized, (2) what goes in
+the "backend" vs the **Observatory** frontend, and with which stacks. It is a
+**proposal**, not a contract — annotate with the date you deviate and why.
+
+See [`observatory.md`](observatory.md) for the visual build-in-public plan.
 
 ---
 
@@ -11,18 +13,20 @@ annotate with the date you deviate and why.
 
 Drawn from `NOTES.md §4` and the existing repo:
 
-1. **Infrastructure you defer is infrastructure you don't burn during the
-   deadline.** Serving/UI (elcaro: "post-challenge, not during"), heavyweight
-   frontends. Build only the surfaces you must show the competition loop now.
-2. **Deterministic core, LLM narration only.** Numbers come from code; any
-   human-facing prose is rendered *from* a facts JSON (`matcha`), never
-   independently. This drives the frontend choice below.
-3. **One responsibility per package.** The backend is a single importable
+1. **Build the surfaces that earn trust early.** The Observatory (visual
+   experiment tracker + critique loop) ships **day 1** as Milestone 0 toward
+   the Virtual Cell Challenge. Inference API serving (elcaro) stays post-challenge.
+2. **Deterministic core, LLM narration only.** Numbers and charts come from code;
+   any human-facing prose is rendered *from* a facts JSON (`matcha`), never
+   independently. Partner APIs enrich around facts — they never invent metrics.
+3. **Visual and engaging by design.** fal-generated hero imagery and share cards
+   are first-class artifacts, not logos. The run page is the demo surface.
+4. **One responsibility per package.** The backend is a single importable
    package (`src/kytos/`) split by concern, so any piece can be tested and
    swapped without entangling the rest.
-4. **Provenance on everything.** Every artifact path + config + seed + code hash
+5. **Provenance on everything.** Every artifact path + config + seed + code hash
    in a `meta.json` (see `docs/run-protocol.md`).
-5. **Any data this project consumes is untrusted.** Parse defensively; never
+6. **Any data this project consumes is untrusted.** Parse defensively; never
    let an external file drive code execution.
 
 ---
@@ -33,37 +37,48 @@ Drawn from `NOTES.md §4` and the existing repo:
 kytos/
 ├── README.md              # concise entry point → docs/  (no deep detail here)
 ├── docs/                  # ALL prose lives here (this repo's "knowledge base")
+│   ├── observatory.md         # build-in-public surface: visual UX, partner tech
+│   ├── competitive-landscape.md  # problem, evidence, wedge, adjacent projects
 │   ├── architecture.md        # model-stack ADR (Layer A/B, gates)
 │   ├── code-organization.md   # THIS FILE
 │   ├── phase0-environment.md  # declared packages + install
-│   ├── run-protocol.md        # run-IDs, meta.json, provenance rules
+│   ├── run-protocol.md        # run-IDs, meta.json, facts.json, provenance
 │   └── security.md            # secrets policy + caveats
 │
 ├── src/kytos/             # the backend — one importable package
 │   ├── data/            # corpus loaders + the gene-space alignment layer
 │   ├── features/        # context conditioning (basal-derived features)
 │   ├── models/          # Layer A (gene-level transfer) + Layer B (sampler)
-│   ├── eval/            # cell-eval wrappers, run-IDs, metric aggregation
+│   ├── eval/            # cell-eval wrappers, facts.json assembly, metrics
 │   ├── audit/           # biological sanity layer (lemma-derived)
 │   └── serve/           # (deferred) thin API — elcaro pattern, post-challenge
+│
+├── frontend/             # Observatory — static site from facts JSON + visuals
+│   ├── build.py          # static generator → dist/
+│   └── dist/             # committed or CI-built deploy artifact
+│
+├── tools/                # dev + enrichment tooling
+│   ├── scan_secrets.py
+│   ├── render_narrative.py   # OpenAI: facts → narrative/report.md (+ briefing script)
+│   ├── enrich_literature.py  # Tavily: audit flags → literature/
+│   ├── render_visuals.py     # fal: facts + metrics → visual/hero, share-card
+│   └── render_briefing.py    # fal veed/fabric-1.0: image + audio → visual/briefing.mp4
 │
 ├── submission/           # competition harness (the load-bearing contract)
 │   ├── script.py         # official inputs → cell-eval AnnData
 │   └── fixtures/         # smoke-test inputs + committed outputs
 │
-├── tools/                # dev tooling (secrets scanner, etc.)
 ├── experiments/          # run outputs — artifacts + meta.json per run
 │   └── README.md         # → points at docs/run-protocol.md
 ├── data/                 # corpora manifest/staging; raw/ is gitignored
 ├── tests/                # pytest suite
-├── frontend/             # (deferred) static renderer from facts JSON
 └── .pre-commit-config.yaml, .ruff.toml, .gitignore
 ```
 
-**What lives where vs today:** `submission/`, `tools/`, `experiments/`,
-`data/` stay top-level (they are external-contract-facing, not library code).
-The new `src/kytos/` package is the internal "backend" that those top-level
-entrypoints import. `docs/` becomes the single home for all prose.
+**What lives where:** `submission/`, `tools/`, `experiments/`, `data/` stay
+top-level (external-contract-facing). `src/kytos/` is the scientific backend;
+`frontend/` is the Observatory; enrichment lives in `tools/` and writes back
+into `experiments/<run-id>/`.
 
 ---
 
@@ -84,73 +99,89 @@ frozen submission model. **One language, one env manager, one test runner.**
 | Lint/format/secrets | `ruff` + `tools/scan_secrets.py` via pre-commit | now |
 | **API serving** | **FastAPI + uvicorn + pydantic** | **deferred to post-challenge** |
 
-**Decision rationale — API (FastAPI) is deferred, not absent:** `elcaro` gives
-the pattern (config-driven service description, request/response schemas,
-x402-metered inference) and explicitly flags it as *post-challenge*. During the
-competition the only "frontend" of the backend is `cell-eval` itself and the
-filesystem. Standing up a server now adds deployment surface, creds, and timing
-risk for zero competition value.
-
 **Do not add** to the backend during the challenge: Docker/Kubernetes, message
-queues, a database, an ORM. None help the leaderboard. A `results/` directory
-plus frozen CSVs is the durable store.
+queues, a database, an ORM. A `experiments/` directory plus frozen CSVs is the
+durable store.
 
 ---
 
-## 4. Frontend — stack
+## 4. Observatory frontend — stack
 
-The "frontend" is any human-facing surface. Honest scope here:
+The Observatory is the **visual, engaging** human-facing surface. It renders
+from committed artifacts only; enrichment runs at build time and commits outputs.
 
-- **During the challenge**, the human-facing surfaces are: the **docs site**
-  (walkthrough/ADRs), the **experiment tracker** (run results + audit report),
-  and a **leaderboard tracker** (our scores vs validation over time). These are
-  **internal tooling** and are all stable, low-frequency, and already structured
-  as facts JSON.
+### Pages
 
-**Recommendation: generated static site, not an SPA.** Build-time HTML rendered
-from facts JSON (matcha: "renders from a facts JSON — nothing else"; lemma:
-"generated outputs committed so the site needs no backend").
+| Page | Content source |
+|---|---|
+| Home | Latest run hero (`visual/hero`), VCC timeline, build log |
+| Runs | Index of `experiments/*/facts.json` — card layout |
+| Run detail | Metrics (Plotly), audit flags, literature rail, narrative, provenance |
+| Critique | Links to GitHub Discussions; pre-registered hypotheses per run |
 
-| Option | When | Why |
+### Stack
+
+| Layer | Stack | When |
 |---|---|---|
-| **MkDocs + Material** (Markdown) | now | Painless for the heavily-prose docs; links to /static prediction HTML + charts |
-| **Tiny static generator + a chart lib** (e.g. Plotly HTML, FastHTML) | now | Experiment/leaderboard pages written server-side from facts JSON |
-| **React + Vite + TS** | **only if** a real interactive UI is required | Overkill for 3 low-frequency pages; adds a node toolchain + build step to a Python repo |
+| Static generator | Python `frontend/build.py` → HTML | now |
+| Charts | Plotly (from committed CSVs) | now |
+| Docs prose | MkDocs Material (optional sibling site) | now |
+| Narration | OpenAI via `tools/render_narrative.py` | now |
+| Literature | Tavily via `tools/enrich_literature.py` | now |
+| **Visuals** | **fal via `tools/render_visuals.py`** | **now — core to UX** |
+| Interactive SPA | React + Vite | only if a page needs it later |
 
-**Default: `MkDocs` (Material) for docs + a minimal `frontend/` that emits
-static HTML/Plotly from the run's facts JSON.** If a genuine interactive need
-emerges, graduate only that page to React/Vite as a **static export**.
+**Default:** custom static generator + Plotly + **fal hero/share assets** per run.
+MkDocs for long-form ADRs; Observatory for the visual experiment experience.
 
-**Frontend rules (hard):**
-1. Render **only** from facts JSON / committed CSVs. No live second guesses, no
-   LLM prose in the DOM.
-2. No runtime backend for the frontend during the challenge — it is static, so
-   it can't break the prediction path.
-3. If we ever expose predictions publicly (post-challenge), that surface goes
-   behind the deferred FastAPI/x402 layer; the static tracker stays internal.
+### Partner technology map (hackathon + ongoing)
+
+| Partner | Integration point | Hard rule |
+|---|---|---|
+| **OpenAI** | `tools/render_narrative.py` → `narrative/report.md`; TTS for briefings | Output must cite `facts.json` fields |
+| **Tavily** | `tools/enrich_literature.py` → `literature/*.json` | Empty on failure; never blocks build |
+| **fal** | `tools/render_visuals.py` → `visual/hero.png`, `share-card.png` | Gen media for engagement; not metric source |
+| **fal + VEED** | `tools/render_briefing.py` → `visual/briefing.mp4` via `veed/fabric-1.0` | Image + audio → talking video; core demo moment |
+
+Optional: Pioneer (critique classification), h (computer-use agents) — post-Milestone 0.
+
+Problem / wedge / adjacent projects: [`competitive-landscape.md`](competitive-landscape.md).
+
+### Visual design (Milestone 0)
+
+Quality bar: immersive center stage, editorial typography, detail panels —
+inspired by [cell-architecture-studio](https://github.com/cclank/cell-architecture-studio)
+and [plant-dna](https://github.com/thebuggeddev/plant-dna), with Kytos identity
+(observatory / instrument-panel metaphor, κύτος vessel centerpiece). Spec:
+[`observatory.md §3`](observatory.md#3-experience-design--visual-first).
+
+Layout grammar: `Header · Run strip · Stage (vessel + Fabric video) · Evidence rail`.
+
+### Frontend rules (hard)
+
+1. Render **only** from `facts.json`, committed CSVs, and committed `visual/`.
+   No live LLM or fal calls in the browser.
+2. Pre-render enrichment; static `frontend/dist/` must build with zero API keys.
+3. Every narrative sentence links to its source fact field.
+4. fal / Fabric media are **first-class** — briefing on run detail, hero + share card.
 
 ---
 
 ## 5. Dependency & build hygiene
 
-- **uv** is the single tool for env + package resolution (cell-eval documents
-  `uv pip install`). Declare deps in `pyproject.toml` (root) as the source of
-  truth, not a stray `requirements.txt`.
-- **Node toolchain is absent by design** during the challenge (no `package.json`
-  at the root). The first page that needs a real build gets its own
-  `frontend/package.json`; it must never own the repo root.
-- Ruff config is committed (`.ruff.toml`); secrets scan + ruff run on every
-  commit. No CI yet — the hooks are the local gate.
+- **uv** is the single tool for env + package resolution. Declare deps in
+  `pyproject.toml` (root) as the source of truth.
+- **Node toolchain is absent by design** at repo root. If a page needs React,
+  it gets its own `frontend/package.json` — never at root.
+- Partner API keys live in env / local secrets only (see `docs/security.md`).
+- Ruff + secrets scan on every commit. No CI yet — hooks are the local gate.
 
 ---
 
 ## 6. Open questions to resolve as we go
-1. Do we want any interactive view pre-validation (e.g. a clickable UMAP of a
-   predicted distribution)? If no, MkDocs + static Plotly suffices; decide
-   before Phase 2 (sampling) so Layer B can emit the needed JSON lazily.
-2. Experiment-tracking volume — at ~2–5 runs/week the filesystem + meta.json is
-   fine; only if this grows past ~10 runs/week consider a lightweight
-   SQLite-backed index (still no server).
-3. Whether post-challenge serving is in scope (elcaro), and if so whether it is
-   a metered public API (x402) or a private notebook export. Decide after the
-   competition.
+
+1. Deploy target for `frontend/dist/` (GitHub Pages vs Cloudflare Pages)?
+2. MkDocs vs all-in-one Python generator for Observatory layout — decide Milestone 0.
+3. fal model for hero still vs Fabric source frame (same image or separate).
+4. Interactive UMAP on run detail — emit JSON from Layer B before Phase 2 ends.
+5. Post-challenge serving (elcaro / x402) — decide after Nov 5.

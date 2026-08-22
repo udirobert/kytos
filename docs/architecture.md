@@ -1,6 +1,6 @@
 # Kytos — Phase 0 Architecture & Decision Record
 
-Status: **DRAFT** · Owner: udingethe · Created: 2026-08-21
+Status: **DRAFT** · Owner: udingethe · Started: **2026-08-22**
 Companion to `NOTES.md §3 Honest Positioning` and `§4 Learnings`. This is the
 decision record for the 2026 Virtual Cell Challenge stack. It is a *proposal*,
 not a contract — each numbered decision has a gate below it that must be
@@ -131,11 +131,35 @@ design around.
 
 ---
 
+## 5b. Kytos Observatory (build-in-public)
+
+Parallel to the prediction stack, the **Observatory** (`docs/observatory.md`) is
+the **public accountability layer** for VCC experiments: metrics, biological
+audit flags, literature, provenance, and video briefings. It does not sit on
+the inference path. Problem, evidence, and wedge:
+[`docs/competitive-landscape.md`](competitive-landscape.md).
+
+| Layer | Role | Partner / stack |
+|---|---|---|
+| Render contract | `facts.json` per run — metrics, flags, provenance, visual paths | deterministic (`src/kytos/eval/`) |
+| Narration | Run digest, briefing script — **from facts only** | OpenAI (weft / matcha) |
+| Literature | Evidence sidebar for audit-flagged genes | Tavily (famile; degrade empty) |
+| Stills | Hero imagery, share cards | **fal** (image gen) |
+| Video briefings | Run explainers from committed artifacts | **fal** [`veed/fabric-1.0`](https://fal.ai/models/veed/fabric-1.0) (VEED Fabric) |
+| Critique | Pre-registered hypotheses, Discussions per flag | GitHub |
+
+**Milestone 0 (2026-08-22):** ship static Observatory + k001 run page as the
+{Tech: Europe} × VEED Hackathon entry — initial milestone toward Nov 5, not a
+detour from the science track.
+
+---
+
 ## 6. Phase-0 sequencing to deadline (Nov 5, 2026)
 
 | Window | Milestone |
 |---|---|
-| **Phase 0 (now)** | install `cell-eval`; baseline through harness → `cell-eval run --ceiling` |
+| **2026-08-22 (today)** | Observatory Milestone 0: `frontend/`, `facts.json`, enrichment tools, k001 page; hackathon submit |
+| **Late Aug** | install `cell-eval`; baseline through harness → `cell-eval run --ceiling` |
 | **Early Sep** | inspect validation basal: gene-set overlap with public corpora; unlock Level-A context features; lock normalization |
 | **Mid Sep** | gene-level transfer head; train on Replogle multi-line; simulate held-out-cell; pre-register rules |
 | **Early Oct** | decide Layer A/B split; freeze + test submission with exact gene list & AnnData gating |
@@ -153,5 +177,6 @@ design around.
 4. (Data) whether any of the six unseen lines are already perturbed in a public
    corpus — check on validation release; legitimate if so.
 
-*Next: Phase 0 — install cell-eval (uv), stand up the harness, run the mean-shift
-baseline + `--ceiling`. See `submission/README.md` and `experiments/README.md`.*
+*Next: Observatory Milestone 0 (today) — see `docs/observatory.md`. Then install
+cell-eval (uv), stand up the harness, run the mean-shift baseline + `--ceiling`.
+See `submission/README.md` and `experiments/README.md`.*

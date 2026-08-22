@@ -5,7 +5,7 @@ Importable as `kytos` (src-layout, see `pyproject.toml`). Split by concern:
 - `data/`     — corpus loaders + gene-space alignment
 - `features/` — basal-derived context conditioning
 - `models/`   — Layer A (gene-level transfer) + Layer B (cell sampler)
-- `eval/`     — cell-eval wrappers, run-IDs, metric aggregation
+- `eval/`     — cell-eval wrappers, `facts.json` assembly, metric aggregation
 - `audit/`    — biological sanity layer
 - `serve/`    — deferred thin API (post-challenge)
 
