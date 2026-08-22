@@ -3,7 +3,11 @@
 # Netlify rebuilds on every push to the connected branch (enable in Site settings).
 
 [build]
-  command = "python3 frontend/build.py --experiments experiments --out frontend/dist"
+  # jinja2 must be installed: the observatory templates moved to Jinja2
+  # (d15e6fa) and bare python3 has no site-packages on Netlify. Keep this
+  # in sync with the top-level imports of frontend/observatory/*.py or the
+  # deploy silently sticks on the last good build.
+  command = "pip install -q jinja2 && python3 frontend/build.py --experiments experiments --out frontend/dist"
   publish = "frontend/dist"
 
 [build.environment]
