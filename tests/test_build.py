@@ -65,7 +65,8 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "briefing-play" in html
     assert "chart-details" in html
     assert "run-header" in html
-    assert "vessel3d.js" not in html
+    assert "vessel3d.js" in html  # run detail now has full-bleed vessel
+    assert "run-hero" in html
     assert "metrics-chart-data" in html
     assert "vessel3d.js" not in runs_html
     assert "runs-header" in runs_html

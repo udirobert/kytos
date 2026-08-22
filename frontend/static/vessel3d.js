@@ -203,15 +203,21 @@ function initVessel3D() {
   // Cell membrane — organic, slightly irregular sphere (not a perfect ball)
   var cellRadius = 1.1;
   var CELL_SEGMENTS = lowPerf ? 32 : 48;
-  var cellGeo = new THREE.IcosahedronGeometry(cellRadius, 2);
-  // Deform vertices for organic irregularity
+  var cellGeo = new THREE.IcosahedronGeometry(cellRadius, 3);
+  // Deform vertices for organic irregularity — multi-octave noise for a
+  // real membrane texture, not just smooth bumps
   var cellPos = cellGeo.attributes.position;
   for (var ci = 0; ci < cellPos.count; ci++) {
     var cx = cellPos.getX(ci);
     var cy = cellPos.getY(ci);
     var cz = cellPos.getZ(ci);
-    var noise = 1 + Math.sin(cx * 3) * 0.04 + Math.cos(cy * 4) * 0.03 + Math.sin(cz * 5) * 0.02;
-    cellPos.setXYZ(ci, cx * noise, cy * noise, cz * noise);
+    var noise =
+      Math.sin(cx * 3) * 0.04 +
+      Math.cos(cy * 4) * 0.03 +
+      Math.sin(cz * 5) * 0.02 +
+      Math.sin(cx * 7 + cy * 3) * 0.015 +
+      Math.cos(cz * 9 + cx * 2) * 0.01;
+    cellPos.setXYZ(ci, cx * (1 + noise), cy * (1 + noise), cz * (1 + noise));
   }
   cellGeo.computeVertexNormals();
 
@@ -469,6 +475,70 @@ function initVessel3D() {
   var particles = new THREE.Points(particleGeo, particleMat);
   scene.add(particles);
 
+  // ── DNA helix strands — subtle biological motif in the background ─────────
+  // Two slow-rotating double-helix strands float behind the vessel, evoking
+  // the molecular biology without dominating the scene. Inspired by plant-dna
+  // and cell-architecture-studio repos.
+  var dnaGroup = new THREE.Group();
+  scene.add(dnaGroup);
+  var dnaStrands = [];
+  var dnaColors = [0x2dd4bf, 0xa78bfa, 0x4ade80];
+  for (var si = 0; si < 2; si++) {
+    var helixGroup = new THREE.Group();
+    var helixColor = dnaColors[si];
+    var helixPoints = lowPerf ? 14 : 22;
+    for (var hi = 0; hi < helixPoints; hi++) {
+      var tH = hi / (helixPoints - 1);
+      var angle = tH * Math.PI * 4;
+      var y = (tH - 0.5) * 6;
+      var radius = 0.4;
+      // Two dots per rung — the double helix pair
+      var dotGeo = new THREE.SphereGeometry(0.06, 8, 8);
+      var dotMat = new THREE.MeshBasicMaterial({
+        color: helixColor,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+      });
+      var dot1 = new THREE.Mesh(dotGeo, dotMat);
+      dot1.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
+      helixGroup.add(dot1);
+      var dotMat2 = dotMat.clone();
+      var dot2 = new THREE.Mesh(dotGeo, dotMat2);
+      dot2.position.set(
+        Math.cos(angle + Math.PI) * radius,
+        y,
+        Math.sin(angle + Math.PI) * radius,
+      );
+      helixGroup.add(dot2);
+      // Rung (ladder bar) every other step
+      if (hi % 2 === 0) {
+        var rungGeo = new THREE.CylinderGeometry(0.01, 0.01, radius * 2, 6);
+        var rungMat = new THREE.MeshBasicMaterial({
+          color: helixColor,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+        });
+        var rung = new THREE.Mesh(rungGeo, rungMat);
+        rung.position.set(0, y, 0);
+        rung.lookAt(dot1.position);
+        rung.rotateX(Math.PI / 2);
+        helixGroup.add(rung);
+      }
+    }
+    // Position the strands behind/beside the vessel
+    helixGroup.position.set(
+      si === 0 ? -3.5 : 3.2,
+      0,
+      -2,
+    );
+    helixGroup.scale.setScalar(0.8);
+    helixGroup.userData = { rotSpeed: 0.1 + si * 0.05, phase: si * 1.5 };
+    dnaStrands.push(helixGroup);
+    dnaGroup.add(helixGroup);
+  }
+
   // ── Lighting — bright biological medium, not dark void ───────────────────
   scene.add(new THREE.AmbientLight(0x3a6b8c, 0.8));
 
@@ -483,6 +553,11 @@ function initVessel3D() {
   var rimLight = new THREE.DirectionalLight(0x22d3ee, 0.8);
   rimLight.position.set(-5, 2, -3);
   scene.add(rimLight);
+
+  // Botanical accent — subtle green side-light evoking plant biology
+  var bioLight = new THREE.PointLight(0x4ade80, 0.6, 12);
+  bioLight.position.set(-4, 1, 2);
+  scene.add(bioLight);
 
   // ── Controls ─────────────────────────────────────────────────────────────
   // Interactive: judges can drag to rotate and scroll to zoom. Auto-rotate
@@ -592,6 +667,7 @@ function initVessel3D() {
     cracks: { start: 2.3, dur: 0.8 },
     droplets: { start: 2.6, dur: 0.6 },
     particles: { start: 0.2, dur: 1.0 },
+    dna: { start: 1.5, dur: 1.5 },
   };
   var entranceDone = reducedMotion;
   if (entranceDone) {
@@ -757,8 +833,30 @@ function initVessel3D() {
       }
       pos.needsUpdate = true;
 
+      // DNA helix strands — slow rotation + fade-in
+      var dnaA = fadeFactor("dna");
+      dnaStrands.forEach(function (strand) {
+        strand.rotation.y += strand.userData.rotSpeed * dt;
+        strand.position.y = Math.sin(t * 0.3 + strand.userData.phase) * 0.3;
+        strand.children.forEach(function (child) {
+          if (child.material) {
+            child.material.opacity = (child.geometry.type === "CylinderGeometry" ? 0.12 : 0.3) * dnaA;
+          }
+        });
+      });
+
       // Vessel bob
       vesselGroup.position.y = Math.sin(t * 0.5) * 0.06;
+    } else {
+      // Reduced motion: still set DNA opacity (no rotation/movement)
+      var dnaA = fadeFactor("dna");
+      dnaStrands.forEach(function (strand) {
+        strand.children.forEach(function (child) {
+          if (child.material) {
+            child.material.opacity = (child.geometry.type === "CylinderGeometry" ? 0.12 : 0.3) * dnaA;
+          }
+        });
+      });
     }
 
     // Mouse parallax — smooth follow

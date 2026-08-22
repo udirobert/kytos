@@ -1119,24 +1119,36 @@ html.no-webgl .vessel-loading {
   height: auto;
 }
 
-/* Overlay: gradient scrim + centered content */
+/* Overlay: full-width scrim over the vessel — nav + run header on top */
 .run-hero-overlay {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 800px;
-  text-align: center;
-  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
   background: radial-gradient(
-    ellipse 80% 60% at 50% 50%,
-    transparent 0%,
-    rgba(6, 10, 16, 0.3) 50%,
-    rgba(6, 10, 16, 0.75) 100%
+    ellipse 75% 55% at 50% 40%,
+    rgba(8, 20, 30, 0.9) 0%,
+    rgba(8, 20, 30, 0.75) 35%,
+    rgba(8, 20, 30, 0.45) 65%,
+    rgba(8, 20, 30, 0.12) 88%,
+    transparent 100%
   );
 }
 
 .run-hero-overlay .eyebrow {
   margin-bottom: 0.6rem;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.run-hero-overlay .eyebrow,
+.run-hero-overlay .run-header-title,
+.run-hero-overlay .run-verdict,
+.run-hero-overlay .breadcrumb a,
+.run-hero-overlay .jk-hint {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(8, 20, 30, 0.4);
 }
 
 .run-hero-title {
@@ -1178,7 +1190,11 @@ html.no-webgl .vessel-loading {
 .run-header {
   max-width: 960px;
   margin: 0 auto;
-  padding: 1rem 1.5rem 0.5rem;
+  padding: 1rem 1.5rem 2rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .run-header-grid {
@@ -1194,6 +1210,7 @@ html.no-webgl .vessel-loading {
   font-weight: 400;
   line-height: 1.15;
   margin: 0 0 0.6rem;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7), 0 0 32px rgba(8, 20, 30, 0.4);
 }
 
 .metric-pills {
