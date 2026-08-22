@@ -231,8 +231,8 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
         src = f"{media_prefix}{briefing}"
         return f"""
         <div class="stage-hero video-hero">
-          <video class="briefing-video" src="{_h(src)}" controls playsinline
-                 poster="{_h(media_prefix + hero) if hero else ""}"></video>
+          <video class="briefing-video" src="{_h(src)}" autoplay muted loop playsinline
+                 controls poster="{_h(media_prefix + hero) if hero else ""}"></video>
         </div>
         """
     if hero:

@@ -19,5 +19,13 @@ models/
 .DS_Store
 *.swp
 
+# Local secrets (copy from .env.example)
+.env
+.env.local
+.env.*.local
+
 # Observatory build output (generated locally; Netlify builds on push)
 frontend/dist/
+
+# Pioneer model ID cache (local; not committed — per-account)
+tools/.pioneer_model_id

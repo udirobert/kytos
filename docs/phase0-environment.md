@@ -4,6 +4,13 @@ Declared for the 2026 Virtual Cell Challenge. Install via `uv` (cell-eval's
 documented distribution path). Python 3.14.5 is present here; `uv` 0.5.9 is
 available.
 
+**Platform note (2026-08-22):** `torch` (pulled by `scvi-tools`/`scanpy`) has
+**no Python 3.14 wheel** for this platform — a full `uv sync` currently fails
+(`torch==2.13.0` resolution error). The **heavy stack is pinned to Python
+3.12** once the science track starts. The Observatory `.venv` (Python 3.12)
+already works with just the partner clients (`openai`, `tavily-python`,
+`fal-client`) — see [`tools/README.md`](../tools/README.md).
+
 ## Core inference/env stack
 
 | Package | Why |
@@ -48,7 +55,12 @@ reference or a frozen `cell-eval run`.
 ## Install (first action of Phase 0)
 
 ```bash
-uv pip install -U cell-eval
+# Observatory enrichment venv (Python 3.12 — 3.14 has no torch wheel):
+uv venv --python 3.12 .venv
+uv pip install openai tavily-python fal-client
+
+# Science track (when cell-eval work starts):
+uv pip install -U cell-eval   # in a Python 3.12 env; anndata comes with it
 uv pip install -r requirements.txt   # once declared, see src release hygiene
 ```
 

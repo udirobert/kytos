@@ -76,7 +76,9 @@ class Strategy:
     def fit(self, inputs: ChallengeInputs) -> None:
         """Fit on whatever the strategy needs (Atlas 2025, Replogle, etc.)."""
 
-    def predict(self, inputs: ChallengeInputs, gene_order: List[str]) -> PredictionResult:
+    def predict(
+        self, inputs: ChallengeInputs, gene_order: List[str], targets: List[str]
+    ) -> PredictionResult:
         raise NotImplementedError
 
 
@@ -91,18 +93,26 @@ class MeanShiftBaseline(Strategy):
     name = "mean-shift"
 
     def predict(
-        self, inputs: ChallengeInputs, gene_order: List[str], n_targets: int
+        self, inputs: ChallengeInputs, gene_order: List[str], targets: List[str]
     ) -> PredictionResult:
         import numpy as np
 
         n_genes = len(gene_order)
         n_cells = inputs.n_per_group
+        # One control block + one block per knocked gene, n_cells each.
+        # obs[pert_col] must label EVERY cell so cell-eval can compare control
+        # vs perturbed groups — the group labels and X rows must line up
+        # (regression fixed: groups was n_cells long while X had
+        # n_cells * (1 + n_targets) rows, which AnnData would reject).
         groups = [inputs.control_value] * n_cells
-        values = np.zeros((n_cells * (1 + n_targets), n_genes), dtype=np.float32)
+        for target in targets:
+            groups.extend([target] * n_cells)
+        values = np.zeros((len(groups), n_genes), dtype=np.float32)
         meta = {
             "strategy": self.name,
             "normalization": inputs.normalization,
             "n_per_group": n_cells,
+            "n_targets": len(targets),
             "gene_order_sha": _file_hash(inputs.gene_order_path),
         }
         return PredictionResult(genes=gene_order, groups=groups, values=values, meta=meta)
@@ -173,7 +183,7 @@ def main(argv=None) -> int:
     gene_order = [ln.strip() for ln in Path(args.gene_order).read_text().splitlines() if ln.strip()]
     targets = [ln.strip() for ln in Path(args.targets).read_text().splitlines() if ln.strip()]
     strategy = MeanShiftBaseline()
-    result = strategy.predict(inputs, gene_order, len(targets))
+    result = strategy.predict(inputs, gene_order, targets)
 
     adata = cell_eval_h5ad(
         result.genes, result.groups, result.values, inputs.pert_col, inputs.control_value

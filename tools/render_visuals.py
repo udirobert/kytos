@@ -26,7 +26,7 @@ from _enrich_common import (
 )
 
 MODEL = "fal-ai/flux/dev"
-IMAGE_SIZE = "landscape_16_9"
+IMAGE_SIZE_CANDIDATES = ("landscape_16_9", "16:9", "1024x576")
 
 HERO_PROMPT = (
     "cinematic scientific observatory instrument panel, a single hollow glass "
@@ -53,13 +53,21 @@ def generate_still(prompt: str) -> str:
     """Run one fal image generation; return the output image URL."""
     import fal_client  # lazy: partner client is optional
 
-    result = fal_client.subscribe(
-        MODEL, arguments={"prompt": prompt, "image_size": IMAGE_SIZE, "num_images": 1}
-    )
-    try:
-        return result["images"][0]["url"]
-    except (KeyError, IndexError, TypeError) as exc:
-        raise RuntimeError(f"unexpected fal response shape: {result}") from exc
+    last_exc: Exception | None = None
+    for image_size in IMAGE_SIZE_CANDIDATES:
+        try:
+            result = fal_client.subscribe(
+                MODEL,
+                arguments={"prompt": prompt, "image_size": image_size, "num_images": 1},
+            )
+            try:
+                return result["images"][0]["url"]
+            except (KeyError, IndexError, TypeError) as exc:
+                raise RuntimeError(f"unexpected fal response shape: {result}") from exc
+        except Exception as exc:
+            last_exc = exc
+            warn(f"fal flux/dev image_size={image_size!r} failed ({exc}); trying next")
+    raise RuntimeError(f"all image_size candidates failed: {last_exc}") from last_exc
 
 
 def main(argv=None) -> int:

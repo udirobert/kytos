@@ -4,5 +4,6 @@
   "strategy": "mean-shift",
   "normalization": "log1p",
   "n_per_group": 100,
+  "n_targets": 3,
   "gene_order_sha": "3a1bbc304a8f"
 }

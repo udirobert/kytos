@@ -250,8 +250,10 @@ The realistic path:
 
 ---
 
-*Next (end of day 1, 2026-08-22): finish the Observatory run page (Developer C),
-then the science track — install `cell-eval` + `anndata` (uv), run k001 through
+*Next (hackathon day, 2026-08-22): finish the live enrichment run (Dev A),
+connect Netlify for the deployed Observatory (Dev B), record the
+2-min Loom (Dev C) — then the science track: install `cell-eval` + `anndata` on
+**Python 3.12** (no torch wheel for 3.14), run k001 through
 `cell-eval run --ceiling`, register, download Atlas 2025, read the Altos
 preprint, and publish the first run page. Milestone 0 progress:
 [`docs/milestone-0-worksplit.md`](docs/milestone-0-worksplit.md).*

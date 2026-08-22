@@ -197,14 +197,16 @@ Ruthless cut for hackathon deadline (19:00 opt-in):
 
 One gorgeous run page beats three half-finished pages.
 
-### Progress (2026-08-22, end of day 1)
+### Progress (2026-08-22, hackathon day)
 
 | Track | Status |
 |---|---|
-| Core (A) | ✅ `facts.json` assembler (`src/kytos/eval/facts.py`), audit rules + CLI (`src/kytos/audit/`), k001 seeded: metrics CSVs, flags, `facts.json` |
-| Enrich (B) | ✅ four `tools/render_*.py` + `tools/README.md` + `obs` extra; degrade-empty verified against k001 (`narrative/report.md` fallback committed); live fal/Tavily/Fabric runs pending API keys |
-| Frontend (C) | ✅ `frontend/build.py` → `dist/` (home, runs index, k001 run detail) + Netlify (`netlify.toml`) |
-| Integration | ⏳ enrichment with keys → rebuild `dist/` → deploy → 2-min Loom |
+| Core (A) | ✅ `facts.json` assembler (`src/kytos/eval/facts.py`), audit rules + CLI (`src/kytos/audit/`), k001 seed — committed |
+| Enrich (B) | ✅ four `tools/render_*.py` + one-shot `tools/run_enrichment.sh` + `env.example`; degrade-empty verified against k001; **live API run in progress** (venv unblocked: Python 3.12 + partner clients) |
+| Frontend (C) | ✅ `frontend/build.py` → `dist/` (home, runs index, k001 run detail); Playwright-verified desktop + mobile, zero console errors; briefing video autoplay; Netlify (`netlify.toml`) |
+| Deploy (B) | ✅ Netlify (`netlify.toml`) — auto-builds `frontend/dist/` on push; connect repo in Netlify dashboard |
+| Pioneer (C) | 🧪 `tools/enrich_pioneer.py` — fine-tuned narrative model for the side challenge (experimental) |
+| Integration | ⏳ real enrichment artifacts → rebuild `dist/` → redeploy → 2-min Loom |
 
 ### Later (Aug → Nov 2026)
 
@@ -231,7 +233,7 @@ Full problem/evidence talking points: [`competitive-landscape.md §6`](competiti
 
 ## 8. Open questions
 
-1. ~~Deploy target for `frontend/dist/`~~ → **Netlify** (`netlify.toml`)
+1. ~~Deploy target for `frontend/dist/`~~ → **Netlify** (`netlify.toml`) — decided 2026-08-22
 2. Font / palette final choice (avoid cloning Plant DNA's Space Mono verbatim)?
 3. fal model for hero still vs Fabric source frame (same image or separate)?
 4. Pioneer fine-tune for critique classification — post-hackathon?

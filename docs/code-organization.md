@@ -63,7 +63,11 @@ kytos/
 │   ├── render_narrative.py   # OpenAI: facts → narrative/report.md (+ briefing script)
 │   ├── enrich_literature.py  # Tavily: audit flags → literature/
 │   ├── render_visuals.py     # fal: facts + metrics → visual/hero, share-card
-│   └── render_briefing.py    # fal veed/fabric-1.0: image + audio → visual/briefing.mp4
+│   ├── render_briefing.py    # fal veed/fabric-1.0: image + audio → visual/briefing.mp4
+│   ├── run_enrichment.sh     # one-shot: audit → facts → all enrichers → refresh
+│   ├── enrich_pioneer.py     # (experimental) Pioneer fine-tuned narrative — side challenge
+│
+│   (partner keys: `.env.example` → `.env` at repo root — gitignored)
 │
 ├── submission/           # competition harness (the load-bearing contract)
 │   ├── script.py         # official inputs → cell-eval AnnData

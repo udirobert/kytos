@@ -17,9 +17,19 @@ from __future__ import annotations
 import argparse
 import json
 
-from _enrich_common import env_key, load_facts, notice, resolve_run_dir, utcnow, warn
+from _enrich_common import (
+    chat_model,
+    env_key,
+    load_facts,
+    narration_provider,
+    notice,
+    openai_chat_client,
+    resolve_run_dir,
+    utcnow,
+    warn,
+)
 
-MODEL = "gpt-4o-mini"  # narration only; metrics never come from an LLM
+MODEL = chat_model()
 MAX_TOKENS = 700
 OUT = "narrative/report.md"
 
@@ -79,9 +89,7 @@ def fallback_digest(facts: dict) -> str:
 
 
 def render_with_openai(facts: dict) -> str:
-    import openai  # lazy: partner client is optional
-
-    client = openai.OpenAI(api_key=env_key("OPENAI_API_KEY"))
+    client = openai_chat_client()
     response = client.chat.completions.create(
         model=MODEL,
         max_tokens=MAX_TOKENS,
@@ -97,7 +105,10 @@ def render_with_openai(facts: dict) -> str:
     text = (response.choices[0].message.content or "").strip()
     if not text:
         raise RuntimeError("OpenAI returned an empty narrative")
-    header = f"<!-- kytos narrative · generated_by=llm · model={MODEL} · {utcnow()} UTC -->"
+    header = (
+        f"<!-- kytos narrative · generated_by=llm · provider={narration_provider()} "
+        f"· model={MODEL} · {utcnow()} UTC -->"
+    )
     return f"{header}\n\n{text}\n"
 
 
@@ -110,13 +121,25 @@ def main(argv=None) -> int:
     facts = load_facts(run_dir)
 
     text = None
-    if env_key("OPENAI_API_KEY"):
+    provider = narration_provider()
+    if provider == "venice":
+        if not env_key("VENICE_INFERENCE_KEY", "VENICE_API_KEY"):
+            warn("NARRATION_PROVIDER=venice but no VENICE_INFERENCE_KEY; using fallback digest")
+        else:
+            try:
+                text = render_with_openai(facts)
+                notice(f"narrative: LLM digest via venice / {MODEL}")
+            except ImportError:
+                warn("openai client not installed (`uv pip install openai`); using fallback digest")
+            except Exception as exc:
+                warn(f"Venice call failed ({exc}); using fallback digest")
+    elif env_key("OPENAI_API_KEY"):
         try:
             text = render_with_openai(facts)
-            notice(f"narrative: LLM digest via {MODEL}")
+            notice(f"narrative: LLM digest via openai / {MODEL}")
         except ImportError:
-            warn("openai client not installed (`uv sync --extra obs`); using fallback digest")
-        except Exception as exc:  # enrichment must never block the build
+            warn("openai client not installed (`uv pip install openai`); using fallback digest")
+        except Exception as exc:
             warn(f"OpenAI call failed ({exc}); using fallback digest")
     if text is None:
         text = (

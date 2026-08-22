@@ -171,13 +171,13 @@ Observatory maintenance stays with **C**; **A** feeds new runs into `experiments
 
 ---
 
-## Progress (2026-08-22, end of day 1)
+## Progress (2026-08-22, hackathon day)
 
 | Dev | Status |
 |---|---|
-| **A** | ✅ `facts.py` assembler, `audit/rules.py` + CLI, k001 seed (`meta.json`, metrics + ceiling CSVs, flags, `facts.json`), `test_facts.py` / `test_audit.py` |
-| **B** | ✅ 4 enrichment tools + `tools/README.md` + `obs` extra + `test_enrich.py`; degrade paths verified on the real k001 run; API runs pending keys (`uv sync --extra obs`) |
-| **C** | ✅ `frontend/build.py` + `frontend/observatory/` + `frontend/static/` + `netlify.toml`; `dist/` builds from k001 |
-| **Shared** | ✅ ruff/format/secrets clean repo-wide; `pre-commit run --all-files` passes — integration commit unblocked |
+| **A** | ✅ core + k001 seed committed; 🏃 **live enrichment run in progress** — `tools/run_enrichment.sh` one-shot pipeline, `env.example`; venv unblocked (Python 3.12 + partner clients; full `uv sync` blocked on torch/3.14 wheel) |
+| **B** | ✅ enrichment tools + `tools/README.md` + `obs` extra + `test_enrich.py`; ✅ deploy: Netlify config (`netlify.toml`), site verified desktop + mobile (Playwright, zero console errors), briefing autoplay — connect repo in Netlify dashboard |
+| **C** | ✅ `frontend/build.py` + `frontend/observatory/` + `frontend/static/` + `netlify.toml`; 🧪 `tools/enrich_pioneer.py` (Pioneer side challenge) |
+| **Shared** | ✅ ruff/format/secrets green; pre-commit passes; harness e2e tests added (`tests/test_harness.py` — 21 tests total) |
 
 *Integration checklist: k001 folder complete → enrichment committed → `dist/` builds offline → deploy → demo script in [`observatory.md §7`](observatory.md#7-demo-script-2-minutes).*

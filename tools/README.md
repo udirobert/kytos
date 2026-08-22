@@ -42,14 +42,36 @@ python frontend/build.py --experiments experiments/ --out frontend/dist/
 ## Environment
 
 Partner clients are imported **lazily** — the tools run with zero deps and
-degrade. To enable the API paths:
+degrade. Copy [`.env.example`](../.env.example) → `.env` at the repo root and
+fill in keys (`.env` is gitignored):
 
 ```bash
-uv sync --extra obs     # installs openai, tavily-python, fal-client
-export OPENAI_API_KEY=...   # narrative + briefing TTS
-export TAVILY_API_KEY=...   # literature
-export FAL_KEY=...          # visuals + briefing (FABRIC)
+cp .env.example .env
+# edit .env, then:
+./tools/run_enrichment.sh
 ```
+
+Or export manually — see [`.env.example`](../.env.example).
+
+**Dev narration:** set `NARRATION_PROVIDER=venice` and `VENICE_INFERENCE_KEY` in
+`.env` to avoid burning hackathon OpenAI credits locally. Venice uses an
+OpenAI-compatible API (`VENICE_BASE_URL`, `VENICE_MODEL`). TTS for Fabric
+briefings still requires `OPENAI_TTS_API_KEY` (direct OpenAI) or fal-only hero
+without video.
+
+**Production / hackathon:** set `NARRATION_PROVIDER=openai` and `OPENAI_API_KEY`
+in Netlify env vars (never commit).
+
+**One-shot pipeline** (audit → facts → all enrichers → facts refresh):
+
+```bash
+./tools/run_enrichment.sh experiments/k001-mean-shift-baseline
+```
+
+**Hackathon note:** If `OPENAI_BASE_URL` points at a chat-only gateway (e.g.
+gitlawb), narration works there but **TTS requires `OPENAI_TTS_API_KEY`** from
+the Luma OpenAI credits (direct `api.openai.com`). Top up gateway credits if
+you see `insufficient_credits`.
 
 `--run` accepts either a path or `experiments/<run-id>` relative to the repo
 root.

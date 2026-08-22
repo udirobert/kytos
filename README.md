@@ -71,20 +71,21 @@ frontend/        Observatory — static site from facts JSON + visual/
 ## Quick start
 
 ```bash
-uv sync                       # install deps (or: uv pip install -r ...)
 pre-commit install            # secrets + lint hooks on commit
 python -m pytest              # smoke tests
 python submission/script.py --basal <basal> --targets <genes> \
   --gene-order <genelist> --out pred.h5ad --meta meta.json
 ```
 
+Env note: the heavy stack (torch/scanpy/anndata/cell-eval) targets **Python
+3.12** — 3.14 has no torch wheel. The `.venv` already holds the Observatory
+partner clients (see [`docs/phase0-environment.md`](docs/phase0-environment.md)).
+
 Observatory build (enrichment + static site — see [`docs/observatory.md`](docs/observatory.md)):
 
 ```bash
-python tools/render_narrative.py   --run experiments/<run-id>
-python tools/enrich_literature.py  --run experiments/<run-id>
-python tools/render_visuals.py     --run experiments/<run-id>
-python tools/render_briefing.py    --run experiments/<run-id>
+cp .env.example .env          # fill partner keys (.env is gitignored)
+./tools/run_enrichment.sh     # loads .env; see tools/README.md
 python frontend/build.py --experiments experiments/ --out frontend/dist/
 ```
 
@@ -95,14 +96,15 @@ lint + `ruff` format (see [`docs/security.md`](docs/security.md)).
 
 - [x] Notes reviewed, stack reasoned (architecture ADR)
 - [x] Problem / wedge / competitive landscape documented
-- [x] Submission harness contract drafted + running (degrades with no deps)
+- [x] Submission harness contract drafted + running (degrades with no deps) — e2e shape tests lock the groups-vs-X contract ([tests/test_harness.py](tests/test_harness.py))
 - [x] Repo organized: package-per-concern backend, consolidated `docs/`
 - [x] Milestone 0 worksplit agreed — three-dev parallel build ([docs/milestone-0-worksplit.md](docs/milestone-0-worksplit.md))
 - [x] **k001 seeded (Dev A)**: `facts.json` assembler, audit rules (`housekeeping_shift`, `pathway_coherence`), metrics + ceiling CSVs, committed run artifacts
-- [x] **Enrichment tools (Dev B)**: OpenAI narrative (+ deterministic fallback), Tavily literature, fal visuals, VEED Fabric briefing — degrade-empty verified against k001; live runs need API keys ([tools/README.md](tools/README.md))
-- [x] **Observatory frontend (Dev C)**: `frontend/build.py` → `dist/` (home, runs index, k001 run page); Netlify deploy ([`netlify.toml`](netlify.toml))
-- [ ] Integration: enrichment with keys → rebuilt `dist/` → deploy → 2-min Loom
-- [ ] Install `cell-eval` + `anndata` (uv) → H5AD write path
+- [x] **Enrichment tools (Dev B)**: OpenAI narrative (+ deterministic fallback), Tavily literature, fal visuals, VEED Fabric briefing — degrade-empty verified against k001; one-shot `tools/run_enrichment.sh`; **live API run in progress** ([tools/README.md](tools/README.md))
+- [x] **Observatory frontend (Dev C)**: `frontend/build.py` → `dist/` (home, runs index, k001 run page); Playwright-verified desktop + mobile, zero console errors; briefing video autoplay
+- [x] **Deploy**: Netlify ([`netlify.toml`](netlify.toml)) — auto-builds `frontend/dist/` on push; connect the repo in the Netlify dashboard
+- [ ] Integration: real enrichment artifacts → rebuilt `dist/` → redeploy → 2-min Loom
+- [ ] Install `cell-eval` + `anndata` (uv, **Python 3.12**) → H5AD write path
 - [ ] k001 through `cell-eval run --ceiling` — real metrics replace mock CSVs
 
 ## Open decisions

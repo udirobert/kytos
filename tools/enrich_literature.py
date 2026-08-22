@@ -51,6 +51,7 @@ def search_gene(gene: str, api_key: str) -> dict:
                 "title": item.get("title"),
                 "url": item.get("url"),
                 "content": (item.get("content") or "")[:MAX_SNIPPET],
+                "snippet": (item.get("content") or "")[:MAX_SNIPPET],
                 "score": item.get("score"),
             }
         )

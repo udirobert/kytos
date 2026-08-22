@@ -49,6 +49,56 @@ def env_key(*names: str) -> str | None:
     return None
 
 
+def narration_provider() -> str:
+    """Which backend powers run narration: venice (dev) or openai (hackathon)."""
+    explicit = (env_key("NARRATION_PROVIDER", "KYTOS_NARRATION_PROVIDER") or "").lower()
+    if explicit in ("venice", "openai"):
+        return explicit
+    if env_key("VENICE_INFERENCE_KEY", "VENICE_API_KEY"):
+        return "venice"
+    return "openai"
+
+
+def chat_model() -> str:
+    if narration_provider() == "venice":
+        return env_key("VENICE_MODEL", "VENICE_CHAT_MODEL") or "stealth-ox-alpha"
+    return env_key("OPENAI_MODEL", "OPENAI_NARRATIVE_MODEL") or "gpt-4o-mini"
+
+
+def openai_chat_client():
+    """OpenAI-compatible client for narration (Venice in dev, OpenAI in prod)."""
+    import openai  # lazy
+
+    if narration_provider() == "venice":
+        key = env_key("VENICE_INFERENCE_KEY", "VENICE_API_KEY")
+        if not key:
+            raise RuntimeError("NARRATION_PROVIDER=venice but no VENICE_INFERENCE_KEY")
+        base = env_key("VENICE_BASE_URL") or "https://api.venice.ai/api/v1"
+        return openai.OpenAI(api_key=key, base_url=base)
+
+    kwargs: dict = {"api_key": env_key("OPENAI_API_KEY")}
+    base = env_key("OPENAI_BASE_URL", "OPENAI_API_BASE")
+    if base:
+        kwargs["base_url"] = base
+    return openai.OpenAI(**kwargs)
+
+
+def openai_tts_client():
+    """OpenAI client for TTS — requires api.openai.com (not chat-only gateways)."""
+    import openai  # lazy
+
+    direct = env_key("OPENAI_TTS_API_KEY", "OPENAI_DIRECT_API_KEY")
+    if direct:
+        return openai.OpenAI(api_key=direct)
+    base = env_key("OPENAI_BASE_URL", "OPENAI_API_BASE") or ""
+    if base and "api.openai.com" not in base:
+        raise RuntimeError(
+            "TTS unavailable on OPENAI_BASE_URL (chat-only gateway). "
+            "Set OPENAI_TTS_API_KEY to a direct OpenAI key for briefing audio."
+        )
+    return openai.OpenAI(api_key=env_key("OPENAI_API_KEY"))
+
+
 def resolve_run_dir(run: str) -> Path:
     """Resolve a `--run` value (path or `experiments/<run-id>`) to a folder."""
     p = Path(run)
@@ -58,7 +108,7 @@ def resolve_run_dir(run: str) -> Path:
             p = candidate
     if not p.is_dir():
         die(f"run folder not found: {run}")
-    return p
+    return p.resolve()
 
 
 def load_facts(run_dir: Path) -> dict:

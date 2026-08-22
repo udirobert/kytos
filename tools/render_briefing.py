@@ -31,6 +31,7 @@ from _enrich_common import (
     env_key,
     load_facts,
     notice,
+    openai_tts_client,
     resolve_run_dir,
     set_visual_paths,
     warn,
@@ -76,9 +77,7 @@ def briefing_script(run_dir: Path, facts: dict) -> str:
 
 
 def tts_audio(script: str) -> bytes:
-    import openai  # lazy: partner client is optional
-
-    client = openai.OpenAI(api_key=env_key("OPENAI_API_KEY"))
+    client = openai_tts_client()
     response = client.audio.speech.create(model=TTS_MODEL, voice=TTS_VOICE, input=script)
     content = response.content
     if not content:
