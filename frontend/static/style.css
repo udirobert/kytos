@@ -419,10 +419,6 @@ code {
   pointer-events: none;
 }
 
-.vessel-3d-container.is-3d .vessel-svg-fallback {
-  display: none;
-}
-
 /* Canvas cross-fades in when 3D mounts */
 .vessel-3d-container canvas {
   opacity: 0;
@@ -433,22 +429,24 @@ code {
   opacity: 1;
 }
 
-/* SVG fallback only shows when 3D fails and no-webgl class is on <html> */
+/* SVG fallback: hidden during loading, shown only on actual WebGL failure */
 .vessel-svg-fallback {
   opacity: 0;
   transition: opacity 0.5s ease;
 }
 
+/* Actual failure — WebGL probe or timeout confirmed it's unavailable */
 html.no-webgl .vessel-svg-fallback {
   opacity: 1;
 }
 
-.vessel-3d-container.is-3d .vessel-svg-fallback {
+html.no-webgl .vessel-loading {
   opacity: 0;
 }
 
-html.no-webgl .vessel-loading {
-  opacity: 0;
+/* 3D loaded successfully — hide fallback + loading */
+.vessel-3d-container.is-3d .vessel-svg-fallback {
+  display: none;
 }
 
 /* Overlay: gradient scrim + centered content */

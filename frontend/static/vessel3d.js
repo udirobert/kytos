@@ -105,6 +105,7 @@ function initVessel3D() {
   container.appendChild(renderer.domElement);
   container.classList.add("is-3d"); // hide SVG fallback
   document.documentElement.classList.remove("no-webgl");
+  document.documentElement.classList.remove("vessel-pending");
 
   // ── Scene & camera ──────────────────────────────────────────────────────
   var scene = new THREE.Scene();

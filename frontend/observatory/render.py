@@ -234,7 +234,7 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
 
 
 def _head(meta: PageMeta, *, root_prefix: str) -> str:
-    html_class = "no-webgl" if meta.needs_vessel else ""
+    html_class = "vessel-pending" if meta.needs_vessel else ""
     return f"""<!DOCTYPE html>
 <html lang="en" class="{html_class}">
 <head>

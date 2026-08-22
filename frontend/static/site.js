@@ -10,6 +10,7 @@
       return;
     }
     document.documentElement.classList.add("no-webgl");
+    document.documentElement.classList.remove("vessel-pending");
     animateVesselFallback();
   }
 
