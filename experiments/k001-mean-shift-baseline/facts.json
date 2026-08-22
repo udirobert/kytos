@@ -42,5 +42,9 @@
     "commit": "2fe7bd7f4f0902b454d0f2face73f917e6e065d5",
     "seed": 0,
     "code_hash": "k001-mean-shift-v0"
+  },
+  "visual": {
+    "hero": "visual/hero.png",
+    "share_card": "visual/share-card.png"
   }
 }
