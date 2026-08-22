@@ -2564,6 +2564,91 @@ details summary {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
+   NO-WEBGL — SVG-first path (Safari fallback, CDN blocked, etc.)
+   Lighter scrim, larger vessel art, motion without filter/blur.
+   ════════════════════════════════════════════════════════════════════════ */
+
+html.no-webgl .home-overlay {
+  background: radial-gradient(
+    ellipse 92% 70% at 50% 36%,
+    rgba(13, 31, 45, 0.68) 0%,
+    rgba(13, 31, 45, 0.38) 48%,
+    rgba(13, 31, 45, 0.12) 72%,
+    transparent 100%
+  );
+}
+
+html.no-webgl .home-stage .vessel-fullscreen .vessel-svg-fallback {
+  opacity: 1;
+}
+
+html.no-webgl .home-stage .vessel-fullscreen .vessel-svg-fallback .vessel-svg,
+html.no-webgl .home-stage .vessel-fullscreen .vessel-svg-fallback .home-vessel {
+  width: min(520px, 72vw);
+  max-height: 58vh;
+  filter: drop-shadow(0 0 48px rgba(45, 212, 191, 0.22));
+}
+
+html.no-webgl .disclosure-body {
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+html.no-webgl .disclosure-panel[open] > .disclosure-body {
+  opacity: 1 !important;
+  pointer-events: auto;
+}
+
+html.no-webgl .disclosure-panel:not([open]) > .disclosure-body {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.no-webgl .disclosure-summary .t-icon {
+  transition: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+html.no-webgl .disclosure-panel:not([open]) .t-icon[data-icon="open"],
+html.no-webgl .disclosure-panel[open] .t-icon[data-icon="closed"] {
+  display: none;
+}
+
+html.no-webgl .t-digit-group .t-digit {
+  animation: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+html.no-webgl .t-text-swap {
+  transition: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+html.no-webgl .disclosure-panel,
+html.no-webgl .home-proof,
+html.no-webgl .metric-pill,
+html.no-webgl .run-card,
+html.no-webgl .site-header {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html.no-webgl .disclosure-panel {
+  background: rgba(17, 48, 74, 0.94);
+}
+
+html.no-webgl .home-proof {
+  background: rgba(22, 59, 92, 0.85);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
    REDUCED MOTION
    ════════════════════════════════════════════════════════════════════════ */
 

@@ -13,6 +13,10 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
+function markNoWebGL() {
+  document.documentElement.classList.add("no-webgl");
+}
+
 function initVessel3D() {
   var container = document.getElementById("vessel-canvas");
   var dataEl = document.getElementById("vessel-data");
@@ -27,6 +31,7 @@ function initVessel3D() {
   try {
     params = JSON.parse(dataEl.textContent || "{}");
   } catch (e) {
+    markNoWebGL();
     return; // malformed data — SVG fallback
   }
   var fillPct = Math.max(6, Math.min(100, params.fill_pct || 0));
@@ -84,6 +89,7 @@ function initVessel3D() {
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   } catch (e) {
+    markNoWebGL();
     return; // No WebGL — SVG fallback stays visible
   }
 
@@ -98,6 +104,7 @@ function initVessel3D() {
   renderer.localClippingEnabled = true;
   container.appendChild(renderer.domElement);
   container.classList.add("is-3d"); // hide SVG fallback
+  document.documentElement.classList.remove("no-webgl");
 
   // ── Scene & camera ──────────────────────────────────────────────────────
   var scene = new THREE.Scene();

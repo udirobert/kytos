@@ -5,13 +5,48 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  function markNoWebGL() {
+    document.documentElement.classList.add("no-webgl");
+  }
+
+  function isNoWebGL() {
+    return document.documentElement.classList.contains("no-webgl");
+  }
+
+  function probeWebGL() {
+    try {
+      var canvas = document.createElement("canvas");
+      return !!(
+        canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
+      );
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function initNoWebGLDetect() {
+    var container = document.getElementById("vessel-canvas");
+    if (!container) {
+      return;
+    }
+    if (!probeWebGL()) {
+      markNoWebGL();
+    }
+    setTimeout(function () {
+      if (!container.classList.contains("is-3d")) {
+        markNoWebGL();
+        animateVesselFallback();
+      }
+    }, 1500);
+  }
+
   // ── Text states swap (transitions.dev pattern) ──────────────────────────
   // Three-phase swap: old text exits up with blur, new text enters from below.
   // Skipped entirely under prefers-reduced-motion (plain textContent swap).
   var swapDur = 150;
   function swapText(el, next) {
     if (!el) return;
-    if (prefersReducedMotion() || !el.classList.contains("t-text-swap")) {
+    if (prefersReducedMotion() || isNoWebGL() || !el.classList.contains("t-text-swap")) {
       el.textContent = next;
       return;
     }
@@ -236,8 +271,8 @@
   // each digit re-enters with blur + stagger when the count reaches its target.
   function initCountUp() {
     var els = document.querySelectorAll("[data-count-to]");
-    if (!els.length || prefersReducedMotion()) {
-      // Reduced motion: jump straight to the real value.
+    if (!els.length || prefersReducedMotion() || isNoWebGL()) {
+      // Reduced motion / SVG path: jump straight to the real value.
       els.forEach(function (el) {
         el.textContent = el.getAttribute("data-count-to") + (el.getAttribute("data-suffix") || "");
       });
@@ -469,7 +504,7 @@
     initBriefingPlay();
     initGeneEvidenceLinks();
     initHashDisclosure();
-    setTimeout(animateVesselFallback, 2000);
+    initNoWebGLDetect();
   }
 
   if (document.readyState === "loading") {
