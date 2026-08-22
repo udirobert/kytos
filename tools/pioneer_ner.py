@@ -39,6 +39,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import ssl
 import time
 import urllib.error
 import urllib.request
@@ -281,6 +282,90 @@ def extract_entities_fallback(text: str) -> list[dict]:
     return entities
 
 
+def _entity_schema() -> dict:
+    """Unified GLiNER2 schema (Pioneer API v2026)."""
+    return {"entities": [{"name": label} for label in BIO_ENTITY_LABELS]}
+
+
+def parse_pioneer_inference_response(resp: dict | list) -> list[dict]:
+    """Normalize Pioneer /inference payloads into [{text, label, start, end, score?}]."""
+    entities: list[dict] = []
+
+    def _append_span(item: dict) -> None:
+        text_val = item.get("text") or item.get("span") or ""
+        label = item.get("label") or item.get("type") or ""
+        if text_val and label:
+            entities.append(
+                {
+                    "text": text_val,
+                    "label": label,
+                    "start": item.get("start", 0),
+                    "end": item.get("end", 0),
+                    **({"score": item["score"]} if "score" in item else {}),
+                }
+            )
+
+    def _append_label_map(label_map: dict) -> None:
+        for label, items in label_map.items():
+            if isinstance(items, str):
+                items = [items]
+            if not isinstance(items, list):
+                continue
+            for item in items:
+                if isinstance(item, dict):
+                    text_val = item.get("text") or item.get("span") or ""
+                    if not text_val:
+                        continue
+                    ent: dict = {
+                        "text": text_val,
+                        "label": label,
+                        "start": item.get("start", 0),
+                        "end": item.get("end", 0),
+                    }
+                    if "confidence" in item:
+                        ent["score"] = item["confidence"]
+                    elif "score" in item:
+                        ent["score"] = item["score"]
+                    entities.append(ent)
+                elif item:
+                    entities.append({"text": str(item), "label": label, "start": 0, "end": 0})
+
+    if isinstance(resp, list):
+        for item in resp:
+            if isinstance(item, dict):
+                _append_span(item)
+        return entities
+
+    if not isinstance(resp, dict):
+        return entities
+
+    result = resp.get("result")
+    if isinstance(result, dict):
+        data = result.get("data")
+        if isinstance(data, dict) and isinstance(data.get("entities"), dict):
+            _append_label_map(data["entities"])
+            if entities:
+                return entities
+        if isinstance(result.get("entities"), dict):
+            _append_label_map(result["entities"])
+            if entities:
+                return entities
+
+    top_entities = resp.get("entities")
+    if isinstance(top_entities, dict):
+        sample = next(iter(top_entities.values()), None)
+        if isinstance(sample, list) or isinstance(sample, str):
+            _append_label_map(top_entities)
+            return entities
+
+    if isinstance(top_entities, list):
+        for item in top_entities:
+            if isinstance(item, dict):
+                _append_span(item)
+
+    return entities
+
+
 def extract_entities(
     text: str, model_id: str | None = None, api_key: str | None = None
 ) -> tuple[list[dict], str]:
@@ -299,35 +384,22 @@ def extract_entities(
                 {
                     "model_id": model_id,
                     "text": text,
-                    "schema": {"entities": BIO_ENTITY_LABELS},
+                    "schema": _entity_schema(),
                     "threshold": 0.3,
                 },
             )
-            # Parse Pioneer response into our entity format
-            entities = []
-            if isinstance(resp, list):
-                for item in resp:
-                    entities.append(
-                        {
-                            "text": item.get("text", ""),
-                            "label": item.get("label", ""),
-                            "start": item.get("start", 0),
-                            "end": item.get("end", 0),
-                            "score": item.get("score", 0),
-                        }
-                    )
-            elif isinstance(resp, dict) and "entities" in resp:
-                for item in resp["entities"]:
-                    entities.append(
-                        {
-                            "text": item.get("text", ""),
-                            "label": item.get("label", ""),
-                            "start": item.get("start", 0),
-                            "end": item.get("end", 0),
-                            "score": item.get("score", 0),
-                        }
-                    )
-            return entities, "pioneer"
+            entities = parse_pioneer_inference_response(resp)
+            if entities:
+                return entities, "pioneer"
+            warn("pioneer: inference returned no entities; using fallback extractor")
+        except urllib.error.HTTPError as exc:
+            if _is_billing_error(exc):
+                warn(
+                    "pioneer: billing required — add a card at "
+                    "https://agent.pioneer.ai/billing to run inference"
+                )
+            else:
+                warn(f"pioneer: inference failed (HTTP {exc.code}); using fallback extractor")
         except Exception as exc:
             warn(f"pioneer: inference failed ({exc}); using fallback extractor")
 
@@ -396,6 +468,16 @@ def enrich_literature_entities(run_dir: Path, model_id: str | None = None) -> in
 # --------------------------------------------------------------------------- #
 
 
+def _ssl_context() -> ssl.SSLContext:
+    """CA bundle for macOS/Python builds with incomplete cert stores."""
+    try:
+        import certifi
+
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        return ssl.create_default_context()
+
+
 def _post(api_key: str, path: str, body: dict) -> dict:
     url = f"{PIONEER_BASE}{path}"
     data = json.dumps(body).encode("utf-8")
@@ -405,14 +487,14 @@ def _post(api_key: str, path: str, body: dict) -> dict:
         headers={"X-API-Key": api_key, "Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=60, context=_ssl_context()) as resp:
         return json.loads(resp.read())
 
 
 def _get(api_key: str, path: str) -> dict:
     url = f"{PIONEER_BASE}{path}"
     req = urllib.request.Request(url, headers={"X-API-Key": api_key})
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=60, context=_ssl_context()) as resp:
         return json.loads(resp.read())
 
 
@@ -502,6 +584,12 @@ def start_training(api_key: str) -> str | None:
         job_id = resp.get("id")
         notice(f"pioneer: training job started (id={job_id})")
         return job_id
+    except urllib.error.HTTPError as exc:
+        if _is_billing_error(exc):
+            warn("pioneer: billing required — add a card at agent.pioneer.ai/billing to train")
+        else:
+            warn(f"pioneer: training start failed (HTTP {exc.code})")
+        return None
     except Exception as exc:
         warn(f"pioneer: training start failed ({exc})")
         return None

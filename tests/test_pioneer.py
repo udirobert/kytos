@@ -62,6 +62,63 @@ def test_fallback_deduplicates() -> None:
     assert len(gene_entities) == 1
 
 
+def test_parse_pioneer_unified_result_map() -> None:
+    resp = {
+        "type": "encoder",
+        "result": {
+            "data": {
+                "entities": {
+                    "gene": [{"text": "ACTB", "confidence": 1.0, "start": 21, "end": 25}],
+                    "pathway": [],
+                    "cell_type": [
+                        {"text": "K562 cells", "confidence": 0.99, "start": 29, "end": 39}
+                    ],
+                }
+            }
+        },
+    }
+    entities = pioneer_ner.parse_pioneer_inference_response(resp)
+    assert len(entities) == 2
+    labels = {e["label"] for e in entities}
+    assert labels == {"gene", "cell_type"}
+    assert entities[0]["text"] == "ACTB"
+    assert entities[0]["score"] == 1.0
+
+
+def test_parse_pioneer_legacy_string_map() -> None:
+    resp = {
+        "result": {
+            "entities": {
+                "gene": ["ACTB", "GAPDH"],
+                "pathway": ["interferon response"],
+            }
+        }
+    }
+    entities = pioneer_ner.parse_pioneer_inference_response(resp)
+    assert len(entities) == 3
+    gene_texts = {e["text"] for e in entities if e["label"] == "gene"}
+    assert gene_texts == {"ACTB", "GAPDH"}
+
+
+def test_parse_pioneer_legacy_span_list() -> None:
+    resp = {
+        "entities": [
+            {"text": "ACTB", "label": "gene", "start": 10, "end": 14, "score": 0.91},
+            {"text": "CRISPRi", "label": "perturbation_type", "start": 0, "end": 7},
+        ]
+    }
+    entities = pioneer_ner.parse_pioneer_inference_response(resp)
+    assert len(entities) == 2
+    assert entities[0]["text"] == "ACTB"
+    assert entities[0]["score"] == 0.91
+
+
+def test_entity_schema_uses_named_entities() -> None:
+    schema = pioneer_ner._entity_schema()
+    assert schema["entities"][0] == {"name": "gene"}
+    assert all("name" in item for item in schema["entities"])
+
+
 def test_extract_entities_uses_fallback_without_api(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
