@@ -625,6 +625,64 @@ code {
    RUNS INDEX
    ════════════════════════════════════════════════════════════════════════ */
 
+/* Full-bleed 3D vessel hero — consistent identity with home page */
+.runs-hero {
+  position: relative;
+  min-height: 55vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.runs-hero .vessel-fullscreen {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.runs-hero-overlay {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 50%,
+    transparent 0%,
+    transparent 40%,
+    rgba(10, 18, 24, 0.35) 80%,
+    rgba(10, 18, 24, 0.5) 100%
+  );
+}
+
+.runs-hero-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 400;
+  margin: 0 0 0.5rem;
+}
+
+.runs-hero-sub {
+  color: var(--muted);
+  font-size: 0.95rem;
+  max-width: 48ch;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Mini vessel on run cards — SVG, inherits the same visual language */
+.run-card-vessel {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.vessel-mini {
+  width: 64px;
+  height: auto;
+}
+
 .run-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -636,7 +694,7 @@ code {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding: 1rem 1.1rem;
+  padding: 1.25rem 1.1rem 1rem;
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: var(--bg-panel);
@@ -650,6 +708,10 @@ code {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(94, 234, 212, 0.08);
   text-decoration: none;
+}
+
+.run-card:hover .vessel-mini {
+  opacity: 1;
 }
 
 .run-card-id {
@@ -1468,6 +1530,23 @@ details summary {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.timeline-centered {
+  text-align: center;
+  align-items: center;
+}
+
+.timeline-centered .timeline-hackathon,
+.timeline-centered .timeline-vcc {
+  max-width: 640px;
+  width: 100%;
+}
+
+.timeline-centered .timeline-tagline,
+.timeline-centered .hackathon-deadline {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .timeline-hackathon {

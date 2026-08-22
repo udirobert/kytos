@@ -124,7 +124,7 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
     # (saves 1.3 MB of render-blocking JS). No <script> tag needed in <head>.
     #
     # Three.js + vessel3d.js: ~270 KB — only on pages with the 3D vessel.
-    # Home + run detail have it; runs index does not.
+    # Home, runs index, and run detail all include it for visual consistency.
     if meta.needs_vessel:
         head += f"""
   <script type="importmap">

@@ -93,7 +93,6 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
         <a href="{root_prefix}index.html" class="brand-mark">κύτος</a>
         <div class="brand-text">
           <span class="brand-name">Kytos Observatory</span>
-          <span class="brand-tag">Virtual Cell Challenge · build in public</span>
         </div>
       </div>
       <nav class="nav-main"><ul>{lis}</ul></nav>
@@ -119,7 +118,6 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         run_href = f"{root_prefix}runs/{_h(latest.run_id)}/index.html"
         metrics = latest.facts.get("headline_metrics") or {}
         metric_bits = ", ".join(f"{k} {v}" for k, v in metrics.items())
-        headline = _h(latest.facts.get("headline", latest.run_id))
         vd = _vessel_data(latest.facts)
         vessel_json = json.dumps(vd)
         svg = _vessel_svg(latest.facts, clip_id="vessel-clip-home")
@@ -138,8 +136,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
                 and <em>show when the model is biologically wrong.</em>
               </h1>
               <p class="home-lede">
-                Run #{_run_index(latest, runs)} of {VCC_DAYS} — {_h(latest.run_id)}: {headline}.
-                Headline metrics {_h(metric_bits)}.
+                Run #{_run_index(latest, runs)} of {VCC_DAYS} — {_h(metric_bits)}.
               </p>
               <p class="vessel-legend-inline">
                 <span class="legend-item legend-fill">fill = ceiling headroom</span>
@@ -188,7 +185,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         """
 
     timeline = f"""
-    <section class="panel timeline-panel">
+    <section class="panel timeline-panel timeline-centered">
       <div class="timeline-hackathon">
         <p class="timeline-eyebrow">🔥 Today · London</p>
         <h2>{{Tech: Europe}} × VEED Summer Lock-In</h2>
@@ -241,8 +238,9 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
           </div>
           <div class="vcc-stat">
             <span class="vcc-stat-label">📡 Build day</span>
-            <strong class="vcc-stat-value"><span id="vcc-day">…</span>"
-            "<span class="vcc-stat-of">/{VCC_DAYS}</span></strong>
+            <strong class="vcc-stat-value">
+              <span id="vcc-day">…</span><span class="vcc-stat-of">/{VCC_DAYS}</span>
+            </strong>
             <span class="vcc-stat-note">Publishing every run in the open</span>
           </div>
           <div class="vcc-stat">
@@ -287,8 +285,11 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         m = ", ".join(f"{k}={v}" for k, v in metrics.items())
         severity = _run_severity(run.facts)
         vd = _vessel_data(run.facts)
+        # Mini SVG vessel on each card — visual identity consistent with home
+        mini_svg = _vessel_svg(run.facts, svg_class="vessel-mini")
         cards += f"""
         <a class="run-card" href="{href}">
+          <div class="run-card-vessel">{mini_svg}</div>
           <span class="run-card-top">
             <span class="run-card-id">
               <span class="run-pill-dot dot-{severity}"></span>{_h(run.run_id)}
@@ -299,10 +300,34 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
           <span class="run-card-metrics">{_h(m)}</span>
         </a>
         """
+
+    # Full-bleed 3D vessel hero — same instrument as home page, consistent identity
+    latest = runs[-1] if runs else None
+    if latest:
+        vd = _vessel_data(latest.facts)
+        vessel_json = json.dumps(vd)
+        svg = _vessel_svg(latest.facts, clip_id="vessel-clip-runs")
+        hero = f"""
+        <section class="runs-hero">
+          <div class="vessel-fullscreen vessel-3d-container vessel-runs" id="vessel-canvas">
+            <div class="vessel-svg-fallback">{svg}</div>
+            <script type="application/json" id="vessel-data">{vessel_json}</script>
+          </div>
+          <div class="runs-hero-overlay">
+            <h1 class="runs-hero-title">Experiment runs</h1>
+            <p class="runs-hero-sub">
+              Every run's metrics, audit flags, and provenance — published in the open.
+            </p>
+          </div>
+        </section>
+        """
+    else:
+        hero = '<section class="runs-hero"><h1>Experiment runs</h1></section>'
+
     body = (
         _nav("runs", runs, root_prefix=root_prefix)
-        + f'<main class="content"><h1>Experiment runs</h1>'
-        f'<div class="run-grid">{cards}</div></main>'
+        + hero
+        + f'<main class="content"><div class="run-grid">{cards}</div></main>'
     )
     meta = PageMeta(
         title="Runs",
@@ -310,7 +335,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
             "Index of Kytos experiment runs with cell-eval metrics, audit flags, and provenance."
         ),
         canonical_path="/runs/",
-        needs_vessel=False,
+        needs_vessel=True,
     )
     return _head(meta, root_prefix=root_prefix) + f'<body class="page-runs">{body}</body></html>'
 
