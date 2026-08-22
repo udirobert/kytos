@@ -102,13 +102,13 @@ our Fabric briefings a **time series of one character's health across the
 | Move | Status | Why it matters |
 |---|---|---|
 | **Briefing series framing** — "Briefing #1 of ~12" stamped on the run page | ✅ done (2026-08-22) | signals a weekly cadence, not a one-off demo prop |
-| **The oracle anchor** — the vessel given a face (kintsugi amphora, liquid fill inside, amber crack seams) so Fabric's lip-sync is actually showcased | ✅ live (2026-08-22) | Fabric maps phonemes to **facial keypoints** — a faceless vessel wastes the model; a faced vessel is the full capability |
+| **The cell anchor** — the subject given a face (a friendly 3D cell with a glowing nucleus, inside the vessel-as-instrument) so Fabric's lip-sync is actually showcased | ✅ live (2026-08-22) | Fabric maps phonemes to **facial keypoints** — a faceless vessel wastes the model; the cell is the biology, the vessel is the instrument that holds it |
 | **The newsroom broadcast** — Tavily field research (`newsroom/research.json`) woven into a deterministic broadcast script the anchor speaks: opening, headline, audit self-own, "what the field is saying", sign-off | ✅ live (`enrich_newsroom.py`) | the briefing becomes a *product* (a news show), not a demo prop; extends the 78-day cadence naturally |
 | **The vessel testifies** — briefing speaks the grounded OpenAI digest incl. its own audit self-own | ✅ live | the character's honesty is the product |
 | **The sung sign-off** — ElevenLabs Music generates a short "Run #N anthem" (lyrics grounded in facts.json); the anchor breaks into song at the end | ✅ live (`render_anthem.py`, 2026-08-22) | nobody at a hackathon sings a scientific briefing; the 22s anthem is the demo's memorable close |
 | **Volume workflow** — `facts.json → narrative → newsroom → TTS → Fabric → committed mp4` in one command | ✅ live (`render_briefing.py`) | VEED's "built for production volume" thesis, true for us |
 | **genmedia CLI demo moment** — one-liner in the Loom | 🧪 attempted | fal side challenge's "advanced" box |
-| **LoRA on the oracle identity** — consistent character across all runs | 📅 this week | side challenge's "LoRA" box; makes the 78-day time-lapse coherent |
+| **LoRA on the cell identity** — consistent character across all runs | 📅 this week | side challenge's "LoRA" box; makes the 78-day time-lapse coherent |
 | **Weekly cadence automation** | 📅 this week | ~12 briefings between now and Nov 5 — the series is the product |
 
 **Cadence pitch (the demo closer):** *"Every run of a 78-day public experiment
