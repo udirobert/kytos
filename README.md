@@ -20,10 +20,12 @@ that publishes metrics, biological audit flags, literature, provenance, and vide
 briefings alongside every experiment run. Leaderboards score 18,000-dimensional
 predictions; the Observatory shows *why* a model is biologically wrong.
 
-**k001** is our own baseline. It deliberately fails its own audit (housekeeping
-gene ACTB shifted +2.10 log2FC; interferon pathway shows mixed directionality).
-The metrics are **mock** — a ceiling probe, not leaderboard claims. Real
-`cell-eval` output replaces them before Oct 22.
+**k001** is our audit-probe run: it deliberately fails its own audit
+(housekeeping gene ACTB shifted +2.10 log2FC; interferon pathway shows mixed
+directionality) on **probe** metrics. **k002** is the first **real** run —
+VCC 2025 validation through the actual submission harness, scored by
+`cell-eval` 0.8.2 with ceilings (see
+[`experiments/README.md`](experiments/README.md)).
 
 **If you read one doc**: [`docs/competitive-landscape.md`](docs/competitive-landscape.md)
 (the wedge, evidence, and adjacent projects). **If you want the pitch**:
@@ -109,9 +111,10 @@ python submission/script.py --basal <basal> --targets <genes> \
   --gene-order <genelist> --out pred.h5ad --meta meta.json
 ```
 
-Env note: the heavy stack (torch/scanpy/anndata/cell-eval) targets **Python
-3.12** — 3.14 has no torch wheel. The `.venv` already holds the Observatory
-partner clients (see [`docs/phase0-environment.md`](docs/phase0-environment.md)).
+Env note: `uv sync --extra dev` just works — the torch constraint is forked
+per-platform (≥2.13 ships no macOS wheels; darwin resolves 2.12.1). venvs must
+be **arm64** and Python **3.12** (see
+[`docs/phase0-environment.md`](docs/phase0-environment.md)).
 
 Observatory build (enrichment + static site — see [`docs/observatory.md`](docs/observatory.md)):
 
@@ -136,10 +139,13 @@ lint + `ruff` format (see [`docs/security.md`](docs/security.md)).
 - [x] **Observatory frontend (Dev C)**: `frontend/build.py` → `dist/` (home, runs index, k001 run page); Playwright-verified desktop + mobile, zero console errors; briefing video autoplay
 - [x] **3D vessel instrument**: Three.js r169 real-time scene — glass with transmission/refraction, animated liquid fill, rising bubbles, emissive crack halos, floor reflection, UnrealBloomPass, mouse parallax, scroll-driven camera; SVG fallback if WebGL unavailable ([`frontend/static/vessel3d.js`](frontend/static/vessel3d.js))
 - [x] **Full-bleed immersive layout**: home + run detail pages rebuilt as full-viewport vessel hero with overlaid glass content; evidence panels flow in centered column with scroll-reveal; glass data readout strip; runs index cards show severity dot + fill % badge
-- [x] **Deploy**: [kytosapp.netlify.app](https://kytosapp.netlify.app) via Netlify ([`netlify.toml`](netlify.toml)) — auto-builds `frontend/dist/` on push
-- [ ] Integration: real enrichment artifacts → rebuilt `dist/` → redeploy → 2-min Loom
-- [ ] Install `cell-eval` + `anndata` (uv, **Python 3.12**) → H5AD write path
-- [ ] k001 through `cell-eval run --ceiling` — real metrics replace mock CSVs
+- [x] **Deploy**: [kytosapp.netlify.app](https://kytosapp.netlify.app) via Netlify ([`netlify.toml`](netlify.toml)) — auto-builds `frontend/dist/` on push; environment-fix commits now also include `.github/workflows/` (the autonomy loop) until concern-split commits land
+- [x] **k002 — first real `cell-eval` run**: VCC 2025 validation (98,927 cells, 50 targets) through the submission harness → `cell-eval` 0.8.2 with ceilings; floor 0.0 / undefined vs ceilings 0.494 / 0.667; both preregistered hypotheses confirmed (scoring subsample disclosed on-page)
+- [x] **Trust layer v2**: planted-signal matrix (13 cases), narrative grounding checker (`tools/check_narrative.py`) as third Trust card, undefined-metric honesty end to end
+- [x] **Autonomy**: `.github/workflows/observatory.yml` — push/cron → test gate → per-run enrichment → build smoke → bot commit-back
+- [x] **Enrichment live**: Venice/OpenAI digests, fal hero + share cards, Fabric briefings, Holo VLM audit on both runs
+- [ ] k003: full-depth cell-eval scoring (eliminating the k002 scoring subsample)
+- [ ] Layer A/B model work → final submission `script.py` → H5AD (Nov 5)
 
 ## Open decisions
 
