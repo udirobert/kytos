@@ -20,7 +20,7 @@ import json
 
 from _enrich_common import env_key, load_facts, notice, resolve_run_dir, utcnow, warn
 
-MAX_GENES = 5  # spend cap: max Tavily searches per run
+MAX_GENES = 10  # spend cap: max Tavily searches per run (covers all flagged genes)
 MAX_RESULTS = 3  # per gene
 MAX_SNIPPET = 500  # chars stored per result
 

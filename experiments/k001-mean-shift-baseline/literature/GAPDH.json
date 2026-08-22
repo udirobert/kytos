@@ -1,0 +1,28 @@
+{
+  "gene": "GAPDH",
+  "query": "GAPDH gene CRISPRi knockdown perturbation function",
+  "generated_at": "2026-08-22T12:39:44+00:00",
+  "results": [
+    {
+      "title": "Isoform-specific single-cell perturb-seq reveals distinct functions of alternative promoters in drug response",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12926921",
+      "content": "To implement our Isoform-Specific Perturb-Seq approach, we generated MCF-7 breast cancer cells stably expressing dCas9-CRISPRi. We selected MCF-7 cells due to their well-characterized alternative promoter usage and clinical relevance in breast cancer studies. To ensure robust knockdown, we employed a dual guide RNA strategy, targeting each promoter with two sgRNAs (Fig.2A andB,Supplementary Fig. S2, and Supplementary Tables S1 and S2, see the \u2018Materials and methods\u2019 section). Initial validation ",
+      "snippet": "To implement our Isoform-Specific Perturb-Seq approach, we generated MCF-7 breast cancer cells stably expressing dCas9-CRISPRi. We selected MCF-7 cells due to their well-characterized alternative promoter usage and clinical relevance in breast cancer studies. To ensure robust knockdown, we employed a dual guide RNA strategy, targeting each promoter with two sgRNAs (Fig.2A andB,Supplementary Fig. S2, and Supplementary Tables S1 and S2, see the \u2018Materials and methods\u2019 section). Initial validation ",
+      "score": 0.53050464
+    },
+    {
+      "title": "Isoform-specific single-cell perturb-seq reveals distinct functions of alternative promoters in drug response",
+      "url": "https://www.biorxiv.org/content/10.1101/2025.07.14.664827v1.full-text",
+      "content": "To implement our Isoform-Specific Perturb-Seq approach, we generated MCF7 breast cancer cells stably expressing dCas9-CRISPRi. We selected MCF7 cells due to their well-characterized alternative promoter usage and clinical relevance in breast cancer studies. To ensure robust knockdown, we employed a dual guide RNA strategy, targeting each promoter with two sgRNAs (Figure 2A-B, S2, Table S1, Table S2, Methods). Initial validation using quantitative PCR demonstrated successful promoter-specific [..",
+      "snippet": "To implement our Isoform-Specific Perturb-Seq approach, we generated MCF7 breast cancer cells stably expressing dCas9-CRISPRi. We selected MCF7 cells due to their well-characterized alternative promoter usage and clinical relevance in breast cancer studies. To ensure robust knockdown, we employed a dual guide RNA strategy, targeting each promoter with two sgRNAs (Figure 2A-B, S2, Table S1, Table S2, Methods). Initial validation using quantitative PCR demonstrated successful promoter-specific [..",
+      "score": 0.52612424
+    },
+    {
+      "title": "CRISPR interference",
+      "url": "https://horizondiscovery.com/en/applications/crisprmod/crispri",
+      "content": "expression.  Cells were harvested 72 hours post-transfection, total RNA was isolated, and relative gene expression was measured using RT-qPCR.  The relative expression of each target gene was calculated with the \u2206\u2206Cq method using GAPDH as the housekeeping gene and normalized to a non-targeting control (NTC).  The CRISPRi-mediated target gene repression is shown in the left graph where the genes are ordered from low to high level of basal transcript expression.  In the right graph target gene [..",
+      "snippet": "expression.  Cells were harvested 72 hours post-transfection, total RNA was isolated, and relative gene expression was measured using RT-qPCR.  The relative expression of each target gene was calculated with the \u2206\u2206Cq method using GAPDH as the housekeeping gene and normalized to a non-targeting control (NTC).  The CRISPRi-mediated target gene repression is shown in the left graph where the genes are ordered from low to high level of basal transcript expression.  In the right graph target gene [..",
+      "score": 0.49846253
+    }
+  ]
+}

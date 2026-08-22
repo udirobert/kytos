@@ -1,0 +1,28 @@
+{
+  "gene": "IFIT1",
+  "query": "IFIT1 gene CRISPRi knockdown perturbation function",
+  "generated_at": "2026-08-22T12:39:45+00:00",
+  "results": [
+    {
+      "title": "IFIT1 is rapidly evolving and exhibits disparate antiviral activities across 11 mammalian orders | eLife",
+      "url": "https://elifesciences.org/articles/101929",
+      "content": "a lid over the 3\u2032 exit of the tunnel, and helps link subdomain II to subdomain III (Figure 2A\u2013C; Abbas et al., 2017). L193 in the TPR4 loop protrudes into the tunnel exit, comes into close contact with RNA (Figure 2C), and is adjacent to R187, a residue essential for RNA binding and antiviral function (Pichlmair et al., 2011). To test the functional importance of L193, we knocked out endogenous IFIT1 in Huh7.5 cells with CRISPR\u2013Cas9 editing and re-expressed CRISPR-resistant IFIT1 variants [...] ",
+      "snippet": "a lid over the 3\u2032 exit of the tunnel, and helps link subdomain II to subdomain III (Figure 2A\u2013C; Abbas et al., 2017). L193 in the TPR4 loop protrudes into the tunnel exit, comes into close contact with RNA (Figure 2C), and is adjacent to R187, a residue essential for RNA binding and antiviral function (Pichlmair et al., 2011). To test the functional importance of L193, we knocked out endogenous IFIT1 in Huh7.5 cells with CRISPR\u2013Cas9 editing and re-expressed CRISPR-resistant IFIT1 variants [...] ",
+      "score": 0.5008063
+    },
+    {
+      "title": "Perturb-Seq Combines CRISPR and Single-Cell RNA-Seq",
+      "url": "https://www.insideprecisionmedicine.com/news-and-features/perturb-seq-combines-crispr-and-single-cell-rna-seq",
+      "content": "In the UCSF-led study (\u201cA Multiplexed Single-Cell CRISPR Screening Platform Enables Systematic Dissection of the Unfolded Protein Response\u201d), researchers used CRISPR-based transcriptional interference (CRISPRi) to simultaneously repress up to three genes in a cancer cell line and to investigate the unfolded protein response (UPR), a well-known quality control pathway that senses stress in the endoplasmic reticulum (ER), where many of a cell\u2019s key proteins are made. The UPR detects errors in [...",
+      "snippet": "In the UCSF-led study (\u201cA Multiplexed Single-Cell CRISPR Screening Platform Enables Systematic Dissection of the Unfolded Protein Response\u201d), researchers used CRISPR-based transcriptional interference (CRISPRi) to simultaneously repress up to three genes in a cancer cell line and to investigate the unfolded protein response (UPR), a well-known quality control pathway that senses stress in the endoplasmic reticulum (ER), where many of a cell\u2019s key proteins are made. The UPR detects errors in [...",
+      "score": 0.26463783
+    },
+    {
+      "title": "Isolating perturbation-induced variations with contrastiveVI \u2014 scvi-tools",
+      "url": "https://docs.scvi-tools.org/en/1.3.3/tutorials/notebooks/scrna/contrastiveVI_tutorial.html",
+      "content": "Perturb-seq is a platform for conducting large scale CRISPR-mediated gene perturbation screens in single-cells. A major goal of Perturb-seq experiments is to gain new insights as to gene functions (e.g. pathway membership) and the relationships between different genes. Unfortunately, analyzing the effects of CRISPR perturbation in Perturb-seq experiments can be confounded by sources of variation shared with control cells (e.g. cell-cycle-related variations). [...] Here we illustrate how contrast",
+      "snippet": "Perturb-seq is a platform for conducting large scale CRISPR-mediated gene perturbation screens in single-cells. A major goal of Perturb-seq experiments is to gain new insights as to gene functions (e.g. pathway membership) and the relationships between different genes. Unfortunately, analyzing the effects of CRISPR perturbation in Perturb-seq experiments can be confounded by sources of variation shared with control cells (e.g. cell-cycle-related variations). [...] Here we illustrate how contrast",
+      "score": 0.23163204
+    }
+  ]
+}

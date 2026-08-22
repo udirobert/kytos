@@ -1,19 +1,28 @@
 {
   "gene": "ACTB",
   "query": "ACTB gene CRISPRi knockdown perturbation function",
-  "generated_at": "2026-08-22T10:30:00+00:00",
+  "generated_at": "2026-08-22T12:39:44+00:00",
   "results": [
     {
-      "title": "ACTB (beta-actin) is a housekeeping gene critical for cell structure",
-      "url": "https://example.org/actb-housekeeping",
-      "content": "ACTB encodes beta-actin, a cytoskeletal protein essential for cell motility and structure. CRISPRi knockdown of ACTB in K562 cells causes significant disruption to the cytoskeleton. ACTB is commonly used as a housekeeping gene in qPCR normalization, though its stability varies across conditions. Perturbation of ACTB can trigger apoptosis and cell cycle arrest.",
-      "score": 0.92
+      "title": "Decoding heterogeneous single-cell perturbation responses",
+      "url": "https://www.nature.com/articles/s41556-025-01626-9",
+      "content": "(h), and correctly estimated cells in low MOI (i) and high MOI (j). k, A representative gene (_ACTB_) where PS correctly estimated the efficiency of CRISPRi. A linear regression line is shown, and the shaded area indicates a 95% confidence interval of linear regression. PCC = \u22120.36, _n_ = 54, and the associated Pearson\u2019s test _P_ value is _P_ = 0.008. Source numerical data are available in the source data. DE, differential expression. [...] Next, we evaluated different methods using several publ",
+      "snippet": "(h), and correctly estimated cells in low MOI (i) and high MOI (j). k, A representative gene (_ACTB_) where PS correctly estimated the efficiency of CRISPRi. A linear regression line is shown, and the shaded area indicates a 95% confidence interval of linear regression. PCC = \u22120.36, _n_ = 54, and the associated Pearson\u2019s test _P_ value is _P_ = 0.008. Source numerical data are available in the source data. DE, differential expression. [...] Next, we evaluated different methods using several publ",
+      "score": 0.6824261
     },
     {
-      "title": "Perturbation of housekeeping genes in single-cell CRISPRi screens",
-      "url": "https://example.org/housekeeping-perturbation",
-      "content": "Housekeeping genes including ACTB, GAPDH, and B2M are frequently used as controls in CRISPRi experiments. Knockdown of these genes can activate the dna damage response pathway and induce apoptosis. Researchers observed interferon response activation, including ISG15 and IFIT1 induction, when ACTB is perturbed in leukemia cell lines.",
-      "score": 0.87
+      "title": "Perturbation effect is not an on-off switch",
+      "url": "https://dataxight.com/blogs/perturbation-effect-is-not-an-on-off-switch",
+      "content": "CRISPRi effects are inherently variable, not uniform: Knockdown effects span a spectrum, with many targets showing non-detectable suppression, highlighting that genetic perturbations are neither consistently effective nor directly comparable in magnitude. [...] Our observation is as follows: we compared the expression of each targeted gene between perturbed cells and non-targeting controls to assess the effectiveness of CRISPRi-mediated knockdown across all perturbations. We measured the level o",
+      "snippet": "CRISPRi effects are inherently variable, not uniform: Knockdown effects span a spectrum, with many targets showing non-detectable suppression, highlighting that genetic perturbations are neither consistently effective nor directly comparable in magnitude. [...] Our observation is as follows: we compared the expression of each targeted gene between perturbed cells and non-targeting controls to assess the effectiveness of CRISPRi-mediated knockdown across all perturbations. We measured the level o",
+      "score": 0.67911536
+    },
+    {
+      "title": "CRISPR interference - Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/CRISPR_interference",
+      "content": "CRISPR interference (CRISPRi) is a genetic perturbation technique that allows for sequence-specific repression of gene expression in prokaryotic and eukaryotic cells. It was first developed by Stanley Qi and colleagues in the laboratories of Wendell Lim, Adam Arkin, Jonathan Weissman, and Jennifer Doudna. Sequence-specific activation of gene expression refers to CRISPR activation (CRISPRa). [...] For bacteria, gene knockdown by CRISPRi has been fully implemented and characterized (off-target ana",
+      "snippet": "CRISPR interference (CRISPRi) is a genetic perturbation technique that allows for sequence-specific repression of gene expression in prokaryotic and eukaryotic cells. It was first developed by Stanley Qi and colleagues in the laboratories of Wendell Lim, Adam Arkin, Jonathan Weissman, and Jennifer Doudna. Sequence-specific activation of gene expression refers to CRISPR activation (CRISPRa). [...] For bacteria, gene knockdown by CRISPRi has been fully implemented and characterized (off-target ana",
+      "score": 0.6601948
     }
   ]
 }

@@ -1,0 +1,28 @@
+{
+  "gene": "ISG15",
+  "query": "ISG15 gene CRISPRi knockdown perturbation function",
+  "generated_at": "2026-08-22T12:39:45+00:00",
+  "results": [
+    {
+      "title": "ISG15 Gene - Ma'ayan Lab \u2013 Computational Systems Biology",
+      "url": "https://maayanlab.cloud/Harmonizome/gene/ISG15",
+      "content": "ISG15 in regulating immune responses, protein quality control, autophagy, and tumor biology, while linking cellular stress and aging to inflammatory outcomes.",
+      "snippet": "ISG15 in regulating immune responses, protein quality control, autophagy, and tumor biology, while linking cellular stress and aging to inflammatory outcomes.",
+      "score": 0.4172008
+    },
+    {
+      "title": "CRISPR interference",
+      "url": "https://horizondiscovery.com/en/applications/crisprmod/crispri",
+      "content": "#### Multiplexed gene knockdown\n\nCRISPRi synthetic sgRNA offers a unique method for the simultaneous knockdown of multiple genes (figure 6). Each guide RNA binds to its specific DNA target independently and relies on exogenously supplied dCas9 fusion protein, thereby minimizing any competition for endogenous pathways. Our scientists have validated the effectiveness of multiplex CRISPRi in iPSC cells. [...] ###### CRISPRi gene repression is observed 24 hours post-transfection and is maximal 48-72",
+      "snippet": "#### Multiplexed gene knockdown\n\nCRISPRi synthetic sgRNA offers a unique method for the simultaneous knockdown of multiple genes (figure 6). Each guide RNA binds to its specific DNA target independently and relies on exogenously supplied dCas9 fusion protein, thereby minimizing any competition for endogenous pathways. Our scientists have validated the effectiveness of multiplex CRISPRi in iPSC cells. [...] ###### CRISPRi gene repression is observed 24 hours post-transfection and is maximal 48-72",
+      "score": 0.3869261
+    },
+    {
+      "title": "Generation of two human ISG15 knockout iPSC clones ...",
+      "url": "https://www.sciencedirect.com/science/article/pii/S1873506120304360",
+      "content": "by S Merkert \u00b7 2021 \u00b7 Cited by 6 \u2014 Our ISG15 knockout clones provide ideal cell resources to explore the mechanisms in ISG15 deficient patients and to study the role of ISG15 within the context",
+      "snippet": "by S Merkert \u00b7 2021 \u00b7 Cited by 6 \u2014 Our ISG15 knockout clones provide ideal cell resources to explore the mechanisms in ISG15 deficient patients and to study the role of ISG15 within the context",
+      "score": 0.32672292
+    }
+  ]
+}

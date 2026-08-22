@@ -1,0 +1,28 @@
+{
+  "gene": "OAS1",
+  "query": "OAS1 gene CRISPRi knockdown perturbation function",
+  "generated_at": "2026-08-22T12:39:46+00:00",
+  "results": [
+    {
+      "title": "Gene - OAS1",
+      "url": "https://maayanlab.cloud/Harmonizome/gene/OAS1",
+      "content": "|\n|  | LINCS L1000 CMAP Chemical Perturbation Consensus Signatures | small molecule perturbations changing expression of OAS1 gene from the LINCS L1000 CMAP Chemical Perturbations Consensus Signatures dataset. |\n|\n|  | LINCS L1000 CMAP CRISPR Knockout Consensus Signatures | gene perturbations changing expression of OAS1 gene from the LINCS L1000 CMAP CRISPR Knockout Consensus Signatures dataset. |\n| [...] |\n|  | Klijn et al., Nat. Biotechnol., 2015 Cell Line Gene Mutation Profiles | cell lines w",
+      "snippet": "|\n|  | LINCS L1000 CMAP Chemical Perturbation Consensus Signatures | small molecule perturbations changing expression of OAS1 gene from the LINCS L1000 CMAP Chemical Perturbations Consensus Signatures dataset. |\n|\n|  | LINCS L1000 CMAP CRISPR Knockout Consensus Signatures | gene perturbations changing expression of OAS1 gene from the LINCS L1000 CMAP CRISPR Knockout Consensus Signatures dataset. |\n| [...] |\n|  | Klijn et al., Nat. Biotechnol., 2015 Cell Line Gene Mutation Profiles | cell lines w",
+      "score": 0.6654328
+    },
+    {
+      "title": "OAS1 Gene - 2'-5'-Oligoadenylate Synthetase 1 | Function, Mutations & Disease \u2013 EDITGENE",
+      "url": "https://www.editxor.com/genemap/OAS1",
+      "content": "OAS1 is a 363-amino acid protein (canonical isoform) that belongs to the 2-5A synthetase family. It contains a nucleotidyltransferase domain and a double-stranded RNA binding domain. Upon binding dsRNA (viral replication intermediate), OAS1 polymerizes ATP into 2',5'-linked oligoadenylates (2-5A). These 2-5A molecules bind and activate RNase L, which degrades viral and cellular RNA, thereby limiting viral spread. OAS1 is induced by type I interferons and is localized primarily in the cytoplasm. ",
+      "snippet": "OAS1 is a 363-amino acid protein (canonical isoform) that belongs to the 2-5A synthetase family. It contains a nucleotidyltransferase domain and a double-stranded RNA binding domain. Upon binding dsRNA (viral replication intermediate), OAS1 polymerizes ATP into 2',5'-linked oligoadenylates (2-5A). These 2-5A molecules bind and activate RNase L, which degrades viral and cellular RNA, thereby limiting viral spread. OAS1 is induced by type I interferons and is localized primarily in the cytoplasm. ",
+      "score": 0.5631623
+    },
+    {
+      "title": "How Scalable Perturbation Sequencing Rewrites Causal Target Discovery",
+      "url": "https://www.librariesforthefuture.bio/p/how-scalable-perturbation-sequencing",
+      "content": "In biology, a perturbation is any intentional change made to a cell, like turning a gene off, overexpressing a protein, or adding a drug. Perturbation at scale is the transition from doing this to one gene at a time to doing it to every gene in the genome simultaneously. By using tools such as CRISPR to knock down thousands of genes across millions of individual cells and then sequencing the results, we create a high-resolution data point for every possible intervention. We can test every",
+      "snippet": "In biology, a perturbation is any intentional change made to a cell, like turning a gene off, overexpressing a protein, or adding a drug. Perturbation at scale is the transition from doing this to one gene at a time to doing it to every gene in the genome simultaneously. By using tools such as CRISPR to knock down thousands of genes across millions of individual cells and then sequencing the results, we create a high-resolution data point for every possible intervention. We can test every",
+      "score": 0.31961012
+    }
+  ]
+}
