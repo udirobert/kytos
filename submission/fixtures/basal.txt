@@ -1,0 +1,4 @@
+placeholder for C4_BASAL
+the real Challenge input will be an AnnData / H5AD of non-targeting-guide
+expression (basal state). This stub exists so the harness contract can be
+tested before the validation release (Aug 20/21, 2026).

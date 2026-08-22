@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+
+# Cell-eval / anndata intermediates
+*.h5ad.lock
+
+# Large data / models (not committed; fetch scripts in data/)
+data/raw/
+models/
+*.onnx
+*.safetensors
+*.bin
+
+# Editor / OS
+.DS_Store
+*.swp

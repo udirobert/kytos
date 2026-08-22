@@ -1,0 +1,31 @@
+# Kytos pre-commit configuration.
+#
+# Local, offline hooks only: no fetched remote repos, no network on first
+# run (NOTES §4 poker: a dependency that relies on network/sandbox rots silently
+# and surfaces at deadline). Install once per clone:
+#     pre-commit install
+# Then every `git commit` runs: secrets → ruff lint → ruff format.
+
+fail_fast: false  # run all hooks even if one fails
+minimum_pre_commit_version: "2.9"
+
+repos:
+  - repo: local
+    hooks:
+      - id: secrets
+        name: "secrets: offline deterministic scan"
+        entry: python3 tools/scan_secrets.py
+        language: system
+        types: [text]
+
+      - id: ruff
+        name: "ruff: lint (pyflakes/pycodestyle errors)"
+        entry: ruff check --fix
+        language: python
+        types: [python]
+
+      - id: ruff-format
+        name: "ruff: format (deterministic style)"
+        entry: ruff format --force-exclude
+        language: python
+        types: [python]
