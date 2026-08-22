@@ -5,6 +5,35 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  // ── Text states swap (transitions.dev pattern) ──────────────────────────
+  // Three-phase swap: old text exits up with blur, new text enters from below.
+  // Skipped entirely under prefers-reduced-motion (plain textContent swap).
+  var swapDur = 150;
+  function swapText(el, next) {
+    if (!el) return;
+    if (prefersReducedMotion() || !el.classList.contains("t-text-swap")) {
+      el.textContent = next;
+      return;
+    }
+    if (el._swapTimer) {
+      // A swap is mid-flight — jump to the new text without animation.
+      clearTimeout(el._swapTimer);
+      el.classList.remove("is-exit", "is-enter-start");
+      el.textContent = next;
+      return;
+    }
+    if (el.textContent === next) return;
+    el.classList.add("is-exit");
+    el._swapTimer = setTimeout(function () {
+      el.textContent = next;
+      el.classList.remove("is-exit");
+      el.classList.add("is-enter-start");
+      void el.offsetHeight; // force reflow
+      el.classList.remove("is-enter-start");
+      el._swapTimer = null;
+    }, swapDur);
+  }
+
   // ── Metrics chart (Plotly) — lazy loaded when scrolled into view ────────
   // Plotly is 1.3 MB. Instead of loading it in <head>, we inject the script
   // only when the metrics-chart section enters the viewport. This saves
@@ -148,23 +177,22 @@
       needle.style.left = (progress * 100).toFixed(2) + "%";
       fill.style.width = (progress * 100).toFixed(2) + "%";
 
-      countdown.textContent = fmt(Math.max(0, end - now));
+      swapText(countdown, fmt(Math.max(0, end - now)));
       if (dayEl) {
         dayEl.textContent = String(buildDay);
       }
       if (testEl) {
-        testEl.textContent = fmt(Math.max(0, testSet - now));
+        swapText(testEl, fmt(Math.max(0, testSet - now)));
       }
       if (hackathonEl) {
         var hackLeft = hackathonEnd - now;
-        hackathonEl.textContent =
-          hackLeft > 0 ? fmt(hackLeft) : "closed ✅ keep building";
+        swapText(hackathonEl, hackLeft > 0 ? fmt(hackLeft) : "closed ✅ keep building");
       }
       if (homeBuild) {
         homeBuild.textContent = "day " + buildDay;
       }
       if (homeLeft) {
-        homeLeft.textContent = fmtShort(Math.max(0, end - now));
+        swapText(homeLeft, fmtShort(Math.max(0, end - now)));
       }
     }
 
@@ -204,6 +232,8 @@
   }
 
   // ── Count-up: data strip numbers rise on load ────────────────────────────
+  // Uses the number-pop-in transition (transitions.dev) for the final value:
+  // each digit re-enters with blur + stagger when the count reaches its target.
   function initCountUp() {
     var els = document.querySelectorAll("[data-count-to]");
     if (!els.length || prefersReducedMotion()) {
@@ -227,10 +257,32 @@
         el.textContent = Math.round(target * eased) + suffix;
         if (p < 1) {
           requestAnimationFrame(step);
+        } else {
+          // Count finished — replay with digit pop-in for the final value.
+          playDigitPopIn(el, String(Math.round(target)) + suffix);
         }
       }
       requestAnimationFrame(step);
     });
+  }
+
+  // ── Number pop-in (transitions.dev pattern) ─────────────────────────────
+  // Wrap each character in a .t-digit span, stagger the last two, then animate.
+  function playDigitPopIn(el, str) {
+    el.classList.remove("t-digit-group", "is-animating");
+    el.replaceChildren();
+    el.classList.add("t-digit-group");
+    var chars = String(str).split("");
+    chars.forEach(function (ch, i) {
+      var span = document.createElement("span");
+      span.className = "t-digit";
+      span.textContent = ch;
+      if (i === chars.length - 2) span.dataset.stagger = "1";
+      else if (i === chars.length - 1) span.dataset.stagger = "2";
+      el.appendChild(span);
+    });
+    void el.offsetHeight; // force reflow
+    el.classList.add("is-animating");
   }
 
   // ── Provenance: copy-to-clipboard for the reproduce command ───────────────

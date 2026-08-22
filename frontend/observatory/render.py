@@ -22,6 +22,21 @@ VCC_TEST_SET = "2026-10-22T00:00:00Z"
 VCC_END = "2026-11-05T23:59:59Z"
 HACKATHON_END = "2026-08-22T18:00:00Z"  # 19:00 London (BST) opt-in deadline
 
+# Display names for cell-eval metric keys (full key kept in title/tooltip).
+METRIC_LABELS: dict[str, str] = {
+    "DESigGenesRecall": "DE gene recall",
+    "pearson_delta": "Pearson Δ",
+    "mse": "MSE",
+    "mae": "MAE",
+}
+
+
+def _metric_label(key: str) -> str:
+    if key in METRIC_LABELS:
+        return METRIC_LABELS[key]
+    spaced = re.sub(r"([a-z])([A-Z])", r"\1 \2", key)
+    return spaced.replace("_", " ")
+
 
 def _h(text: str) -> str:
     return html.escape(text, quote=True)
@@ -132,11 +147,29 @@ def _card_metrics_summary(metrics: dict[str, Any], limit: int = 2) -> str:
     if not metrics:
         return "—"
     items = list(metrics.items())
-    head = ", ".join(f"{k}={v}" for k, v in items[:limit])
+    head = ", ".join(f"{_metric_label(k)} {v}" for k, v in items[:limit])
     extra = len(items) - limit
     if extra > 0:
         head += f" +{extra} more"
     return head
+
+
+def _run_card_delta(run: RunSummary, prev: RunSummary | None) -> str:
+    """Delta vs prior run on the first shared headline metric (when n ≥ 2)."""
+    if not prev:
+        return ""
+    curr_m = run.facts.get("headline_metrics") or {}
+    prev_m = prev.facts.get("headline_metrics") or {}
+    for key, val in curr_m.items():
+        if key not in prev_m:
+            continue
+        delta = float(val) - float(prev_m[key])
+        sign = "+" if delta >= 0 else ""
+        return (
+            f'<span class="run-card-delta">'
+            f"{sign}{delta:.2f} {_h(_metric_label(key))} vs prior</span>"
+        )
+    return ""
 
 
 def _evidence_sub_panel(title: str, hint: str, body: str) -> str:
@@ -173,16 +206,19 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
         f'<li><a class="nav-link{" is-active" if is_active else ""}" href="{href}">{label}</a></li>'
         for label, href, is_active in links
     )
-    strip = "".join(
-        f'<a class="run-pill{" is-active" if run.run_id == active else ""}" '
-        f'href="{root_prefix}runs/{_h(run.run_id)}/index.html">'
-        f'<span class="run-pill-id">'
-        f'<span class="run-pill-dot dot-{_run_severity(run.facts)}"></span>'
-        f"{_h(run.run_id)}</span>"
-        f'<span class="run-pill-headline">{_h(run.facts.get("headline", ""))}</span>'
-        f"</a>"
-        for run in runs
-    )
+    strip_block = ""
+    if len(runs) > 1:
+        strip = "".join(
+            f'<a class="run-pill{" is-active" if run.run_id == active else ""}" '
+            f'href="{root_prefix}runs/{_h(run.run_id)}/index.html">'
+            f'<span class="run-pill-id">'
+            f'<span class="run-pill-dot dot-{_run_severity(run.facts)}"></span>'
+            f"{_h(run.run_id)}</span>"
+            f'<span class="run-pill-headline">{_h(run.facts.get("headline", ""))}</span>'
+            f"</a>"
+            for run in runs
+        )
+        strip_block = f'<div class="run-strip">{strip}</div>'
     return f"""
     <header class="site-header">
       <div class="brand">
@@ -193,9 +229,7 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
       </div>
       <nav class="nav-main"><ul>{lis}</ul></nav>
     </header>
-    <div class="run-strip">
-      {strip or '<span class="muted">No runs with facts.json yet.</span>'}
-    </div>
+    {strip_block}
     """
 
 
@@ -208,6 +242,22 @@ def _head(meta: PageMeta, *, root_prefix: str) -> str:
 """
 
 
+def _home_proof_pill(facts: dict) -> str:
+    """One-line live stat from the latest run — optional social proof on the hero."""
+    flags = facts.get("audit_flags") or []
+    warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
+    metrics = facts.get("headline_metrics") or {}
+    parts: list[str] = []
+    if warns:
+        parts.append(f"{warns} audit warning{'s' if warns != 1 else ''}")
+    if metrics:
+        key, val = next(iter(metrics.items()))
+        parts.append(f"{_metric_label(key)} {val}")
+    if not parts:
+        return ""
+    return f'<p class="home-proof">{_h(" · ".join(parts))}</p>'
+
+
 def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
     latest = runs[-1] if runs else None
     if latest:
@@ -215,6 +265,9 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         vd = _vessel_data(latest.facts)
         vessel_json = json.dumps(vd)
         svg = _vessel_svg(latest.facts, clip_id="vessel-clip-home")
+
+        run_index = _run_index(latest, runs)
+        proof = _home_proof_pill(latest.facts)
 
         # Full-bleed 3D vessel as background layer
         stage = f"""
@@ -226,49 +279,21 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
           <div class="home-overlay">
             <div class="home-overlay-content">
               <h1 class="home-headline">
-                Predict how an unseen cell responds —<br>
-                and <em>show when the model is biologically wrong.</em>
+                We publish every prediction — and
+                <em>every time biology says we&rsquo;re wrong.</em>
               </h1>
-              <p class="home-lede">
-                The Observatory publishes every run of a {VCC_DAYS}-day public
-                experiment: scores, biological audit flags, literature, and
-                provenance. Run #{_run_index(latest, runs)} of {VCC_DAYS} is live.
+              <p class="home-subline">
+                Run #{run_index} of {VCC_DAYS} · Virtual Cell Challenge 2026
               </p>
-              <p class="vessel-legend-inline">
-                <span class="legend-item legend-fill">nucleus = ceiling headroom</span>
-                <span class="legend-item legend-warn">membrane stress = audit warnings</span>
-                <span class="legend-item legend-info">vesicles = info flags</span>
-              </p>
+              {proof}
               <div class="home-cta-row">
-                <a class="button" href="{run_href}">View run #{_run_index(latest, runs)} →</a>
-                <a class="home-chip" href="{root_prefix}about/index.html">
-                  About the build
-                </a>
+                <a class="button" href="{run_href}">View run #{run_index} →</a>
               </div>
+              <p class="home-about-link">
+                <a href="{root_prefix}about/index.html">About the 78-day build</a>
+              </p>
             </div>
           </div>
-          <div class="home-data-strip">
-            <span class="data-strip-item">
-              <span class="data-strip-label">fill</span>
-              {_count_span("data-strip-value", vd["fill_pct"], "%", "0%")}
-            </span>
-            <span class="data-strip-sep"></span>
-            <span class="data-strip-item">
-              <span class="data-strip-label">audit</span>
-              {_count_span("data-strip-value data-strip-warn", vd["warns"], " warn", "0 warn")}
-            </span>
-            <span class="data-strip-sep"></span>
-            <span class="data-strip-item">
-              <span class="data-strip-label">build</span>
-              <span class="data-strip-value" id="home-build-day" data-vcc-days="{VCC_DAYS}">…</span>
-            </span>
-            <span class="data-strip-sep"></span>
-            <span class="data-strip-item">
-              <span class="data-strip-label">nov 5</span>
-              <span class="data-strip-value" id="home-vcc-left">…</span>
-            </span>
-          </div>
-          <div class="home-scroll-hint">scroll ↓</div>
         </section>
         """
     else:
@@ -299,15 +324,15 @@ def _timeline_html() -> str:
     return f"""
     <section class="panel timeline-panel timeline-centered">
       <div class="timeline-hackathon">
-        <p class="timeline-eyebrow">🔥 Today · London</p>
-        <h2>{{Tech: Europe}} × VEED Summer Lock-In</h2>
+        <p class="timeline-eyebrow">🏆 VEED Summer Lock-In · Aug 2026</p>
+        <h2>{{Tech: Europe}} × VEED Hackathon</h2>
         <p class="timeline-tagline">
-          Observatory Milestone 0 goes live today — same repo, same public build,
-          all the way to VCC finals 🧬
+          Observatory Milestone 0 — the public transparency layer for our Virtual Cell
+          Challenge entry, shipping from this repo through Nov 5.
         </p>
         <p class="hackathon-deadline">
-          ⏰ Opt-in closes <strong id="hackathon-countdown">…</strong>
-          <span class="muted">· 19:00 London</span>
+          Opt-in closed <strong id="hackathon-countdown" class="t-text-swap">…</strong>
+          <span class="muted">· we keep building in public</span>
         </p>
       </div>
 
@@ -345,7 +370,7 @@ def _timeline_html() -> str:
         <div class="vcc-stats">
           <div class="vcc-stat">
             <span class="vcc-stat-label">🏁 Submit by Nov 5</span>
-            <strong class="vcc-stat-value" id="vcc-countdown">…</strong>
+            <strong class="vcc-stat-value t-text-swap" id="vcc-countdown">…</strong>
             <span class="vcc-stat-note">Arc scores the hidden test set</span>
           </div>
           <div class="vcc-stat">
@@ -360,6 +385,35 @@ def _timeline_html() -> str:
             <strong class="vcc-stat-value" id="vcc-testsets">…</strong>
             <span class="vcc-stat-note">New perturbations to predict</span>
           </div>
+        </div>
+      </div>
+    </section>
+    """
+
+
+def _vessel_about_panel(runs: list[RunSummary]) -> str:
+    """Explain the κύτος vessel metaphor — moved off home when hero slimmed down."""
+    latest = runs[-1] if runs else None
+    if not latest:
+        return ""
+    vd = _vessel_data(latest.facts)
+    svg = _vessel_svg(latest.facts, svg_class="vessel-mini about-vessel")
+    warn_word = "warning" if vd["warns"] == 1 else "warnings"
+    info_word = "flag" if vd["infos"] == 1 else "flags"
+    return f"""
+    <section class="panel vessel-about-panel">
+      <h2>The vessel</h2>
+      <div class="vessel-about-grid">
+        <div class="vessel-about-art" aria-hidden="true">{svg}</div>
+        <div class="vessel-about-copy">
+          <p class="prose">The κύτος vessel is a live readout of each run&rsquo;s health —
+          not decoration. Fill level tracks ceiling headroom; membrane stress and vesicles
+          map to audit severity.</p>
+          <p class="vessel-legend-inline">
+            <span class="legend-item legend-fill">nucleus · {vd["fill_pct"]}% headroom</span>
+            <span class="legend-item legend-warn">membrane · {vd["warns"]} audit {warn_word}</span>
+            <span class="legend-item legend-info">vesicles · {vd["infos"]} info {info_word}</span>
+          </p>
         </div>
       </div>
     </section>
@@ -384,6 +438,7 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         _nav("about", runs, root_prefix=root_prefix)
         + '<main class="content about-content">'
         + _timeline_html()
+        + _vessel_about_panel(runs)
         + _why_html()
         + "</main>"
     )
@@ -411,7 +466,10 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         m = _card_metrics_summary(metrics)
         severity = _run_severity(run.facts)
         vd = _vessel_data(run.facts)
-        # Mini SVG vessel on each card — visual identity without WebGL on this page
+        chron = list(runs)
+        run_pos = chron.index(run)
+        prev = chron[run_pos - 1] if run_pos > 0 else None
+        delta = _run_card_delta(run, prev)
         mini_svg = _vessel_svg(run.facts, svg_class="vessel-mini")
         cards += f"""
         <a class="run-card" href="{href}">
@@ -424,6 +482,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
           </span>
           <span class="run-card-headline">{_h(run.facts.get("headline", ""))}</span>
           <span class="run-card-metrics">{_h(m)}</span>
+          {delta}
         </a>
         """
 
@@ -544,6 +603,7 @@ def render_run_detail(
 
     body = f"""
     {_nav(run.run_id, runs, root_prefix=root_prefix)}
+    {_confession_banner(facts, run.run_id)}
     {
         _run_header_compact(
             run,
@@ -784,6 +844,10 @@ def _disclosure_section(
       <summary class="disclosure-summary">
         <span class="disclosure-title">{_h(title)}</span>
         <span class="disclosure-hint">{hint}</span>
+        <span class="disclosure-icon t-icon-swap">
+          <span class="t-icon" data-icon="closed">+</span>
+          <span class="t-icon" data-icon="open">−</span>
+        </span>
       </summary>
       <div class="disclosure-body">{body}</div>
     </details>
@@ -795,9 +859,10 @@ def _metric_pills(headline_m: dict[str, Any], headline_c: dict[str, Any], csv_hr
         return ""
     pills = []
     for key in headline_m:
+        label = _metric_label(key)
         pills.append(
-            f'<span class="metric-pill">'
-            f"{_h(key)} "
+            f'<span class="metric-pill" title="{_h(key)}">'
+            f"{_h(label)} "
             f'<a class="metric-src" href="{csv_href}" title="opens metrics CSV">'
             f"<strong>{_h(str(headline_m.get(key, '—')))}</strong></a> "
             f'<span class="metric-ceiling">/ {_h(str(headline_c.get(key, "—")))}</span>'
@@ -810,7 +875,7 @@ def _audit_summary(facts: dict) -> str:
     flags = facts.get("audit_flags") or []
     warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
     metrics = facts.get("headline_metrics") or {}
-    metric_bits = ", ".join(f"{k} {v}" for k, v in list(metrics.items())[:2])
+    metric_bits = ", ".join(f"{_metric_label(k)} {v}" for k, v in list(metrics.items())[:2])
     parts = []
     if warns:
         parts.append(f"{warns} audit warn{'s' if warns != 1 else ''}")
@@ -975,11 +1040,11 @@ def _confession_banner(facts: dict, run_id: str) -> str:
         return ""
     rules = ", ".join(f"<code>{_h(f.get('rule', '?'))}</code>" for f in warns[:3])
     return f"""
-    <section class="confession-banner">
-      <p class="eyebrow">Audit confession — k001 fails its own rules</p>
-      <p>{len(warns)} warning(s) raised against our own baseline: {rules}.
+    <div class="confession-banner">
+      <p class="eyebrow">Audit confession — this run fails its own rules</p>
+      <p>{len(warns)} warning(s) on our published baseline: {rules}.
       Reproduce: <code>python -m kytos.audit --run experiments/{_h(run_id)}</code></p>
-    </section>
+    </div>
     """
 
 

@@ -30,22 +30,31 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert run_page.is_file()
 
     home_html = home.read_text(encoding="utf-8")
+    about_html = about.read_text(encoding="utf-8")
+    html = run_page.read_text(encoding="utf-8")
+    runs_html = (dist / "runs" / "index.html").read_text(encoding="utf-8")
+
     assert 'rel="icon"' in home_html
     assert 'property="og:image"' in home_html
     assert 'name="twitter:card"' in home_html
     assert "https://kytos.example/" in home_html
     assert "View run" in home_html
-    assert "About the build" in home_html
+    assert "About the 78-day build" in home_html
+    assert "home-scroll-hint" not in home_html
+    assert "home-data-strip" not in home_html
+    assert "run-strip" not in home_html
+    assert "DE gene recall" in home_html
 
-    about_html = about.read_text(encoding="utf-8")
     assert "VEED Summer Lock-In" in about_html
+    assert "vessel-about-panel" in about_html
+    assert "Today · London" not in about_html
     assert "vcc-stats" in about_html
     assert "hackathon-countdown" in about_html
     assert "Why the Observatory" in about_html
 
-    html = run_page.read_text(encoding="utf-8")
-    runs_html = (dist / "runs" / "index.html").read_text(encoding="utf-8")
     assert "k001-mean-shift-baseline" in html
+    assert "confession-banner" in html
+    assert "DE gene recall" in html
     assert "disclosure-panel" in html
     assert "Audit &amp; metrics" in html
     assert "gene-evidence-link" in html

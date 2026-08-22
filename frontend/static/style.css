@@ -20,6 +20,32 @@
   --glow-warn: 0 0 30px rgba(251, 191, 36, 0.18);
   --shadow-float: 0 24px 60px rgba(13, 31, 45, 0.4), 0 2px 8px rgba(13, 31, 45, 0.2);
   --shadow-glass: 0 20px 50px rgba(13, 31, 45, 0.3), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+
+  /* ── Motion tokens (transitions.dev scale) ────────────────────────────── */
+  /* Shared semantic durations / easings so every transition feels cohesive. */
+  --panel-open-dur: 400ms;
+  --panel-close-dur: 350ms;
+  --panel-translate-y: 100px;
+  --panel-blur: 2px;
+  --panel-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --icon-swap-dur: 250ms;
+  --icon-swap-blur: 2px;
+  --icon-swap-start-scale: 0.25;
+  --icon-swap-ease: ease-in-out;
+
+  --digit-dur: 500ms;
+  --digit-distance: 8px;
+  --digit-stagger: 70ms;
+  --digit-blur: 2px;
+  --digit-ease: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --digit-dir-x: 0;
+  --digit-dir-y: 1;
+
+  --text-swap-dur: 150ms;
+  --text-swap-translate-y: 4px;
+  --text-swap-blur: 2px;
+  --text-swap-ease: ease-in-out;
 }
 
 *,
@@ -334,11 +360,11 @@ code {
   justify-content: center;
   padding: 2rem;
   background: radial-gradient(
-    ellipse 90% 70% at 50% 50%,
-    transparent 0%,
-    transparent 40%,
-    rgba(13, 31, 45, 0.35) 80%,
-    rgba(13, 31, 45, 0.5) 100%
+    ellipse 85% 55% at 50% 42%,
+    rgba(13, 31, 45, 0.88) 0%,
+    rgba(13, 31, 45, 0.62) 42%,
+    rgba(13, 31, 45, 0.28) 68%,
+    transparent 100%
   );
 }
 
@@ -386,17 +412,39 @@ code {
 
 .home-headline {
   font-family: var(--serif);
-  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-size: clamp(2rem, 5vw, 3.25rem);
   font-weight: 400;
-  line-height: 1.08;
+  line-height: 1.12;
   letter-spacing: -0.01em;
-  max-width: 18ch;
-  margin: 0 auto 1.25rem;
+  max-width: 22ch;
+  margin: 0 auto 1rem;
   text-wrap: balance;
 }
 
 .home-headline em {
   font-style: italic;
+  color: var(--accent);
+}
+
+.home-subline {
+  color: var(--ink);
+  font-size: 0.92rem;
+  max-width: 40ch;
+  margin: 0 auto 1rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+  opacity: 0.92;
+}
+
+.home-proof {
+  display: inline-block;
+  margin: 0 auto 1.25rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(22, 59, 92, 0.5);
+  font-family: var(--mono);
+  font-size: 0.72rem;
   color: var(--accent);
 }
 
@@ -415,6 +463,23 @@ code {
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.home-about-link {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.home-about-link a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.home-about-link a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
 }
 
 .home-chip {
@@ -445,27 +510,6 @@ code {
   font-variant-numeric: tabular-nums;
 }
 
-/* Data readout strip — instrument panel at the bottom */
-.home-data-strip {
-  position: absolute;
-  bottom: 3.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  padding: 0.6rem 1.4rem;
-  border-radius: 999px;
-  border: 1px solid var(--line-bright);
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-glass);
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
-}
-
 .data-strip-item {
   display: flex;
   flex-direction: column;
@@ -493,25 +537,6 @@ code {
   width: 1px;
   height: 1.2rem;
   background: var(--line-bright);
-}
-
-/* Scroll hint */
-.home-scroll-hint {
-  position: absolute;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  font-size: 0.68rem;
-  color: var(--muted);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  animation: scroll-bounce 2s ease-in-out infinite;
-}
-
-@keyframes scroll-bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
-  50% { transform: translateX(-50%) translateY(4px); opacity: 1; }
 }
 
 /* Below-the-fold panels */
@@ -935,20 +960,15 @@ code {
 }
 
 .confession-banner {
-  max-width: 1400px;
-  margin: 0.75rem auto;
-  padding: 0 2rem;
+  max-width: 960px;
+  margin: 0.75rem auto 0;
+  padding: 0.8rem 1.1rem;
   position: relative;
   z-index: 10;
-}
-
-.confession-banner > section {
-  margin: 0;
   border: 1px solid rgba(251, 191, 36, 0.35);
   border-left: 3px solid var(--warn);
   background: rgba(251, 191, 36, 0.06);
   border-radius: 0 var(--radius) var(--radius) 0;
-  padding: 0.8rem 1.1rem;
   font-size: 0.88rem;
   line-height: 1.5;
   box-shadow: var(--glow-warn);
@@ -1188,17 +1208,14 @@ code {
   display: none;
 }
 
-.disclosure-summary::after {
-  content: "+";
+/* Icon swap container replaces the old ::after +/− pseudo-element */
+.disclosure-icon {
   flex-shrink: 0;
+  position: relative;
+  display: inline-grid;
   font-family: var(--mono);
   font-size: 0.85rem;
   color: var(--muted);
-  transition: transform 0.2s ease;
-}
-
-.disclosure-panel[open] > .disclosure-summary::after {
-  content: "−";
 }
 
 .disclosure-title {
@@ -2081,6 +2098,41 @@ details summary {
   color: #67e8f9;
 }
 
+.vessel-about-panel {
+  text-align: left;
+}
+
+.vessel-about-grid {
+  display: grid;
+  grid-template-columns: min(140px, 28%) 1fr;
+  gap: 1.25rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.vessel-about-art {
+  display: grid;
+  place-items: center;
+}
+
+.vessel-about-art .about-vessel {
+  width: 100%;
+  max-width: 140px;
+  height: auto;
+}
+
+.vessel-about-copy .vessel-legend-inline {
+  margin-top: 0.65rem;
+}
+
+.run-card-delta {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--accent);
+}
+
 /* ════════════════════════════════════════════════════════════════════════
    TIMELINE — hackathon callout + VCC rail
    ════════════════════════════════════════════════════════════════════════ */
@@ -2395,30 +2447,120 @@ details summary {
   .home-headline {
     font-size: clamp(2rem, 8vw, 3rem);
   }
-
-  .home-data-strip {
-    bottom: 2.5rem;
-    gap: 0.8rem;
-    padding: 0.5rem 1rem;
-  }
-
-  .home-scroll-hint {
-    bottom: 0.5rem;
-  }
 }
 
 @media (max-width: 480px) {
-  .home-data-strip {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: var(--radius);
-    padding: 0.5rem 0.8rem;
+  .home-proof {
+    font-size: 0.66rem;
   }
+}
 
-  .data-strip-sep {
-    display: none;
+/* ════════════════════════════════════════════════════════════════════════
+   TRANSITIONS.DEV — product motion patterns
+   4 patterns: panel reveal, icon swap, number pop-in, text states swap
+   Each namespaced under t-* and guarded by prefers-reduced-motion.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Panel reveal — disclosure body slides open with cross-blur ──────── */
+.disclosure-body {
+  transform: translateY(var(--panel-translate-y));
+  opacity: 0;
+  filter: blur(var(--panel-blur));
+  pointer-events: none;
+  transition:
+    transform var(--panel-close-dur) var(--panel-ease),
+    opacity   var(--panel-close-dur) var(--panel-ease),
+    filter    var(--panel-close-dur) var(--panel-ease);
+  will-change: transform, opacity, filter;
+}
+.disclosure-panel[open] > .disclosure-body {
+  transform: translateY(0);
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+  transition:
+    transform var(--panel-open-dur) var(--panel-ease),
+    opacity   var(--panel-open-dur) var(--panel-ease),
+    filter    var(--panel-open-dur) var(--panel-ease);
+}
+
+/* ── 2. Icon swap — disclosure +/− cross-fades with blur + scale ───────── */
+.disclosure-summary::after {
+  display: inline-grid;
+}
+.disclosure-summary .t-icon {
+  grid-area: 1 / 1;
+  transition:
+    opacity   var(--icon-swap-dur) var(--icon-swap-ease),
+    filter    var(--icon-swap-dur) var(--icon-swap-ease),
+    transform var(--icon-swap-dur) var(--icon-swap-ease);
+  will-change: opacity, filter, transform;
+}
+.disclosure-panel:not([open]) .t-icon[data-icon="open"],
+.disclosure-panel[open] .t-icon[data-icon="closed"] {
+  opacity: 0;
+  filter: blur(var(--icon-swap-blur));
+  transform: scale(var(--icon-swap-start-scale));
+}
+.disclosure-panel:not([open]) .t-icon[data-icon="closed"],
+.disclosure-panel[open] .t-icon[data-icon="open"] {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}
+
+/* ── 3. Number pop-in — headline digits re-enter with blur + stagger ───── */
+@keyframes t-digit-pop-in {
+  0% {
+    transform: translate(
+      calc(var(--digit-distance) * var(--digit-dir-x)),
+      calc(var(--digit-distance) * var(--digit-dir-y))
+    );
+    opacity: 0;
+    filter: blur(var(--digit-blur));
   }
+  100% { transform: translate(0, 0); opacity: 1; filter: blur(0); }
+}
+.t-digit-group {
+  display: inline-flex;
+  align-items: baseline;
+}
+.t-digit {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+.t-digit-group.is-animating .t-digit {
+  animation: t-digit-pop-in var(--digit-dur) var(--digit-ease) both;
+}
+.t-digit-group.is-animating .t-digit[data-stagger="1"] {
+  animation-delay: var(--digit-stagger);
+}
+.t-digit-group.is-animating .t-digit[data-stagger="2"] {
+  animation-delay: calc(var(--digit-stagger) * 2);
+}
+
+/* ── 4. Text states swap — countdown ticks swap with blur ──────────────── */
+.t-text-swap {
+  display: inline-block;
+  transform: translateY(0);
+  filter: blur(0);
+  opacity: 1;
+  transition:
+    transform var(--text-swap-dur) var(--text-swap-ease),
+    filter    var(--text-swap-dur) var(--text-swap-ease),
+    opacity   var(--text-swap-dur) var(--text-swap-ease);
+  will-change: transform, filter, opacity;
+}
+.t-text-swap.is-exit {
+  transform: translateY(calc(var(--text-swap-translate-y) * -1));
+  filter: blur(var(--text-swap-blur));
+  opacity: 0;
+}
+.t-text-swap.is-enter-start {
+  transform: translateY(var(--text-swap-translate-y));
+  filter: blur(var(--text-swap-blur));
+  opacity: 0;
+  transition: none;
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -2447,7 +2589,8 @@ details summary {
     animation: none;
   }
 
-  .home-scroll-hint {
-    animation: none;
-  }
+  .disclosure-body { transition: none !important; transform: none !important; opacity: 1 !important; filter: none !important; }
+  .disclosure-summary .t-icon { transition: none !important; }
+  .t-digit-group .t-digit { animation: none !important; }
+  .t-text-swap { transition: none !important; }
 }
