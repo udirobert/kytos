@@ -795,6 +795,50 @@ html.no-webgl .vessel-loading {
   color: var(--accent);
 }
 
+/* ── Prelude: general-audience intro between headline and stats ───────── */
+.home-prelude {
+  max-width: 58ch;
+  margin: 0 auto 1.5rem;
+  text-align: center;
+}
+
+.home-prelude p {
+  margin: 0 0 0.65rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(8, 20, 30, 0.4);
+}
+
+.home-prelude-lead {
+  color: rgba(240, 247, 250, 0.85);
+  font-size: 1.05rem;
+}
+
+.home-prelude-punch {
+  color: var(--accent, #2dd4bf);
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: 1rem !important;
+}
+
+.home-prelude-bridge {
+  color: rgba(240, 247, 250, 0.7);
+  font-size: 0.92rem;
+}
+
+.home-prelude-bridge em {
+  font-style: italic;
+  color: rgba(240, 247, 250, 0.9);
+}
+
+.home-prelude-stakes {
+  color: rgba(240, 247, 250, 0.82);
+  font-size: 0.96rem;
+  border-top: 1px solid rgba(45, 212, 191, 0.18);
+  padding-top: 0.85rem;
+  margin-top: 0.85rem;
+}
+
 .home-subline {
   color: #f0f7fa;
   font-size: 0.92rem;

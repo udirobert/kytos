@@ -312,10 +312,15 @@ def _home_proof_pill(facts: dict, meta: dict | None = None) -> str:
         parts.append(badge)
     if warns:
         parts.append(f"{warns} audit warning{'s' if warns != 1 else ''}")
+    ceilings = facts.get("ceiling_headroom") or {}
     defined = [(k, v) for k, v in metrics.items() if v is not None]
     if defined:
         key, val = defined[0]
-        parts.append(f"{_metric_label(key)} {val}")
+        ceil = ceilings.get(key)
+        if isinstance(ceil, (int, float)):
+            parts.append(f"{_metric_label(key)} {val} / {ceil:.2f} ceiling")
+        else:
+            parts.append(f"{_metric_label(key)} {val}")
     if not parts:
         return ""
     # The badge is already-safe HTML; the text parts need escaping separately
