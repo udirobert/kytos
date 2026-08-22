@@ -1,8 +1,8 @@
-<!-- kytos narrative · generated_by=fallback · 2026-08-22T22:36:28+00:00 UTC -->
+<!-- kytos narrative · generated_by=fallback · 2026-08-22T22:40:45+00:00 UTC -->
 
 # k002-vcc2025-validation-mean-shift — run digest
 
-> Fallback digest rendered deterministically from `facts.json` (no LLM call). Generated 2026-08-22T22:36:28+00:00 UTC.
+> Fallback digest rendered deterministically from `facts.json` (no LLM call). Generated 2026-08-22T22:40:45+00:00 UTC.
 
 ## Headline
 First real cell-eval run — mean-shift floor vs VCC 2025 validation (H1 hESC, 50 targets)
