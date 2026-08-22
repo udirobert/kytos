@@ -60,14 +60,15 @@ ships today and carries through to Nov 5. See
 | **Venice** | Same narration path for **local dev** — private inference, saves hackathon OpenAI credits | — ([`venice-dev.md`](venice-dev.md)) |
 | **Tavily** | Literature sidebar for audit-flagged genes/pathways; empty on failure | famile |
 | **fal** | Hero stills, share cards, **VEED Fabric run briefings** | — |
+| **H (Holo)** | Independent Observatory auditor — vision-language model reads the rendered site and verifies it matches `facts.json` | — (see [§3b](#3b-holo-auditor--independent-render-verification)) |
 
-Optional later: **h** (computer-use agents).
+Optional later: **Pioneer** (critique classification).
 
 ### VEED Fabric (`veed/fabric-1.0` on fal)
 
 Hosted by VEED — their API is a first-class demo moment, not an afterthought.
 
-**Run briefing pipeline:**
+**Run briefing pipeline (LIVE 2026-08-22):**
 
 ```
 facts.json + metrics
@@ -80,7 +81,68 @@ facts.json + metrics
 
 Fabric turns committed experiment artifacts into **talking video explainers** —
 science communication (our domain) meets video (VEED's domain). The hackathon
-demo can include a Fabric-generated briefing as the centerpiece.
+demo includes a Fabric-generated briefing as the centerpiece.
+
+### Fabric frontier strategy — the data-driven protagonist (2026-08-22)
+
+Research read: VEED's Fabric launch post + fal's model page. What they are
+excited about, in their own words: **production volume** (8¢/s exists so you
+generate *many* videos), **any image with preserved character** ("the animation
+is derived from your specific input" — mascots, illustrations, 3D renders), and
+**video personalization** (same character, different states/scripts). The fal
+side challenge names **a workflow** and **genmedia CLI** as the "advanced"
+signals.
+
+The median submission will be "an avatar pitches my product." Our answer:
+**the vessel is the only mascot whose appearance is computed, not chosen** —
+fill = ceiling headroom, cracks = audit warnings, colors = severity. That makes
+our Fabric briefings a **time series of one character's health across the
+78 days**: the protagonist literally embodies the evidence.
+
+| Move | Status | Why it matters |
+|---|---|---|
+| **Briefing series framing** — "Briefing #1 of ~12" stamped on the run page | ✅ done (2026-08-22) | signals a weekly cadence, not a one-off demo prop |
+| **The vessel testifies** — briefing speaks the grounded OpenAI digest incl. its own audit self-own | ✅ live | the character's honesty is the product |
+| **Volume workflow** — `facts.json → narrative → TTS → Fabric → committed mp4` in one command | ✅ live (`render_briefing.py`) | VEED's "built for production volume" thesis, true for us |
+| **genmedia CLI demo moment** — one-liner in the Loom | 🧪 attempted | fal side challenge's "advanced" box |
+| **LoRA on the vessel identity** — consistent character across all runs | 🧪 attempted | side challenge's "LoRA" box; makes the 78-day time-lapse coherent |
+| **Site's own vessel speaks** — feed Fabric the live 3D vessel render as source frame | 🧪 attempted | "the animation is derived from your specific input" — ours is the actual instrument |
+| **Weekly cadence automation** | 📅 this week | ~12 briefings between now and Nov 5 — the series is the product |
+
+**Cadence pitch (the demo closer):** *"Every run of a 78-day public experiment
+gets a talking briefing, auto-generated from the same committed facts. This is
+briefing #1 — come back and watch the vessel fill, crack, or heal."*
+
+---
+
+## 3b. Holo auditor — independent render verification
+
+Our entire thesis is "show when a model is biologically wrong." But who verifies
+that what the Observatory renders matches the committed `facts.json`? Right now,
+nobody. **H's Holo** vision-language model fills that gap.
+
+**What it does:** `tools/holo_audit.py` screenshots the built Observatory (via
+Playwright), sends the screenshot to Holo's API, and asks it to read the visible
+values — vessel fill %, audit flag count, metric scores. It then diffs Holo's
+reading against the committed `facts.json` and reports any discrepancy.
+
+```
+frontend/dist/runs/k001/index.html  (built page)
+  → Playwright screenshot
+  → Holo API: "read the visible numbers from this page"
+  → diff against facts.json
+  → PASS / FAIL report (same pattern as planted_signal.py)
+```
+
+**Why Holo specifically:** the model is purpose-built for UI-VQA (visual question
+answering on screens) and element localization — not a generic LLM bolted into
+a browser loop. It reads what a human sees and returns coordinates for what it
+finds. That's the exact capability for independent render verification.
+
+**Hard rule:** Holo audits the render, never the science. It checks that the
+site shows what the data says — not whether the data is biologically correct
+(that's the audit layer's job). It degrades to a skip if `HAI_API_KEY` is unset
+or the API is unreachable; it never blocks the build.
 
 ---
 
@@ -240,6 +302,7 @@ One gorgeous run page beats three half-finished pages.
 | UX polish (B) | ✅ instrument-panel metaphor: live VCC timeline rail + countdown to Nov 5, vessel fill animation on load, run-strip severity dots + scroll-snap, flag severity badges, breadcrumb, copy-to-clipboard provenance, `prefers-reduced-motion` support; mobile overflow fixed (grid `min-width:0`, narrative/provenance wrapping) — Playwright-verified desktop + mobile, zero console errors |
 | 3D vessel (C) | ✅ **Three.js real-time 3D κύτος vessel** — glass with transmission/refraction, animated liquid fill, rising bubbles, emissive crack halos, cyan droplets, reflective floor, UnrealBloomPass, mouse parallax, scroll-driven camera, auto-rotate + drag; SVG fallback if WebGL unavailable (`frontend/static/vessel3d.js`, 527 lines) |
 | Full-bleed immersive layout (C) | ✅ home + run detail pages rebuilt as full-viewport vessel hero with overlaid glass content; evidence panels flow in centered column with scroll-reveal (IntersectionObserver); glass data readout strip; runs index cards show severity dot + fill % badge |
+| Holo auditor (C) | ✅ `tools/holo_audit.py` — H Holo vision-language model screenshots the built Observatory, reads visible values (fill %, flag counts, metrics), diffs against `facts.json`; degrades to skip without `HAI_API_KEY`; same PASS/FAIL pattern as `planted_signal.py` |
 | Integration | ⏳ real enrichment artifacts → rebuild `dist/` → redeploy → 2-min Loom |
 
 ### Later (Aug → Nov 2026)

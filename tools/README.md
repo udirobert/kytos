@@ -11,6 +11,7 @@ into `experiments/<run-id>/`. None of them touch the inference path.
 | `enrich_literature.py` | Tavily | `literature/<gene>.json` | ≤ 5 searches |
 | `render_visuals.py` | fal (flux/dev) | `visual/hero.png`, `visual/share-card.png` | 2 image gens |
 | `render_briefing.py` | OpenAI TTS + fal `veed/fabric-1.0` | `visual/briefing.mp4` (+ `briefing-audio.mp3`) | 1 TTS + 1 Fabric |
+| `holo_audit.py` | **H / Holo** | `holo_screenshot.png`, `holo_audit.json` | 1 VLM call |
 
 ## Rules (hard)
 
@@ -31,6 +32,7 @@ python tools/render_narrative.py   --run experiments/k001-mean-shift-baseline
 python tools/enrich_literature.py  --run experiments/k001-mean-shift-baseline
 python tools/render_visuals.py     --run experiments/k001-mean-shift-baseline
 python tools/render_briefing.py    --run experiments/k001-mean-shift-baseline   # needs render_visuals first
+python tools/holo_audit.py         --run experiments/k001-mean-shift-baseline   # independent UI verification
 ```
 
 Then Developer C builds the site:
@@ -85,6 +87,34 @@ Top up gateway credits if you see `insufficient_credits`.
 root.
 
 ## Notes
+
+### Holo audit (H / Holo — computer-use agent)
+
+`holo_audit.py` is an **independent render-verification audit**: it screenshots
+the built Observatory run page via Playwright, sends the screenshot to Holo's
+VLM (vision-language model), asks it to read visible values (vessel fill %,
+audit flag counts, run ID, headline), then diffs Holo's reading against the
+committed `facts.json`. Any mismatch means the rendered page does not match
+the data contract — the agent caught a render bug.
+
+This is an AI agent that audits the auditor — our thesis is "show when a model
+is biologically wrong"; Holo extends that to "show when our UI is wrong."
+
+| Aspect | Detail |
+|---|---|
+| API | Holo `holo3-1-35b-a3b` (OpenAI-compatible, `https://api.hcompany.ai/v1/`) |
+| Key | `HAI_API_KEY` (free tier, no credit card) |
+| Deps | `openai`, `playwright` (+ `playwright install chromium`) |
+| Degrade | Missing key/Playwright/API → skip, exit 0 |
+| Live URL | `--url https://kytosapp.netlify.app/runs/k001-mean-shift-baseline/` |
+
+```bash
+python tools/holo_audit.py --run experiments/k001-mean-shift-baseline
+# or audit the live deployed site:
+python tools/holo_audit.py --run experiments/k001-mean-shift-baseline --url https://kytosapp.netlify.app/runs/k001-mean-shift-baseline/
+```
+
+### Other notes
 
 - `render_briefing.py` derives its spoken script from the committed
   `narrative/report.md` (or a facts.json digest), so the video's words trace to

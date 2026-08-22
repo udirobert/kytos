@@ -174,8 +174,9 @@ frontend/
 | **fal** | `tools/render_visuals.py` → `visual/hero.png`, `share-card.png` | Gen media for engagement; not metric source |
 | **fal + VEED** | `tools/render_briefing.py` → `visual/briefing.mp4` via `veed/fabric-1.0` | Image + audio → talking video; core demo moment |
 | **Three.js** | `frontend/static/vessel3d.js` — 3D vessel instrument | Renders from `facts.json` only; SVG fallback if WebGL unavailable |
+| **H (Holo)** | `tools/holo_audit.py` — independent render verification | Screenshots built site → Holo reads visible values → diffs vs `facts.json`; degrades to skip without `HAI_API_KEY` |
 
-Optional: Pioneer (critique classification), h (computer-use agents) — post-Milestone 0.
+Optional: Pioneer (critique classification) — post-Milestone 0.
 
 Problem / wedge / adjacent projects: [`competitive-landscape.md`](competitive-landscape.md).
 

@@ -56,6 +56,7 @@ Confirm usage in submission materials.
 | **Tavily** | `tools/enrich_literature.py` | `literature/*.json` | Evidence for audit-flagged genes (degrades empty) |
 | **fal** | `tools/render_visuals.py`, `tools/render_briefing.py` | `visual/*` | Hero stills; **VEED Fabric** (`veed/fabric-1.0`) run briefings |
 | **Pioneer** | `tools/pioneer_ner.py` | `literature/*.entities.json` | Fine-tuned GLiNER2 biomedical NER — deterministic entity extraction from literature (side challenge) |
+| **H (Holo)** | `tools/holo_audit.py` | PASS/FAIL report | Independent render verification — Holo vision-language model screenshots the built Observatory and verifies visible values match `facts.json` |
 
 Metrics and charts come **only** from committed CSVs — never from LLM or gen-media APIs.
 
