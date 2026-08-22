@@ -32,6 +32,7 @@ from _enrich_common import (
     load_facts,
     notice,
     openai_tts_client,
+    record_pipeline_status,
     resolve_run_dir,
     set_visual_paths,
     warn,
@@ -128,12 +129,30 @@ def main(argv=None) -> int:
     hero = run_dir / args.image
     if not hero.exists():
         notice(f"briefing: no {args.image} — run render_visuals.py first; degrading")
+        record_pipeline_status(
+            run_dir,
+            "briefing",
+            "skipped",
+            f"Source image {args.image} missing — run render_visuals.py first.",
+        )
         return 0
     if not env_key("FAL_KEY", "FAL_API_KEY"):
         notice("briefing: skipped (no FAL_KEY); run degrades without video")
+        record_pipeline_status(
+            run_dir,
+            "briefing",
+            "skipped",
+            "FAL_KEY not set — no briefing video generated.",
+        )
         return 0
     if not env_key("OPENAI_API_KEY"):
         notice("briefing: skipped (no OPENAI_API_KEY for TTS audio); run degrades without video")
+        record_pipeline_status(
+            run_dir,
+            "briefing",
+            "skipped",
+            "OPENAI_API_KEY not set — no TTS audio for briefing.",
+        )
         return 0
 
     try:
@@ -147,10 +166,28 @@ def main(argv=None) -> int:
         download(url, video_path)
         notice(f"briefing: wrote {video_path.relative_to(run_dir)}")
         set_visual_paths(run_dir, facts, briefing=str(video_path.relative_to(run_dir)))
+        record_pipeline_status(
+            run_dir,
+            "briefing",
+            "done",
+            f"TTS audio + fal Fabric video generated ({args.resolution}).",
+        )
     except ImportError:
         warn("openai/fal_client not installed (`uv sync --extra obs`); run degrades without video")
+        record_pipeline_status(
+            run_dir,
+            "briefing",
+            "skipped",
+            "openai/fal_client not installed — no briefing video.",
+        )
     except Exception as exc:
         warn(f"briefing failed ({exc}); run degrades without video")
+        record_pipeline_status(
+            run_dir,
+            "briefing",
+            "failed",
+            f"Briefing generation failed: {exc}.",
+        )
     return 0
 
 

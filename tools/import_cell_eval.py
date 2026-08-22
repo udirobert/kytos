@@ -24,21 +24,34 @@ from pathlib import Path
 
 
 def _read_wide_describe(path: Path) -> dict[str, float]:
-    """pl.DataFrame.describe() → {metric: mean}, or raise on unknown shape."""
+    """cell-eval aggregate CSV → {metric: mean}.
+
+    Two shapes exist: prediction aggregates are pl.describe() tables (first
+    column 'statistic', per-metric columns); ceiling aggregates are a single
+    row of Spearman-Brown-corrected means (metric columns, one data row).
+    Raise on anything else rather than silently mapping the wrong cell — the
+    committed CSVs are cited link targets from the site.
+    """
     if not path.is_file():
         raise FileNotFoundError(path)
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
-        if not reader.fieldnames or reader.fieldnames[0] != "statistic":
-            raise ValueError(f"{path}: expected 'statistic' as first column")
+        if not reader.fieldnames:
+            raise ValueError(f"{path}: empty CSV")
         rows = list(reader)
-    mean_row = next((r for r in rows if r["statistic"] == "mean"), None)
-    if mean_row is None:
-        raise ValueError(f"{path}: no 'mean' statistic row")
+        metrics = list(reader.fieldnames)
+    if metrics[0] == "statistic":
+        mean_row = next((r for r in rows if r["statistic"] == "mean"), None)
+        if mean_row is None:
+            raise ValueError(f"{path}: no 'mean' statistic row")
+        metrics = metrics[1:]
+    elif len(rows) == 1:
+        mean_row = rows[0]  # ceiling aggregate: single row of means
+    else:
+        raise ValueError(f"{path}: unknown aggregate shape ({len(rows)} rows)")
     out: dict[str, float] = {}
-    for metric, raw in mean_row.items():
-        if metric == "statistic":
-            continue
+    for metric in metrics:
+        raw = mean_row.get(metric)
         try:
             out[metric] = float(raw)
         except (TypeError, ValueError):
@@ -52,7 +65,9 @@ def _write_long(path: Path, values: dict[str, float], column: str) -> None:
         writer = csv.writer(handle)
         writer.writerow(["metric", column])
         for metric, value in values.items():
-            writer.writerow([metric, f"{value:.6g}"])
+            # NaN (undefined metric, e.g. pearson of a constant prediction)
+            # serializes as an empty cell → null downstream, valid JSON.
+            writer.writerow([metric, f"{value:.6g}" if value == value else ""])
 
 
 def main(argv: list[str] | None = None) -> int:

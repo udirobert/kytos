@@ -27,6 +27,7 @@ HACKATHON_END = "2026-08-22T18:00:00Z"  # 19:00 London (BST) opt-in deadline
 # Display names for cell-eval metric keys (full key kept in title/tooltip).
 METRIC_LABELS: dict[str, str] = {
     "DESigGenesRecall": "DE gene recall",
+    "de_sig_genes_recall": "DE gene recall",
     "pearson_delta": "Pearson Δ",
     "mse": "MSE",
     "mae": "MAE",
@@ -179,7 +180,7 @@ def _run_card_delta(run: RunSummary, prev: RunSummary | None) -> str:
     curr_m = run.facts.get("headline_metrics") or {}
     prev_m = prev.facts.get("headline_metrics") or {}
     for key, val in curr_m.items():
-        if key not in prev_m:
+        if key not in prev_m or val is None or prev_m[key] is None:
             continue
         delta = float(val) - float(prev_m[key])
         sign = "+" if delta >= 0 else ""
@@ -306,8 +307,9 @@ def _home_proof_pill(facts: dict, meta: dict | None = None) -> str:
         parts.append(badge)
     if warns:
         parts.append(f"{warns} audit warning{'s' if warns != 1 else ''}")
-    if metrics:
-        key, val = next(iter(metrics.items()))
+    defined = [(k, v) for k, v in metrics.items() if v is not None]
+    if defined:
+        key, val = defined[0]
         parts.append(f"{_metric_label(key)} {val}")
     if not parts:
         return ""
@@ -566,7 +568,11 @@ def _metrics_line_from_facts(facts: dict) -> str:
     for key, val in list(metrics.items())[:2]:
         label = _metric_label(key)
         ceil = ceilings.get(key)
-        if ceil is not None and float(ceil) > 0:
+        if val is None:
+            # cell-eval reports NaN for mathematically undefined metrics (e.g.
+            # pearson_delta of a constant prediction) — we serialized it null.
+            parts.append(f"{label} undefined")
+        elif ceil is not None and float(ceil) > 0:
             pct = int(round(100 * float(val) / float(ceil)))
             parts.append(f"{label} {pct}% ceiling")
         else:
@@ -847,7 +853,7 @@ def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../")
         )
 
         metrics = facts.get("headline_metrics") or {}
-        recall = metrics.get("DESigGenesRecall")
+        recall = metrics.get("DESigGenesRecall", metrics.get("de_sig_genes_recall"))
         recall_str = f"{float(recall):.3f}" if recall is not None else "—"
 
         pearson = metrics.get("pearson_delta")
@@ -976,7 +982,10 @@ def render_run_detail(
         )
     )
 
-    agent_trace_html = render_template("components/agent_trace.html")
+    agent_trace_tasks = _build_agent_trace(
+        run.path, facts, metrics_names, literature, entity_summary, narrative
+    )
+    agent_trace_html = render_template("components/agent_trace.html", tasks=agent_trace_tasks)
     trust_body = (
         agent_trace_html
         + _verification_section(run.path, run.run_id, embedded=True)
@@ -1162,9 +1171,10 @@ def _vessel_data(facts: dict) -> dict:
     metric_items = list(metrics.items())[:6]  # max 6 organelles
     for name, value in metric_items:
         ceiling_val = ceiling.get(name)
+        value_str = f"{value:.2f}" if isinstance(value, (int, float)) else "undefined"
         organelle_metrics.append(
             {
-                "label": f"{name}: {value:.2f}",
+                "label": f"{name}: {value_str}",
                 "ceiling": f"/ {ceiling_val:.2f}" if isinstance(ceiling_val, (int, float)) else "",
                 "target": "audit",  # scroll to the audit panel
             }
@@ -1352,6 +1362,251 @@ def _evidence_hint(literature: list[dict], entity_summary: dict) -> str:
     return "Literature & entity enrichment"
 
 
+def _build_agent_trace(
+    run_path: Any,
+    facts: dict,
+    metrics_names: list[str],
+    literature: list[dict],
+    entity_summary: dict,
+    narrative: str | None,
+) -> list[dict[str, str]]:
+    """Assemble the agent execution trace from real run artifacts.
+
+    Every value is derived from committed files — metrics CSVs, audit
+    flags.json, literature/*.json, verification/*.json, narrative/report.md,
+    and the pipeline_status.json degradation ledger. No hardcoded numbers or
+    timings. If an artifact is missing, that step shows as pending.
+
+    The ledger is the source of truth for *what happened*. If a tool was
+    attempted but degraded (API down, key missing, partial failure), the
+    ledger records status="fallback"/"skipped"/"failed" with a detail string.
+    If no ledger entry exists, the tool was never run.
+
+    Returns a list of task dicts with keys: tool, detail, status, timing.
+    """
+    from pathlib import Path
+
+    run_dir = Path(run_path)
+    ledger = data_mod.load_pipeline_status(run_dir)
+    ledger_steps = ledger.get("steps") if isinstance(ledger, dict) else None
+    ledger_steps = ledger_steps if isinstance(ledger_steps, dict) else {}
+    tasks: list[dict[str, str]] = []
+
+    def ledger_entry(step: str) -> dict[str, str] | None:
+        """Return the ledger entry for a step, or None if not recorded."""
+        entry = ledger_steps.get(step)
+        if not isinstance(entry, dict):
+            return None
+        status = str(entry.get("status") or "")
+        detail = str(entry.get("detail") or "")
+        if not status or not detail:
+            return None
+        return {"tool": "", "detail": detail, "status": status, "timing": ""}
+
+    # 1. cell-eval scoring — metric count + ceiling from committed CSVs
+    #    (no ledger entry — this runs in the science venv, not tools/)
+    n_metrics = len(metrics_names)
+    ceiling_count = len(facts.get("ceiling_headroom") or {})
+    data_status = facts.get("data_status") or "real"
+    if n_metrics:
+        metric_word = "metric" if n_metrics == 1 else "metrics"
+        detail = f"Evaluated {n_metrics} cell-eval {metric_word}"
+        if ceiling_count:
+            detail += f" vs {ceiling_count} ceiling bound{'s' if ceiling_count != 1 else ''}"
+        if data_status != "real":
+            detail += f" · data_status={data_status}"
+        tasks.append(
+            {
+                "tool": "cell_eval.score_perturbations()",
+                "detail": detail + ".",
+                "status": "done",
+                "timing": "",
+            }
+        )
+    else:
+        tasks.append(
+            {
+                "tool": "cell_eval.score_perturbations()",
+                "detail": "No metrics CSVs found — run cell-eval and commit results.",
+                "status": "pending",
+                "timing": "",
+            }
+        )
+
+    # 2. biological audit — actual rule count from the audit package + flag count
+    #    (no ledger entry — this runs via `kytos.audit`, not tools/)
+    flags = facts.get("audit_flags") or []
+    n_flags = len(flags)
+    try:
+        from kytos.audit.rules import ALL_RULES
+
+        n_rules = len(ALL_RULES)
+    except Exception:
+        n_rules = 0
+    flag_rule_names = sorted({f.get("rule", "?") for f in flags})
+    rules_fired = ", ".join(flag_rule_names) if flag_rule_names else "none fired"
+    tasks.append(
+        {
+            "tool": "kytos.audit.evaluate_rules()",
+            "detail": (
+                f"Ran {n_rules} deterministic rule{'s' if n_rules != 1 else ''} · "
+                f"{n_flags} flag{'s' if n_flags != 1 else ''} raised ({rules_fired})."
+            ),
+            "status": "done",
+            "timing": "",
+        }
+    )
+
+    # 3. literature enrichment — prefer ledger; fall back to artifact count
+    entry = ledger_entry("literature")
+    if entry:
+        entry["tool"] = "tavily.search_literature()"
+        tasks.append(entry)
+    else:
+        n_lit = len(literature)
+        if n_lit:
+            gene_word = "gene" if n_lit == 1 else "genes"
+            tasks.append(
+                {
+                    "tool": "tavily.search_literature()",
+                    "detail": (
+                        f"Retrieved evidence for {n_lit} flagged {gene_word} "
+                        "across PubMed & web sources."
+                    ),
+                    "status": "done",
+                    "timing": "",
+                }
+            )
+        else:
+            tasks.append(
+                {
+                    "tool": "tavily.search_literature()",
+                    "detail": (
+                        "Literature enrichment not yet run — execute tools/enrich_literature.py."
+                    ),
+                    "status": "pending",
+                    "timing": "",
+                }
+            )
+
+    # 4. biomedical NER — prefer ledger; fall back to entity_summary
+    entry = ledger_entry("ner")
+    if entry:
+        entry["tool"] = "pioneer.ner_extract_entities()"
+        tasks.append(entry)
+    else:
+        n_entities = entity_summary.get("total_entities") or 0
+        n_entity_genes = entity_summary.get("gene_count") or 0
+        model_label = entity_summary.get("model_label") or "Pioneer"
+        if n_entities:
+            gene_word = "gene" if n_entity_genes == 1 else "genes"
+            tasks.append(
+                {
+                    "tool": "pioneer.ner_extract_entities()",
+                    "detail": (
+                        f"Extracted {n_entities} biomedical entities across "
+                        f"{n_entity_genes} {gene_word} ({model_label})."
+                    ),
+                    "status": "done",
+                    "timing": "",
+                }
+            )
+        else:
+            tasks.append(
+                {
+                    "tool": "pioneer.ner_extract_entities()",
+                    "detail": "NER extraction not yet run — execute tools/pioneer_ner.py.",
+                    "status": "pending",
+                    "timing": "",
+                }
+            )
+
+    # 5. narrative synthesis — prefer ledger; fall back to raw report.md
+    entry = ledger_entry("narrative")
+    if entry:
+        entry["tool"] = "narrative.synthesize_digest()"
+        tasks.append(entry)
+    else:
+        narrative_path = run_dir / "narrative" / "report.md"
+        if narrative and narrative_path.is_file():
+            raw = narrative_path.read_text(encoding="utf-8")
+            first_line = raw.splitlines()[0] if raw else ""
+            provider = "fallback"
+            model = "deterministic"
+            m = re.search(r"provider=(\w+)", first_line)
+            if m:
+                provider = m.group(1)
+            m = re.search(r"model=([^\s·]+)", first_line)
+            if m:
+                model = m.group(1)
+            tasks.append(
+                {
+                    "tool": "narrative.synthesize_digest()",
+                    "detail": (
+                        f"Generated run digest via {provider} ({model}) "
+                        "· grounded by check_narrative.py."
+                    ),
+                    "status": "done",
+                    "timing": "",
+                }
+            )
+        else:
+            tasks.append(
+                {
+                    "tool": "narrative.synthesize_digest()",
+                    "detail": "Narrative not yet generated — execute tools/render_narrative.py.",
+                    "status": "pending",
+                    "timing": "",
+                }
+            )
+
+    # 6. verification — planted-signal, holo audit, narrative check
+    #    Holo audit has its own ledger entry; planted-signal and
+    #    narrative-check are deterministic local scripts.
+    planted = data_mod.load_planted_signal(run_dir)
+    holo = data_mod.load_holo_audit(run_dir)
+    narrative_check = data_mod.load_narrative_check(run_dir)
+
+    verify_parts: list[str] = []
+    if planted:
+        verify_parts.append(f"planted-signal {planted.get('summary', '—')}")
+    if holo:
+        verify_parts.append(f"holo-agent {holo.get('summary', '—')}")
+    if narrative_check:
+        verify_parts.append(f"narrative-check {narrative_check.get('summary', '—')}")
+
+    if verify_parts:
+        detail = "Passed: " + " · ".join(verify_parts) + "."
+        tasks.append(
+            {
+                "tool": "verification.self_audit()",
+                "detail": detail,
+                "status": "done",
+                "timing": "",
+            }
+        )
+    else:
+        holo_ledger = ledger_entry("holo_audit")
+        if holo_ledger:
+            # Verification was attempted but holo audit degraded — surface that
+            holo_ledger["tool"] = "verification.self_audit()"
+            tasks.append(holo_ledger)
+        else:
+            tasks.append(
+                {
+                    "tool": "verification.self_audit()",
+                    "detail": (
+                        "Verification artifacts not yet committed — run "
+                        "planted_signal.py, holo_audit.py, check_narrative.py."
+                    ),
+                    "status": "pending",
+                    "timing": "",
+                }
+            )
+
+    return tasks
+
+
 def _extract_volcano_data(run_path: Any, facts: dict) -> str:
     """Extract differential expression coordinates for the interactive Volcano plot."""
     from pathlib import Path
@@ -1467,6 +1722,8 @@ def _run_header_media(visual: dict, facts: dict) -> str:
         ceilings = facts.get("ceiling_headroom") or {}
         score = "score pending"
         for key, value in list(metrics.items())[:1]:
+            if value is None:
+                continue  # undefined metric — leave score pending
             ceiling = ceilings.get(key)
             score = (
                 f"{round(100 * float(value) / float(ceiling))}%"

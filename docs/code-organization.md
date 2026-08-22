@@ -49,24 +49,35 @@ kytos/
 │
 ├── src/kytos/             # the backend — one importable package
 │   ├── data/            # corpus loaders + the gene-space alignment layer
-│   ├── features/        # context conditioning (basal-derived features)
-│   ├── models/          # Layer A (gene-level transfer) + Layer B (sampler)
+│   ├── features/        # context conditioning (basal-derived features: mean, var, rank, sparsity)
+│   ├── models/          # Layer A (gene-level transfer) + Layer B (single-cell sampler)
 │   ├── eval/            # cell-eval wrappers, facts.json assembly, metrics
-│   ├── audit/           # biological sanity layer (lemma-derived)
+│   ├── audit/           # biological sanity layer (deterministic rules)
 │   └── serve/           # (deferred) thin API — elcaro pattern, post-challenge
 │
-├── frontend/             # Observatory — static site from facts JSON + visuals
+├── frontend/             # Observatory — static site generator & design system
 │   ├── build.py          # static generator → dist/
+│   ├── observatory/      # Python engine, data loaders, Plotly charts, Jinja renderer
+│   │   ├── templates.py  # Jinja2 environment config
+│   │   └── templates/    # base.html, page layouts, component partials (matrix, journey, disclosure, agent_trace)
+│   ├── static/           # CSS (glassmorphism), site.js, vessel3d.js (Three.js WebGL)
 │   └── dist/             # committed or CI-built deploy artifact
 │
-├── tools/                # dev + enrichment tooling
-│   ├── scan_secrets.py
+├── tools/                # dev + enrichment tooling (16 Python scripts + 1 shell)
+│   ├── scan_secrets.py   # pre-commit secrets scanner (~120 lines, pattern-based)
 │   ├── render_narrative.py   # OpenAI (prod) or Venice (dev): facts → narrative/report.md
+│   ├── check_narrative.py    # deterministic: digest grounding check → verification/
 │   ├── enrich_literature.py  # Tavily: audit flags → literature/
+│   ├── pioneer_ner.py        # Pioneer GLiNER2 biomedical entity extraction (LoRA fine-tuned)
+│   ├── enrich_newsroom.py    # Tavily: audit flags → newsroom/research.json
 │   ├── render_visuals.py     # fal: facts + metrics → visual/hero, share-card
 │   ├── render_briefing.py    # fal veed/fabric-1.0: image + audio → visual/briefing.mp4
+│   ├── render_anthem.py      # ElevenLabs Music: facts.json → sung sign-off audio
+│   ├── holo_audit.py         # Holo VLM: Playwright screenshot → render verification
+│   ├── planted_signal.py     # Planted-signal self-test: planted failures → audit rules
+│   ├── prep_vcc2025_validation.py  # VCC 2025 validation data preparation
+│   ├── build_audit_context.py      # Build audit context from prediction h5ad
 │   ├── run_enrichment.sh     # one-shot: audit → facts → all enrichers → refresh
-│   ├── enrich_pioneer.py     # (experimental) Pioneer fine-tuned narrative — side challenge
 │
 │   (partner keys: `.env.example` → `.env` at repo root — gitignored;
 │    local narration: Venice — see docs/venice-dev.md)
@@ -122,9 +133,9 @@ from committed artifacts only; enrichment runs at build time and commits outputs
 | Page | Layout |
 |---|---|
 | Home | Full-bleed 3D vessel fills viewport; headline + lede + CTA float over it with glass scrim; data readout strip; scroll hint |
-| Runs | Card grid — severity dot + fill % badge + headline + metrics |
-| Run detail | Full-bleed 3D vessel hero (min-height 100vh) with title + metric summary + data strip overlay; evidence panels flow in centered 760px column with scroll-reveal |
-| Critique | Links to GitHub Discussions; pre-registered hypotheses per run |
+| About | VCC stats, substantiation evidence strip, comparison with adjacent projects |
+| Runs | Comparison matrix (cross-experiment scorecard) + card grid — severity dot + fill % badge + headline + metrics |
+| Run detail | Full-bleed 3D vessel hero (min-height 100vh) with title + metric summary + data strip overlay; evidence panels flow in centered 760px column with scroll-reveal; interactive volcano plot |
 
 ### Stack
 
@@ -148,15 +159,15 @@ hero/share assets per run.
 frontend/
 ├── build.py                # static generator → dist/
 ├── observatory/
-│   ├── render.py           # HTML rendering — home, runs index, run detail
+│   ├── render.py           # HTML rendering — home, about, runs index, run detail
 │   ├── data.py             # loads facts.json, metrics, narrative, literature, NER
 │   ├── charts.py           # Plotly bar chart (metrics vs ceiling)
 │   ├── meta.py             # <head> tags, SEO, social, import map for Three.js
 │   └── runs.py             # RunSummary dataclass, run discovery
 ├── static/
-│   ├── vessel3d.js         # Three.js κύτος vessel — 3D scene (527 lines)
+│   ├── vessel3d.js         # Three.js κύτος vessel — 3D scene (1162 lines)
 │   ├── site.js             # Plotly init, VCC rail, copy buttons, scroll reveal, SVG fallback
-│   ├── style.css           # full design system (1300+ lines)
+│   ├── style.css           # full design system (4500 lines)
 │   ├── favicon.svg          # κύτος vessel icon
 │   ├── og-image.png         # social share image
 │   ├── site.webmanifest     # PWA manifest
@@ -174,7 +185,7 @@ frontend/
 | **fal** | `tools/render_visuals.py` → `visual/hero.png`, `share-card.png` | Gen media for engagement; not metric source |
 | **fal + VEED** | `tools/render_briefing.py` → `visual/briefing.mp4` via `veed/fabric-1.0` | Image + audio → talking video; core demo moment |
 | **Three.js** | `frontend/static/vessel3d.js` — 3D vessel instrument | Renders from `facts.json` only; SVG fallback if WebGL unavailable |
-| **H (Computer-use Agents)** | `tools/holo_audit.py` — independent render verification | Agent (`h/web-surfer-flash`) navigates the deployed Observatory in a cloud browser, returns schema-validated answer; diffs vs `facts.json`; VLM screenshot fallback; degrades to skip without `HAI_API_KEY` |
+| **Holo VLM** | `tools/holo_audit.py` — independent render verification | Playwright screenshots + VLM diff vs `facts.json`; degrades to skip without `HAI_API_KEY` |
 
 Optional: Pioneer (critique classification) — post-Milestone 0.
 

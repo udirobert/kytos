@@ -42,11 +42,11 @@ jobs:
         run: |
           python -m venv .venv
           .venv/bin/pip install --quiet --upgrade pip
-          .venv/bin/pip install --quiet pytest openai tavily-python fal-client playwright certifi
+          .venv/bin/pip install --quiet pytest numpy openai tavily-python fal-client playwright certifi
           .venv/bin/playwright install --with-deps chromium || true
 
-      - name: Test gate (stdlib suite; heavy science env stays local)
-        run: .venv/bin/python -m pytest tests/ -q --ignore=tests/test_harness.py
+      - name: Test gate (full suite; heavy science env stays local)
+        run: PYTHONPATH=src .venv/bin/python -m pytest tests/ -q
 
       - name: Enrich every experiment run
         env:

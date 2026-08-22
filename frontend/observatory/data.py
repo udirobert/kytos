@@ -23,8 +23,8 @@ def load_metrics(metrics_dir: Path) -> tuple[list[str], list[float], list[float]
     return names, scores, ceilings
 
 
-def _metric_map(path: Path, value_col: str) -> dict[str, float]:
-    out: dict[str, float] = {}
+def _metric_map(path: Path, value_col: str) -> dict[str, float | None]:
+    out: dict[str, float | None] = {}
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         if reader.fieldnames is None:
@@ -32,8 +32,11 @@ def _metric_map(path: Path, value_col: str) -> dict[str, float]:
         key = reader.fieldnames[0]
         for row in reader:
             name = row[key].strip()
-            if name:
-                out[name] = float(row[value_col])
+            if not name:
+                continue
+            raw = (row[value_col] or "").strip()
+            # Empty cell = undefined metric (e.g. pearson of constant prediction)
+            out[name] = float(raw) if raw else None
     return out
 
 
@@ -185,6 +188,23 @@ def load_newsroom_research(run_dir: Path) -> list[dict[str, Any]]:
         return []
     results = payload.get("results") if isinstance(payload, dict) else None
     return results if isinstance(results, list) else []
+
+
+def load_pipeline_status(run_dir: Path) -> dict[str, Any]:
+    """Load the pipeline_status.json degradation ledger.
+
+    Each enrichment tool records what it attempted and what happened,
+    so the agent trace can distinguish "never attempted" from "attempted
+    but degraded." Returns an empty dict if no ledger exists.
+    """
+    path = run_dir / "pipeline_status.json"
+    if not path.is_file():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def markdown_to_html(text: str) -> str:

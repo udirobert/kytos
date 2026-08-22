@@ -93,7 +93,7 @@ python tools/render_briefing.py    --run experiments/k001-mean-shift-baseline
 | Deliverable | Paths |
 |---|---|
 | Static generator | `frontend/build.py` |
-| Templates + assets | `frontend/templates/`, `frontend/static/` |
+| Templates + assets | `frontend/observatory/templates/`, `frontend/static/` |
 | Run detail page (P0) | stage layout: strip + center + evidence rail |
 | Plotly metrics charts | from `metrics/*.csv` only |
 | Thin Home | mission blurb + link to k001 + VCC timeline |
@@ -177,7 +177,7 @@ Observatory maintenance stays with **C**; **A** feeds new runs into `experiments
 |---|---|
 | **A** | ✅ core + k001 seed committed; 🏃 **live enrichment run in progress** — `tools/run_enrichment.sh` one-shot pipeline, `env.example`; venv unblocked (Python 3.12 + partner clients; full `uv sync` blocked on torch/3.14 wheel) |
 | **B** | ✅ enrichment tools + `tools/README.md` + `obs` extra + `test_enrich.py`; ✅ deploy: Netlify config (`netlify.toml`), site verified desktop + mobile (Playwright, zero console errors), briefing autoplay — connect repo in Netlify dashboard |
-| **C** | ✅ `frontend/build.py` + `frontend/observatory/` + `frontend/static/` + `netlify.toml`; 🧪 `tools/enrich_pioneer.py` (Pioneer side challenge) |
+| **C** | ✅ `frontend/build.py` + `frontend/observatory/` + `frontend/static/` + `netlify.toml`; 🧪 `tools/pioneer_ner.py` (Pioneer side challenge) |
 | **Shared** | ✅ ruff/format/secrets green; pre-commit passes; harness e2e tests added (`tests/test_harness.py` — 21 tests total) |
 
 *Integration checklist: k001 folder complete → enrichment committed → `dist/` builds offline → deploy → demo script in [`observatory.md §7`](observatory.md#7-demo-script-2-minutes).*

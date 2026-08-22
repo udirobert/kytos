@@ -61,20 +61,24 @@ because all six share the core above.
 Map knocked gene *k* → gene-wise response field, in a **learned gene-embedding
 space**, conditioned on a **context encoding derived only from the target
 basal cells**. Context features (cheap, high signal at first):
-- per-gene mean / quantile expression and rank in the target,
+- per-gene mean / quantile expression and rank in the target (`src/kytos/features/basal.py`),
 - gene–gene **co-expression / covariation structure of the target baseline**
   (a strong prior for how a knockdown propagates across genes in that context).
 
-Purpose: **transfer the effect field between cell types**. This is the
-scientifically central, auditable piece. "How much does basal-conditioning alone
-buy" (NOTES open question 3) is the cheapest first experiment and steers
-everything downstream.
+**Implemented in `src/kytos/models/layer_a.py`:**
+- `BaseLayerA`: Abstract interface `predict_gene_deltas(basal_context, target_genes)`.
+- `MeanShiftTransfer`: Unconditioned empirical cross-cell-type transfer baseline.
+- `ContextConditionedTransfer`: Basal mean/variance/rank conditioned transfer with damping.
 
 ### Layer B — conditional cell sample generator
 Given target basal cells and Layer A's gene-delta field, **draw synthetic
 post-perturbation cells** per gene and for the control. This is the
 flow-matching / diffusion piece; it satisfies the single-cell and DE-gated
 metrics rather than a point estimate.
+
+**Implemented in `src/kytos/models/layer_b.py`:**
+- `BaseLayerB`: Abstract interface `sample_cells(X_basal, delta, n_samples)`.
+- `AdditiveTransportSampler`: Vectorized non-negative transport sampler with biological dispersion preservation.
 
 **Two formulations, one decision**
 - **Layer A:** favor an in-context-learning / gene-projection style regression
@@ -150,7 +154,6 @@ the inference path. Problem, evidence, and wedge:
 | Literature | Evidence sidebar for audit-flagged genes | Tavily (famile; degrade empty) |
 | Stills | Hero imagery, share cards | **fal** (image gen) |
 | Video briefings | Run explainers from committed artifacts | **fal** [`veed/fabric-1.0`](https://fal.ai/models/veed/fabric-1.0) (VEED Fabric) |
-| Critique | Pre-registered hypotheses, Discussions per flag | GitHub |
 
 **Milestone 0 (2026-08-22):** ship static Observatory + k001 run page as the
 {Tech: Europe} × VEED Hackathon entry — initial milestone toward Nov 5, not a
@@ -177,7 +180,7 @@ WebGL is unavailable. 36 tests green, ruff clean, Netlify auto-deploys on push.
 | **Late Oct → Nov 5** | test set (Oct 22); audit → ensembled final → capped submissions |
 
 **Status (2026-08-22, hackathon day):** Milestone 0 landed and deployed —
-facts assembler, audit rules, k001 seed, four enrichment tools
+facts assembler, audit rules, k001 seed, sixteen enrichment tools
 (degrade-verified), frontend (`frontend/build.py` → `dist/`, Playwright-verified
 desktop + mobile), deploy via Netlify (`netlify.toml`). Live enrichment run in
 progress; harness e2e tests added.

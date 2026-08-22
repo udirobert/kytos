@@ -7,55 +7,26 @@
     <div class="agent-top-copy">
       <div class="agent-name-row">
         <span class="agent-name">Dr. Kytos Biological Observer</span>
-        <span class="agent-status-pill">Autonomous Investigation Trace</span>
+        <span class="agent-status-pill">Pipeline Execution Trace</span>
       </div>
-      <p class="agent-summary-sub">4 pipeline tools executed · deterministic self-audit &amp; literature enrichment</p>
+      <p class="agent-summary-sub">{{ tasks|length }} pipeline steps · sourced from committed artifacts only</p>
     </div>
   </div>
 
   <div class="agent-task-list">
-    <div class="task-item task-done">
-      <div class="task-bullet">✓</div>
+    {% for task in tasks %}
+    <div class="task-item task-{{ task.status }}">
+      <div class="task-bullet">
+        {% if task.status == "done" %}✓{% elif task.status == "pending" %}○{% else %}⚠{% endif %}
+      </div>
       <div class="task-content">
         <div class="task-head">
-          <span class="task-tool">cell_eval.score_perturbations()</span>
-          <span class="task-timing">1.2s</span>
+          <span class="task-tool">{{ task.tool }}</span>
+          {% if task.timing %}<span class="task-timing">{{ task.timing }}</span>{% endif %}
         </div>
-        <p class="task-detail">Evaluated 6 official challenge metrics vs empirical ceiling headroom.</p>
+        <p class="task-detail">{{ task.detail }}</p>
       </div>
     </div>
-
-    <div class="task-item task-done">
-      <div class="task-bullet">✓</div>
-      <div class="task-content">
-        <div class="task-head">
-          <span class="task-tool">kytos.audit.evaluate_rules()</span>
-          <span class="task-timing">0.3s</span>
-        </div>
-        <p class="task-detail">Audited 12 biological invariants (housekeeping stability, pathway coherence, dosage monotonicity).</p>
-      </div>
-    </div>
-
-    <div class="task-item task-done">
-      <div class="task-bullet">✓</div>
-      <div class="task-content">
-        <div class="task-head">
-          <span class="task-tool">tavily.search_literature()</span>
-          <span class="task-timing">0.4s</span>
-        </div>
-        <p class="task-detail">Autonomous evidence retrieval for flagged genes across PubMed &amp; PMC research papers.</p>
-      </div>
-    </div>
-
-    <div class="task-item task-done">
-      <div class="task-bullet">✓</div>
-      <div class="task-content">
-        <div class="task-head">
-          <span class="task-tool">narrative.synthesize_confession()</span>
-          <span class="task-timing">0.2s</span>
-        </div>
-        <p class="task-detail">Formulated field report digest and rendered broadcast video briefing.</p>
-      </div>
-    </div>
+    {% endfor %}
   </div>
 </div>

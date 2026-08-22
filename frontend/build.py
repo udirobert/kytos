@@ -11,6 +11,8 @@ FRONTEND_ROOT = Path(__file__).resolve().parent
 REPO_ROOT = FRONTEND_ROOT.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+if str(REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from frontend.observatory.render import (  # noqa: E402 - after sys.path bootstrap
     render_about,

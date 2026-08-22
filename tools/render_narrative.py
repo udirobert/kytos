@@ -27,6 +27,7 @@ from _enrich_common import (
     narration_provider,
     notice,
     openai_chat_client,
+    record_pipeline_status,
     resolve_run_dir,
     utcnow,
     warn,
@@ -147,6 +148,12 @@ def main(argv=None) -> int:
             try:
                 text = render_with_openai(facts)
                 notice(f"narrative: LLM digest via venice / {MODEL}")
+                record_pipeline_status(
+                    run_dir,
+                    "narrative",
+                    "done",
+                    f"LLM digest via venice / {MODEL}.",
+                )
             except ImportError:
                 warn("openai client not installed (`uv pip install openai`); using fallback digest")
             except Exception as exc:
@@ -155,6 +162,12 @@ def main(argv=None) -> int:
         try:
             text = render_with_openai(facts)
             notice(f"narrative: LLM digest via openai / {MODEL}")
+            record_pipeline_status(
+                run_dir,
+                "narrative",
+                "done",
+                f"LLM digest via openai / {MODEL}.",
+            )
         except ImportError:
             warn("openai client not installed (`uv pip install openai`); using fallback digest")
         except Exception as exc:
@@ -165,6 +178,12 @@ def main(argv=None) -> int:
             f"{fallback_digest(facts)}"
         )
         notice("narrative: deterministic fallback digest (no API key or call failed)")
+        record_pipeline_status(
+            run_dir,
+            "narrative",
+            "fallback",
+            "Deterministic fallback digest (no API key or LLM call failed).",
+        )
 
     out = run_dir / OUT
     out.parent.mkdir(parents=True, exist_ok=True)

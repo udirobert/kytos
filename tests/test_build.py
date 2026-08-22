@@ -12,6 +12,9 @@ FRONTEND = ROOT / "frontend"
 
 def test_build_produces_run_page(tmp_path: Path) -> None:
     dist = tmp_path / "dist"
+    # NOTE: builds the production experiments/ tree — several assertions pin
+    # k001's enriched artifacts (narrative, briefing video). Adding runs must
+    # not break this contract; only k001-specific contents are asserted.
     result = subprocess.run(
         [sys.executable, str(FRONTEND / "build.py"), "--out", str(dist)],
         cwd=ROOT,
@@ -44,7 +47,8 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "home-data-strip" not in home_html
     assert "home-hero-grid" in home_html
     assert "home-vessel-legend" in home_html
-    assert "run-strip" not in home_html
+    # (run-strip presence depends on run count — the strip renders when ≥2
+    # runs exist; do not pin it either way here)
     assert "DE gene recall" in home_html
 
     assert "VEED Summer Lock-In" in about_html

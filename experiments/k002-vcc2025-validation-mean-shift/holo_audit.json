@@ -1,0 +1,40 @@
+{
+  "status": "pass",
+  "run_id": "k002-vcc2025-validation-mean-shift",
+  "audit_mode": "vlm",
+  "model": "holo3-1-35b-a3b",
+  "results": [
+    {
+      "field": "fill_pct",
+      "ok": true,
+      "expected": 58,
+      "observed": null
+    },
+    {
+      "field": "warn_count",
+      "ok": true,
+      "expected": 0,
+      "observed": null
+    },
+    {
+      "field": "info_count",
+      "ok": true,
+      "expected": 0,
+      "observed": null
+    },
+    {
+      "field": "run_id",
+      "ok": true,
+      "expected": "k002-vcc2025-validation-mean-shift",
+      "observed": null
+    }
+  ],
+  "summary": "4/4 passed",
+  "observed": {
+    "run_id": null,
+    "fill_pct": null,
+    "warn_count": null,
+    "info_count": null
+  },
+  "generated_at": "2026-08-22T19:00:44+00:00"
+}

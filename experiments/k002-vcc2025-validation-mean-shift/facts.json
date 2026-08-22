@@ -1,0 +1,29 @@
+{
+  "run_id": "k002-vcc2025-validation-mean-shift",
+  "created": "2026-08-22",
+  "headline": "First real cell-eval run \u2014 mean-shift floor vs VCC 2025 validation (H1 hESC, 50 targets)",
+  "data_status": "real",
+  "headline_metrics": {
+    "de_sig_genes_recall": 0.0,
+    "pearson_delta": null
+  },
+  "ceiling_headroom": {
+    "de_sig_genes_recall": 0.49358,
+    "pearson_delta": 0.667108
+  },
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Zero-shift floor: DESigGenesRecall lands at or near zero \u2014 a constant prediction has no DE genes to recall",
+    "Mean absolute error will beat replicate-naive intuition but pearson_delta will sit far below the computed ceiling"
+  ],
+  "provenance": {
+    "commit": "86a5b5b0f23c294216ecc0bf2513ed7c10af2eac",
+    "seed": 0,
+    "code_hash": "k002-mean-shift-vcc2025-v0"
+  },
+  "visual": {
+    "hero": "visual/hero.png",
+    "share_card": "visual/share-card.png",
+    "briefing": "visual/briefing.mp4"
+  }
+}

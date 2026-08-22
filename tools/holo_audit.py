@@ -51,6 +51,7 @@ from _enrich_common import (  # noqa: E402 - same tools/ plumbing
     env_key,
     load_facts,
     notice,
+    record_pipeline_status,
     resolve_run_dir,
     utcnow,
     warn,
@@ -603,6 +604,31 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError:
         rel = str(report_path)
     notice(f"holo_audit: report saved to {rel}")
+
+    # Record pipeline status for the agent trace
+    if report["status"] == "pass":
+        mode_label = report.get("audit_mode", "agent")
+        record_pipeline_status(
+            run_dir,
+            "holo_audit",
+            "done",
+            f"Independent render verification passed ({mode_label} mode) — "
+            f"{report.get('summary', '?')}.",
+        )
+    elif report["status"] == "skipped":
+        record_pipeline_status(
+            run_dir,
+            "holo_audit",
+            "skipped",
+            f"Holo audit skipped: {report.get('reason', 'unknown')}.",
+        )
+    elif report["status"] == "fail":
+        record_pipeline_status(
+            run_dir,
+            "holo_audit",
+            "failed",
+            f"Render verification FAILED: {report.get('summary', '?')}.",
+        )
 
     # Exit 0 on skip or pass, 1 on fail
     if report["status"] == "fail":

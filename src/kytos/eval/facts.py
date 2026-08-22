@@ -10,14 +10,29 @@ from typing import Any
 from kytos.eval.metrics_io import load_agg_metrics, load_ceiling_metrics
 from kytos.eval.provenance import provenance_from_run
 
-HEADLINE_METRICS = ("DESigGenesRecall", "pearson_delta")
+# cell-eval renamed the DE recall metric between the 2025-era mock schema and
+# the 0.8.2 release (k002, first real run). Accept both spellings and keep the
+# key the committed CSV actually uses.
+HEADLINE_METRICS: tuple[tuple[str, ...], ...] = (
+    ("de_sig_genes_recall", "DESigGenesRecall"),
+    ("pearson_delta",),
+)
 
 
-def _headline_subset(metrics: dict[str, float], keys: tuple[str, ...]) -> dict[str, float]:
-    missing = [key for key in keys if key not in metrics]
+def _headline_subset(
+    metrics: dict[str, float | None], keys: tuple[tuple[str, ...], ...]
+) -> dict[str, float | None]:
+    missing: list[str] = []
+    out: dict[str, float | None] = {}
+    for aliases in keys:
+        key = next((a for a in aliases if a in metrics), None)
+        if key is None:
+            missing.append("/".join(aliases))
+            continue
+        out[key] = metrics[key]
     if missing:
         raise KeyError(f"missing headline metrics in agg_results.csv: {missing}")
-    return {key: metrics[key] for key in keys}
+    return out
 
 
 def _visual_paths(run_dir: Path) -> dict[str, str]:

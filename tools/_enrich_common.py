@@ -16,7 +16,7 @@ import sys
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import NoReturn
+from typing import Any, NoReturn
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -157,3 +157,49 @@ def download(url: str, dest: Path, timeout: int = 180) -> None:
     req = urllib.request.Request(url, headers={"User-Agent": "kytos-enrich/0.1"})
     with urllib.request.urlopen(req, timeout=timeout) as resp, dest.open("wb") as fh:
         shutil.copyfileobj(resp, fh)
+
+
+# ── Pipeline status ledger ────────────────────────────────────────────────
+# Every enrichment tool records what it attempted and what happened into a
+# shared pipeline_status.json so the agent trace can distinguish "never
+# attempted" from "attempted but degraded."  Holo_audit already writes its
+# own holo_audit.json with status="skipped"; this ledger covers the rest.
+
+_PIPELINE_FILE = "pipeline_status.json"
+
+
+def record_pipeline_status(run_dir: Path, step: str, status: str, detail: str) -> None:
+    """Append/update one step's outcome in the run's pipeline_status.json.
+
+    Args:
+        run_dir:  the experiment run directory.
+        step:     short key, e.g. "narrative", "literature", "ner".
+        status:   "done" | "fallback" | "skipped" | "failed".
+        detail:   one-line human-readable explanation.
+    """
+    path = run_dir / _PIPELINE_FILE
+    ledger: dict[str, Any] = {}
+    if path.is_file():
+        try:
+            ledger = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            ledger = {}
+    steps = ledger.setdefault("steps", {})
+    steps[step] = {
+        "status": status,
+        "detail": detail,
+        "timestamp": utcnow(),
+    }
+    path.write_text(json.dumps(ledger, indent=2) + "\n", encoding="utf-8")
+
+
+def load_pipeline_status(run_dir: Path) -> dict[str, Any]:
+    """Read the pipeline_status.json ledger (empty dict if missing)."""
+    path = run_dir / _PIPELINE_FILE
+    if not path.is_file():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    return payload if isinstance(payload, dict) else {}

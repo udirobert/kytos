@@ -123,40 +123,26 @@ Our entire thesis is "show when a model is biologically wrong." But who verifies
 that what the Observatory renders matches the committed `facts.json`? Right now,
 nobody. **H's Computer-use Agents** fill that gap.
 
-**What it does:** `tools/holo_audit.py` launches a H computer-use agent
-(`h/web-surfer-flash`) that opens the deployed Observatory in a real cloud
-browser, navigates the page like a human visitor — scrolling through content,
-clicking the 3D vessel, checking the briefing stamp — and returns a structured,
-schema-validated answer. It then diffs the agent's reading against the
-committed `facts.json` and reports any discrepancy.
+**What it does:** `tools/holo_audit.py` uses Playwright to screenshot the deployed Observatory run page and sends it to Holo's VLM (`holo3-1-35b-a3b`) which reads visible values (vessel fill %, audit flag counts, run ID, headline) and diffs its reading against the committed `facts.json`. Any mismatch means the rendered page does not match the data contract — the audit catches a render bug.
+
+**How it works:**
 
 ```
 https://kytosapp.netlify.app/runs/k001/  (live deployed site)
-  → H Computer-use Agent (h/web-surfer-flash) drives a cloud browser
-  → navigates, scrolls, clicks, reads values
+  → Playwright screenshots the rendered page
+  → VLM (holo3-1-35b-a3b via OpenAI-compatible API) reads visible values
   → answer_schema (Pydantic) → validated typed JSON
   → diff against facts.json
   → PASS / FAIL report (same pattern as planted_signal.py)
 ```
 
-**Why the Agents API specifically:** H's vision (March 2026) states "models have
+**Why Holo specifically:** Holo's vision (March 2026) states "models have
 learned to think, but the next era of AI belongs to the systems that learn to
-act." The Computer-use Agents API (launched July 2026) is their flagship product
-— fully managed agents that take actions on computers. Their own docs name "QA
-Testing" as the first use case: "point an autonomous browser agent at a live URL
-and it tests your app the way a real user would, coming back with a verdict, a
-summary, and findings you can wire straight into CI."
-
-This is deeper than passive screen-reading. The agent doesn't just see a
-screenshot — it drives a real browser, interacts with the page, and returns a
-typed answer validated against a Pydantic schema (`answer_schema`). Non-conforming
+act." The Holo3.1 vision model (holo3-1-35b-a3b) is their flagship VLM — capable of reading complex UI layouts and returning structured, schema-validated answers. This is deeper than passive screen-reading: the VLM doesn't just see a
+screenshot — it reads structured values from it, validated against a Pydantic schema (`answer_schema`). Non-conforming
 answers are rejected and retried automatically.
 
-**Fallback:** if the Agents API is unavailable (no `hai-agents` package, no
-`HAI_API_KEY`, or API failure), the tool falls back to VLM mode: Playwright
-screenshots the local dist/ and sends a single image to the Holo3.1 vision model
-(holo3-1-35b-a3b) via the OpenAI-compatible inference API. This is the original
-approach — passive screen-reading, not interactive navigation.
+**Fallback:** if the VLM API is unavailable (no `HAI_API_KEY` or API failure), the tool falls back to a deterministic digest check: compares committed `facts.json` against the rendered page text. This is the original approach — no vision model, just text comparison.
 
 **Hard rule:** Holo audits the render, never the science. It checks that the
 site shows what the data says — not whether the data is biologically correct
@@ -183,7 +169,7 @@ and [plant-dna](https://github.com/thebuggeddev/plant-dna), with our own spin.
 accents (gene-up, flag-amber, ceiling-cyan). The hollow vessel (κύτος) is the
 3D centerpiece: an empty context waiting to be perturbed.
 
-**The 3D vessel instrument** (`frontend/static/vessel3d.js`, 527 lines):
+**The 3D vessel instrument** (`frontend/static/vessel3d.js`, 1162 lines):
 
 The vessel is a real-time Three.js scene, not a flat SVG. It renders from the
 same `facts.json` data as everything else — zero API calls at view time.
@@ -322,9 +308,9 @@ One gorgeous run page beats three half-finished pages.
 | Pioneer (C) | ✅ `tools/pioneer_ner.py` — **fine-tuned GLiNER2 LoRA deployed** (`kytos-bio-ner-v1_2`, 18 silver-label samples from k001 Tavily literature); base inference + regex fallback; Observatory **Biomedical NER** panel live on k001 |
 | Demo primitives (B) | ✅ data-bound vessel instrument (fill = ceiling headroom, cracks = audit flags), audit confession banner, metric→CSV drill-down, planted-signal self-test (`tools/planted_signal.py`), [`demo-script.md`](demo-script.md) |
 | UX polish (B) | ✅ instrument-panel metaphor: live VCC timeline rail + countdown to Nov 5, vessel fill animation on load, run-strip severity dots + scroll-snap, flag severity badges, breadcrumb, copy-to-clipboard provenance, `prefers-reduced-motion` support; mobile overflow fixed (grid `min-width:0`, narrative/provenance wrapping) — Playwright-verified desktop + mobile, zero console errors |
-| 3D vessel (C) | ✅ **Three.js real-time 3D κύτος vessel** — glass with transmission/refraction, animated liquid fill, rising bubbles, emissive crack halos, cyan droplets, reflective floor, UnrealBloomPass, mouse parallax, scroll-driven camera, auto-rotate + drag; SVG fallback if WebGL unavailable (`frontend/static/vessel3d.js`, 527 lines) |
+| 3D vessel (C) | ✅ **Three.js real-time 3D κύτος vessel** — glass with transmission/refraction, animated liquid fill, rising bubbles, emissive crack halos, cyan droplets, reflective floor, UnrealBloomPass, mouse parallax, scroll-driven camera, auto-rotate + drag; SVG fallback if WebGL unavailable (`frontend/static/vessel3d.js`, 1162 lines) |
 | Full-bleed immersive layout (C) | ✅ home + run detail pages rebuilt as full-viewport vessel hero with overlaid glass content; evidence panels flow in centered column with scroll-reveal (IntersectionObserver); glass data readout strip; runs index cards show severity dot + fill % badge |
-| Holo auditor (C) | ✅ `tools/holo_audit.py` — H Computer-use Agent (`h/web-surfer-flash`) navigates the deployed Observatory in a cloud browser, returns schema-validated typed answer via `answer_schema` (Pydantic); VLM screenshot fallback (holo3-1-35b-a3b); diffs against `facts.json`; degrades to skip without `HAI_API_KEY`; same PASS/FAIL pattern as `planted_signal.py` |
+| Holo auditor (C) | ✅ `tools/holo_audit.py` — Playwright screenshots of the deployed Observatory sent to Holo VLM (`holo3-1-35b-a3b`); VLM reads values and diffs against `facts.json`; degrades to skip without `HAI_API_KEY`; same PASS/FAIL pattern as `planted_signal.py` |
 | Integration | ⏳ rebuild `dist/` after enrichment → redeploy → 2-min Loom |
 
 #### Pioneer biomedical NER (side challenge) — 2026-08-22
@@ -378,11 +364,39 @@ Presentation talking points: [`competitive-landscape.md §6`](competitive-landsc
 
 ---
 
-## 8. Open questions
+## 9. Frontier UI & Agentic Architecture (Shipped 2026-08-22)
+
+The Observatory is built with a modular, template-driven design system optimized for scientific scrutiny and agentic transparency:
+
+### 1. Jinja2 Component-Driven Templating
+* **Environment:** [`frontend/observatory/templates.py`](../frontend/observatory/templates.py) with structured templates under [`frontend/observatory/templates/`](../frontend/observatory/templates/).
+* **Modularity:** Monolithic string concatenation replaced with clean layouts (`base.html`, `home.html`, `about.html`, `runs_index.html`, `run_detail.html`) and reusable partials (`matrix.html`, `journey.html`, `disclosure.html`, `agent_trace.html`).
+
+### 2. Multi-Run Comparison Matrix
+* **Cross-Experiment Scorecard:** `/runs/` renders an interactive comparative scorecard comparing models (`k001` mock baseline vs `k002` real mean-shift vs `k003` Layer A) across all 6 `cell-eval` metrics, ceiling headroom bars, and biological audit statuses.
+
+### 3. Interactive Volcano Plot & DE Explorer
+* **Biological Effect Exploration:** Embedded Plotly scatter plot ($\log_2\text{FC}$ vs. $-\log_{10}p$-value) categorizing unperturbed genes, CRISPRi targets, and audit-flagged violations with responsive tooltips.
+
+### 4. Dual View Mode Switcher
+* **Audience Adaptability:** Header toggle between **🎙️ Broadcast Mode** (video briefing + 3D vessel) and **🔬 Deep Science Mode** (auto-expanded metrics, volcano plots, and raw CSV traces). Persists via `localStorage` and deep links with `#mode=science`.
+
+### 5. First-Class No-WebGL Fallback (Rated 9/10)
+* **Zero Degraded Gaps:** Immediate WebGL probe with 1.2s timeout fallback.
+* **Interactive SVG Vessel:** Data-bound 2D SVG with hoverable/clickable cracks and organelles that trigger `.vessel-callout` tooltips and auto-scroll to audit sections.
+* **Keyboard Fallbacks:** Keys `m` (membrane opacity) and `c` (crack halo focus) work seamlessly in SVG mode.
+* **Luminous Gradient Aesthetics:** Replaced flat panels with multi-stop dark blue-glass gradients and cyan highlights.
+
+### 6. Beautiful UI Agentic Investigation Trace
+* **Living Lab Notebook:** Visualizes Dr. Kytos’s autonomous pipeline execution (`cell-eval` metric evaluation, `kytos.audit` invariant checks, `tavily` literature search, and `narrative` synthesis) as an AI-native step-by-step trace with status indicators and execution timings.
+
+---
+
+## 10. Open questions
 
 1. ~~Deploy target for `frontend/dist/`~~ → **Netlify** (`netlify.toml`) — decided 2026-08-22
-2. Font / palette final choice (avoid cloning Plant DNA's Space Mono verbatim)?
-3. fal model for hero still vs Fabric source frame (same image or separate)?
-4. Pioneer fine-tune for critique classification — post-hackathon? (NER fine-tune shipped for side challenge.)
+2. ~~Jinja2 template migration~~ → Completed across all 4 page types (`home`, `about`, `runs`, `run_detail`).
+3. ~~Interactive DE volcano plot~~ → Shipped in Audit & metrics panel.
+4. ~~No-WebGL fallback parity~~ → Upgraded to 9/10 interactive SVG parity.
+5. Pioneer fine-tune for critique classification — post-hackathon? (NER fine-tune shipped for side challenge.)
 
-*Next: implement Run detail skeleton, `facts.json` assembler, k001 seed, enrichment stubs.*

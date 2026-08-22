@@ -23,14 +23,19 @@ METRIC_DESCRIPTIONS: dict[str, str] = {
 
 
 def metrics_bar_chart(metrics: list[str], scores: list[float], ceilings: list[float]) -> str:
+    def _fmt(v: float | None) -> str:
+        # None = undefined metric (e.g. pearson of a constant prediction)
+        return f"{v:.4g}" if isinstance(v, (int, float)) else "undefined"
+
     hover_scores = [
-        f"<b>{m}</b><br>Score: {s:.4g}<br><i>{METRIC_DESCRIPTIONS.get(m, '')}</i>"
+        f"<b>{m}</b><br>Score: {_fmt(s)}<br><i>{METRIC_DESCRIPTIONS.get(m, '')}</i>"
         for m, s in zip(metrics, scores)
     ]
     hover_ceilings = [
-        f"<b>{m}</b><br>Ceiling: {c:.4g}<br><i>{METRIC_DESCRIPTIONS.get(m, '')}</i>"
+        f"<b>{m}</b><br>Ceiling: {_fmt(c)}<br><i>{METRIC_DESCRIPTIONS.get(m, '')}</i>"
         for m, c in zip(metrics, ceilings)
     ]
+    numeric = [v for v in (*ceilings, *scores) if isinstance(v, (int, float))]
 
     figure: dict[str, Any] = {
         "data": [
@@ -65,7 +70,7 @@ def metrics_bar_chart(metrics: list[str], scores: list[float], ceilings: list[fl
                 "linecolor": "rgba(148,163,184,0.2)",
             },
             "yaxis": {
-                "range": [0, max([*ceilings, *scores, 0.1]) * 1.15],
+                "range": [0, max([*numeric, 0.1]) * 1.15],
                 "gridcolor": "rgba(148,163,184,0.12)",
                 "linecolor": "rgba(148,163,184,0.2)",
             },

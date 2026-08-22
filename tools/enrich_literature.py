@@ -18,7 +18,15 @@ from __future__ import annotations
 import argparse
 import json
 
-from _enrich_common import env_key, load_facts, notice, resolve_run_dir, utcnow, warn
+from _enrich_common import (
+    env_key,
+    load_facts,
+    notice,
+    record_pipeline_status,
+    resolve_run_dir,
+    utcnow,
+    warn,
+)
 
 MAX_GENES = 10  # spend cap: max Tavily searches per run (covers all flagged genes)
 MAX_RESULTS = 3  # per gene
@@ -74,25 +82,70 @@ def main(argv=None) -> int:
 
     if not genes:
         notice("literature: no audit-flagged genes; nothing to search")
+        record_pipeline_status(
+            run_dir,
+            "literature",
+            "skipped",
+            "No audit-flagged genes to search.",
+        )
         return 0
     api_key = env_key("TAVILY_API_KEY")
     if not api_key:
         notice("literature: skipped (no TAVILY_API_KEY); run degrades empty")
+        record_pipeline_status(
+            run_dir,
+            "literature",
+            "skipped",
+            "TAVILY_API_KEY not set — enrichment not attempted.",
+        )
         return 0
 
+    succeeded = 0
+    failed = 0
     try:
         for gene in genes:
             try:
                 payload = search_gene(gene, api_key)
             except Exception as exc:  # one gene failing must not kill the rest
                 warn(f"Tavily search failed for {gene} ({exc}); continuing")
+                failed += 1
                 continue
             out = run_dir / "literature" / f"{gene}.json"
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(json.dumps(payload, indent=2) + "\n")
             notice(f"literature: cached {out.relative_to(run_dir)}")
+            succeeded += 1
     except ImportError:
         warn("tavily client not installed (`uv sync --extra obs`); run degrades empty")
+        record_pipeline_status(
+            run_dir,
+            "literature",
+            "failed",
+            "tavily-python not installed — no literature retrieved.",
+        )
+        return 0
+
+    if failed and not succeeded:
+        record_pipeline_status(
+            run_dir,
+            "literature",
+            "failed",
+            f"All {failed} gene searches failed (API unavailable or erroring).",
+        )
+    elif failed:
+        record_pipeline_status(
+            run_dir,
+            "literature",
+            "fallback",
+            f"Partial: {succeeded}/{len(genes)} genes retrieved; {failed} failed.",
+        )
+    else:
+        record_pipeline_status(
+            run_dir,
+            "literature",
+            "done",
+            f"Retrieved evidence for {succeeded} flagged gene{'s' if succeeded != 1 else ''}.",
+        )
 
     return 0
 

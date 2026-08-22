@@ -20,6 +20,7 @@ from _enrich_common import (
     env_key,
     load_facts,
     notice,
+    record_pipeline_status,
     resolve_run_dir,
     set_visual_paths,
     warn,
@@ -80,12 +81,24 @@ def main(argv=None) -> int:
 
     if not env_key("FAL_KEY", "FAL_API_KEY"):
         notice("visuals: skipped (no FAL_KEY); run degrades without media")
+        record_pipeline_status(
+            run_dir,
+            "visuals",
+            "skipped",
+            "FAL_KEY not set — no hero or share card generated.",
+        )
         return 0
 
     try:
         _configure_fal_client()
     except ImportError:
         warn("fal_client not installed (`uv sync --extra obs`); run degrades without media")
+        record_pipeline_status(
+            run_dir,
+            "visuals",
+            "skipped",
+            "fal_client not installed — no media generated.",
+        )
         return 0
 
     generated: dict[str, str] = {}
@@ -101,6 +114,19 @@ def main(argv=None) -> int:
 
     if generated:
         set_visual_paths(run_dir, facts, **generated)
+        record_pipeline_status(
+            run_dir,
+            "visuals",
+            "done",
+            f"Generated {len(generated)} visual(s): " + ", ".join(sorted(generated)) + ".",
+        )
+    else:
+        record_pipeline_status(
+            run_dir,
+            "visuals",
+            "failed",
+            "All fal image generations failed — no media saved.",
+        )
     return 0
 
 

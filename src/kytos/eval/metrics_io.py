@@ -6,12 +6,17 @@ import csv
 from pathlib import Path
 
 
-def load_metric_column_csv(path: Path, *, value_column: str) -> dict[str, float]:
-    """Read ``metric,<value_column>`` CSV into a metric-name → float map."""
+def load_metric_column_csv(path: Path, *, value_column: str) -> dict[str, float | None]:
+    """Read ``metric,<value_column>`` CSV into a metric-name → float-or-None map.
+
+    An empty cell means the metric was mathematically undefined for the run
+    (e.g. pearson_delta when the prediction is constant — cell-eval emits
+    NaN). We serialize that as null, not NaN, so facts.json stays valid JSON.
+    """
     if not path.is_file():
         raise FileNotFoundError(path)
 
-    out: dict[str, float] = {}
+    out: dict[str, float | None] = {}
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         if reader.fieldnames is None:
@@ -23,7 +28,8 @@ def load_metric_column_csv(path: Path, *, value_column: str) -> dict[str, float]
             name = row[metric_key].strip()
             if not name:
                 continue
-            out[name] = float(row[value_column])
+            raw = (row[value_column] or "").strip()
+            out[name] = float(raw) if raw else None
     return out
 
 

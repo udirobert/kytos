@@ -1,0 +1,27 @@
+{
+  "run_id": "k002-vcc2025-validation-mean-shift",
+  "source": "data/raw/vcc2025/pred_k002.h5ad",
+  "basis": "prediction: mean over perturbed cells vs control cells (log2 ratio, lognorm space)",
+  "housekeeping_shifts": {
+    "ACTB": 3.095654502879674e-05,
+    "B2M": 5.039003668821633e-05,
+    "PPIA": 7.102708636691046e-05
+  },
+  "pathways": [
+    {
+      "name": "interferon_response",
+      "genes": [
+        "ISG15",
+        "IFIT1",
+        "MX1",
+        "OAS1"
+      ],
+      "gene_shifts": {
+        "ISG15": 5.8128964911862545e-05,
+        "IFIT1": 1.4618451260618274e-05,
+        "MX1": 5.2109802103264645e-05,
+        "OAS1": 1.6510240010658686e-05
+      }
+    }
+  ]
+}

@@ -50,6 +50,7 @@ from _enrich_common import (  # noqa: E402
     env_key,
     load_facts,
     notice,
+    record_pipeline_status,
     resolve_run_dir,
     warn,
 )
@@ -1083,8 +1084,37 @@ def main(argv=None) -> int:
     count = enrich_literature_entities(run_dir, model_id=model_id)
     if count:
         notice(f"pioneer: enriched {count} literature file(s) with biomedical NER")
+        if model_id and model_id != "fallback" and model_id != BASE_MODEL:
+            record_pipeline_status(
+                run_dir,
+                "ner",
+                "done",
+                f"Fine-tuned LoRA ({model_id}) — {count} literature files enriched.",
+            )
+        elif model_id == BASE_MODEL:
+            record_pipeline_status(
+                run_dir,
+                "ner",
+                "fallback",
+                f"Base GLiNER2 ({model_id}) — trained model unavailable, "
+                f"{count} files enriched with base model.",
+            )
+        else:
+            record_pipeline_status(
+                run_dir,
+                "ner",
+                "fallback",
+                f"Regex fallback extractor — {count} files enriched "
+                "(no API key or all model calls failed).",
+            )
     else:
         notice("pioneer: no literature files were enriched (degrades empty)")
+        record_pipeline_status(
+            run_dir,
+            "ner",
+            "failed",
+            "No literature files to enrich — run enrich_literature.py first.",
+        )
 
     return 0
 
