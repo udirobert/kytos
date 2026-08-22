@@ -33,6 +33,7 @@ obs = [
     "fal-client>=0.2",
     "playwright>=1.40",
     "certifi",
+    "hai-agents>=1.0",
 ]
 
 [tool.setuptools.packages.find]

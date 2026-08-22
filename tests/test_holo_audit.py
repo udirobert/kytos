@@ -91,11 +91,11 @@ def test_diff_run_id_loose_match() -> None:
     assert holo_audit._diff(expected, observed) == []
 
 
-def test_holo_client_returns_none_without_key(monkeypatch: pytest.MonkeyPatch) -> None:
-    """No HAI_API_KEY → returns None (degrade, not error)."""
+def test_vlm_client_returns_none_without_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """No HAI_API_KEY → VLM client returns None (degrade, not error)."""
     monkeypatch.delenv("HAI_API_KEY", raising=False)
     monkeypatch.delenv("hai_api_key", raising=False)
-    assert holo_audit._holo_client() is None
+    assert holo_audit._holo_vlm_client() is None
 
 
 def test_run_audit_skips_without_key(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -121,3 +121,79 @@ def test_main_exits_zero_on_skip(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     exit_code = holo_audit.main(["--run", str(tmp_path)])
     assert exit_code == 0
     assert (tmp_path / "holo_audit.json").exists()
+
+
+def test_run_audit_without_url_skips_without_hai(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Without --url, agent mode can't run (cloud browser can't reach localhost)
+    so it falls to VLM mode — which skips without a dist/ or Playwright."""
+    monkeypatch.delenv("HAI_API_KEY", raising=False)
+    monkeypatch.setenv("HAI_API_KEY", "test-key")
+    # Patch out hai_agents so agent mode is unavailable
+    monkeypatch.setitem(__import__("sys").modules, "hai_agents", None)
+
+    facts = SAMPLE_FACTS.copy()
+    (tmp_path / "facts.json").write_text(json.dumps(facts))
+
+    report = holo_audit.run_audit(tmp_path)
+    assert report["status"] == "skipped"
+    assert "reason" in report
+
+
+def test_main_with_vlm_flag_skips_agent(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """--vlm flag forces VLM mode, skipping the Agents API."""
+    monkeypatch.delenv("HAI_API_KEY", raising=False)
+    monkeypatch.setenv("HAI_API_KEY", "test-key")
+
+    facts = SAMPLE_FACTS.copy()
+    (tmp_path / "facts.json").write_text(json.dumps(facts))
+
+    # No dist/ and no --url → VLM mode skips
+    exit_code = holo_audit.main(["--run", str(tmp_path), "--vlm"])
+    assert exit_code == 0
+
+
+def test_agent_prompt_asks_for_four_values() -> None:
+    """The agent prompt must ask for all four audit values."""
+    prompt = holo_audit.AGENT_AUDIT_PROMPT
+    for field in ("run_id", "fill_pct", "warn_count", "info_count"):
+        assert field in prompt
+
+
+def test_agent_prompt_instructs_interaction() -> None:
+    """The agent prompt must instruct the agent to interact with the page —
+    scroll, click, and confirm the page is live — not just read a screenshot.
+    This is what makes it H's 'QA Testing' use case, not passive screen-reading.
+    """
+    prompt = holo_audit.AGENT_AUDIT_PROMPT
+    assert "scroll" in prompt.lower()
+    assert "click" in prompt.lower()
+    assert "interactive" in prompt.lower()
+
+
+def test_audit_schema_returns_pydantic_model() -> None:
+    """The _audit_schema() builder returns a Pydantic BaseModel with the
+    four audit fields, used as answer_schema for the typed-answer API."""
+    model = holo_audit._audit_schema()
+    instance = model(run_id="k001-mean-shift-baseline", fill_pct=38, warn_count=2, info_count=1)
+    assert instance.run_id == "k001-mean-shift-baseline"
+    assert instance.fill_pct == 38
+    assert instance.warn_count == 2
+    assert instance.info_count == 1
+    # All four fields must be optional (nullable) — agent may not find a value
+    empty = model()
+    assert empty.run_id is None
+    assert empty.fill_pct is None
+    assert empty.warn_count is None
+    assert empty.info_count is None
+    # model_dump produces the dict the diff function expects
+    dumped = instance.model_dump()
+    assert dumped["fill_pct"] == 38
+
+
+def test_vlm_prompt_asks_for_four_values() -> None:
+    """The VLM prompt must ask for all four audit values."""
+    prompt = holo_audit.VLM_AUDIT_PROMPT
+    for field in ("run_id", "fill_pct", "warn_count", "info_count"):
+        assert field in prompt

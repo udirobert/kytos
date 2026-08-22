@@ -1,12 +1,40 @@
 {
-  "status": "skipped",
-  "reason": "no HAI_API_KEY",
+  "status": "pass",
   "run_id": "k001-mean-shift-baseline",
-  "expected": {
+  "audit_mode": "agent",
+  "model": "h/web-surfer-flash",
+  "results": [
+    {
+      "field": "fill_pct",
+      "ok": true,
+      "expected": 38,
+      "observed": 38
+    },
+    {
+      "field": "warn_count",
+      "ok": true,
+      "expected": 2,
+      "observed": 2
+    },
+    {
+      "field": "info_count",
+      "ok": true,
+      "expected": 0,
+      "observed": 0
+    },
+    {
+      "field": "run_id",
+      "ok": true,
+      "expected": "k001-mean-shift-baseline",
+      "observed": "k001-mean-shift-baseline"
+    }
+  ],
+  "summary": "4/4 passed",
+  "observed": {
+    "run_id": "k001-mean-shift-baseline",
     "fill_pct": 38,
     "warn_count": 2,
-    "info_count": 0,
-    "run_id": "k001-mean-shift-baseline"
+    "info_count": 0
   },
-  "generated_at": "2026-08-22T13:28:35+00:00"
+  "generated_at": "2026-08-22T13:57:33+00:00"
 }
