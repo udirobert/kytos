@@ -780,18 +780,12 @@
     if (closeBtn) {
       closeBtn.addEventListener("click", dismiss);
     }
-    // Also dismiss on scroll
-    var dismissed = false;
-    window.addEventListener(
-      "scroll",
-      function () {
-        if (!dismissed && !onboard.hidden) {
-          dismissed = true;
-          dismiss();
-        }
-      },
-      { passive: true, once: true },
-    );
+    // Dismiss when clicking outside the tooltip (but not on the vessel itself)
+    document.addEventListener("click", function (e) {
+      if (onboard.hidden) return;
+      if (onboard.contains(e.target)) return;
+      dismiss();
+    }, { passive: true });
   }
 
   // ── SVG Vessel Interactivity (No-WebGL mode) ─────────────────────────────
