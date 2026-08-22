@@ -164,7 +164,9 @@ full-bleed immersive experience — real-time Three.js 3D κύτος vessel (gla
 with transmission/refraction, animated liquid fill, rising bubbles, emissive
 crack halos, floor reflection, UnrealBloomPass) on both home and run detail
 pages, with glassmorphism evidence cards and scroll-reveal. SVG fallback if
-WebGL is unavailable. 36 tests green, ruff clean, Netlify auto-deploys on push.
+WebGL is unavailable. 89 tests green, ruff clean, Netlify auto-deploys on push.
+Home hero uses a 3-phase guided flow (claim → argument → evidence) — each
+phase shows 3 things at a time; selecting one closes the previous.
 
 ---
 

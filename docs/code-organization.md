@@ -157,7 +157,7 @@ hero/share assets per run.
 
 ```
 frontend/
-├── build.py                # static generator → dist/
+├── build.py                # static generator → dist/ (with content-hash cache-busting)
 ├── observatory/
 │   ├── render.py           # HTML rendering — home, about, runs index, run detail
 │   ├── data.py             # loads facts.json, metrics, narrative, literature, NER
@@ -166,7 +166,7 @@ frontend/
 │   └── runs.py             # RunSummary dataclass, run discovery
 ├── static/
 │   ├── vessel3d.js         # Three.js κύτος vessel — 3D scene (1162 lines)
-│   ├── site.js             # Plotly init, VCC rail, copy buttons, scroll reveal, SVG fallback
+│   ├── site.js             # Plotly, VCC rail, copy buttons, scroll reveal, SVG fallback, home 3-phase flow
 │   ├── style.css           # full design system (4500 lines)
 │   ├── favicon.svg          # κύτος vessel icon
 │   ├── og-image.png         # social share image
