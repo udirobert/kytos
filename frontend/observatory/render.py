@@ -30,6 +30,11 @@ def _run_index(run: RunSummary, runs: list[RunSummary]) -> int:
         return len(runs)
 
 
+def _count_span(cls: str, value: Any, suffix: str = "", text: str = "0") -> str:
+    """A data-strip value span that counts up to `value` on load."""
+    return f'<span class="{cls}" data-count-to="{value}" data-suffix="{suffix}">{text}</span>'
+
+
 def _narrative_label(narrative: str | None) -> str:
     """Label the narrative panel from its own provenance comment — never guess."""
     first = (narrative or "").splitlines()[0] if narrative else ""
@@ -143,17 +148,17 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
           <div class="home-data-strip">
             <span class="data-strip-item">
               <span class="data-strip-label">fill</span>
-              <span class="data-strip-value">{vd["fill_pct"]}%</span>
+              {_count_span("data-strip-value", vd["fill_pct"], "%", "0%")}
             </span>
             <span class="data-strip-sep"></span>
             <span class="data-strip-item">
               <span class="data-strip-label">audit</span>
-              <span class="data-strip-value data-strip-warn">{vd["warns"]} warn</span>
+              {_count_span("data-strip-value data-strip-warn", vd["warns"], " warn", "0 warn")}
             </span>
             <span class="data-strip-sep"></span>
             <span class="data-strip-item">
               <span class="data-strip-label">vcc</span>
-              <span class="data-strip-value">78 days left</span>
+              {_count_span("data-strip-value", VCC_DAYS, " days left", "0 days left")}
             </span>
           </div>
           <div class="home-scroll-hint">scroll ↓</div>
@@ -188,6 +193,10 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         </div>
       </div>
       <p class="vcc-countdown">Final submissions in <strong id="vcc-countdown">…</strong></p>
+      <p class="vcc-day">
+        Day <strong id="vcc-day">…</strong> of {VCC_DAYS} · test set in
+        <strong id="vcc-testsets">…</strong>
+      </p>
     </section>
     """
 
@@ -304,7 +313,10 @@ def render_run_detail(
     body = f"""
     {_nav(run.run_id, runs, root_prefix=root_prefix)}
     {_confession_banner(facts, run.run_id)}
-    <nav class="breadcrumb"><a href="{root_prefix}runs/index.html">← All runs</a></nav>
+    <nav class="breadcrumb">
+      <a href="{root_prefix}runs/index.html">← All runs</a>
+      {"<span class='jk-hint'>j/k · switch runs</span>" if len(runs) > 1 else ""}
+    </nav>
     <section class="run-hero">
       {hero_html}
       <div class="run-hero-overlay">
@@ -316,17 +328,17 @@ def render_run_detail(
         <div class="run-hero-strip">
           <span class="data-strip-item">
             <span class="data-strip-label">fill</span>
-            <span class="data-strip-value">{vd["fill_pct"]}%</span>
+            {_count_span("data-strip-value", vd["fill_pct"], "%", "0%")}
           </span>
           <span class="data-strip-sep"></span>
           <span class="data-strip-item">
             <span class="data-strip-label">audit</span>
-            <span class="data-strip-value data-strip-warn">{vd["warns"]} warn</span>
+            {_count_span("data-strip-value data-strip-warn", vd["warns"], " warn", "0 warn")}
           </span>
           <span class="data-strip-sep"></span>
           <span class="data-strip-item">
             <span class="data-strip-label">info</span>
-            <span class="data-strip-value">{vd["infos"]}</span>
+            {_count_span("data-strip-value", vd["infos"])}
           </span>
         </div>
       </div>
@@ -383,10 +395,7 @@ def render_run_detail(
     if headline_m:
         desc_bits.append(" · ".join(f"{k} {headline_m.get(k)}" for k in headline_m))
     run_desc = " ".join(desc_bits)[:300]
-    og_image = None
-    hero_path = visual.get("hero")
-    if hero_path and media_prefix:
-        og_image = f"{media_prefix}{hero_path}"
+    og_image = visual.get("hero")  # run-relative; meta.py resolves it
 
     meta = PageMeta(
         title=run.run_id,
@@ -407,19 +416,23 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
     """
     briefing = visual.get("briefing")
     hero = visual.get("hero")
+    # facts.json visual paths are run-relative and already include the
+    # `visual/` dir (run-protocol schema) — build.py copies the run's visual/
+    # next to the page, so the facts value IS the correct src. Prepending
+    # media_prefix here double-prefixes to visual/visual/... (regression fixed).
     if briefing:
-        src = f"{media_prefix}{briefing}"
-        poster = f"{_h(media_prefix + hero)}" if hero else ""
+        src = f"{_h(briefing)}"
+        poster = f"{_h(hero)}" if hero else ""
         return f"""
         <div class="hero-fullscreen hero-video">
-          <video class="briefing-video" src="{_h(src)}" autoplay muted loop playsinline
+          <video class="briefing-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}"></video>
         </div>
         """
     if hero:
         return f"""
         <div class="hero-fullscreen hero-image-bg">
-          <img src="{_h(media_prefix + hero)}" alt="Run visual" class="hero-image">
+          <img src="{_h(hero)}" alt="Run visual" class="hero-image">
         </div>
         """
     return _vessel_stage(facts, fullscreen=True)

@@ -44,7 +44,7 @@
     });
   }
 
-  // ── VCC timeline rail: live needle + countdown to Nov 5 ───────────────────
+  // ── VCC timeline rail: live needle + countdowns (submissions + test set) ──
   function initVccRail() {
     var track = document.querySelector(".vcc-track");
     if (!track) {
@@ -52,16 +52,30 @@
     }
     var start = new Date("2026-08-20T00:00:00Z").getTime();
     var end = new Date("2026-11-05T23:59:59Z").getTime();
+    var testSet = new Date("2026-10-22T00:00:00Z").getTime();
     var markers = Array.prototype.slice.call(track.querySelectorAll(".vcc-marker"));
     var needle = document.getElementById("vcc-needle");
     var fill = document.getElementById("vcc-fill");
     var countdown = document.getElementById("vcc-countdown");
+    var dayEl = document.getElementById("vcc-day");
+    var testEl = document.getElementById("vcc-testsets");
     if (!needle || !fill || !countdown) {
       return;
     }
 
     function pct(date) {
       return Math.min(1, Math.max(0, (date - start) / (end - start)));
+    }
+
+    function fmt(ms) {
+      var d = Math.floor(ms / 86400000);
+      var h = Math.floor((ms % 86400000) / 3600000);
+      var m = Math.floor((ms % 3600000) / 60000);
+      var s = Math.floor((ms % 60000) / 1000);
+      var pad = function (n) {
+        return String(n).padStart(2, "0");
+      };
+      return d + "d " + pad(h) + ":" + pad(m) + ":" + pad(s);
     }
 
     function tick() {
@@ -76,19 +90,78 @@
       needle.style.left = (progress * 100).toFixed(2) + "%";
       fill.style.width = (progress * 100).toFixed(2) + "%";
 
-      var remaining = Math.max(0, end - now);
-      var days = Math.floor(remaining / 86400000);
-      var hours = Math.floor((remaining % 86400000) / 3600000);
-      var minutes = Math.floor((remaining % 3600000) / 60000);
-      var seconds = Math.floor((remaining % 60000) / 1000);
-      var pad = function (n) {
-        return String(n).padStart(2, "0");
-      };
-      countdown.textContent = days + "d " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds);
+      countdown.textContent = fmt(Math.max(0, end - now));
+      if (dayEl) {
+        dayEl.textContent = String(Math.floor((now - start) / 86400000) + 1);
+      }
+      if (testEl) {
+        testEl.textContent = fmt(Math.max(0, testSet - now));
+      }
     }
 
     tick();
     setInterval(tick, 1000);
+  }
+
+  // ── Run navigation: j/k between runs + auto-scroll the active pill ───────
+  function initRunNav() {
+    var pills = Array.prototype.slice.call(document.querySelectorAll(".run-strip .run-pill"));
+    if (pills.length < 2) {
+      return;
+    }
+    var active = document.querySelector(".run-strip .run-pill.is-active");
+    if (active && active.scrollIntoView) {
+      active.scrollIntoView({ block: "nearest", inline: "center" });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) {
+        return;
+      }
+      var tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
+        return;
+      }
+      var idx = pills.indexOf(active);
+      var next = null;
+      if (e.key === "j" || e.key === "J") {
+        next = pills[(idx + 1) % pills.length];
+      } else if (e.key === "k" || e.key === "K") {
+        next = pills[(idx - 1 + pills.length) % pills.length];
+      }
+      if (next && next.href) {
+        window.location.href = next.href;
+      }
+    });
+  }
+
+  // ── Count-up: data strip numbers rise on load ────────────────────────────
+  function initCountUp() {
+    var els = document.querySelectorAll("[data-count-to]");
+    if (!els.length || prefersReducedMotion()) {
+      // Reduced motion: jump straight to the real value.
+      els.forEach(function (el) {
+        el.textContent = el.getAttribute("data-count-to") + (el.getAttribute("data-suffix") || "");
+      });
+      return;
+    }
+    els.forEach(function (el) {
+      var target = parseFloat(el.getAttribute("data-count-to")) || 0;
+      var suffix = el.getAttribute("data-suffix") || "";
+      var dur = 750;
+      var t0 = null;
+      function step(ts) {
+        if (!t0) {
+          t0 = ts;
+        }
+        var p = Math.min(1, (ts - t0) / dur);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (p < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    });
   }
 
   // ── Provenance: copy-to-clipboard for the reproduce command ───────────────
@@ -150,6 +223,8 @@
   function onReady() {
     initPlotly();
     initVccRail();
+    initRunNav();
+    initCountUp();
     initCopyButtons();
     initScrollReveal();
     setTimeout(animateVesselFallback, 2000);

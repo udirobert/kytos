@@ -229,6 +229,21 @@ code {
 
 .run-pill.is-active {
   border-color: var(--accent);
+}
+
+.run-pill.is-active .run-pill-dot {
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 4px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 10px 2px currentColor;
+  }
+}
   box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.25), 0 4px 16px rgba(94, 234, 212, 0.06);
 }
 
@@ -722,6 +737,16 @@ code {
 
 .breadcrumb a:hover {
   color: var(--accent);
+}
+
+.jk-hint {
+  margin-left: 1rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  opacity: 0.75;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  padding: 0.1rem 0.5rem;
 }
 
 .confession-banner {
@@ -1314,6 +1339,17 @@ details summary {
   font-variant-numeric: tabular-nums;
 }
 
+.vcc-day {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0.35rem 0 0;
+}
+
+.vcc-day strong {
+  color: var(--ceiling);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ════════════════════════════════════════════════════════════════════════
    RESPONSIVE
    ════════════════════════════════════════════════════════════════════════ */
@@ -1382,6 +1418,10 @@ details summary {
   .run-card,
   .button {
     transition: none;
+  }
+
+  .run-pill.is-active .run-pill-dot {
+    animation: none;
   }
 
   .home-scroll-hint {
