@@ -1,36 +1,24 @@
 {
-  "method": "pioneer",
-  "model_id": "4225fc3e-3839-42fb-9cfb-e41d7c08dfe2",
-  "entity_count": 20,
+  "method": "fallback",
+  "model_id": "fallback",
+  "entity_count": 9,
   "by_label": {
     "gene": [
-      "ISG15",
-      "sgRNA",
-      "DNA"
+      "ISG15"
     ],
     "pathway": [
-      "endogenous pathways"
+      "erk",
+      "autophagy"
     ],
-    "disease": [
-      "ISG15 deficient patients",
-      "tumor biology"
-    ],
-    "protein": [
-      "dCas9 fusion protein"
+    "perturbation_type": [
+      "CRISPRi",
+      "CRISPR",
+      "Cas9",
+      "knockdown",
+      "knockout"
     ],
     "cell_type": [
-      "iPSC cells"
-    ],
-    "biological_process": [
-      "autophagy",
-      "cellular stress",
-      "immune responses",
-      "aging",
-      "protein quality control",
-      "inflammatory outcomes",
-      "tumor biology",
-      "mechanisms",
-      "CRISPRi gene repression"
+      "iPSC"
     ]
   },
   "source_file": "ISG15.json"

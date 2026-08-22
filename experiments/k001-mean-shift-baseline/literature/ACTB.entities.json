@@ -1,29 +1,21 @@
 {
-  "method": "pioneer",
-  "model_id": "4225fc3e-3839-42fb-9cfb-e41d7c08dfe2",
-  "entity_count": 18,
+  "method": "fallback",
+  "model_id": "fallback",
+  "entity_count": 10,
   "by_label": {
-    "disease": [
-      "MOI"
+    "gene": [
+      "MOI",
+      "PS",
+      "PCC",
+      "DE",
+      "CRISPR"
     ],
     "perturbation_type": [
       "CRISPRi",
-      "CRISPR interference"
-    ],
-    "protein": [
       "CRISPR",
-      "CRISPRa"
-    ],
-    "cell_type": [
-      "prokaryotic",
-      "eukaryotic",
-      "bacteria"
-    ],
-    "biological_process": [
-      "CRISPR activation",
-      "gene expression",
-      "gene knockdown",
-      "sequence-specific repression"
+      "Knockdown",
+      "knockdown",
+      "perturbation"
     ]
   },
   "source_file": "ACTB.json"

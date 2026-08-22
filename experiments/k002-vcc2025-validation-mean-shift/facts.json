@@ -24,7 +24,6 @@
   },
   "visual": {
     "hero": "visual/hero.png",
-    "share_card": "visual/share-card.png",
-    "briefing": "visual/briefing.mp4"
+    "share_card": "visual/share-card.png"
   }
 }

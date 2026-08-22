@@ -1,24 +1,27 @@
-<!-- kytos narrative · generated_by=llm · provider=venice · model=stealth-ox-alpha · 2026-08-22T17:02:25+00:00 UTC -->
+<!-- kytos narrative · generated_by=fallback · 2026-08-22T22:02:13+00:00 UTC -->
 
-# Run Digest: k001-mean-shift-baseline
+# k001-mean-shift-baseline — run digest
 
-**Headline:** The basal mean-shift baseline lands far below ceiling on both metrics, confirming that basal co-expression alone carries only a small fraction of cross-context transfer signal.
+> Fallback digest rendered deterministically from `facts.json` (no LLM call). Generated 2026-08-22T22:02:13+00:00 UTC.
 
-## Results
+## Headline
+Basal mean-shift baseline — ceiling headroom probe
 
-The probe reached a DESigGenesRecall of 0.12 against a ceiling headroom of 0.45, and a pearson_delta of 0.08 against a ceiling of 0.31. Both preregistered hypotheses were consistent with the outcome: recall of 0.12 falls under the 20% threshold proposed for basal co-expression explaining cross-context transfer, and the pearson_delta sits well below half of its ceiling value.
+## Metrics
 
-## Audit Flags
+| metric | value | ceiling |
+|---|---|---|
+| DESigGenesRecall | 0.12 | 0.45 |
+| pearson_delta | 0.08 | 0.31 |
 
-Two warnings were raised:
+## Audit flags
 
-- **Housekeeping stability (hk-stability):** The housekeeping genes ACTB and GAPDH shifted up to +2.10 log2FC, exceeding the ±1.0 threshold, with ACTB at the peak. This suggests the basal normalization assumptions underlying the mean-shift baseline may be compromised in this run.
-- **Pathway coherence (interferon_response):** The interferon_response pathway shows mixed directionality among measured genes — 2 up and 2 down across ISG15, IFIT1, MX1, and OAS1 — so pathway-level interpretation should be treated cautiously.
-
-## Caveats
-
-This run is labeled as a probe, not a full submission. The housekeeping shift flag in particular warrants follow-up before drawing strong conclusions from the baseline's low absolute scores.
+- **[warn]** `housekeeping_shift` — ACTB, GAPDH (`hk-stability`)
+- **[warn]** `pathway_coherence` — ISG15, IFIT1, MX1, OAS1 (`pathway-interferon_response`)
 
 ## Provenance
 
-Commit `2fe7bd7f4f0902b454d0f2face73f917e6e065d5`, seed 0, code hash `k001-mean-shift-v0`. Hero, share card, and briefing visuals are available in the run's visual directory.
+- commit: `2fe7bd7f4f0902b454d0f2face73f917e6e065d5`
+- seed: 0
+- code hash: `k001-mean-shift-v0`
+- hypotheses pre-registered: ['Basal co-expression alone explains <20% of cross-context transfer on DESigGenesRecall', 'Mean-shift baseline will sit below 50% of ceiling on pearson_delta']

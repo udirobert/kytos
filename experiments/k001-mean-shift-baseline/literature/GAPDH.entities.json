@@ -1,27 +1,29 @@
 {
-  "method": "pioneer",
-  "model_id": "4225fc3e-3839-42fb-9cfb-e41d7c08dfe2",
-  "entity_count": 19,
+  "method": "fallback",
+  "model_id": "fallback",
+  "entity_count": 14,
   "by_label": {
     "gene": [
-      "sgRNAs",
+      "MCF",
+      "S2",
+      "S1",
+      "MCF7",
+      "PCR",
+      "RT",
       "GAPDH",
-      "target gene",
-      "housekeeping gene",
-      "alternative promoter"
+      "NTC"
+    ],
+    "perturbation_type": [
+      "CRISPRi",
+      "CRISPR",
+      "Cas9",
+      "knockdown"
     ],
     "disease": [
-      "breast cancer"
-    ],
-    "protein": [
-      "dCas9-CRISPRi"
+      "cancer"
     ],
     "cell_type": [
-      "MCF-7",
       "MCF7"
-    ],
-    "biological_process": [
-      "CRISPRi-mediated target gene repression"
     ]
   },
   "source_file": "GAPDH.json"

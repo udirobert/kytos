@@ -1,29 +1,25 @@
 {
-  "method": "pioneer",
-  "model_id": "4225fc3e-3839-42fb-9cfb-e41d7c08dfe2",
-  "entity_count": 21,
+  "method": "fallback",
+  "model_id": "fallback",
+  "entity_count": 12,
   "by_label": {
     "gene": [
-      "OAS1 gene",
+      "LINCS",
+      "L1000",
+      "CMAP",
       "OAS1",
-      "gene",
-      "Gene",
-      "genome"
+      "CRISPR",
+      "ATP"
+    ],
+    "pathway": [
+      "type I interferon"
     ],
     "perturbation_type": [
+      "CRISPR",
+      "Knockout",
+      "Perturbation",
       "perturbation",
-      "Perturbation"
-    ],
-    "drug": [
-      "drug"
-    ],
-    "protein": [
-      "RNase L",
-      "OAS1",
-      "2-5A synthetase"
-    ],
-    "cell_type": [
-      "cytoplasm"
+      "gene perturbation"
     ]
   },
   "source_file": "OAS1.json"

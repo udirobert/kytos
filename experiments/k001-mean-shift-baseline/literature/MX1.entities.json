@@ -1,46 +1,30 @@
 {
-  "method": "pioneer",
-  "model_id": "4225fc3e-3839-42fb-9cfb-e41d7c08dfe2",
-  "entity_count": 31,
+  "method": "fallback",
+  "model_id": "fallback",
+  "entity_count": 13,
   "by_label": {
     "gene": [
-      "endogenous genes",
-      "gene expression",
-      "sgRNA",
-      "genes",
-      "genome"
+      "CRISPR",
+      "UCSF",
+      "UPR",
+      "ER"
     ],
     "pathway": [
       "unfolded protein response",
-      "endogenous pathways"
+      "UPR"
+    ],
+    "perturbation_type": [
+      "CRISPRi",
+      "CRISPR",
+      "Cas9",
+      "knockdown",
+      "perturbation"
     ],
     "disease": [
       "cancer"
     ],
-    "perturbation_type": [
-      "CRISPR interference",
-      "CRISPRi",
-      "sequence-specific repression",
-      "genetic perturbation technique",
-      "CRISPR"
-    ],
-    "protein": [
-      "dCas9 fusion protein",
-      "key proteins"
-    ],
     "cell_type": [
-      "iPSC cells",
-      "eukaryotic cells",
-      "prokaryotic",
-      "impaired cells"
-    ],
-    "biological_process": [
-      "CRISPR activation",
-      "unfolded protein response",
-      "self-destruct",
-      "stress",
-      "protein-production machinery",
-      "gene expression"
+      "iPSC"
     ]
   },
   "source_file": "MX1.json"
