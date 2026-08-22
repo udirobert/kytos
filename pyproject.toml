@@ -31,6 +31,8 @@ obs = [
     "openai>=1.0",
     "tavily-python>=0.3",
     "fal-client>=0.2",
+    "playwright>=1.40",
+    "certifi",
 ]
 
 [tool.setuptools.packages.find]

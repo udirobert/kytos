@@ -40,8 +40,13 @@ fi
 cd "$ROOT/tools"
 "$PY" render_narrative.py --run "../$RUN"
 "$PY" enrich_literature.py --run "../$RUN"
+"$PY" pioneer_ner.py --run "../$RUN"
 "$PY" render_visuals.py --run "../$RUN"
 "$PY" render_briefing.py --run "../$RUN"
+
+cd "$ROOT"
+"$PY" frontend/build.py --out frontend/dist --experiments experiments/ 2>/dev/null || true
+"$PY" tools/holo_audit.py --run "../$RUN" || true
 
 cd "$ROOT"
 "$PY" -m kytos.eval.facts --run "$RUN"
