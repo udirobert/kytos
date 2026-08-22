@@ -105,7 +105,16 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap"
         rel="stylesheet">
   <link rel="stylesheet" href="{root_prefix}static/style.css">
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>"""
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+  <script type="importmap">
+  {{
+    "imports": {{
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    }}
+  }}
+  </script>
+  <script type="module" src="{root_prefix}static/vessel3d.js"></script>"""
 
 
 def render_robots_txt() -> str:

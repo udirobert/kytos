@@ -246,11 +246,55 @@ code {
   overflow: hidden;
 }
 
-.home-vessel {
-  width: min(380px, 50vw);
+.home-vessel-stage {
+  position: relative;
+  width: min(440px, 55vw);
+  height: min(440px, 50vh);
+  margin: 0 auto 0.5rem;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.home-vessel-stage .vessel-label,
+.home-vessel-stage .vessel-legend {
+  position: static;
+  padding: 0 1rem;
+}
+
+.home-vessel-stage .vessel-legend {
+  margin-top: 0.5rem;
+}
+
+/* When 3D is active, hide the SVG fallback inside the container */
+.vessel-3d-container.is-3d .vessel-svg-fallback {
+  display: none;
+}
+
+.vessel-3d-container {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.vessel-3d-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* SVG fallback styling (when WebGL unavailable) */
+.vessel-svg-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.vessel-svg-fallback .vessel-svg,
+.vessel-svg-fallback .home-vessel {
+  width: min(340px, 75%);
   height: auto;
-  margin: 0 auto 1.5rem;
-  filter: drop-shadow(0 0 30px rgba(94, 234, 212, 0.15));
 }
 
 .home-headline {
@@ -528,7 +572,7 @@ code {
   object-fit: cover;
 }
 
-/* ── Vessel instrument ────────────────────────────────────────────────── */
+/* ── Vessel instrument (3D canvas + SVG fallback) ───────────────────────── */
 
 .vessel-instrument {
   position: relative;
@@ -536,13 +580,32 @@ code {
     radial-gradient(circle at 50% 35%, rgba(94, 234, 212, 0.14), transparent 55%),
     radial-gradient(circle at 50% 90%, rgba(103, 232, 249, 0.06), transparent 50%),
     var(--bg-panel);
-  padding: 2rem 1rem 1rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
 }
 
+.vessel-instrument .vessel-3d-container {
+  flex: 1;
+  min-height: 420px;
+}
+
+.vessel-instrument .vessel-label {
+  position: static;
+  text-align: center;
+  padding: 0.5rem 1rem 0;
+}
+
+.vessel-instrument .vessel-legend {
+  position: static;
+  padding: 0.5rem 1rem 1rem;
+  margin: 0;
+}
+
+/* SVG fallback (used inside the 3D container when WebGL is unavailable) */
 .vessel-svg {
   width: min(340px, 75%);
   height: auto;
@@ -583,9 +646,6 @@ code {
 }
 
 .vessel-label {
-  position: absolute;
-  bottom: 4.5rem;
-  width: 100%;
   text-align: center;
   font-size: 0.7rem;
   color: var(--muted);
@@ -594,16 +654,12 @@ code {
 }
 
 .vessel-legend {
-  position: absolute;
-  bottom: 1.2rem;
-  width: 100%;
   display: flex;
   justify-content: center;
   gap: 0.9rem;
   flex-wrap: wrap;
   font-size: 0.68rem;
   color: var(--muted);
-  padding: 0 1rem;
 }
 
 .legend-item::before {

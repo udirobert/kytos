@@ -23,18 +23,20 @@
     }
   }
 
-  // ── Vessel instrument: liquid fills up on load ────────────────────────────
-  // The rect's target y is baked in at build time; we start it at the bottom
-  // and let the CSS transition carry it up. Pure presentation — never touches
-  // the committed data.
-  function animateVessel() {
+  // ── Vessel SVG fallback animation (when WebGL is unavailable) ────────────
+  // The 3D scene (vessel3d.js) handles animation when WebGL is available.
+  // If the 3D container doesn't get .is-3d within 2s, animate the SVG fallback.
+  function animateVesselFallback() {
+    var container = document.getElementById("vessel-canvas");
+    if (container && container.classList.contains("is-3d")) {
+      return;
+    }
     var liquid = document.querySelector(".vessel-liquid");
     if (!liquid || prefersReducedMotion()) {
       return;
     }
     var target = liquid.getAttribute("y");
     liquid.setAttribute("y", "250");
-    // Double rAF so the browser paints the start state before transitioning.
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         liquid.setAttribute("y", target);
@@ -119,9 +121,9 @@
 
   function onReady() {
     initPlotly();
-    animateVessel();
     initVccRail();
     initCopyButtons();
+    setTimeout(animateVesselFallback, 2000);
   }
 
   if (document.readyState === "loading") {

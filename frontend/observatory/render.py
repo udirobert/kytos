@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import html
+import json
 from typing import Any
 
 from frontend.observatory import data as data_mod
@@ -81,11 +82,10 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         metrics = latest.facts.get("headline_metrics") or {}
         metric_bits = ", ".join(f"{k} {v}" for k, v in metrics.items())
         headline = _h(latest.facts.get("headline", latest.run_id))
-        # Home vessel uses a fresh clip-id to avoid colliding with the run page.
-        vessel_svg = _vessel_svg(latest.facts, svg_class="home-vessel", clip_id="vessel-clip-home")
+        vessel_stage = _vessel_stage(latest.facts, stage_class="home-vessel-stage")
         stage = f"""
         <section class="home-stage">
-          {vessel_svg}
+          {vessel_stage}
           <h1 class="home-headline">
             Predict how an unseen cell responds —<br>
             and <em>show when the model is biologically wrong.</em>
@@ -332,23 +332,31 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
           <img src="{_h(media_prefix + hero)}" alt="Run visual" class="hero-image">
         </div>
         """
-    return _vessel_instrument(facts)
+    return _vessel_stage(facts)
+
+
+def _vessel_data(facts: dict) -> dict:
+    """Extract the data that drives the 3D vessel from facts.json."""
+    ceiling = facts.get("ceiling_headroom") or {}
+    values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
+    fill = int(round(100 * sum(values) / len(values))) if values else 0
+    fill = max(6, min(100, fill))
+    flags = facts.get("audit_flags") or []
+    return {
+        "fill_pct": fill,
+        "warns": sum(1 for f in flags if f.get("severity") in ("warn", "error")),
+        "infos": sum(1 for f in flags if f.get("severity") == "info"),
+    }
 
 
 def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "vessel-clip") -> str:
-    """The κύτος vessel as an SVG — a data-bound instrument, zero JS.
+    """The κύτος vessel as an SVG — the fallback for the 3D scene.
 
     Liquid fill = mean ceiling headroom, amber cracks = warn/error audit flags,
     cyan droplets = info flags. The vessel's shape IS the run's state.
     """
-    ceiling = facts.get("ceiling_headroom") or {}
-    values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
-    fill = int(round(100 * sum(values) / len(values))) if values else 0
-    fill = max(6, min(100, fill))  # keep a visible droplet even at 0 headroom
-
-    flags = facts.get("audit_flags") or []
-    warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
-    infos = sum(1 for f in flags if f.get("severity") == "info")
+    vd = _vessel_data(facts)
+    fill, warns, infos = vd["fill_pct"], vd["warns"], vd["infos"]
 
     fill_y = 236 - int(fill / 100 * 190)  # liquid surface y (bottom = 236)
     cracks = "".join(
@@ -381,23 +389,25 @@ def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "v
       </svg>"""
 
 
-def _vessel_instrument(facts: dict) -> str:
-    """The hollow vessel fills with evidence — the run-detail stage centerpiece."""
-    ceiling = facts.get("ceiling_headroom") or {}
-    values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
-    fill = int(round(100 * sum(values) / len(values))) if values else 0
-    fill = max(6, min(100, fill))
+def _vessel_stage(facts: dict, *, stage_class: str = "stage-hero vessel-instrument") -> str:
+    """Vessel instrument with 3D canvas + SVG fallback + legend.
 
-    flags = facts.get("audit_flags") or []
-    warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
-    infos = sum(1 for f in flags if f.get("severity") == "info")
+    The 3D scene loads progressively via import map. If WebGL is unavailable
+    the SVG fallback stays visible and the canvas never replaces it.
+    """
+    vd = _vessel_data(facts)
+    fill, warns, infos = vd["fill_pct"], vd["warns"], vd["infos"]
     warn_plural = "warning" if warns == 1 else "warnings"
     info_plural = "flag" if infos == 1 else "flags"
+    vessel_json = json.dumps(vd)
 
     svg = _vessel_svg(facts)
     return f"""
-    <div class="stage-hero vessel-instrument">
-      {svg}
+    <div class="{stage_class}">
+      <div class="vessel-3d-container" id="vessel-canvas">
+        <div class="vessel-svg-fallback">{svg}</div>
+      </div>
+      <script type="application/json" id="vessel-data">{vessel_json}</script>
       <p class="vessel-label">κύτος · the hollow vessel fills with evidence</p>
       <p class="vessel-legend">
         <span class="legend-item legend-fill">fill = {fill}% ceiling headroom</span>
