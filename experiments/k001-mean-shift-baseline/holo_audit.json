@@ -1,0 +1,12 @@
+{
+  "status": "skipped",
+  "reason": "no HAI_API_KEY",
+  "run_id": "k001-mean-shift-baseline",
+  "expected": {
+    "fill_pct": 38,
+    "warn_count": 2,
+    "info_count": 0,
+    "run_id": "k001-mean-shift-baseline"
+  },
+  "generated_at": "2026-08-22T13:28:35+00:00"
+}
