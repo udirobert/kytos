@@ -72,10 +72,12 @@ TEE/E2EE modes on select models. See [`docs/venice-dev.md`](../docs/venice-dev.m
 **TTS for Fabric briefings** still requires `OPENAI_TTS_API_KEY` (direct
 OpenAI) or skip video and ship hero stills only.
 
-**Hackathon note:** If `OPENAI_BASE_URL` points at a chat-only gateway (e.g.
-gitlawb), narration works there in openai mode but **TTS requires
-`OPENAI_TTS_API_KEY`** from the Luma OpenAI credits (direct `api.openai.com`).
-Top up gateway credits if you see `insufficient_credits`.
+**Hackathon note:** Always use `api.openai.com` directly for both narration
+and TTS — no third-party gateways. The OpenAI SDK auto-reads
+`OPENAI_BASE_URL` from the environment; if set to a chat-only gateway, TTS
+will 404. The code guards against this (`openai_tts_client` rejects
+non-openai.com base URLs) but it's cleaner to never set `OPENAI_BASE_URL`
+at all.
 
 **One-shot pipeline** (audit → facts → all enrichers → facts refresh):
 

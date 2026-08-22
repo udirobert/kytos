@@ -27,8 +27,17 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.plot.ly; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
 
 [[headers]]
   for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+# Run visuals (briefing.mp4, hero.png, share-card.png) — static content that
+# never changes between deploys. Long-cache like /static/*.
+[[headers]]
+  for = "/runs/*/visual/*"
   [headers.values]
     Cache-Control = "public, max-age=604800, immutable"

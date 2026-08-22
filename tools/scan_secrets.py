@@ -100,7 +100,16 @@ def all_repo_files() -> list[Path]:
     Scanning `.venv/` (installed package metadata) or build output would drown
     real signals in false positives.
     """
-    skip_parts = {".git", ".venv", "venv", "node_modules", "__pycache__", ".ruff_cache", "dist"}
+    skip_parts = {
+        ".git",
+        ".venv",
+        ".venv-science",
+        "venv",
+        "node_modules",
+        "__pycache__",
+        ".ruff_cache",
+        "dist",
+    }
     return [
         p
         for p in sorted(REPO_ROOT.rglob("*"))
