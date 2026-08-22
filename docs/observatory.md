@@ -115,29 +115,46 @@ briefing #1 — come back and watch the vessel fill, crack, or heal."*
 
 ---
 
-## 3b. Holo auditor — independent render verification
+## 3b. Holo auditor — independent render verification (Computer-use Agents)
 
 Our entire thesis is "show when a model is biologically wrong." But who verifies
 that what the Observatory renders matches the committed `facts.json`? Right now,
-nobody. **H's Holo** vision-language model fills that gap.
+nobody. **H's Computer-use Agents** fill that gap.
 
-**What it does:** `tools/holo_audit.py` screenshots the built Observatory (via
-Playwright), sends the screenshot to Holo's API, and asks it to read the visible
-values — vessel fill %, audit flag count, metric scores. It then diffs Holo's
-reading against the committed `facts.json` and reports any discrepancy.
+**What it does:** `tools/holo_audit.py` launches a H computer-use agent
+(`h/web-surfer-flash`) that opens the deployed Observatory in a real cloud
+browser, navigates the page like a human visitor — scrolling through content,
+clicking the 3D vessel, checking the briefing stamp — and returns a structured,
+schema-validated answer. It then diffs the agent's reading against the
+committed `facts.json` and reports any discrepancy.
 
 ```
-frontend/dist/runs/k001/index.html  (built page)
-  → Playwright screenshot
-  → Holo API: "read the visible numbers from this page"
+https://kytosapp.netlify.app/runs/k001/  (live deployed site)
+  → H Computer-use Agent (h/web-surfer-flash) drives a cloud browser
+  → navigates, scrolls, clicks, reads values
+  → answer_schema (Pydantic) → validated typed JSON
   → diff against facts.json
   → PASS / FAIL report (same pattern as planted_signal.py)
 ```
 
-**Why Holo specifically:** the model is purpose-built for UI-VQA (visual question
-answering on screens) and element localization — not a generic LLM bolted into
-a browser loop. It reads what a human sees and returns coordinates for what it
-finds. That's the exact capability for independent render verification.
+**Why the Agents API specifically:** H's vision (March 2026) states "models have
+learned to think, but the next era of AI belongs to the systems that learn to
+act." The Computer-use Agents API (launched July 2026) is their flagship product
+— fully managed agents that take actions on computers. Their own docs name "QA
+Testing" as the first use case: "point an autonomous browser agent at a live URL
+and it tests your app the way a real user would, coming back with a verdict, a
+summary, and findings you can wire straight into CI."
+
+This is deeper than passive screen-reading. The agent doesn't just see a
+screenshot — it drives a real browser, interacts with the page, and returns a
+typed answer validated against a Pydantic schema (`answer_schema`). Non-conforming
+answers are rejected and retried automatically.
+
+**Fallback:** if the Agents API is unavailable (no `hai-agents` package, no
+`HAI_API_KEY`, or API failure), the tool falls back to VLM mode: Playwright
+screenshots the local dist/ and sends a single image to the Holo3.1 vision model
+(holo3-1-35b-a3b) via the OpenAI-compatible inference API. This is the original
+approach — passive screen-reading, not interactive navigation.
 
 **Hard rule:** Holo audits the render, never the science. It checks that the
 site shows what the data says — not whether the data is biologically correct
@@ -302,7 +319,7 @@ One gorgeous run page beats three half-finished pages.
 | UX polish (B) | ✅ instrument-panel metaphor: live VCC timeline rail + countdown to Nov 5, vessel fill animation on load, run-strip severity dots + scroll-snap, flag severity badges, breadcrumb, copy-to-clipboard provenance, `prefers-reduced-motion` support; mobile overflow fixed (grid `min-width:0`, narrative/provenance wrapping) — Playwright-verified desktop + mobile, zero console errors |
 | 3D vessel (C) | ✅ **Three.js real-time 3D κύτος vessel** — glass with transmission/refraction, animated liquid fill, rising bubbles, emissive crack halos, cyan droplets, reflective floor, UnrealBloomPass, mouse parallax, scroll-driven camera, auto-rotate + drag; SVG fallback if WebGL unavailable (`frontend/static/vessel3d.js`, 527 lines) |
 | Full-bleed immersive layout (C) | ✅ home + run detail pages rebuilt as full-viewport vessel hero with overlaid glass content; evidence panels flow in centered column with scroll-reveal (IntersectionObserver); glass data readout strip; runs index cards show severity dot + fill % badge |
-| Holo auditor (C) | ✅ `tools/holo_audit.py` — H Holo vision-language model screenshots the built Observatory, reads visible values (fill %, flag counts, metrics), diffs against `facts.json`; degrades to skip without `HAI_API_KEY`; same PASS/FAIL pattern as `planted_signal.py` |
+| Holo auditor (C) | ✅ `tools/holo_audit.py` — H Computer-use Agent (`h/web-surfer-flash`) navigates the deployed Observatory in a cloud browser, returns schema-validated typed answer via `answer_schema` (Pydantic); VLM screenshot fallback (holo3-1-35b-a3b); diffs against `facts.json`; degrades to skip without `HAI_API_KEY`; same PASS/FAIL pattern as `planted_signal.py` |
 | Integration | ⏳ real enrichment artifacts → rebuild `dist/` → redeploy → 2-min Loom |
 
 ### Later (Aug → Nov 2026)

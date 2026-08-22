@@ -119,6 +119,14 @@ def test_entity_schema_uses_named_entities() -> None:
     assert all("name" in item for item in schema["entities"])
 
 
+def test_dataset_has_entity_labels() -> None:
+    assert pioneer_ner.dataset_has_entity_labels(
+        {"rows": [{"entities": [{"text": "ACTB", "label": "gene"}]}]}
+    )
+    assert not pioneer_ner.dataset_has_entity_labels({"rows": [{"entities": []}]})
+    assert not pioneer_ner.dataset_has_entity_labels({"rows": []})
+
+
 def test_extract_entities_uses_fallback_without_api(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -165,3 +173,47 @@ def test_enrich_skips_existing_entities_files(run_dir: Path) -> None:
 def test_enrich_handles_no_literature_dir(tmp_path: Path) -> None:
     count = pioneer_ner.enrich_literature_entities(tmp_path, model_id=None)
     assert count == 0
+
+
+# ── label-existing + upload pipeline ──────────────────────────────────────────
+
+
+def test_parse_label_existing_item_extracts_span_objects() -> None:
+    """label-existing items with {text, label} span dicts are parsed to [[text, label]]."""
+    item = {"entities": {"gene": [{"text": "ACTB", "start": 0, "end": 4}]}}
+    result = pioneer_ner._parse_label_existing_item(item, "ACTB was knocked down")
+    assert result == [["ACTB", "gene"]]
+
+
+def test_parse_label_existing_item_extracts_plain_strings() -> None:
+    """label-existing items with plain string spans are parsed to [[text, label]]."""
+    item = {"entities": {"gene": ["ACTB", "GAPDH"], "pathway": []}}
+    result = pioneer_ner._parse_label_existing_item(item, "ACTB and GAPDH")
+    assert ["ACTB", "gene"] in result
+    assert ["GAPDH", "gene"] in result
+    assert len(result) == 2  # pathway is empty
+
+
+def test_parse_label_existing_item_handles_list_entities() -> None:
+    """label-existing items with entity lists (text+label) are parsed."""
+    item = {"entities": [{"text": "K562", "label": "cell_type"}]}
+    result = pioneer_ner._parse_label_existing_item(item, "K562 cells")
+    assert result == [["K562", "cell_type"]]
+
+
+def test_parse_label_existing_item_empty() -> None:
+    """Empty entities produce an empty list."""
+    item = {"entities": {}}
+    assert pioneer_ner._parse_label_existing_item(item, "no entities here") == []
+
+
+def test_collect_literature_texts_gathers_content(run_dir: Path) -> None:
+    """_collect_literature_texts reads 'content' from Tavily results."""
+    texts = pioneer_ner._collect_literature_texts(run_dir, max_texts=5)
+    assert len(texts) > 0
+    assert all(len(t) > 50 for t in texts)
+
+
+def test_collect_literature_texts_missing_dir(tmp_path: Path) -> None:
+    """No literature/ dir → empty list (degrade)."""
+    assert pioneer_ner._collect_literature_texts(tmp_path) == []

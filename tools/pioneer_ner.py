@@ -45,7 +45,14 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from _enrich_common import env_key, load_facts, notice, resolve_run_dir, warn
+from _enrich_common import (  # noqa: E402
+    REPO_ROOT,
+    env_key,
+    load_facts,
+    notice,
+    resolve_run_dir,
+    warn,
+)
 
 PIONEER_BASE = "https://api.pioneer.ai"
 BASE_MODEL = "fastino/gliner2-base-v1"
@@ -542,6 +549,179 @@ def generate_dataset(api_key: str) -> str | None:
         return None
 
 
+def label_existing_texts(api_key: str, texts: list[str]) -> list[dict]:
+    """Auto-label real text via POST /generate/ner/label-existing (synchronous).
+
+    This is the recommended path when synthetic /generate produces empty entities.
+    Takes 1-1000 raw text strings, returns NER-labeled examples synchronously.
+
+    Returns a list of {"text": ..., "entities": [[text, label], ...]} dicts
+    ready for JSONL upload.
+    """
+    if not texts:
+        return []
+    notice(f"pioneer: auto-labeling {len(texts)} text(s) via /generate/ner/label-existing...")
+    try:
+        resp = _post(
+            api_key,
+            "/generate/ner/label-existing",
+            {
+                "labels": BIO_ENTITY_LABELS,
+                "inputs": texts,
+            },
+        )
+    except Exception as exc:
+        warn(f"pioneer: label-existing failed ({exc})")
+        return []
+
+    # Response format: {"result": {"data": {"entities": {label: [span, ...]}}}}
+    # or a list of per-input annotation dicts. Normalize to NER training rows.
+    labeled: list[dict] = []
+    if isinstance(resp, list):
+        for i, item in enumerate(resp):
+            if isinstance(item, dict):
+                ents = _parse_label_existing_item(item, texts[i] if i < len(texts) else "")
+                if ents:
+                    labeled.append({"text": texts[i] if i < len(texts) else "", "entities": ents})
+    elif isinstance(resp, dict):
+        result = resp.get("result") or resp
+        data = result.get("data") if isinstance(result, dict) else None
+        if isinstance(data, list):
+            for i, item in enumerate(data):
+                if isinstance(item, dict):
+                    ents = _parse_label_existing_item(item, texts[i] if i < len(texts) else "")
+                    if ents:
+                        labeled.append(
+                            {
+                                "text": texts[i] if i < len(texts) else "",
+                                "entities": ents,
+                            }
+                        )
+
+    notice(f"pioneer: label-existing produced {len(labeled)} labeled examples")
+    return labeled
+
+
+def _parse_label_existing_item(item: dict, original_text: str) -> list[list[str]]:
+    """Extract [[text, label], ...] from a label-existing annotation item."""
+    entities: list[list[str]] = []
+    ent_data = item.get("entities")
+    if isinstance(ent_data, dict):
+        for label, spans in ent_data.items():
+            if isinstance(spans, str):
+                spans = [spans]
+            if isinstance(spans, list):
+                for span in spans:
+                    if isinstance(span, dict):
+                        text_val = span.get("text") or span.get("span") or ""
+                        if text_val:
+                            entities.append([text_val, label])
+                    elif isinstance(span, str) and span:
+                        entities.append([span, label])
+    elif isinstance(ent_data, list):
+        for span in ent_data:
+            if isinstance(span, dict):
+                text_val = span.get("text") or span.get("span") or ""
+                label = span.get("label") or span.get("type") or ""
+                if text_val and label:
+                    entities.append([text_val, label])
+    return entities
+
+
+def _collect_literature_texts(run_dir: Path | None = None, max_texts: int = 50) -> list[str]:
+    """Gather text snippets from k001 literature/*.json for labeling.
+
+    Uses the 'content' field from Tavily search results — real biomedical text
+    that the Pioneer generator should be able to annotate with entity spans.
+    """
+    if run_dir is None:
+        run_dir = REPO_ROOT / "experiments" / "k001-mean-shift-baseline"
+    lit_dir = run_dir / "literature"
+    if not lit_dir.is_dir():
+        return []
+
+    texts: list[str] = []
+    for lit_file in sorted(lit_dir.glob("*.json")):
+        if lit_file.name.endswith(".entities.json"):
+            continue
+        try:
+            data = json.loads(lit_file.read_text())
+        except Exception:
+            continue
+        for result in data.get("results") or []:
+            content = result.get("content") or ""
+            if content and len(content) > 50:
+                texts.append(content[:500])  # cap length for the API
+                if len(texts) >= max_texts:
+                    return texts
+    return texts
+
+
+def upload_dataset(
+    api_key: str, dataset_name: str, rows: list[dict], dataset_type: str = "ner"
+) -> str | None:
+    """Upload labeled examples as a JSONL dataset via the 3-step upload pipeline.
+
+    Steps: POST /felix/datasets/upload/url → PUT to S3 → POST .../upload/process
+    Returns the dataset_id, or None on failure.
+    """
+    if not rows:
+        warn("pioneer: no rows to upload")
+        return None
+
+    import tempfile
+
+    # Write JSONL to temp file
+    jsonl_path = Path(tempfile.mktemp(suffix=".jsonl"))
+    with jsonl_path.open("w") as f:
+        for row in rows:
+            f.write(json.dumps(row) + "\n")
+
+    try:
+        # Step 1: get presigned URL
+        notice(f"pioneer: requesting upload URL for '{dataset_name}' ({len(rows)} rows)...")
+        resp = _post(
+            api_key,
+            "/felix/datasets/upload/url",
+            {
+                "dataset_name": dataset_name,
+                "dataset_type": dataset_type,
+                "type": "training",
+                "filename": "data.jsonl",
+            },
+        )
+        presigned_url = resp.get("presigned_url")
+        dataset_id = resp.get("dataset_id")
+        if not presigned_url or not dataset_id:
+            warn(f"pioneer: upload URL response missing fields: {list(resp.keys())}")
+            return None
+
+        # Step 2: PUT file to S3
+        notice("pioneer: uploading JSONL to S3...")
+        data = jsonl_path.read_bytes()
+        req = urllib.request.Request(
+            presigned_url,
+            data=data,
+            method="PUT",
+            headers={"Content-Type": "application/octet-stream"},
+        )
+        with urllib.request.urlopen(req, timeout=120) as r:
+            if r.status not in (200, 204):
+                warn(f"pioneer: S3 upload returned status {r.status}")
+                return None
+
+        # Step 3: trigger processing
+        notice("pioneer: triggering dataset processing...")
+        _post(api_key, "/felix/datasets/upload/process", {"dataset_id": dataset_id})
+        notice(f"pioneer: dataset '{dataset_name}' uploaded (dataset_id={dataset_id})")
+        return dataset_id
+    except Exception as exc:
+        warn(f"pioneer: dataset upload failed ({exc})")
+        return None
+    finally:
+        jsonl_path.unlink(missing_ok=True)
+
+
 def poll_generation(api_key: str, job_id: str) -> bool:
     """Poll generation job until ready or timeout. Returns True on success."""
     deadline = time.time() + GEN_TIMEOUT
@@ -558,29 +738,95 @@ def poll_generation(api_key: str, job_id: str) -> bool:
         if status == "ready":
             return True
         if status == "failed":
-            warn(f"pioneer: generation failed: {resp.get('error', 'unknown')}")
+            err = resp.get("error") or resp.get("message") or "unknown"
+            warn(f"pioneer: generation failed: {err}")
             return False
         time.sleep(GEN_POLL_INTERVAL)
     warn("pioneer: generation timed out")
     return False
 
 
-def start_training(api_key: str) -> str | None:
-    """Start a fine-tuning job on the generated dataset. Returns job_id."""
-    notice(f"pioneer: starting fine-tuning job (base={BASE_MODEL}, lora, 5 epochs)...")
+def _dataset_ready(api_key: str, dataset_name: str) -> dict | None:
+    """Return the latest ready dataset version dict, or None."""
     try:
-        resp = _post(
-            api_key,
-            "/felix/training-jobs",
-            {
-                "model_name": MODEL_NAME,
-                "base_model": BASE_MODEL,
-                "datasets": [{"name": DATASET_NAME}],
-                "training_type": "lora",
-                "nr_epochs": 5,
-                "learning_rate": 5e-5,
-            },
-        )
+        resp = _get(api_key, f"/felix/datasets/{dataset_name}")
+    except Exception as exc:
+        warn(f"pioneer: dataset lookup failed ({exc})")
+        return None
+    for version in resp.get("versions") or []:
+        if version.get("status") == "ready" and (version.get("sample_size") or 0) > 0:
+            return version
+    return None
+
+
+def _dataset_preview(api_key: str, dataset_name: str, version: str, limit: int = 10) -> dict | None:
+    """Fetch a sample of stored rows via GET /felix/datasets/{name}/{version}/preview."""
+    try:
+        return _get(api_key, f"/felix/datasets/{dataset_name}/{version}/preview?limit={limit}")
+    except Exception as exc:
+        warn(f"pioneer: dataset preview failed ({exc})")
+        return None
+
+
+def dataset_has_entity_labels(preview: dict) -> bool:
+    """True if at least one preview row carries NER entity annotations."""
+    for row in preview.get("rows") or []:
+        entities = row.get("entities")
+        if isinstance(entities, list) and entities:
+            return True
+        if isinstance(entities, dict) and entities:
+            return True
+    return False
+
+
+def _validate_ner_dataset(api_key: str, dataset_name: str, version_no: str) -> bool:
+    """Preflight: status=ready is not enough — rows must contain entity labels."""
+    preview = _dataset_preview(api_key, dataset_name, version_no)
+    if not preview:
+        return False
+    total = preview.get("total_rows") or 0
+    if total <= 0:
+        warn(f"pioneer: dataset '{dataset_name}' v{version_no} has zero rows")
+        return False
+    if dataset_has_entity_labels(preview):
+        return True
+    warn(
+        f"pioneer: dataset '{dataset_name}' v{version_no} has {total} rows but preview "
+        f"shows empty entity labels — training would fail with 'No valid datasets found'. "
+        "Regenerate with simpler labels, use POST /generate/ner/label-existing on real "
+        "text, or upload JSONL via /felix/datasets/upload/* "
+        "(see docs.pioneer.ai/concepts/datasets)."
+    )
+    return False
+
+
+def start_training(api_key: str, dataset_name: str = DATASET_NAME) -> str | None:
+    """Start a fine-tuning job on the generated dataset. Returns job_id."""
+    version = _dataset_ready(api_key, dataset_name)
+    if not version:
+        warn(f"pioneer: dataset '{dataset_name}' not ready — cannot train")
+        return None
+    version_no = str(version.get("version_number") or "1")
+    if not _validate_ner_dataset(api_key, dataset_name, version_no):
+        return None
+    sample_size = version.get("sample_size")
+    notice(
+        f"pioneer: starting fine-tuning (base={BASE_MODEL}, lora, 5 epochs, "
+        f"samples={sample_size})..."
+    )
+    body: dict = {
+        "model_name": MODEL_NAME,
+        "base_model": BASE_MODEL,
+        "datasets": [{"name": dataset_name, "version": version_no}],
+        "training_type": "lora",
+        "nr_epochs": 5,
+        "learning_rate": 5e-5,
+    }
+    project_id = version.get("project_id")
+    if project_id:
+        body["project_id"] = project_id
+    try:
+        resp = _post(api_key, "/felix/training-jobs", body)
         job_id = resp.get("id")
         notice(f"pioneer: training job started (id={job_id})")
         return job_id
@@ -615,8 +861,9 @@ def poll_training(api_key: str, job_id: str) -> dict | None:
                 f"recall={metrics.get('recall', '?')}"
             )
             return resp
-        if status == "failed":
-            warn("pioneer: training failed")
+        if status in ("failed", "errored", "error", "cancelled"):
+            err = resp.get("error") or resp.get("message") or resp.get("detail") or status
+            warn(f"pioneer: training failed ({err})")
             return None
         time.sleep(TRAIN_POLL_INTERVAL)
     warn("pioneer: training timed out")
@@ -639,18 +886,63 @@ def find_deployed_model(api_key: str) -> str | None:
 
 
 def run_training_pipeline(api_key: str) -> str | None:
-    """Full pipeline: generate data → train → return model job_id for inference."""
+    """Full pipeline: generate data → train → return model job_id for inference.
+
+    Strategy (tried in order):
+    1. If a trained model already exists, reuse it.
+    2. Try synthetic /generate. If the dataset has empty entities (known issue
+       with niche domains + many labels), fall back to:
+    3. label-existing on real Tavily literature text → upload as JSONL → train.
+    """
     existing = find_deployed_model(api_key)
     if existing:
         return existing
 
+    # Path A: synthetic generation
     gen_job = generate_dataset(api_key)
-    if not gen_job:
-        return None
-    if not poll_generation(api_key, gen_job):
+    if gen_job and poll_generation(api_key, gen_job):
+        version = _dataset_ready(api_key, DATASET_NAME)
+        if version:
+            version_no = str(version.get("version_number") or "1")
+            if _validate_ner_dataset(api_key, DATASET_NAME, version_no):
+                # Synthetic data has real entity labels — proceed to training
+                train_job = start_training(api_key, DATASET_NAME)
+                if train_job:
+                    result = poll_training(api_key, train_job)
+                    if result:
+                        return train_job
+            else:
+                warn(
+                    "pioneer: synthetic dataset has empty entities — falling back to label-existing"
+                )
+
+    # Path B: auto-label real literature text → upload → train
+    notice("pioneer: trying label-existing on real Tavily literature text...")
+    texts = _collect_literature_texts()
+    if not texts:
+        warn("pioneer: no literature text found for label-existing")
         return None
 
-    train_job = start_training(api_key)
+    labeled = label_existing_texts(api_key, texts)
+    if not labeled:
+        warn("pioneer: label-existing produced no labeled examples — cannot train")
+        return None
+
+    upload_dataset_name = f"{DATASET_NAME}-labeled"
+    dataset_id = upload_dataset(api_key, upload_dataset_name, labeled)
+    if not dataset_id:
+        return None
+
+    # Wait for the uploaded dataset to be ready (processing → validating → ready)
+    version = _dataset_ready(api_key, upload_dataset_name)
+    if not version:
+        warn(f"pioneer: uploaded dataset '{upload_dataset_name}' not ready — cannot train")
+        return None
+    version_no = str(version.get("version_number") or "1")
+    if not _validate_ner_dataset(api_key, upload_dataset_name, version_no):
+        return None
+
+    train_job = start_training(api_key, upload_dataset_name)
     if not train_job:
         return None
 
