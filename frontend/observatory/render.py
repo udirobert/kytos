@@ -259,8 +259,13 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
         f'<li><a class="nav-link{" is-active" if is_active else ""}" href="{href}">{label}</a></li>'
         for label, href, is_active in links
     )
+    # Lateral nav strip only where it earns its keep: run-detail pages
+    # ("which run am I in, what's its sibling, who's the red one?"). Home is
+    # an immersive poster (one stat, one door); runs index already lists runs
+    # as cards; about is pure thesis.
     strip_block = ""
-    if len(runs) > 1:
+    show_strip = len(runs) > 1 and any(r.run_id == active for r in runs)
+    if show_strip:
         strip = "".join(
             f'<a class="run-pill{" is-active" if run.run_id == active else ""}" '
             f'href="{root_prefix}runs/{_h(run.run_id)}/index.html">'
@@ -448,6 +453,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
                 "vcc_days": VCC_DAYS,
                 "proof": proof,
                 "run_href": run_href,
+                "runs_href": f"{root_prefix}runs/index.html",
                 "about_href": about_href,
             }
         )

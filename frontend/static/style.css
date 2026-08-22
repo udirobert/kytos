@@ -1037,6 +1037,19 @@ html.no-webgl .vessel-loading {
   transform: scale(0.97);
 }
 
+/* Secondary action in a CTA row — quiet glass pill so the primary keeps
+   visual dominance (home: "All runs" supports "View run #N"). */
+.button-secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.button-secondary:hover {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
 .panel-note {
   color: var(--muted);
   font-size: 0.78rem;
