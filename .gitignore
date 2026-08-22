@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.egg-info/
 .venv/
+.venv-science/
 venv/
 
 # Cell-eval / anndata intermediates

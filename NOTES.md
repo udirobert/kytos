@@ -252,8 +252,11 @@ The realistic path:
 
 *Next (hackathon day, 2026-08-22): finish the live enrichment run (Dev A),
 connect Netlify for the deployed Observatory (Dev B), record the
-2-min Loom (Dev C) — then the science track: install `cell-eval` + `anndata` on
-**Python 3.12** (no torch wheel for 3.14), run k001 through
-`cell-eval run --ceiling`, register, download Atlas 2025, read the Altos
-preprint, and publish the first run page. Milestone 0 progress:
+2-min Loom (Dev C). Science track: `cell-eval 0.8.2` + `anndata` are now
+installed in **`.venv-science`** (native arm64 3.12.8 — the Rosetta x86_64
+3.12 has no llvmlite/numba wheels) and the harness obs contract is **verified
+against cell-eval source** (`target_gene` / `non-targeting`) and passes
+`cell-eval prep`. Next: download Atlas 2025, run k001 through
+`cell-eval run --ceiling`, register, read the Altos preprint, and publish the
+first run page. Milestone 0 progress:
 [`docs/milestone-0-worksplit.md`](docs/milestone-0-worksplit.md).*

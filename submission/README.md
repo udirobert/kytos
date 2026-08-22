@@ -13,8 +13,12 @@ inputs and writes a cell-eval-ready prediction.
 - `--gene-order` — canonical gene axis (`expected_genelist`, one per line)
 
 and writes an AnnData (H5AD) with X `[n_cells, n_genes]`, an obs column
-`perturbation` (a `control` row set + one per target gene), and gene identity on
-the var axis — the shape `cell-eval` compares against `adata_real`.
+`target_gene` (a `non-targeting` row set + one per target gene), and gene
+identity on the var axis — the shape `cell-eval` compares against
+`adata_real`. The column + control names are **verified against cell-eval
+0.8.2's defaults** (`cell_eval/_cli/_const.py`), so
+`cell-eval run -ap pred.h5ad -ar real.h5ad` works with zero flags. Override
+with `--pert-col` / `--control-pert` if the challenge schema differs.
 
 **Graceful degradation:** with `anndata`/`cell-eval` not yet installed, the
 harness writes a JSON placeholder (same gene-order contract) so the pipeline

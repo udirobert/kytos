@@ -14,6 +14,8 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
+
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -24,7 +26,10 @@ import script as harness  # noqa: E402
 
 GENE_ORDER = [f"gene{i}" for i in range(20)]
 TARGETS = ["gene2", "gene7", "gene13"]
-CONTROL = "control"
+# Verified against cell-eval 0.8.2 defaults (cell_eval/_cli/_const.py):
+# DEFAULT_PERT_COL="target_gene", DEFAULT_CTRL="non-targeting".
+PERT_COL = "target_gene"
+CONTROL = "non-targeting"
 N_CELLS = 100
 
 
@@ -48,6 +53,15 @@ def test_mean_shift_groups_match_values_shape() -> None:
     for target in TARGETS:
         assert result.groups[offset : offset + N_CELLS] == [target] * N_CELLS
         offset += N_CELLS
+
+    # The default pert col / control label must match cell-eval's constants.
+    assert _inputs().pert_col == "target_gene"
+    assert _inputs().control_value == "non-targeting"
+
+    # Non-zero values: all-zeros → log(0) → NaN under cell-eval's log1p
+    # normalization, which crashes the DE Mann-Whitney (frozen-run finding).
+    assert (result.values > 0).all()
+    assert np.isfinite(result.values).all()
 
 
 def test_harness_end_to_end(tmp_path: Path) -> None:
@@ -87,7 +101,10 @@ def test_harness_end_to_end(tmp_path: Path) -> None:
         expected_rows = N_CELLS * (1 + len(TARGETS))
         assert adata.shape == (expected_rows, len(GENE_ORDER))
         assert list(adata.var.index) == GENE_ORDER
-        pert = adata.obs["perturbation"]
+        # obs column + control label must match cell-eval's defaults so
+        # `cell-eval run -ap pred.h5ad -ar real.h5ad` works with zero flags.
+        assert PERT_COL in adata.obs.columns
+        pert = adata.obs[PERT_COL]
         assert len(pert) == expected_rows
         assert (pert == CONTROL).sum() == N_CELLS
         for target in TARGETS:

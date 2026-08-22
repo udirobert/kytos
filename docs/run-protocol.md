@@ -120,8 +120,14 @@ Deliverables for **k001**:
 + `flags.json`, `facts.json`, and a deterministic fallback `narrative/report.md`
 are committed. Live enrichment (OpenAI / Tavily / fal / Fabric) is **in
 progress** via `tools/run_enrichment.sh`; as artifacts land they are committed
-here and the Observatory redeploys. Pending: real `cell-eval run --ceiling`
-numbers replacing the mock CSVs, `literature/`, `visual/`, `briefing.mp4`, and
-the one-line basal-conditioning conclusion.
+here and the Observatory redeploys.
+
+**Contract validated (2026-08-22, live):** `cell-eval 0.8.2` is installed in
+`.venv-science` (native arm64 3.12.8). The harness's obs contract was verified
+against cell-eval source (`target_gene` / `non-targeting`) and fixed in
+`submission/script.py`; the fixture `pred.h5ad` is now a real H5AD that passes
+`cell-eval prep`. Pending: real Atlas 2025 data → genuine
+`cell-eval run --ceiling` numbers replacing the mock CSVs, `literature/`,
+`visual/`, `briefing.mp4`, and the one-line basal-conditioning conclusion.
 
 The k001 run page is the **Observatory Milestone 0** demo surface (2026-08-22).

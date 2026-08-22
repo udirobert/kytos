@@ -64,6 +64,25 @@ uv pip install -U cell-eval   # in a Python 3.12 env; anndata comes with it
 uv pip install -r requirements.txt   # once declared, see src release hygiene
 ```
 
+## Science venv (2026-08-22, live)
+
+**`.venv-science`** — native **arm64** Python 3.12.8 (downloaded via
+`uv python install 3.12`), with `cell-eval 0.8.2` + `anndata` + `scanpy` +
+`numba`/`llvmlite` installed and verified. This is the science-track env.
+
+**Gotcha that cost a cycle:** the machine is arm64, but the locally installed
+Homebrew Python 3.12 is **x86_64 (Rosetta)** — so `cell-eval`'s `llvmlite`
+(numba) dependency had no wheel and failed to build from source (same class as
+the earlier tiktoken/torch wheel issues). The native arm64 3.12.8 fixes all of
+them. Keep the science stack on `.venv-science`, not the Rosetta `.venv`.
+
+```bash
+uv python install 3.12            # native arm64 CPython
+uv venv --python 3.12.8 .venv-science
+uv pip install --python .venv-science/bin/python -U cell-eval
+uv pip install --python .venv-science/bin/python pytest
+```
+
 Verify the harness imports cleanly with no packages present (it must degrade,
 not crash, when `cell-eval` isn't installed).
 

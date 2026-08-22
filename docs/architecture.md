@@ -13,9 +13,13 @@ re-checked before it is relied upon.
 Cell-eval compares **two cell × gene AnnData matrices** (`adata_pred` vs
 `adata_real`), runs differential expression (pdex) on each independently, and
 scores a panel of metrics. The perturbation identity lives in an **obs column**
-(default `perturbation`), and a **`control` marker** denotes non-targeting /
-basal cells. Gene identity is the **var axis** (`-g <expected_genelist>` in
-`cell-eval prep`).
+(**`target_gene`** by default), and a **`non-targeting`** label denotes
+non-targeting / basal cells — **verified against cell-eval 0.8.2 source**
+(`cell_eval/_cli/_const.py`: `DEFAULT_PERT_COL="target_gene"`,
+`DEFAULT_CTRL="non-targeting"`). Gene identity is the **var axis**
+(`-g <expected_genelist>` in `cell-eval prep`). The submission harness
+(`submission/script.py`) writes these exact names so a zero-flag
+`cell-eval run -ap pred.h5ad -ar real.h5ad` just works.
 
 **Consequence**: the prediction is a **generated single-cell distribution per
 knocked gene, plus a control group** — not a gene-level delta vector. A
@@ -169,9 +173,17 @@ detour from the science track.
 facts assembler, audit rules, k001 seed, four enrichment tools
 (degrade-verified), frontend (`frontend/build.py` → `dist/`, Playwright-verified
 desktop + mobile), deploy via Netlify (`netlify.toml`). Live enrichment run in
-progress; harness e2e tests added. Next
-scientific step: `cell-eval` + `anndata` on **Python 3.12** (torch has no 3.14
-wheel) and k001 `run --ceiling`.
+progress; harness e2e tests added.
+
+**Science-track status (2026-08-22, live):** `cell-eval 0.8.2` + `anndata`
+installed in a **native arm64 `.venv-science`** (Python 3.12.8 — the Rosetta
+x86_64 3.12 has no llvmlite/numba wheels). The harness contract was **verified
+against cell-eval source** and fixed: obs column is `target_gene`, control
+label `non-targeting` (was `perturbation`/`control` — a mismatch that would
+have broken the first real `cell-eval run`). The harness output now passes
+`cell-eval prep` end-to-end, and the harness tests run the real H5AD branch
+(36 tests green in both envs). Next: real Atlas 2025 data → k001
+`run --ceiling`.
 
 ---
 

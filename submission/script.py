@@ -39,8 +39,11 @@ class ChallengeInputs:
     targets_path: Path
     gene_order_path: Path
     normalization: str = "log1p"  # "counts" or "log1p" — Gate 3 decision
-    pert_col: str = "perturbation"
-    control_value: str = "control"
+    # Verified against cell-eval 0.8.2 defaults (cell_eval/_cli/_const.py):
+    # DEFAULT_PERT_COL="target_gene", DEFAULT_CTRL="non-targeting". A
+    # `cell-eval run -ap pred.h5ad -ar real.h5ad` with zero flags must work.
+    pert_col: str = "target_gene"
+    control_value: str = "non-targeting"
     n_per_group: int = 100
 
     def validate(self) -> None:
@@ -82,12 +85,37 @@ class Strategy:
         raise NotImplementedError
 
 
+def _basal_mean_vector(inputs: ChallengeInputs, n_genes: int):
+    """Per-gene basal mean, or a small positive constant fallback.
+
+    The real Challenge basal is an H5AD of non-targeting-guide expression; when
+    it is readable we predict its per-gene mean (the honest "no shift" floor).
+    Until then (fixture placeholder) we fall back to a small positive constant.
+    Never zeros: all-zero predictions become NaN under cell-eval's log1p
+    normalization (log(0)) and crash the DE Mann-Whitney.
+    """
+    import numpy as np
+
+    try:
+        import anndata as ad
+
+        basal = ad.read_h5ad(inputs.basal_path)
+        if basal.shape[1] == n_genes:
+            mean = np.asarray(basal.X.mean(axis=0), dtype=np.float32).ravel()
+            if mean.size == n_genes and np.isfinite(mean).all():
+                return mean
+    except Exception:
+        pass
+    return np.full(n_genes, 1.0, dtype=np.float32)
+
+
 class MeanShiftBaseline(Strategy):
     """Predict the mean shift from basal state, scaled by context similarity.
 
-    Phase-0 floor baseline (NOTES §3.1). Model-free for now; a real fit on Atlas
-    2025 replaces the identity. The contract (shape, schema, meta) is what we
-    are locking down.
+    Phase-0 floor baseline (NOTES §3.1): predict the basal mean for every group
+    (control and perturbed alike) — the zero-shift floor that cell-eval can
+    actually score. A real fit on Atlas 2025 replaces the identity. The
+    contract (shape, schema, meta) is what we are locking down.
     """
 
     name = "mean-shift"
@@ -107,7 +135,8 @@ class MeanShiftBaseline(Strategy):
         groups = [inputs.control_value] * n_cells
         for target in targets:
             groups.extend([target] * n_cells)
-        values = np.zeros((len(groups), n_genes), dtype=np.float32)
+        basal_mean = _basal_mean_vector(inputs, n_genes)
+        values = np.repeat(basal_mean[np.newaxis, :], len(groups), axis=0)
         meta = {
             "strategy": self.name,
             "normalization": inputs.normalization,
@@ -123,7 +152,7 @@ class MeanShiftBaseline(Strategy):
 # --------------------------------------------------------------------------- #
 
 
-def cell_eval_h5ad(gene_order, groups, values, pert_col="perturbation", control="control"):
+def cell_eval_h5ad(gene_order, groups, values, pert_col="target_gene", control="non-targeting"):
     """Build a cell-eval-ready AnnData (X + obs[pert_col] + var gene axis).
 
     Returns None if `anndata` isn't installed so the metadata contract can still
@@ -167,6 +196,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--meta", default=None, help="optional meta.json path")
     p.add_argument("--normalization", default="log1p", choices=["counts", "log1p"])
     p.add_argument("--strategy", default="mean-shift", choices=["mean-shift"])
+    p.add_argument(
+        "--pert-col",
+        default="target_gene",
+        help="obs column for perturbation labels (cell-eval default: target_gene)",
+    )
+    p.add_argument(
+        "--control-pert",
+        default="non-targeting",
+        help="control group label (cell-eval default: non-targeting)",
+    )
     return p
 
 
@@ -177,6 +216,8 @@ def main(argv=None) -> int:
         targets_path=Path(args.targets),
         gene_order_path=Path(args.gene_order),
         normalization=args.normalization,
+        pert_col=args.pert_col,
+        control_value=args.control_pert,
     )
     inputs.validate()
 
