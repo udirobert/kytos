@@ -38,8 +38,14 @@ def provenance_from_run(run_dir: Path, meta: dict) -> dict:
                 break
         commit = git_head_commit(repo_root)
 
-    return {
+    prov: dict = {
         "commit": commit or "unknown",
         "seed": int(meta.get("seed", 0)),
         "code_hash": code.get("hash") or read_text_if_exists(run_dir / "codehash") or "unknown",
     }
+    # Scoring coverage caveat (e.g. seeded subsample) must be visible wherever
+    # provenance is shown — real numbers on reduced coverage are still real,
+    # but the reader must see the reduction.
+    if meta.get("scoring_subsample"):
+        prov["coverage"] = str(meta["scoring_subsample"])
+    return prov

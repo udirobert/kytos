@@ -4,12 +4,15 @@ Declared for the 2026 Virtual Cell Challenge. Install via `uv` (cell-eval's
 documented distribution path). Python 3.14.5 is present here; `uv` 0.5.9 is
 available.
 
-**Platform note (2026-08-22):** `torch` (pulled by `scvi-tools`/`scanpy`) has
-**no Python 3.14 wheel** for this platform — a full `uv sync` currently fails
-(`torch==2.13.0` resolution error). The **heavy stack is pinned to Python
-3.12** once the science track starts. The Observatory `.venv` (Python 3.12)
-already works with just the partner clients (`openai`, `tavily-python`,
-`fal-client`) — see [`tools/README.md`](../tools/README.md).
+**Platform note (updated 2026-08-22, evening):** `uv sync` now works end to
+end. Two gotchas were fixed: (1) `torch` ≥2.13 ships no macOS wheels at all,
+so `pyproject.toml` forks the constraint (`torch<2.13` on darwin, latest
+elsewhere — uv resolves a per-platform lock fork); (2) the local `.venv` had
+accidentally been created from an **x86_64 (Rosetta) Python** — recreated as
+arm64 (`uv venv --python cpython-3.12.8-macos-aarch64`). On this machine the
+env resolves to torch 2.12.1; full suite: 89/89 green in one command
+(`uv run pytest`). `.venv-science` (uv-managed CPython 3.12.8, cell-eval +
+pdex) remains the eval environment.
 
 ## Core inference/env stack
 

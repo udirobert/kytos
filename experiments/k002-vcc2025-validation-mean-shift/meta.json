@@ -3,7 +3,7 @@
   "created": "2026-08-22",
   "task": "baseline",
   "headline": "First real cell-eval run — mean-shift floor vs VCC 2025 validation (H1 hESC, 50 targets)",
-  "data_status": "real",
+  "data_status": "final",
   "inputs": {
     "source_url": "https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/validation/adata_Validation.h5ad",
     "source_sha256_12": "376f0bab27d9f22e",
@@ -21,7 +21,7 @@
   "seed": 0,
   "normalization": "normalize_total(1e4) + log1p",
   "artifact_retention": "prediction + normalized h5ads live under gitignored data/raw (369MB+); committed artifacts are metrics/audit/facts/enrichment only (docs/release-infrastructure.md)",
-  "scoring_subsample": "score matrix subsampled (seed 0): 200 cells/perturbation, 3000 controls (~13k cells) — full-depth 51-group DE ran ~12h ETA on this hardware; k003 will score full depth. Scripts: data/raw/vcc2025/subsample_k002.py, score_k002_sub.sh",
+  "scoring_subsample": "200 cells/pert + 3,000 controls (seed 0) of 98,927 — full depth pending k003",
   "hypotheses_preregistered": [
     "Zero-shift floor: DESigGenesRecall lands at or near zero — a constant prediction has no DE genes to recall",
     "Mean absolute error will beat replicate-naive intuition but pearson_delta will sit far below the computed ceiling"

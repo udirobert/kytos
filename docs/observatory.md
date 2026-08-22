@@ -340,10 +340,39 @@ Training strategy in code (in order): reuse deployed model → label-existing �
 labels from base GLiNER2 + regex fallback → upload JSONL → synthetic `/generate`
 (last resort).
 
+### Shipped since Milestone 0 (2026-08-22)
+
+- **k002 — first real `cell-eval` 0.8.2 run.** VCC 2025 validation (H1 hESC,
+  98,927 cells, 50 targets; public Arc bucket, sha256-checked) through the
+  actual submission harness → mean-shift prediction → `ceiling/targets` +
+  `de/targets` → adapter import. Floor results: DE sig-genes recall 0.0 vs
+  ceiling 0.494; pearson_delta mathematically undefined (constant prediction)
+  vs ceiling 0.667; audit clean. The mirror image of k001: invisible to the
+  audit, legible to the metric. Both preregistered hypotheses confirmed.
+  Scoring matrix subsampled (200 cells/pert + 3,000 controls, seed 0) —
+  disclosed in meta.json and on the page; full-depth run queued as k003.
+- **Undefined-metric honesty end to end.** NaN → empty CSV cell → JSON null
+  → "undefined"/"not reported" rendering across chart, pillars, comparison,
+  home pill. Metric-name aliasing bridges cell-eval's schema to our facts.
+- **Narrative grounding checker** (`tools/check_narrative.py`, deterministic,
+  offline): digest numbers must trace to facts.json, no debug-annotation
+  leaks (`(facts:…)` — root-caused in the generator prompt), per-gene
+  directionality claims allowed only for genes downstream of the flagged
+  pathway. Caught a Venice hallucination (invented ISG15/IFIT1/MX1/OAS1
+  directions) the day it shipped. Third Trust card on every run page.
+- **Autonomy loop** (`.github/workflows/observatory.yml`): push touching
+  experiments/tools/src/frontend (+ weekly cron) → test gate → per-run
+  enrichment → build smoke → bot commits artifacts back. Degrades gracefully
+  without secrets.
+- k001 critique link 404 fixed; runs-header atmosphere containment fixed;
+  literature rail scrubbed of scrape residue and deduped.
+
 ### Later (Aug → Nov 2026)
 
-- k001 through harness → `cell-eval run --ceiling`
-- Each new run auto-publishes to Observatory
+- k003 = full-depth cell-eval scoring (the deterministic checker matrix
+  already in place; just needs overnight GPU-free time)
+- Each new run auto-publishes to Observatory (workflow above; secrets needed
+  for enrichment steps in CI)
 - Leaderboard tracker; audit rules mature; weekly digests
 - Final submission: `submission/script.py` → H5AD (Nov 5)
 

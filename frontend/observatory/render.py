@@ -1776,12 +1776,16 @@ def _provenance_block(prov: dict, run_id: str) -> str:
         f"python -m kytos.audit --run experiments/{_h(run_id)} "
         f"&amp;&amp; python -m kytos.eval.facts --run experiments/{_h(run_id)}"
     )
+    coverage_row = ""
+    if prov.get("coverage"):
+        coverage_row = f"<dt>coverage</dt><dd>{_h(str(prov['coverage']))}</dd>"
     return f"""
     <footer class="provenance provenance-compact">
       <dl>
         <dt>commit</dt><dd><code>{_h(str(prov.get("commit", "")))}</code></dd>
         <dt>seed</dt><dd>{_h(str(prov.get("seed", "")))}</dd>
         <dt>code_hash</dt><dd><code>{_h(str(prov.get("code_hash", "")))}</code></dd>
+        {coverage_row}
       </dl>
       <div class="terminal-widget">
         <div class="terminal-widget-header">
