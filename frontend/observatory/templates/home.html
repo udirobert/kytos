@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+{{ nav | safe }}
+{% if latest %}
+<section class="home-stage">
+  {{ bio_atmosphere | safe }}
+  {% if presenter_bg %}
+  {{ presenter_bg | safe }}
+  {% endif %}
+  <div class="home-hero-grid">
+    <div class="home-vessel-column">
+      <div class="vessel-fullscreen vessel-3d-container vessel-home" id="vessel-canvas">
+        {% if hero_img %}{{ hero_img | safe }}{% endif %}
+        <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
+        <div class="vessel-svg-fallback">{{ svg | safe }}</div>
+        <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
+        {{ vessel_onboard_html | safe }}
+        <script type="application/json" id="vessel-data">{{ vessel_json | safe }}</script>
+      </div>
+      {{ vessel_legend | safe }}
+    </div>
+    <div class="home-copy-column home-overlay">
+      <div class="home-overlay-content">
+        <h1 class="home-headline">
+          We publish every prediction — and
+          <em>every time biology says we&rsquo;re wrong.</em>
+        </h1>
+        <p class="home-subline">
+          Run #{{ run_index }} of {{ vcc_days }} · Virtual Cell Challenge 2026
+        </p>
+        {{ proof | safe }}
+        <div class="home-cta-row">
+          <a class="button" href="{{ run_href }}">View run #{{ run_index }} →</a>
+        </div>
+        <p class="home-about-link">
+          <a href="{{ about_href }}">About the 78-day build</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="home-stage">
+  <h1 class="home-headline">Waiting for the first run</h1>
+  <p class="home-lede">The Observatory lights up when the first experiment lands.</p>
+</section>
+{% endif %}
+{% endblock %}

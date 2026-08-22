@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en" class="{% if meta.needs_vessel %}vessel-pending{% endif %}">
+<head>
+  {{ head_tags | safe }}
+</head>
+<body class="{{ body_class }}">
+  {% block content %}{% endblock %}
+  <script src="{{ root_prefix }}static/site.js" defer></script>
+</body>
+</html>

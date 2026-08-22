@@ -1,0 +1,19 @@
+<nav class="evidence-journey" aria-label="Run evidence journey">
+  <span class="journey-label">specimen trail</span>
+  <div class="journey-steps">
+    {% for step in steps %}
+    <a class="journey-step journey-step-{{ step.accent }}" href="#{{ step.id }}" data-journey-target="{{ step.id }}">
+      <span class="journey-step-number">{{ step.number }}</span>
+      <span class="journey-step-copy"><strong>{{ step.title }}</strong><small>{{ step.hint }}</small></span>
+    </a>
+    {% endfor %}
+  </div>
+  <span class="journey-progress" aria-hidden="true"><span></span></span>
+  <span class="journey-live" aria-live="polite">
+    <span class="journey-live-dot" aria-hidden="true"></span>
+    <span class="journey-live-copy">
+      <strong class="journey-live-title">Audit</strong>
+      <small class="journey-live-hint">stress detected</small>
+    </span>
+  </span>
+</nav>

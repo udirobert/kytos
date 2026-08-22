@@ -11,6 +11,7 @@ from frontend.observatory import data as data_mod
 from frontend.observatory.charts import metrics_bar_chart
 from frontend.observatory.meta import PageMeta, SITE_DESCRIPTION, render_head_tags
 from frontend.observatory.runs import RunSummary
+from frontend.observatory.templates import render_template
 
 SITE_TITLE = "Kytos Observatory"
 
@@ -385,7 +386,20 @@ def _home_vessel_legend_html(vd: dict[str, Any], *, about_href: str) -> str:
 
 
 def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
+    meta = PageMeta(
+        title="Home",
+        description=SITE_DESCRIPTION,
+        canonical_path="/",
+    )
     latest = runs[-1] if runs else None
+    context: dict[str, Any] = {
+        "meta": meta,
+        "head_tags": render_head_tags(meta, root_prefix=root_prefix),
+        "body_class": "page-home",
+        "root_prefix": root_prefix,
+        "nav": _nav("home", runs, root_prefix=root_prefix),
+        "latest": latest is not None,
+    }
     if latest:
         run_href = f"{root_prefix}runs/{_h(latest.run_id)}/index.html"
         vd = _vessel_data(latest.facts)
@@ -418,64 +432,24 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
             </div>
             """
 
-        stage = f"""
-        <section class="home-stage">
-          {_bio_atmosphere(variant="home", density="light")}
-          {presenter_bg}
-          <div class="home-hero-grid">
-            <div class="home-vessel-column">
-              <div class="vessel-fullscreen vessel-3d-container vessel-home" id="vessel-canvas">
-                {hero_img}
-                <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
-                <div class="vessel-svg-fallback">{svg}</div>
-                <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
-                {_VESSEL_ONBOARD_HTML}
-                <script type="application/json" id="vessel-data">{vessel_json}</script>
-              </div>
-              {vessel_legend}
-            </div>
-            <div class="home-copy-column home-overlay">
-              <div class="home-overlay-content">
-                <h1 class="home-headline">
-                  We publish every prediction — and
-                  <em>every time biology says we&rsquo;re wrong.</em>
-                </h1>
-                <p class="home-subline">
-                  Run #{run_index} of {VCC_DAYS} · Virtual Cell Challenge 2026
-                </p>
-                {proof}
-                <div class="home-cta-row">
-                  <a class="button" href="{run_href}">View run #{run_index} →</a>
-                </div>
-                <p class="home-about-link">
-                  <a href="{about_href}">About the 78-day build</a>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-        """
-    else:
-        stage = """
-        <section class="home-stage">
-          <h1 class="home-headline">Waiting for the first run</h1>
-          <p class="home-lede">The Observatory lights up when the first experiment
-          lands.</p>
-        </section>
-        """
+        context.update(
+            {
+                "bio_atmosphere": _bio_atmosphere(variant="home", density="light"),
+                "presenter_bg": presenter_bg,
+                "hero_img": hero_img,
+                "svg": svg,
+                "vessel_onboard_html": _VESSEL_ONBOARD_HTML,
+                "vessel_json": vessel_json,
+                "vessel_legend": vessel_legend,
+                "run_index": run_index,
+                "vcc_days": VCC_DAYS,
+                "proof": proof,
+                "run_href": run_href,
+                "about_href": about_href,
+            }
+        )
 
-    body = _nav("home", runs, root_prefix=root_prefix) + stage
-    meta = PageMeta(
-        title="Home",
-        description=SITE_DESCRIPTION,
-        canonical_path="/",
-    )
-    return (
-        _head(meta, root_prefix=root_prefix)
-        + f'<body class="page-home">{body}'
-        + f'<script src="{root_prefix}static/site.js" defer></script>'
-        + "</body></html>"
-    )
+    return render_template("home.html", **context)
 
 
 def _timeline_html() -> str:
@@ -757,14 +731,6 @@ def _substantiation_about_html(runs: list[RunSummary]) -> str:
 
 
 def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
-    body = (
-        _nav("about", runs, root_prefix=root_prefix)
-        + '<main class="content about-content">'
-        + _timeline_html()
-        + _vessel_about_panel(runs)
-        + _substantiation_about_html(runs)
-        + "</main>"
-    )
     meta = PageMeta(
         title="About",
         description=(
@@ -773,12 +739,17 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         ),
         canonical_path="/about/",
     )
-    return (
-        _head(meta, root_prefix=root_prefix)
-        + f'<body class="page-about">{body}'
-        + f'<script src="{root_prefix}static/site.js" defer></script>'
-        + "</body></html>"
-    )
+    context = {
+        "meta": meta,
+        "head_tags": render_head_tags(meta, root_prefix=root_prefix),
+        "body_class": "page-about",
+        "root_prefix": root_prefix,
+        "nav": _nav("about", runs, root_prefix=root_prefix),
+        "timeline_html": _timeline_html(),
+        "vessel_about_panel": _vessel_about_panel(runs),
+        "substantiation_about_html": _substantiation_about_html(runs),
+    }
+    return render_template("about.html", **context)
 
 
 def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
@@ -835,11 +806,7 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         """
 
     insight_cards = _runs_insight_cards(runs, root_prefix=root_prefix)
-    body = (
-        _nav("runs", runs, root_prefix=root_prefix)
-        + header
-        + f'<main class="content"><div class="run-grid">{cards}{insight_cards}</div></main>'
-    )
+    matrix = _runs_comparison_matrix(runs, root_prefix=root_prefix)
     meta = PageMeta(
         title="Runs",
         description=(
@@ -848,39 +815,104 @@ def render_runs_index(runs: list[RunSummary], *, root_prefix: str = "../") -> st
         canonical_path="/runs/",
         needs_vessel=False,
     )
-    return _head(meta, root_prefix=root_prefix) + f'<body class="page-runs">{body}</body></html>'
+    context = {
+        "meta": meta,
+        "head_tags": render_head_tags(meta, root_prefix=root_prefix),
+        "body_class": "page-runs",
+        "root_prefix": root_prefix,
+        "nav": _nav("runs", runs, root_prefix=root_prefix),
+        "header": header,
+        "matrix": matrix,
+        "cards": cards,
+        "insight_cards": insight_cards,
+    }
+    return render_template("runs_index.html", **context)
+
+
+def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
+    """Render a cross-experiment scorecard table comparing all runs."""
+    if not runs:
+        return ""
+    rows: list[dict[str, Any]] = []
+    for run in runs:
+        facts = run.facts
+        meta = run.meta
+        href = f"{_h(run.run_id)}/index.html"
+        severity = _run_severity(facts)
+        vd = _vessel_data(facts)
+        status_badge = _data_status_badge(facts, meta)
+        strategy = (
+            meta.get("strategy") or facts.get("provenance", {}).get("strategy") or "mean-shift"
+        )
+
+        metrics = facts.get("headline_metrics") or {}
+        recall = metrics.get("DESigGenesRecall")
+        recall_str = f"{float(recall):.3f}" if recall is not None else "—"
+
+        pearson = metrics.get("pearson_delta")
+        pearson_str = f"{float(pearson):.3f}" if pearson is not None else "—"
+
+        flags = facts.get("audit_flags") or []
+        warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
+        info = sum(1 for f in flags if f.get("severity") == "info")
+
+        if warns > 0:
+            audit_badge = f'<span class="audit-badge audit-badge-warn">{warns} warn</span>'
+        elif info > 0:
+            audit_badge = f'<span class="audit-badge audit-badge-info">{info} info</span>'
+        else:
+            audit_badge = '<span class="audit-badge audit-badge-pass">clean</span>'
+
+        rows.append(
+            {
+                "run_id": run.run_id,
+                "href": href,
+                "severity": severity,
+                "strategy": strategy,
+                "status_badge": status_badge,
+                "fill_pct": vd["fill_pct"],
+                "recall_str": recall_str,
+                "pearson_str": pearson_str,
+                "audit_badge": audit_badge,
+            }
+        )
+
+    return render_template("components/matrix.html", rows=rows)
 
 
 def _evidence_journey() -> str:
     """Run-detail navigation rail: one route through the evidence."""
-    steps = (
-        ("audit", "01", "Audit", "stress detected", "amber"),
-        ("evidence", "02", "Evidence", "field context", "teal"),
-        ("narrative", "03", "Digest", "grounded account", "violet"),
-        ("trust", "04", "Trust", "reproduce + verify", "cyan"),
-    )
-    items = "".join(
-        f'<a class="journey-step journey-step-{accent}" href="#{section_id}" '
-        f'data-journey-target="{section_id}">'
-        f'<span class="journey-step-number">{number}</span>'
-        f'<span class="journey-step-copy"><strong>{title}</strong><small>{hint}</small></span>'
-        f"</a>"
-        for section_id, number, title, hint, accent in steps
-    )
-    return f"""
-    <nav class="evidence-journey" aria-label="Run evidence journey">
-      <span class="journey-label">specimen trail</span>
-      <div class="journey-steps">{items}</div>
-      <span class="journey-progress" aria-hidden="true"><span></span></span>
-      <span class="journey-live" aria-live="polite">
-        <span class="journey-live-dot" aria-hidden="true"></span>
-        <span class="journey-live-copy">
-          <strong class="journey-live-title">Audit</strong>
-          <small class="journey-live-hint">stress detected</small>
-        </span>
-      </span>
-    </nav>
-    """
+    steps = [
+        {
+            "id": "audit",
+            "number": "01",
+            "title": "Audit",
+            "hint": "stress detected",
+            "accent": "amber",
+        },
+        {
+            "id": "evidence",
+            "number": "02",
+            "title": "Evidence",
+            "hint": "field context",
+            "accent": "teal",
+        },
+        {
+            "id": "narrative",
+            "number": "03",
+            "title": "Digest",
+            "hint": "grounded account",
+            "accent": "violet",
+        },
+        {
+            "id": "trust",
+            "number": "04",
+            "title": "Trust",
+            "hint": "reproduce + verify",
+            "accent": "cyan",
+        },
+    ]
+    return render_template("components/journey.html", steps=steps)
 
 
 def render_run_detail(
@@ -961,76 +993,6 @@ def render_run_detail(
         + "</details>"
     )
 
-    body = f"""
-    <section class="run-hero">
-      {_bio_atmosphere(variant="detail", density="light")}
-      <div class="vessel-fullscreen vessel-3d-container vessel-run" id="vessel-canvas">
-        <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
-        <div class="vessel-svg-fallback">{_vessel_svg(facts, clip_id="vessel-clip-run")}</div>
-        <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
-        <script type="application/json" id="vessel-data">{json.dumps(vd)}</script>
-      </div>
-      <div class="run-hero-overlay">
-        {_nav(run.run_id, runs, root_prefix=root_prefix)}
-        {_confession_banner(facts, run.run_id)}
-        {
-        _run_header_compact(
-            run,
-            runs,
-            facts,
-            visual,
-            score_line,
-            root_prefix=root_prefix,
-        )
-    }
-      </div>
-    </section>
-    <main class="run-evidence">
-      {_evidence_journey()}
-      {
-        _disclosure_section(
-            "Audit & metrics",
-            _audit_summary(facts),
-            audit_inner,
-            open_default=True,
-            section_id="audit",
-            accent="amber",
-        )
-    }
-      {
-        _disclosure_section(
-            "Evidence",
-            evidence_hint,
-            evidence_body,
-            open_default=False,
-            section_id="evidence",
-            accent="teal",
-        )
-    }
-      {
-        _disclosure_section(
-            "Narrative digest",
-            _narrative_label(narrative),
-            narrative_html,
-            open_default=False,
-            section_id="narrative",
-            accent="violet",
-        )
-    }
-      {
-        _disclosure_section(
-            "Trust & provenance",
-            "Self-tests + reproduce command",
-            trust_body,
-            open_default=False,
-            section_id="trust",
-            accent="cyan",
-        )
-    }
-    </main>
-    <script src="{root_prefix}static/site.js" defer></script>
-    """
-
     headline = str(facts.get("headline", run.run_id))
     desc_bits = [headline]
     if headline_m:
@@ -1048,7 +1010,76 @@ def render_run_detail(
         needs_vessel=True,
     )
 
-    return _head(meta, root_prefix=root_prefix) + f"<body class='page-run'>{body}</body></html>"
+    context = {
+        "meta": meta,
+        "head_tags": render_head_tags(meta, root_prefix=root_prefix),
+        "body_class": "page-run",
+        "root_prefix": root_prefix,
+        "bio_atmosphere": _bio_atmosphere(variant="detail", density="light"),
+        "vessel_svg": _vessel_svg(facts, clip_id="vessel-clip-run"),
+        "vessel_json": json.dumps(vd),
+        "presenter_overlay": (
+            _presenter_overlay(run, root_prefix, visual) if visual.get("presenter") else ""
+        ),
+        "nav": _nav(run.run_id, runs, root_prefix=root_prefix),
+        "confession_banner": _confession_banner(facts, run.run_id),
+        "run_header": _run_header_compact(
+            run,
+            runs,
+            facts,
+            visual,
+            score_line,
+            root_prefix=root_prefix,
+        ),
+        "evidence_journey": _evidence_journey(),
+        "panel_audit": _disclosure_section(
+            "Audit & metrics",
+            _audit_summary(facts),
+            audit_inner,
+            open_default=True,
+            section_id="audit",
+            accent="amber",
+        ),
+        "panel_evidence": _disclosure_section(
+            "Evidence",
+            evidence_hint,
+            evidence_body,
+            open_default=False,
+            section_id="evidence",
+            accent="teal",
+        ),
+        "panel_narrative": _disclosure_section(
+            "Narrative digest",
+            _narrative_label(narrative),
+            narrative_html,
+            open_default=False,
+            section_id="narrative",
+            accent="violet",
+        ),
+        "panel_trust": _disclosure_section(
+            "Trust & provenance",
+            "Self-tests + reproduce command",
+            trust_body,
+            open_default=False,
+            section_id="trust",
+            accent="cyan",
+        ),
+    }
+
+    return render_template("run_detail.html", **context)
+
+
+def _presenter_overlay(run: RunSummary, root_prefix: str, visual: dict) -> str:
+    """Dr. Kytos presenter video overlay for the run detail hero."""
+    presenter_path = visual.get("presenter", "")
+    src = f"{_h(root_prefix)}runs/{_h(run.run_id)}/{_h(presenter_path)}"
+    return f"""
+    <div class="run-hero-presenter">
+      <video class="run-hero-presenter-video" src="{src}"
+             autoplay muted loop playsinline preload="auto"></video>
+      <div class="run-hero-presenter-badge">KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT</div>
+    </div>
+    """
 
 
 def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:

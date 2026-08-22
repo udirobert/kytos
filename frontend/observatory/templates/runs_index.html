@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+{{ nav | safe }}
+{{ header | safe }}
+<main class="content">
+  {{ matrix | safe }}
+  <div class="run-grid">
+    {{ cards | safe }}
+    {{ insight_cards | safe }}
+  </div>
+</main>
+{% endblock %}

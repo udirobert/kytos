@@ -1,0 +1,11 @@
+<section class="disclosure-panel disclosure-{{ name_slug }}" id="{{ name_slug }}">
+  <div class="disclosure-header">
+    <div class="disclosure-title-group">
+      <h2 class="disclosure-title">{{ title }}</h2>
+      {% if summary %}<span class="disclosure-summary">{{ summary }}</span>{% endif %}
+    </div>
+  </div>
+  <div class="disclosure-content">
+    {{ inner_html | safe }}
+  </div>
+</section>

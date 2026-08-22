@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+{{ nav | safe }}
+<main class="content about-content">
+  {{ timeline_html | safe }}
+  {{ vessel_about_panel | safe }}
+  {{ substantiation_about_html | safe }}
+</main>
+{% endblock %}

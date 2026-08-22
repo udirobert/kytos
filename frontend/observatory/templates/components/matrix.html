@@ -1,0 +1,48 @@
+<section class="runs-matrix-section">
+  <div class="runs-matrix-header">
+    <h2>Cross-experiment matrix</h2>
+    <p class="muted">Side-by-side scorecard comparing models, ceiling headroom, and biological sanity flags.</p>
+  </div>
+  <div class="runs-matrix-wrap">
+    <table class="runs-matrix-table">
+      <thead>
+        <tr>
+          <th>Run ID</th>
+          <th>Strategy</th>
+          <th>Status</th>
+          <th>Ceiling headroom</th>
+          <th>DE gene recall</th>
+          <th>Pearson Δ</th>
+          <th>Audit</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>
+            <a class="table-run-link" href="{{ row.href }}">
+              <span class="run-pill-dot dot-{{ row.severity }}"></span>
+              <strong>{{ row.run_id }}</strong>
+            </a>
+          </td>
+          <td><code class="strategy-badge">{{ row.strategy }}</code></td>
+          <td>{{ row.status_badge | safe }}</td>
+          <td>
+            <div class="table-fill-bar-wrap" title="Ceiling headroom: {{ row.fill_pct }}%">
+              <span class="table-fill-val">{{ row.fill_pct }}%</span>
+              <div class="table-fill-track">
+                <div class="table-fill-prog" style="width: {{ row.fill_pct }}%;"></div>
+              </div>
+            </div>
+          </td>
+          <td class="table-metric">{{ row.recall_str }}</td>
+          <td class="table-metric">{{ row.pearson_str }}</td>
+          <td>{{ row.audit_badge | safe }}</td>
+          <td><a class="btn-table-view" href="{{ row.href }}">Inspect →</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>

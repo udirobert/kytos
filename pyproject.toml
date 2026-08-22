@@ -15,6 +15,7 @@ dependencies = [
     "anndata",
     "scanpy",
     "scvi-tools",
+    "jinja2>=3.1",
 ]
 
 [project.optional-dependencies]

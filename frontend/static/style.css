@@ -472,6 +472,23 @@ html[data-journey-state="trust"] .journey-progress span { background: var(--ceil
   display: none;
 }
 
+/* Dr. Kytos presenter background — full-bleed video on home */
+.home-presenter-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.home-presenter-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.35;
+  filter: saturate(0.7);
+}
+
 /* Full-bleed 3D vessel as background */
 .home-stage .vessel-fullscreen {
   position: absolute;
@@ -1246,6 +1263,163 @@ html.no-webgl .vessel-loading {
   line-height: 1.45;
 }
 
+/* ── Runs Cross-Experiment Comparison Matrix ────────────────────────── */
+.runs-matrix-section {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.runs-matrix-header {
+  margin-bottom: 1.2rem;
+}
+
+.runs-matrix-header h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+.runs-matrix-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.runs-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.runs-matrix-table th {
+  padding: 0.6rem 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.runs-matrix-table td {
+  padding: 0.75rem 0.8rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.runs-matrix-table tr:hover td {
+  background: rgba(45, 212, 191, 0.03);
+}
+
+.table-run-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
+  font-family: var(--mono);
+}
+
+.table-run-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.strategy-badge {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--text);
+}
+
+.table-fill-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+}
+
+.table-fill-val {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  width: 2.2rem;
+}
+
+.table-fill-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.table-fill-prog {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+.table-metric {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.audit-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.audit-badge-warn {
+  background: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+.audit-badge-info {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.audit-badge-pass {
+  background: rgba(45, 212, 191, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+.btn-table-view {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--accent);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.btn-table-view:hover {
+  background: rgba(45, 212, 191, 0.12);
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
 .run-insight-card {
   cursor: default;
   border-style: dashed;
@@ -1643,6 +1817,39 @@ a.run-insight-card:hover {
     rgba(8, 20, 30, 0.12) 88%,
     transparent 100%
   );
+}
+
+/* Dr. Kytos presenter overlay on run detail hero */
+.run-hero-presenter {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+.run-hero-presenter-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.4;
+  filter: saturate(0.65);
+}
+.run-hero-presenter-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1.25rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-family: var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(17, 48, 74, 0.72);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  backdrop-filter: blur(6px);
+  z-index: 3;
 }
 
 .run-hero-overlay .eyebrow {
