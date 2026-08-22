@@ -294,7 +294,8 @@ def render_run_detail(
     lit_html = _literature_rail(literature)
 
     entities = data_mod.load_entity_extractions(run.path)
-    entity_html = _entity_rail(entities)
+    entity_summary = data_mod.summarize_entity_extractions(entities)
+    entity_html = _entity_rail(entities, entity_summary)
 
     prov = facts.get("provenance") or {}
     headline_m = facts.get("headline_metrics") or {}
@@ -341,6 +342,15 @@ def render_run_detail(
             <span class="data-strip-label">info</span>
             {_count_span("data-strip-value", vd["infos"])}
           </span>
+          {"<span class='data-strip-sep'></span>" if entity_summary["total_entities"] else ""}
+          {
+        f'''<span class="data-strip-item">
+            <span class="data-strip-label">entities</span>
+            {_count_span("data-strip-value", entity_summary["total_entities"])}
+          </span>'''
+        if entity_summary["total_entities"]
+        else ""
+    }
         </div>
       </div>
     </section>
@@ -361,9 +371,9 @@ def render_run_detail(
         <p class="panel-note">Tavily enrichment · auxiliary evidence</p>
         {lit_html}
       </section>
-      <section class="panel collapsible">
+      <section class="panel collapsible" id="biomedical-ner">
         <h2>Biomedical NER</h2>
-        <p class="panel-note">Pioneer GLiNER2 · deterministic entity extraction</p>
+        <p class="panel-note">{_entity_panel_note(entity_summary)}</p>
         {entity_html}
       </section>
       <section class="panel">
@@ -428,7 +438,7 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
         return f"""
         <div class="hero-fullscreen hero-video">
           <video class="briefing-video" src="{src}" autoplay muted loop playsinline
-                 controls poster="{poster}"></video>
+                 controls poster="{poster}" preload="metadata"></video>
           <span class="briefing-stamp">kytos newsroom · run #1 of 78 · the oracle speaks</span>
         </div>
         """
@@ -611,16 +621,72 @@ def _literature_rail(items: list[dict[str, Any]]) -> str:
     return "".join(blocks)
 
 
-def _entity_rail(items: list[dict[str, Any]]) -> str:
+def _entity_panel_note(summary: dict[str, Any]) -> str:
+    if not summary.get("gene_count"):
+        return (
+            "Pioneer GLiNER2 · fine-tuned on Tavily literature when available · "
+            "regex fallback offline"
+        )
+    label_bits = ", ".join(
+        f"{count} {_h(label.replace('_', ' '))}"
+        for label, count in sorted(
+            (summary.get("label_totals") or {}).items(),
+            key=lambda item: (-item[1], item[0]),
+        )[:4]
+    )
+    model_label = summary.get("model_label") or "unknown"
+    badge_cls = "pioneer-badge-finetuned" if summary.get("is_fine_tuned") else "pioneer-badge-base"
+    model_id = summary.get("model_id") or ""
+    job_hint = ""
+    if summary.get("is_fine_tuned") and model_id:
+        job_hint = f" · job <code>{_h(model_id[:8])}…</code>"
+    return (
+        f'<a href="https://docs.pioneer.ai" rel="noopener">Pioneer</a> '
+        f'<span class="pioneer-badge {badge_cls}">{_h(model_label)}</span>'
+        f" · {summary['total_entities']} entities across {summary['gene_count']} genes"
+        f"{job_hint}"
+        f"{f' · {label_bits}' if label_bits else ''}"
+    )
+
+
+def _entity_method_badge(item: dict[str, Any]) -> str:
+    label = data_mod.entity_model_label(item)
+    if label == "fine-tuned LoRA":
+        cls = "pioneer-badge pioneer-badge-finetuned"
+    elif label == "regex fallback":
+        cls = "pioneer-badge pioneer-badge-fallback"
+    else:
+        cls = "pioneer-badge pioneer-badge-base"
+    return f'<span class="{cls}">{_h(label)}</span>'
+
+
+def _entity_rail(items: list[dict[str, Any]], summary: dict[str, Any]) -> str:
     if not items:
         return (
             '<p class="muted">NER pending — run '
+            "<code>tools/pioneer_ner.py --train</code> once, then "
             "<code>tools/pioneer_ner.py --run experiments/&lt;run-id&gt;</code>.</p>"
         )
-    blocks = []
+
+    label_pills = "".join(
+        f'<span class="entity-label-pill entity-{_h(label)}">'
+        f"{_h(label.replace('_', ' '))} · {count}</span>"
+        for label, count in sorted(
+            (summary.get("label_totals") or {}).items(),
+            key=lambda item: (-item[1], item[0]),
+        )
+    )
+    header = (
+        f'<div class="entity-summary">'
+        f'<span class="entity-stat">{summary["total_entities"]} entities</span>'
+        f'<span class="entity-stat">{summary["gene_count"]} genes</span>'
+        f"{label_pills}"
+        f"</div>"
+    )
+
+    blocks = [header]
     for item in items:
         gene = item.get("source_gene", "gene")
-        method = item.get("method", "?")
         count = item.get("entity_count", 0)
         by_label = item.get("by_label") or {}
         chips = []
@@ -628,11 +694,12 @@ def _entity_rail(items: list[dict[str, Any]]) -> str:
             for text in texts:
                 chips.append(
                     f'<span class="entity-chip entity-{_h(label)}">{_h(text)}'
-                    f'<span class="entity-label">{_h(label)}</span></span>'
+                    f'<span class="entity-label">{_h(label.replace("_", " "))}</span></span>'
                 )
+        empty = '<span class="muted">none</span>'
         blocks.append(
             f'<details open><summary>{_h(gene)} <span class="entity-meta">'
-            f"{count} entities · {_h(method)}</span></summary>"
-            f'<div class="entity-grid">{" ".join(chips)}</div></details>'
+            f"{count} entities · {_entity_method_badge(item)}</span></summary>"
+            f'<div class="entity-grid">{" ".join(chips) if chips else empty}</div></details>'
         )
     return "".join(blocks)
