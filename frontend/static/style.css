@@ -778,6 +778,61 @@ html.no-webgl .vessel-loading {
 
 .home-overlay-content {
   max-width: 700px;
+  position: relative;
+}
+
+/* ── Home flow: 3-phase guided disclosure ──────────────────────────────── */
+/* Each phase shows 3 things. Advancing closes the current phase and opens
+   the next. The container height animates between phases to avoid jumps. */
+.home-flow {
+  position: relative;
+}
+
+.home-phase {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.home-phase.is-active {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-phase { transition: none !important; }
+}
+
+.home-phase-cta {
+  margin-top: 0.5rem;
+}
+
+.home-phase-back {
+  margin-top: 0.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.home-phase-back:hover {
+  color: var(--ink);
+}
+
+.home-proof-wrap {
+  text-align: center;
 }
 
 .home-stage .vessel-3d-container,

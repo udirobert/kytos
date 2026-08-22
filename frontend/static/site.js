@@ -977,20 +977,50 @@
     start();
   }
 
-  // ── Home proof pill: delayed reveal ────────────────────────────────────────
-  // Fades in the evidence pill 3s after load, after the user has had time to
-  // absorb the headline + carousel pitch. Progressive disclosure: the
-  // evidence arrives after the argument, not competing with it.
-  function initHomeProofDelayed() {
-    var el = document.getElementById("home-proof-delayed");
-    if (!el) return;
-    if (prefersReducedMotion()) {
-      el.classList.add("is-shown");
-      return;
+  // ── Home flow: 3-phase guided disclosure ───────────────────────────────────
+  // Each phase shows 3 things. Clicking the CTA closes the current phase and
+  // opens the next. Back returns to phase 1. The carousel auto-starts when
+  // phase 2 becomes active, and stops when it leaves.
+  function initHomeFlow() {
+    var flow = document.getElementById("home-flow");
+    if (!flow) return;
+
+    var phases = flow.querySelectorAll(".home-phase");
+    var carouselStarted = false;
+
+    function goTo(n) {
+      phases.forEach(function (p) {
+        var phaseNum = parseInt(p.dataset.phase, 10);
+        if (phaseNum === n) {
+          p.hidden = false;
+          p.classList.add("is-active");
+          // Re-trigger stagger entrance
+          p.classList.remove("is-shown");
+          void p.offsetHeight;
+          p.classList.add("is-shown");
+          // Start carousel when entering phase 2
+          if (phaseNum === 2 && !carouselStarted) {
+            carouselStarted = true;
+            initHomeCatchCarousel();
+          }
+        } else {
+          p.classList.remove("is-active");
+          p.classList.remove("is-shown");
+          p.hidden = true;
+        }
+      });
     }
-    setTimeout(function () {
-      el.classList.add("is-shown");
-    }, 3000);
+
+    flow.querySelectorAll("[data-next]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        goTo(parseInt(btn.dataset.next, 10));
+      });
+    });
+    flow.querySelectorAll("[data-back]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        goTo(parseInt(btn.dataset.back, 10));
+      });
+    });
   }
 
   function onReady() {
@@ -1011,8 +1041,7 @@
     initVesselOnboard();
     initSvgVesselInteractivity();
     initViewModeToggle();
-    initHomeCatchCarousel();
-    initHomeProofDelayed();
+    initHomeFlow();
   }
 
   if (document.readyState === "loading") {

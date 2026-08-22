@@ -21,45 +21,73 @@
       {{ vessel_legend | safe }}
     </div>
     <div class="home-copy-column home-overlay">
-      <div class="home-overlay-content t-stagger is-shown">
-        <h1 class="home-headline t-stagger-line t-stagger-line--1">
-          We publish every prediction — and
-          <em>every time biology says we&rsquo;re wrong.</em>
-        </h1>
-        <p class="home-subline t-stagger-line t-stagger-line--2">
-          Testing drugs in a computer instead of a lab.
-        </p>
-        <div class="home-catch-carousel t-stagger-line t-stagger-line--3"
-             id="home-catch-carousel"
-             role="region" aria-label="Why this matters" aria-live="polite">
-          <div class="home-catch-track">
-            <p class="home-catch-slide is-active" data-slide="0">
-              Models that score well can still be biologically wrong.
-            </p>
-            <p class="home-catch-slide" data-slide="1" aria-hidden="true">
-              Most evals check if the output looks right &mdash; not if it
-              <em>is</em> right.
-            </p>
-            <p class="home-catch-slide" data-slide="2" aria-hidden="true">
-              In drug prediction, &ldquo;looks right but is wrong&rdquo; is a
-              drug that doesn&rsquo;t work, discovered a year too late.
-            </p>
+      <div class="home-overlay-content home-flow" id="home-flow">
+
+        <!-- Phase 1: The Claim -->
+        <div class="home-phase t-stagger is-shown is-active" data-phase="1">
+          <h1 class="home-headline t-stagger-line t-stagger-line--1">
+            We publish every prediction — and
+            <em>every time biology says we&rsquo;re wrong.</em>
+          </h1>
+          <p class="home-subline t-stagger-line t-stagger-line--2">
+            Testing drugs in a computer instead of a lab.
+          </p>
+          <button class="button home-phase-cta t-stagger-line t-stagger-line--3"
+                  type="button" data-next="2">
+            Why this matters →
+          </button>
+        </div>
+
+        <!-- Phase 2: The Argument -->
+        <div class="home-phase t-stagger" data-phase="2" hidden>
+          <div class="home-catch-carousel t-stagger-line t-stagger-line--1"
+               id="home-catch-carousel"
+               role="region" aria-label="Why this matters" aria-live="polite">
+            <div class="home-catch-track">
+              <p class="home-catch-slide is-active" data-slide="0">
+                Models that score well can still be biologically wrong.
+              </p>
+              <p class="home-catch-slide" data-slide="1" aria-hidden="true">
+                Most evals check if the output looks right &mdash; not if it
+                <em>is</em> right.
+              </p>
+              <p class="home-catch-slide" data-slide="2" aria-hidden="true">
+                In drug prediction, &ldquo;looks right but is wrong&rdquo; is a
+                drug that doesn&rsquo;t work, discovered a year too late.
+              </p>
+            </div>
+            <div class="home-catch-dots" role="tablist" aria-label="Carousel navigation">
+              <button class="home-catch-dot is-active" role="tab"
+                      aria-selected="true" aria-label="Slide 1"></button>
+              <button class="home-catch-dot" role="tab"
+                      aria-selected="false" aria-label="Slide 2"></button>
+              <button class="home-catch-dot" role="tab"
+                      aria-selected="false" aria-label="Slide 3"></button>
+            </div>
           </div>
-          <div class="home-catch-dots" role="tablist" aria-label="Carousel navigation">
-            <button class="home-catch-dot is-active" role="tab"
-                    aria-selected="true" aria-label="Slide 1"></button>
-            <button class="home-catch-dot" role="tab"
-                    aria-selected="false" aria-label="Slide 2"></button>
-            <button class="home-catch-dot" role="tab"
-                    aria-selected="false" aria-label="Slide 3"></button>
+          <button class="button home-phase-cta t-stagger-line t-stagger-line--2"
+                  type="button" data-next="3">
+            See the evidence →
+          </button>
+          <button class="home-phase-back t-stagger-line t-stagger-line--3"
+                  type="button" data-back="1">
+            ← Back
+          </button>
+        </div>
+
+        <!-- Phase 3: Evidence + Action -->
+        <div class="home-phase t-stagger" data-phase="3" hidden>
+          <div class="t-stagger-line t-stagger-line--1 home-proof-wrap">
+            {{ proof | safe }}
           </div>
+          <a class="button home-phase-cta t-stagger-line t-stagger-line--2"
+             href="{{ run_href }}">View run #{{ run_index }} of {{ vcc_days }} →</a>
+          <button class="home-phase-back t-stagger-line t-stagger-line--3"
+                  type="button" data-back="1">
+            ← Back
+          </button>
         </div>
-        <div class="home-cta-row t-stagger-line t-stagger-line--4">
-          <a class="button" href="{{ run_href }}">View run #{{ run_index }} of {{ vcc_days }} →</a>
-        </div>
-        <div class="home-proof-delayed" id="home-proof-delayed">
-          {{ proof | safe }}
-        </div>
+
       </div>
     </div>
   </div>
