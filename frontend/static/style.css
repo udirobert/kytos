@@ -236,33 +236,63 @@ code {
 
 .page-home .home-stage {
   position: relative;
-  min-height: calc(100vh - 120px);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem 2rem 4rem;
+  padding: 0;
   text-align: center;
   overflow: hidden;
 }
 
-.home-vessel-stage {
+/* Full-bleed 3D vessel as background */
+.home-stage .vessel-fullscreen {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.home-stage .vessel-fullscreen canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* SVG fallback for full-bleed */
+.home-stage .vessel-fullscreen .vessel-svg-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.home-stage .vessel-fullscreen .vessel-svg-fallback .vessel-svg {
+  width: min(380px, 45vw);
+  height: auto;
+}
+
+/* Overlay: gradient scrim + centered content */
+.home-overlay {
   position: relative;
-  width: min(440px, 55vw);
-  height: min(440px, 50vh);
-  margin: 0 auto 0.5rem;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
+  z-index: 2;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 50%,
+    transparent 0%,
+    rgba(6, 10, 16, 0.3) 50%,
+    rgba(6, 10, 16, 0.7) 100%
+  );
 }
 
-.home-vessel-stage .vessel-label,
-.home-vessel-stage .vessel-legend {
-  position: static;
-  padding: 0 1rem;
-}
-
-.home-vessel-stage .vessel-legend {
-  margin-top: 0.5rem;
+.home-overlay-content {
+  max-width: 700px;
 }
 
 /* When 3D is active, hide the SVG fallback inside the container */
@@ -356,6 +386,75 @@ code {
   font-variant-numeric: tabular-nums;
 }
 
+/* Data readout strip — instrument panel at the bottom */
+.home-data-strip {
+  position: absolute;
+  bottom: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-bright);
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-glass);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-strip-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.data-strip-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.data-strip-value {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.data-strip-warn {
+  color: var(--warn);
+}
+
+.data-strip-sep {
+  width: 1px;
+  height: 1.2rem;
+  background: var(--line-bright);
+}
+
+/* Scroll hint */
+.home-scroll-hint {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: scroll-bounce 2s ease-in-out infinite;
+}
+
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
+  50% { transform: translateX(-50%) translateY(4px); opacity: 1; }
+}
+
 /* Below-the-fold panels */
 .page-home .panel {
   max-width: 900px;
@@ -364,6 +463,25 @@ code {
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);
   background: var(--bg-panel);
+}
+
+/* Scroll reveal */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-hidden {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .page-home .panel h2 {
@@ -1098,6 +1216,30 @@ details summary {
   .home-headline {
     font-size: clamp(2rem, 8vw, 3rem);
   }
+
+  .home-data-strip {
+    bottom: 2.5rem;
+    gap: 0.8rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .home-scroll-hint {
+    bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-data-strip {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius);
+    padding: 0.5rem 0.8rem;
+  }
+
+  .data-strip-sep {
+    display: none;
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -1120,5 +1262,9 @@ details summary {
   .run-card,
   .button {
     transition: none;
+  }
+
+  .home-scroll-hint {
+    animation: none;
   }
 }

@@ -119,10 +119,39 @@
     });
   }
 
+  // ── Scroll reveal: evidence cards fade in ──────────────────────────────
+  function initScrollReveal() {
+    var panels = document.querySelectorAll(".evidence-rail .panel, .page-home .panel");
+    if (!panels.length || prefersReducedMotion()) {
+      return;
+    }
+    if (typeof IntersectionObserver === "undefined") {
+      return;
+    }
+    panels.forEach(function (p) {
+      p.classList.add("reveal-hidden");
+    });
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+    );
+    panels.forEach(function (p) {
+      observer.observe(p);
+    });
+  }
+
   function onReady() {
     initPlotly();
     initVccRail();
     initCopyButtons();
+    initScrollReveal();
     setTimeout(animateVesselFallback, 2000);
   }
 

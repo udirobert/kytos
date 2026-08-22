@@ -82,25 +82,51 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "") -> str:
         metrics = latest.facts.get("headline_metrics") or {}
         metric_bits = ", ".join(f"{k} {v}" for k, v in metrics.items())
         headline = _h(latest.facts.get("headline", latest.run_id))
-        vessel_stage = _vessel_stage(latest.facts, stage_class="home-vessel-stage")
+        vd = _vessel_data(latest.facts)
+        vessel_json = json.dumps(vd)
+        svg = _vessel_svg(latest.facts, clip_id="vessel-clip-home")
+
+        # Full-bleed 3D vessel as background layer
         stage = f"""
         <section class="home-stage">
-          {vessel_stage}
-          <h1 class="home-headline">
-            Predict how an unseen cell responds —<br>
-            and <em>show when the model is biologically wrong.</em>
-          </h1>
-          <p class="home-lede">
-            Latest run {_h(latest.run_id)}: {headline}. Headline metrics {_h(metric_bits)}.
-            Audit flags, literature, and provenance published for public scrutiny —
-            not just leaderboard scores.
-          </p>
-          <div class="home-cta-row">
-            <a class="button" href="{run_href}">Open run detail →</a>
-            <a class="home-chip" href="{root_prefix}runs/index.html">
-              Browse all <strong>{len(runs)}</strong> runs
-            </a>
+          <div class="vessel-fullscreen vessel-3d-container vessel-home" id="vessel-canvas">
+            <div class="vessel-svg-fallback">{svg}</div>
+            <script type="application/json" id="vessel-data">{vessel_json}</script>
           </div>
+          <div class="home-overlay">
+            <div class="home-overlay-content">
+              <h1 class="home-headline">
+                Predict how an unseen cell responds —<br>
+                and <em>show when the model is biologically wrong.</em>
+              </h1>
+              <p class="home-lede">
+                Latest run {_h(latest.run_id)}: {headline}. Headline metrics {_h(metric_bits)}.
+              </p>
+              <div class="home-cta-row">
+                <a class="button" href="{run_href}">Open run detail →</a>
+                <a class="home-chip" href="{root_prefix}runs/index.html">
+                  Browse all <strong>{len(runs)}</strong> runs
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="home-data-strip">
+            <span class="data-strip-item">
+              <span class="data-strip-label">fill</span>
+              <span class="data-strip-value">{vd["fill_pct"]}%</span>
+            </span>
+            <span class="data-strip-sep"></span>
+            <span class="data-strip-item">
+              <span class="data-strip-label">audit</span>
+              <span class="data-strip-value data-strip-warn">{vd["warns"]} warn</span>
+            </span>
+            <span class="data-strip-sep"></span>
+            <span class="data-strip-item">
+              <span class="data-strip-label">vcc</span>
+              <span class="data-strip-value">78 days left</span>
+            </span>
+          </div>
+          <div class="home-scroll-hint">scroll ↓</div>
         </section>
         """
     else:
