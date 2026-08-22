@@ -1,12 +1,12 @@
 :root {
-  --bg: #060a10;
-  --bg-panel: #0c131e;
-  --bg-elevated: #131d2c;
-  --bg-glass: rgba(15, 22, 35, 0.72);
+  --bg: #0a1218;
+  --bg-panel: #0e1a26;
+  --bg-elevated: #142436;
+  --bg-glass: rgba(16, 28, 42, 0.68);
   --ink: #e2e8f0;
   --muted: #94a3b8;
-  --line: rgba(148, 163, 184, 0.12);
-  --line-bright: rgba(148, 163, 184, 0.22);
+  --line: rgba(148, 163, 184, 0.14);
+  --line-bright: rgba(148, 163, 184, 0.24);
   --accent: #5eead4;
   --ceiling: #67e8f9;
   --warn: #fbbf24;
@@ -16,10 +16,10 @@
   --radius: 14px;
   --radius-lg: 22px;
   --radius-xl: 32px;
-  --glow-accent: 0 0 40px rgba(94, 234, 212, 0.12);
-  --glow-warn: 0 0 30px rgba(251, 191, 36, 0.15);
-  --shadow-float: 0 24px 60px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-glass: 0 20px 50px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  --glow-accent: 0 0 40px rgba(94, 234, 212, 0.15);
+  --glow-warn: 0 0 30px rgba(251, 191, 36, 0.18);
+  --shadow-float: 0 24px 60px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-glass: 0 20px 50px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
 }
 
 *,
@@ -41,9 +41,9 @@ body {
 
 body {
   background:
-    radial-gradient(1400px 700px at 15% -8%, rgba(94, 234, 212, 0.07), transparent 60%),
-    radial-gradient(1000px 600px at 92% 8%, rgba(103, 232, 249, 0.05), transparent 60%),
-    radial-gradient(800px 800px at 50% 100%, rgba(94, 234, 212, 0.03), transparent 50%),
+    radial-gradient(1600px 800px at 15% -8%, rgba(94, 234, 212, 0.12), transparent 60%),
+    radial-gradient(1200px 700px at 92% 8%, rgba(103, 232, 249, 0.08), transparent 60%),
+    radial-gradient(1000px 1000px at 50% 110%, rgba(94, 234, 212, 0.06), transparent 50%),
     var(--bg);
   background-attachment: fixed;
   color: var(--ink);
@@ -333,10 +333,11 @@ code {
   justify-content: center;
   padding: 2rem;
   background: radial-gradient(
-    ellipse 80% 60% at 50% 50%,
+    ellipse 90% 70% at 50% 50%,
     transparent 0%,
-    rgba(6, 10, 16, 0.3) 50%,
-    rgba(6, 10, 16, 0.7) 100%
+    transparent 40%,
+    rgba(10, 18, 24, 0.35) 80%,
+    rgba(10, 18, 24, 0.5) 100%
   );
 }
 

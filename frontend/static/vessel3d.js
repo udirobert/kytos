@@ -93,7 +93,7 @@ function initVessel3D() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPerf ? 1.5 : 2));
   renderer.setSize(w, h);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
+  renderer.toneMappingExposure = 1.25;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.localClippingEnabled = true;
   container.appendChild(renderer.domElement);
@@ -124,7 +124,7 @@ function initVessel3D() {
     ior: 1.5,
     clearcoat: 1.0,
     clearcoatRoughness: 0.03,
-    envMapIntensity: 1.2,
+    envMapIntensity: 1.8,
     side: THREE.DoubleSide,
     attenuationColor: new THREE.Color(0x5eead4),
     attenuationDistance: 3.0,
@@ -283,21 +283,21 @@ function initVessel3D() {
   }
   vesselGroup.add(dropletsGroup);
 
-  // ── Reflective floor ─────────────────────────────────────────────────────
+  // ── Reflective floor — catches and scatters the teal glow ─────────────────
   var floorGeo = new THREE.CircleGeometry(8, 64);
   var floorMat = new THREE.MeshStandardMaterial({
-    color: 0x0a0f17,
-    roughness: 0.15,
-    metalness: 0.9,
-    envMapIntensity: 0.5,
+    color: 0x121e2a,
+    roughness: 0.08,
+    metalness: 0.85,
+    envMapIntensity: 1.0,
   });
   var floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = VESSEL_BOTTOM - 0.3;
   scene.add(floor);
 
-  // Caustics light projection on the floor
-  var causticsLight = new THREE.SpotLight(0x5eead4, 3.0, 12, Math.PI / 5, 0.5);
+  // Caustics light projection on the floor — brighter, warmer spread
+  var causticsLight = new THREE.SpotLight(0x5eead4, 4.5, 14, Math.PI / 4.5, 0.6);
   causticsLight.position.set(0, fillLevel + 2, 0);
   causticsLight.target.position.set(0, VESSEL_BOTTOM - 0.3, 0);
   vesselGroup.add(causticsLight);
@@ -342,18 +342,18 @@ function initVessel3D() {
   var particles = new THREE.Points(particleGeo, particleMat);
   scene.add(particles);
 
-  // ── Lighting ────────────────────────────────────────────────────────────
-  scene.add(new THREE.AmbientLight(0x1a2535, 0.3));
+  // ── Lighting — twilight chamber, not black void ──────────────────────────
+  scene.add(new THREE.AmbientLight(0x2a3a4a, 0.5));
 
-  var belowLight = new THREE.PointLight(0x5eead4, 2.0, 14);
+  var belowLight = new THREE.PointLight(0x5eead4, 3.0, 16);
   belowLight.position.set(0, -3.5, 0);
   scene.add(belowLight);
 
-  var aboveLight = new THREE.PointLight(0xffeed4, 0.5, 18);
+  var aboveLight = new THREE.PointLight(0xfff0d4, 0.8, 20);
   aboveLight.position.set(3, 5, 4);
   scene.add(aboveLight);
 
-  var rimLight = new THREE.DirectionalLight(0x67e8f9, 0.4);
+  var rimLight = new THREE.DirectionalLight(0x67e8f9, 0.6);
   rimLight.position.set(-5, 2, -3);
   scene.add(rimLight);
 
