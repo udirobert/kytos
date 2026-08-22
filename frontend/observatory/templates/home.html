@@ -21,16 +21,16 @@
       {{ vessel_legend | safe }}
     </div>
     <div class="home-copy-column home-overlay">
-      <div class="home-overlay-content">
-        <h1 class="home-headline">
+      <div class="home-overlay-content t-stagger is-shown">
+        <h1 class="home-headline t-stagger-line t-stagger-line--1">
           We publish every prediction — and
           <em>every time biology says we&rsquo;re wrong.</em>
         </h1>
-        <p class="home-subline">
-          The Virtual Cell Challenge: predict how any cell responds to any
-          perturbation — testing drugs in a computer instead of a lab.
+        <p class="home-subline t-stagger-line t-stagger-line--2">
+          Testing drugs in a computer instead of a lab.
         </p>
-        <div class="home-catch-carousel" id="home-catch-carousel"
+        <div class="home-catch-carousel t-stagger-line t-stagger-line--3"
+             id="home-catch-carousel"
              role="region" aria-label="Why this matters" aria-live="polite">
           <div class="home-catch-track">
             <p class="home-catch-slide is-active" data-slide="0">
@@ -54,15 +54,17 @@
                     aria-selected="false" aria-label="Slide 3"></button>
           </div>
         </div>
-        <p class="home-subline home-subline-run">
-          Run #{{ run_index }} of {{ vcc_days }} · Virtual Cell Challenge 2026
+        <p class="home-subline home-subline-run t-stagger-line t-stagger-line--4">
+          Run #{{ run_index }} of {{ vcc_days }}
         </p>
-        {{ proof | safe }}
-        <div class="home-cta-row">
+        <div class="t-stagger-line t-stagger-line--5">
+          {{ proof | safe }}
+        </div>
+        <div class="home-cta-row t-stagger-line t-stagger-line--6">
           <a class="button" href="{{ run_href }}">View run #{{ run_index }} →</a>
           <a class="button button-secondary" href="{{ runs_href }}">All runs →</a>
         </div>
-        <p class="home-about-link">
+        <p class="home-about-link t-stagger-line t-stagger-line--7">
           <a href="{{ about_href }}">About the 78-day build</a>
         </p>
       </div>

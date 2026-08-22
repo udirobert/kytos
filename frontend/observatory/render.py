@@ -37,11 +37,9 @@ METRIC_LABELS: dict[str, str] = {
 # First-visit vessel onboarding tooltip — shared by home + run detail.
 _VESSEL_ONBOARD_HTML = """\
         <div class="vessel-onboard" id="vessel-onboard" hidden>
-          <p>This is the κύτος vessel — <strong>liquid fill</strong> = how much room
-          our prediction has to improve, <strong>amber cracks</strong> = where our
-          audit caught us failing.</p>
-          <p class="vessel-onboard-hint">Drag to rotate · click the cracks to see
-          what went wrong</p>
+          <p><strong>Liquid fill</strong> = room to improve ·
+          <strong>amber cracks</strong> = where biology says we&rsquo;re wrong.</p>
+          <p class="vessel-onboard-hint">Drag to rotate · click cracks for details</p>
           <button class="vessel-onboard-close" type="button"
                   aria-label="Dismiss">Got it</button>
         </div>
