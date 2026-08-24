@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import html
 import json
 import re
@@ -20,6 +21,30 @@ SITE_TITLE = "Kytos Observatory"
 # — is stamped on the surface so the long-game story survives a silent scroll.
 VCC_DAYS = 78
 VCC_START = "2026-08-20T00:00:00Z"
+
+# Header videos heavier than this bloat the run page on mobile connections.
+# The 3D vessel + hero poster carry the hero; the video is a flourish.
+MAX_HEADER_VIDEO_BYTES = 4 * 1024 * 1024
+
+
+def _vcc_day(facts: dict) -> int | None:
+    """Day of the 78-day public build for a run's `created` date (1-based).
+
+    Returns None when the date is missing or unparsable, so callers can fall
+    back to run-index-only stamps instead of inventing a day.
+    """
+    created = str(facts.get("created") or "").strip()
+    if not created:
+        return None
+    try:
+        created_date = datetime.date.fromisoformat(created[:10])
+        start_date = datetime.date.fromisoformat(VCC_START[:10])
+        day = (created_date - start_date).days + 1
+    except ValueError:
+        return None
+    return max(1, min(day, VCC_DAYS))
+
+
 VCC_TEST_SET = "2026-10-22T00:00:00Z"
 VCC_END = "2026-11-05T23:59:59Z"
 HACKATHON_END = "2026-08-22T18:00:00Z"  # 19:00 London (BST) opt-in deadline
@@ -251,6 +276,7 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
     links = [
         ("Home", f"{root_prefix}index.html", active == "home"),
         ("Runs", f"{root_prefix}runs/index.html", active == "runs"),
+        ("Chronicle", f"{root_prefix}shorts/index.html", active == "shorts"),
         ("About", f"{root_prefix}about/index.html", active == "about"),
     ]
     lis = "".join(
@@ -275,6 +301,26 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
             for run in runs
         )
         strip_block = f'<div class="run-strip">{strip}</div>'
+    # Day / night controls — the Observatory's adaptive theme. The auto
+    # button appears only once a visitor pins a theme, so un-pinning is one
+    # click back to dawn/dusk mode.
+    theme_controls = (
+        '<div class="header-actions">'
+        '<button class="theme-toggle" id="theme-toggle" type="button" '
+        'aria-label="Switch to dark mode" title="Day / night">'
+        '<svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" '
+        'stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+        'aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="'
+        "M12 2v2M12 20v2M2 12h2M20 12h2"
+        "M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4"
+        'M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"></path></svg>'
+        '<svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" '
+        'stroke="currentColor" stroke-width="2" aria-hidden="true">'
+        '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>'
+        "</button>"
+        '<button class="theme-auto" id="theme-auto" type="button" hidden>auto</button>'
+        "</div>"
+    )
     return f"""
     <header class="site-header">
       <div class="brand">
@@ -284,6 +330,7 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
         </div>
       </div>
       <nav class="nav-main"><ul>{lis}</ul></nav>
+      {theme_controls}
     </header>
     {strip_block}
     """
@@ -380,23 +427,102 @@ def _bio_atmosphere(*, variant: str = "stage", density: str = "light") -> str:
     """
 
 
-def _home_vessel_legend_html(vd: dict[str, Any], *, about_href: str) -> str:
+def _legend_items_html(vd: dict[str, Any]) -> str:
+    """One legible vessel metaphor, reused verbatim across every surface.
+
+    fill = ceiling headroom · cracks = audit warnings · droplets = info flags.
+    """
     warn_word = "warning" if vd["warns"] == 1 else "warnings"
-    info_word = "flag" if vd["infos"] == 1 else "flags"
     parts = [
-        f'<span class="legend-item legend-fill">{vd["fill_pct"]}% headroom</span>',
-        f'<span class="legend-item legend-warn">{vd["warns"]} audit {warn_word}</span>',
+        f'<span class="legend-item legend-fill">fill · {vd["fill_pct"]}% headroom</span>',
+        f'<span class="legend-item legend-warn">cracks · {vd["warns"]} audit {warn_word}</span>',
     ]
     if vd["infos"]:
-        parts.append(f'<span class="legend-item legend-info">{vd["infos"]} info {info_word}</span>')
+        info_word = "flag" if vd["infos"] == 1 else "flags"
+        info_item = (
+            f'<span class="legend-item legend-info">droplets · '
+            f"{vd['infos']} info {info_word}</span>"
+        )
+        parts.append(info_item)
+    return "".join(parts)
+
+
+def _home_vessel_legend_html(vd: dict[str, Any], *, about_href: str) -> str:
     return (
-        f'<p class="home-vessel-legend vessel-legend-inline">{"".join(parts)}</p>'
+        f'<p class="home-vessel-legend vessel-legend-inline">{_legend_items_html(vd)}</p>'
         f'<p class="home-vessel-about-link">'
         f'<a href="{_h(about_href)}">What is the vessel?</a></p>'
     )
 
 
-def render_home(runs: list[RunSummary], *, root_prefix: str = "", js_version: str = "") -> str:
+def _run_hero_legend_html(facts: dict) -> str:
+    """Vessel legend floated over the run hero so first-time visitors can decode it."""
+    return (
+        f'<p class="vessel-legend run-hero-legend" aria-label="Vessel legend">'
+        f"{_legend_items_html(_vessel_data(facts))}</p>"
+    )
+
+
+def _chronicle_short_summary(chronicle) -> list[dict]:
+    """Latest shorts, duck-typed (the shorts module passes its Chronicle)."""
+    if chronicle is None:
+        return []
+    out = []
+    for short in chronicle.shorts[-2:]:
+        med = short.media
+        out.append(
+            {
+                "href": f"{short.slug}/index.html",
+                "poster": f"{short.slug}/{med.get('poster', '')}" if med.get("poster") else "",
+                "title": short.title,
+                "hook": short.hook,
+                "plain": short.plain_words,
+                "published": short.published,
+            }
+        )
+    return out
+
+
+def _chronicle_rail_html(chronicle, *, root_prefix: str) -> str:
+    items = _chronicle_short_summary(chronicle)
+    if not items:
+        return ""
+    cards = ""
+    for it in items:
+        poster = (
+            f'<img class="chronicle-card-poster" src="{root_prefix}shorts/{it["href"]}"'
+            f' alt="" loading="lazy">'
+            if it.get("poster")
+            else ""
+        )
+        cards += f'''
+        <a class="chronicle-card" href="{root_prefix}shorts/{it["href"]}">
+          {poster}
+          <div class="chronicle-card-body">
+            <p class="chronicle-eyebrow">CHRONICLE · {it["published"]}</p>
+            <h3 class="chronicle-card-title">{it["title"]}</h3>
+            <p class="chronicle-card-hook">{it["hook"]}</p>
+            <p class="chronicle-card-plain">{it["plain"]}</p>
+          </div>
+        </a>'''
+    return f'''
+    <section class="chronicle-rail" aria-label="The Chronicle">
+      <div class="chronicle-rail-head">
+        <p class="chronicle-eyebrow">KYTOS OBSERVATORY · CHRONICLE</p>
+        <h2 class="chronicle-rail-title">The field, in short</h2>
+        <a class="chronicle-rail-link" href="{root_prefix}shorts/index.html">All shorts →</a>
+      </div>
+      <div class="chronicle-grid">{cards}</div>
+    </section>'''
+
+
+def render_home(
+    runs: list[RunSummary],
+    *,
+    root_prefix: str = "",
+    js_version: str = "",
+    chronicle=None,
+) -> str:
     meta = PageMeta(
         title="Home",
         description=SITE_DESCRIPTION,
@@ -419,6 +545,8 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "", js_version: st
         svg = _vessel_svg(latest.facts, clip_id="vessel-clip-home")
 
         run_index = _run_index(latest, runs)
+        vcc_day = _vcc_day(latest.facts)
+        day_stamp = f" · day {vcc_day} of {VCC_DAYS}" if vcc_day else ""
         proof = _home_proof_pill(latest.facts, latest.meta)
         about_href = f"{root_prefix}about/index.html"
         vessel_legend = _home_vessel_legend_html(vd, about_href=about_href)
@@ -431,18 +559,26 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "", js_version: st
             hero_img = (
                 f'<img class="home-vessel-bg" src="{_h(hero_src)}" alt="" '
                 f'decoding="async" loading="eager">'
-            )
-
-        # Dr. Kytos presenter background for home page
+            )  # Dr. Kytos presenter — a broadcast billboard strip under the hero
+        # (full-bleed video behind the headline degrades to unreadable on
+        # mobile). The vessel stays the hero; the anchor gets the stage below.
         presenter_bg = ""
         if presenter:
             presenter_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(presenter)}"
-            presenter_bg = f"""
-            <div class="home-presenter-bg">
-              <video class="home-presenter-video" src="{_h(presenter_src)}"
-                     autoplay muted loop playsinline preload="auto"></video>
-            </div>
-            """
+            poster_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(hero)}" if hero else ""
+            presenter_bg = """\
+            <section class="home-presenter-section" aria-label="Dr. Kytos presents">
+              <span class="home-presenter-eyebrow">
+                KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT · DR. KYTOS PRESENTS</span>
+              <video class="home-presenter-video" src="{presenter_src}"
+                     muted loop playsinline controls preload="metadata"
+                     poster="{poster_src}"
+                     aria-label="Dr. Kytos run briefing playback"></video>
+            </section>
+            """.format(
+                presenter_src=_h(presenter_src),
+                poster_src=_h(poster_src) if poster_src else "",
+            )
 
         context.update(
             {
@@ -454,6 +590,8 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "", js_version: st
                 "vessel_json": vessel_json,
                 "vessel_legend": vessel_legend,
                 "run_index": run_index,
+                "vcc_day": vcc_day or "",
+                "day_stamp": day_stamp,
                 "vcc_days": VCC_DAYS,
                 "proof": proof,
                 "run_href": run_href,
@@ -462,6 +600,7 @@ def render_home(runs: list[RunSummary], *, root_prefix: str = "", js_version: st
             }
         )
 
+    context["chronicle_rail"] = _chronicle_rail_html(chronicle, root_prefix=root_prefix)
     return render_template("home.html", **context)
 
 
@@ -544,8 +683,6 @@ def _vessel_about_panel(runs: list[RunSummary]) -> str:
         return ""
     vd = _vessel_data(latest.facts)
     svg = _vessel_svg(latest.facts, svg_class="vessel-mini about-vessel")
-    warn_word = "warning" if vd["warns"] == 1 else "warnings"
-    info_word = "flag" if vd["infos"] == 1 else "flags"
     return f"""
     <section class="panel vessel-about-panel">
       <h2>The vessel</h2>
@@ -555,11 +692,7 @@ def _vessel_about_panel(runs: list[RunSummary]) -> str:
           <p class="prose">The κύτος vessel is a live readout of each run&rsquo;s health —
           not decoration. Fill level tracks ceiling headroom; membrane stress and vesicles
           map to audit severity.</p>
-          <p class="vessel-legend-inline">
-            <span class="legend-item legend-fill">nucleus · {vd["fill_pct"]}% headroom</span>
-            <span class="legend-item legend-warn">membrane · {vd["warns"]} audit {warn_word}</span>
-            <span class="legend-item legend-info">vesicles · {vd["infos"]} info {info_word}</span>
-          </p>
+      <p class="vessel-legend-inline">{_legend_items_html(vd)}</p>
         </div>
       </div>
     </section>
@@ -934,14 +1067,21 @@ def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../")
     return render_template("components/matrix.html", rows=rows)
 
 
-def _evidence_journey() -> str:
-    """Run-detail navigation rail: one route through the evidence."""
+def _evidence_journey(warn_count: int = 0) -> str:
+    """Run-detail navigation rail: one route through the evidence.
+
+    The Audit step hint is data-bound: a clean run reads "no flags", not
+    the alarmist default the broadcast overlay once hardcoded.
+    """
+    audit_hint = (
+        f"{warn_count} warning{'s' if warn_count != 1 else ''}" if warn_count else "no flags"
+    )
     steps = [
         {
             "id": "audit",
             "number": "01",
             "title": "Audit",
-            "hint": "stress detected",
+            "hint": audit_hint,
             "accent": "amber",
         },
         {
@@ -984,7 +1124,9 @@ def render_run_detail(
     visual = facts.get("visual") or {}
     vd = _vessel_data(facts)
 
-    flags_html = _audit_flags_compact(facts.get("audit_flags") or [], run_id=run.run_id)
+    flags = facts.get("audit_flags") or []
+    warn_count = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
+    flags_html = _audit_flags_compact(flags, run_id=run.run_id)
     hypotheses = facts.get("hypotheses_preregistered") or []
     hyp_html = "".join(f"<li>{_h(item)}</li>" for item in hypotheses)
 
@@ -1041,13 +1183,17 @@ def render_run_detail(
     )
 
     hyp_list = hyp_html or '<li class="muted">None</li>'
+    # The metrics-vs-ceiling chart is the run's core signal — render it
+    # inline in the Audit panel, not behind a third nested <details>. The
+    # class name doubles as the test contract; see initPlotly (no <details>
+    # parent → Plotly boots immediately).
     audit_inner = (
         flags_html
-        + '<details class="chart-details">'
-        + "<summary>Metrics chart (all scores vs ceiling)</summary>"
+        + '<div class="chart-block chart-details">'
+        + '<p class="chart-block-label">Metrics vs ceiling (all scores)</p>'
         + '<div id="metrics-chart" class="chart chart-compact"></div>'
         + f'<script type="application/json" id="metrics-chart-data">{chart_json}</script>'
-        + "</details>"
+        + "</div>"
         + '<details class="volcano-details">'
         + "<summary>Differential expression volcano plot (log2FC vs -log10 p)</summary>"
         + '<div id="volcano-chart" class="chart chart-compact"></div>'
@@ -1099,8 +1245,10 @@ def render_run_detail(
             visual,
             score_line,
             root_prefix=root_prefix,
+            run_path=run.path,
         ),
-        "evidence_journey": _evidence_journey(),
+        "run_hero_legend": _run_hero_legend_html(facts),
+        "evidence_journey": _evidence_journey(warn_count),
         "panel_audit": _disclosure_section(
             "Audit & metrics",
             _audit_summary(facts),
@@ -1139,13 +1287,20 @@ def render_run_detail(
 
 
 def _presenter_overlay(run: RunSummary, root_prefix: str, visual: dict) -> str:
-    """Dr. Kytos presenter video overlay for the run detail hero."""
+    """Dr. Kytos presenter video overlay for the run detail hero.
+
+    The run hero is the anchor's stage: full-bleed presenter, the vessel and
+    data strip read out over it, header media steps aside (see
+    `_run_header_media`).
+    """
     presenter_path = visual.get("presenter", "")
+    hero = visual.get("hero")
     src = f"{_h(root_prefix)}runs/{_h(run.run_id)}/{_h(presenter_path)}"
+    poster = f' poster="{_h(root_prefix)}runs/{_h(run.run_id)}/{_h(hero)}"' if hero else ""
     return f"""
     <div class="run-hero-presenter">
       <video class="run-hero-presenter-video" src="{src}"
-             autoplay muted loop playsinline preload="auto"></video>
+             autoplay muted loop playsinline preload="metadata"{poster}></video>
       <div class="run-hero-presenter-badge">KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT</div>
     </div>
     """
@@ -1320,9 +1475,6 @@ def _vessel_stage(
     background layer (used by run detail page when no fal/fabric visuals exist).
     """
     vd = _vessel_data(facts)
-    fill, warns, infos = vd["fill_pct"], vd["warns"], vd["infos"]
-    warn_plural = "warning" if warns == 1 else "warnings"
-    info_plural = "flag" if infos == 1 else "flags"
     vessel_json = json.dumps(vd)
 
     svg = _vessel_svg(facts)
@@ -1344,11 +1496,7 @@ def _vessel_stage(
       </div>
       <script type="application/json" id="vessel-data">{vessel_json}</script>
       <p class="vessel-label">κύτος · the instrument that shows when the model is wrong</p>
-      <p class="vessel-legend">
-        <span class="legend-item legend-fill">nucleus = {fill}% ceiling headroom</span>
-        <span class="legend-item legend-warn">{warns} {warn_plural}</span>
-        <span class="legend-item legend-info">{infos} info {info_plural}</span>
-      </p>
+      <p class="vessel-legend">{_legend_items_html(vd)}</p>
     </div>
     """
 
@@ -1720,10 +1868,14 @@ def _run_header_compact(
     score_line: str,
     *,
     root_prefix: str,
+    run_path: Any = None,
 ) -> str:
-    media = _run_header_media(visual, facts)
+    media = _run_header_media(visual, facts, run_path=run_path)
     jk = '<span class="jk-hint">j/k · switch runs</span>' if len(runs) > 1 else ""
     status_badge = _data_status_badge(facts, run.meta)
+    run_index = _run_index(run, runs)
+    day = _vcc_day(facts)
+    day_stamp = f"Day {day} of {VCC_DAYS} · " if day else ""
     return f"""
     <header class="run-header">
       <nav class="breadcrumb">
@@ -1731,7 +1883,7 @@ def _run_header_compact(
         {jk}
       </nav>
       <p class="eyebrow">
-        Run #{_run_index(run, runs)} of {VCC_DAYS} · {_h(facts.get("created", ""))}
+        {day_stamp}Run #{run_index} · {_h(facts.get("created", ""))}
       </p>
       <h1 class="run-header-title">{_h(facts.get("headline", run.run_id))}</h1>
       {status_badge}
@@ -1744,11 +1896,32 @@ def _run_header_compact(
     """
 
 
-def _run_header_media(visual: dict, facts: dict) -> str:
+def _run_header_media(visual: dict, facts: dict, *, run_path: Any = None) -> str:
+    """Compact hero video — bulletin preferred over the full briefing.
+
+    The bulletin (8s, ~1.7MB) is the right header surface; the full briefing
+    can be multi-MB and belongs behind a play action, not preload metadata on
+    a mobile connection. Anything over MAX_HEADER_VIDEO_BYTES is dropped so a
+    future heavy artifact can't regress the hero.
+    """
+    # When Dr. Kytos presents (hero overlay), the header media panel steps
+    # aside so the run hero is the anchor's stage — not a second talking clip
+    # stacked over the same face.
+    if visual.get("presenter"):
+        return ""
+    from pathlib import Path
+
     bulletin = visual.get("bulletin")
     briefing = visual.get("briefing")
     hero = visual.get("hero")
     media = bulletin or briefing
+    if media and run_path is not None:
+        candidate = Path(run_path) / str(media)
+        try:
+            if candidate.is_file() and candidate.stat().st_size > MAX_HEADER_VIDEO_BYTES:
+                media = None
+        except OSError:
+            pass
     if media:
         poster = f' poster="{_h(hero)}"' if hero else ""
         is_bulletin = bool(bulletin)
@@ -1771,6 +1944,9 @@ def _run_header_media(visual: dict, facts: dict) -> str:
             (gene for flag in facts.get("audit_flags") or [] for gene in flag.get("genes") or []),
             "audit",
         )
+        warn_sev = {"warn", "error"}
+        warns = sum(1 for f in facts.get("audit_flags") or [] if f.get("severity") in warn_sev)
+        media_state = "AUDIT ACTIVE" if warns else "AUDIT CLEAR"
         return f"""
         <div class="run-header-media run-header-media-video {media_class}">
           <div class="bulletin-bio-lines" aria-hidden="true"></div>
@@ -1781,7 +1957,7 @@ def _run_header_media(visual: dict, facts: dict) -> str:
           <div class="bulletin-overlay" aria-hidden="true">
             <span class="bulletin-kicker">{kicker}</span>
             <span class="bulletin-run">KYTOS · {_h(str(facts.get("run_id", "run")).upper())}</span>
-            <span class="bulletin-state">AUDIT ACTIVE</span>
+            <span class="bulletin-state">{media_state}</span>
           </div>
           <div class="bulletin-data-rail" aria-label="Run bulletin facts">
             <span><strong>{_h(score)} ceiling</strong></span>

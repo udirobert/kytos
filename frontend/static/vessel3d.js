@@ -443,18 +443,255 @@ function initVessel3D() {
   }
   vesselGroup.add(dropletsGroup);
 
-  // ── Reflective floor — catches and scatters the teal glow ─────────────────
-  var floorGeo = new THREE.CircleGeometry(8, 64);
-  var floorMat = new THREE.MeshStandardMaterial({
-    color: 0x11304a,
-    roughness: 0.08,
-    metalness: 0.85,
-    envMapIntensity: 1.0,
+  // ── Backdrop world — the vessel sits in a living field, not a void ───────
+  // Inspired by low-poly island scenes: a soft gradient sky, a low-poly
+  // meadow with grass and flowers, distant hills, drifting pollen, and a
+  // sun/moon glow. The whole world is adaptive — it crossfades between a
+  // bright Nordic day and a warm ember dusk as the site's theme changes,
+  // so the instrument evolves in and out of its states instead of snapping.
+  var WORLD = {
+    light: {
+      skyTop: new THREE.Color("#6fc3ca"),
+      skyHorizon: new THREE.Color("#f7ecd2"),
+      skyGround: new THREE.Color("#e7eed6"),
+      meadow: new THREE.Color("#cfe0bd"),
+      hill: new THREE.Color("#a9c79a"),
+      tuft: new THREE.Color("#7fae6a"),
+      flower: new THREE.Color("#f2a6b8"),
+      flower2: new THREE.Color("#f0c75e"),
+      pollen: new THREE.Color("#e8b64a"),
+      glow: new THREE.Color("#ffd9a6"),
+      ambient: new THREE.Color("#9fd0c8"),
+      ambientI: 0.95,
+      below: new THREE.Color("#2dd4bf"),
+      belowI: 3.2,
+      above: new THREE.Color("#fff3d6"),
+      aboveI: 1.7,
+      rim: new THREE.Color("#7fd3d6"),
+      rimI: 0.9,
+    },
+    dark: {
+      skyTop: new THREE.Color("#0d0f14"),
+      skyHorizon: new THREE.Color("#3a2418"),
+      skyGround: new THREE.Color("#191a13"),
+      meadow: new THREE.Color("#1c2118"),
+      hill: new THREE.Color("#2a2a1c"),
+      tuft: new THREE.Color("#4a5a30"),
+      flower: new THREE.Color("#f59e0b"),
+      flower2: new THREE.Color("#a78bfa"),
+      pollen: new THREE.Color("#f59e0b"),
+      glow: new THREE.Color("#fbbf24"),
+      ambient: new THREE.Color("#6a5a3a"),
+      ambientI: 0.6,
+      below: new THREE.Color("#2dd4bf"),
+      belowI: 2.6,
+      above: new THREE.Color("#ffc97a"),
+      aboveI: 0.9,
+      rim: new THREE.Color("#f59e0b"),
+      rimI: 0.7,
+    },
+  };
+
+  function worldTheme() {
+    return document.documentElement.getAttribute("data-theme") === "light"
+      ? "light"
+      : "dark";
+  }
+
+  // themeBlend: 0 = dusk, 1 = day. Crossfades on change so the world evolves.
+  var themeBlend = worldTheme() === "light" ? 1 : 0;
+  var themeTarget = themeBlend;
+  var worldTrack = [];
+  function trackWorld(apply) {
+    worldTrack.push(apply);
+  }
+
+  window.addEventListener("kytos:theme", function (event) {
+    themeTarget = event.detail && event.detail.theme === "light" ? 1 : 0;
   });
-  var floor = new THREE.Mesh(floorGeo, floorMat);
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = VESSEL_BOTTOM - 0.3;
-  scene.add(floor);
+
+  // ── Sky dome — soft gradient sky, the island's backdrop ──────────────────
+  var skyGeo = new THREE.SphereGeometry(60, 24, 16);
+  var skyMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    depthWrite: false,
+    uniforms: {
+      uTop: { value: new THREE.Color() },
+      uHorizon: { value: new THREE.Color() },
+      uGround: { value: new THREE.Color() },
+    },
+    vertexShader: [
+      "varying vec3 vPos;",
+      "void main() {",
+      "  vPos = position;",
+      "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+      "}",
+    ].join("\n"),
+    fragmentShader: [
+      "varying vec3 vPos;",
+      "uniform vec3 uTop;",
+      "uniform vec3 uHorizon;",
+      "uniform vec3 uGround;",
+      "void main() {",
+      "  vec3 d = normalize(vPos);",
+      "  float h = clamp(d.y, -1.0, 1.0);",
+      "  float zen = smoothstep(0.02, 0.55, h);",
+      "  float gnd = smoothstep(-0.12, 0.10, h);",
+      "  vec3 col = mix(uHorizon, uTop, zen);",
+      "  col = mix(uGround, col, gnd);",
+      "  gl_FragColor = vec4(col, 1.0);",
+      "}",
+    ].join("\n"),
+  });
+  var sky = new THREE.Mesh(skyGeo, skyMat);
+  sky.frustumCulled = false;
+  scene.add(sky);
+  trackWorld(function (b) {
+    skyMat.uniforms.uTop.value.copy(WORLD.dark.skyTop).lerp(WORLD.light.skyTop, b);
+    skyMat.uniforms.uHorizon.value
+      .copy(WORLD.dark.skyHorizon)
+      .lerp(WORLD.light.skyHorizon, b);
+    skyMat.uniforms.uGround.value
+      .copy(WORLD.dark.skyGround)
+      .lerp(WORLD.light.skyGround, b);
+  });
+
+  // ── Sun / moon glow — a soft additive disc near the horizon ──────────────
+  var glowCanvas = document.createElement("canvas");
+  glowCanvas.width = 128;
+  glowCanvas.height = 128;
+  var gctx = glowCanvas.getContext("2d");
+  var ggrad = gctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  ggrad.addColorStop(0, "rgba(255,255,255,1)");
+  ggrad.addColorStop(0.25, "rgba(255,255,255,0.45)");
+  ggrad.addColorStop(1, "rgba(255,255,255,0)");
+  gctx.fillStyle = ggrad;
+  gctx.fillRect(0, 0, 128, 128);
+  var glowTex = new THREE.CanvasTexture(glowCanvas);
+  var glowMat = new THREE.SpriteMaterial({
+    map: glowTex,
+    transparent: true,
+    opacity: 0.6,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  var glow = new THREE.Sprite(glowMat);
+  glow.position.set(0, 3.4, -17);
+  glow.scale.set(8, 8, 1);
+  scene.add(glow);
+  trackWorld(function (b) {
+    glowMat.color.copy(WORLD.dark.glow).lerp(WORLD.light.glow, b);
+    glowMat.opacity = 0.3 + b * 0.45;
+  });
+
+  // ── Meadow — low-poly field where the vessel stands ──────────────────────
+  var floorY = VESSEL_BOTTOM - 0.3;
+  var meadowGeo = new THREE.CircleGeometry(24, 48);
+  var meadowMat = new THREE.MeshStandardMaterial({
+    roughness: 0.6,
+    metalness: 0,
+  });
+  var meadow = new THREE.Mesh(meadowGeo, meadowMat);
+  meadow.rotation.x = -Math.PI / 2;
+  meadow.position.y = floorY;
+  scene.add(meadow);
+  trackWorld(function (b) {
+    meadowMat.color.copy(WORLD.dark.meadow).lerp(WORLD.light.meadow, b);
+  });
+
+  // ── Ecology — grass tufts and flowers scattered on the field ─────────────
+  var ecologyGroup = new THREE.Group();
+  scene.add(ecologyGroup);
+  var tuftBlades = [];
+  var flowerHeads = [];
+  var tuftCount = lowPerf ? 16 : 36;
+  var flowerCount = lowPerf ? 8 : 18;
+  function randRange(a, b) {
+    return a + Math.random() * (b - a);
+  }
+  for (var gi = 0; gi < tuftCount; gi++) {
+    var tAng = Math.random() * Math.PI * 2;
+    var tRad = randRange(2.4, 10);
+    var tuft = new THREE.Group();
+    for (var bi = 0; bi < 3; bi++) {
+      var bladeGeo = new THREE.ConeGeometry(0.05, randRange(0.22, 0.5), 4);
+      var bladeMat = new THREE.MeshStandardMaterial({ roughness: 0.85 });
+      var blade = new THREE.Mesh(bladeGeo, bladeMat);
+      blade.position.set(
+        (Math.random() - 0.5) * 0.2,
+        bladeGeo.parameters.height / 2 - 0.02,
+        (Math.random() - 0.5) * 0.2,
+      );
+      blade.rotation.z = (Math.random() - 0.5) * 0.5;
+      blade.rotation.x = (Math.random() - 0.5) * 0.5;
+      tuft.add(blade);
+      tuftBlades.push(bladeMat);
+    }
+    tuft.position.set(Math.cos(tAng) * tRad, floorY, Math.sin(tAng) * tRad);
+    tuft.userData = {
+      sway: 0.6 + Math.random() * 1.2,
+      phase: Math.random() * Math.PI * 2,
+    };
+    ecologyGroup.add(tuft);
+  }
+  for (var fi = 0; fi < flowerCount; fi++) {
+    var fAng = Math.random() * Math.PI * 2;
+    var fRad = randRange(2.6, 9.4);
+    var flower = new THREE.Group();
+    var stemGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.4, 4);
+    var stemMat = new THREE.MeshStandardMaterial({ color: 0x7fae6a, roughness: 0.85 });
+    var stem = new THREE.Mesh(stemGeo, stemMat);
+    stem.position.y = 0.2;
+    flower.add(stem);
+    var headGeo = new THREE.SphereGeometry(0.05, 6, 6);
+    var headMat = new THREE.MeshStandardMaterial({ roughness: 0.5 });
+    var head = new THREE.Mesh(headGeo, headMat);
+    head.position.y = 0.42;
+    head.userData = {
+      sway: 1 + Math.random(),
+      phase: Math.random() * Math.PI * 2,
+    };
+    flower.add(head);
+    flowerHeads.push(headMat);
+    flower.position.set(Math.cos(fAng) * fRad, floorY, Math.sin(fAng) * fRad);
+    flower.userData = {
+      sway: 0.8 + Math.random(),
+      phase: Math.random() * Math.PI * 2,
+    };
+    ecologyGroup.add(flower);
+  }
+  trackWorld(function (b) {
+    var tuftC = WORLD.dark.tuft.clone().lerp(WORLD.light.tuft, b);
+    var flowerC = WORLD.dark.flower.clone().lerp(WORLD.light.flower, b);
+    var flower2C = WORLD.dark.flower2.clone().lerp(WORLD.light.flower2, b);
+    for (var i = 0; i < tuftBlades.length; i++) tuftBlades[i].color.copy(tuftC);
+    for (var j = 0; j < flowerHeads.length; j++) {
+      flowerHeads[j].color.copy(j % 2 ? flower2C : flowerC);
+    }
+  });
+
+  // ── Horizon hills — low-poly mounds for depth, like a distant treeline ────
+  var hillMat = new THREE.MeshStandardMaterial({ roughness: 1 });
+  var horizonGroup = new THREE.Group();
+  scene.add(horizonGroup);
+  var hillSpots = [
+    [-14, -12],
+    [0, -17],
+    [13, -10],
+    [18, -4],
+    [-19, -1],
+  ];
+  for (var hi = 0; hi < hillSpots.length; hi++) {
+    var hh = randRange(1.4, 2.8);
+    var hillGeo = new THREE.ConeGeometry(randRange(3.5, 6.5), hh, 5);
+    var hill = new THREE.Mesh(hillGeo, hillMat);
+    hill.position.set(hillSpots[hi][0], floorY + hh / 2, hillSpots[hi][1]);
+    hill.rotation.y = Math.random() * Math.PI * 2;
+    horizonGroup.add(hill);
+  }
+  trackWorld(function (b) {
+    hillMat.color.copy(WORLD.dark.hill).lerp(WORLD.light.hill, b);
+  });
 
   // Caustics light projection on the floor — brighter, warmer spread
   var causticsLight = new THREE.SpotLight(0x2dd4bf, 4.5, 14, Math.PI / 4.5, 0.6);
@@ -501,6 +738,10 @@ function initVessel3D() {
   });
   var particles = new THREE.Points(particleGeo, particleMat);
   scene.add(particles);
+  // Pollen — warm gold by day, ember spores at dusk.
+  trackWorld(function (b) {
+    particleMat.color.copy(WORLD.dark.pollen).lerp(WORLD.light.pollen, b);
+  });
 
   // ── DNA helix strands — subtle biological motif in the background ─────────
   // Two slow-rotating double-helix strands float behind the vessel, evoking
@@ -566,20 +807,30 @@ function initVessel3D() {
     dnaGroup.add(helixGroup);
   }
 
-  // ── Lighting — bright biological medium, not dark void ───────────────────
-  scene.add(new THREE.AmbientLight(0x3a6b8c, 0.8));
+  // ── Lighting — bright biological medium, warm with the sun by day and
+  //     ember at dusk. Colors and intensities follow the world palette.
+  var ambientLight = new THREE.AmbientLight(0x6a5a3a, 0.6);
+  scene.add(ambientLight);
 
-  var belowLight = new THREE.PointLight(0x2dd4bf, 3.5, 16);
+  var belowLight = new THREE.PointLight(0x2dd4bf, 2.6, 16);
   belowLight.position.set(0, -3.5, 0);
   scene.add(belowLight);
 
-  var aboveLight = new THREE.PointLight(0xfff0d4, 1.2, 20);
+  var aboveLight = new THREE.PointLight(0xffc97a, 0.9, 20);
   aboveLight.position.set(3, 5, 4);
   scene.add(aboveLight);
 
-  var rimLight = new THREE.DirectionalLight(0x22d3ee, 0.8);
+  var rimLight = new THREE.DirectionalLight(0xf59e0b, 0.7);
   rimLight.position.set(-5, 2, -3);
   scene.add(rimLight);
+
+  trackWorld(function (b) {
+    ambientLight.color.copy(WORLD.dark.ambient).lerp(WORLD.light.ambient, b);
+    ambientLight.intensity += (WORLD.dark.ambientI + (WORLD.light.ambientI - WORLD.dark.ambientI) * b - ambientLight.intensity) * 0.06;
+    belowLight.color.copy(WORLD.dark.below).lerp(WORLD.light.below, b);
+    aboveLight.color.copy(WORLD.dark.above).lerp(WORLD.light.above, b);
+    rimLight.color.copy(WORLD.dark.rim).lerp(WORLD.light.rim, b);
+  });
 
   // Botanical accent — subtle green side-light evoking plant biology
   var bioLight = new THREE.PointLight(0x4ade80, 0.6, 12);
@@ -707,12 +958,14 @@ function initVessel3D() {
     calloutEl.innerHTML = html;
     calloutEl.style.left = x + "px";
     calloutEl.style.top = y + "px";
+    calloutEl.classList.add("frag-showing");
     calloutEl.classList.add("is-visible");
     calloutEl.setAttribute("aria-hidden", "false");
   }
 
   function hideCallout() {
     if (!calloutEl) return;
+    calloutEl.classList.remove("frag-showing");
     calloutEl.classList.remove("is-visible");
     calloutEl.setAttribute("aria-hidden", "true");
   }
@@ -839,6 +1092,10 @@ function initVessel3D() {
     requestAnimationFrame(animate);
     var dt = Math.min(clock.getDelta(), 0.05);
     var t = clock.getElapsedTime();
+
+    // World palette crossfades between day and dusk as the theme changes.
+    themeBlend += (themeTarget - themeBlend) * 0.03;
+    for (var wti = 0; wti < worldTrack.length; wti++) worldTrack[wti](themeBlend);
 
     // Entrance timeline advances in real time
     if (!entranceDone) {
@@ -1033,6 +1290,17 @@ function initVessel3D() {
         strand.children.forEach(function (child) {
           if (child.material) {
             child.material.opacity = (child.geometry.type === "CylinderGeometry" ? 0.12 : 0.3) * dnaA;
+          }
+        });
+      });
+
+      // Ecology — grass and flowers sway in the breeze
+      ecologyGroup.children.forEach(function (e) {
+        var sw = e.userData.sway || 0;
+        e.rotation.z = Math.sin(t * sw + e.userData.phase) * 0.06;
+        e.children.forEach(function (c) {
+          if (c.userData && c.userData.sway) {
+            c.rotation.z = Math.sin(t * c.userData.sway + c.userData.phase) * 0.12;
           }
         });
       });

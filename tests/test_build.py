@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import subprocess
 import sys
 from pathlib import Path
@@ -79,14 +80,19 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "journey-live" in html
     assert "bio-atmosphere" in html
     assert "narrative-more" in html
-    assert "briefing-play" in html
-    assert "bulletin-next" in html
+    # k001 ships the Dr. Kytos presenter (visual.presenter) — the anchor owns
+    # k001 ships the Dr. Kytos presenter (visual.presenter) — the anchor owns
+    # the run hero, so the header media panel steps aside (single video per
+    # surface). The bulletin stays committed; the 16MB full briefing does not
+    # (over the media commit cap — the deployed site only ships clips that
+    # git+Netlify can host).
+    media_dir = dist / "runs" / "k001-mean-shift-baseline" / "visual"
+    assert "run-hero-presenter" in html
+    assert "presenter.mp4" in html
+    assert (media_dir / "presenter.mp4").is_file()
+    assert (media_dir / "bulletin.mp4").is_file()
+    assert not (media_dir / "briefing.mp4").exists()
     assert 'data-copy-label="copy"' in html
-    assert "run-header-media" in html
-    assert "visual/briefing.mp4" in html or "visual/bulletin.mp4" in html
-    assert (dist / "runs" / "k001-mean-shift-baseline" / "visual" / "briefing.mp4").is_file() or (
-        dist / "runs" / "k001-mean-shift-baseline" / "visual" / "bulletin.mp4"
-    ).is_file()
     assert "chart-details" in html
     assert "run-header" in html
     assert "vessel3d.js" in html  # run detail now has full-bleed vessel
@@ -100,6 +106,13 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "run-insight-card" in runs_html
     assert "% ceiling" in runs_html
     assert "hk-stability" in html or "housekeeping_shift" in html
+    # Holo screenshot ships compressed when Pillow is present (raw ~410KB;
+    # the Trust panel shows it as a small thumbnail) — never a 400KB asset.
+    if importlib.util.find_spec("PIL") is not None:
+        holo_out = dist / "runs" / "k001-mean-shift-baseline" / "holo_screenshot.png"
+        assert holo_out.is_file()
+        assert holo_out.stat().st_size < 250_000
+
     assert (dist / "static" / "style.css").is_file()
     assert (dist / "static" / "favicon.svg").is_file()
     assert (dist / "static" / "og-image.png").is_file()

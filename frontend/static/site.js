@@ -818,6 +818,7 @@
 
     function showSvgCallout(text, e) {
       callout.textContent = text;
+      callout.classList.add("frag-showing");
       callout.style.opacity = "1";
       callout.style.transform = "none";
       var rect = svg.getBoundingClientRect();
@@ -828,6 +829,7 @@
     }
 
     function hideSvgCallout() {
+      callout.classList.remove("frag-showing");
       callout.style.opacity = "0";
     }
 
@@ -927,12 +929,14 @@
 
     var slides = carousel.querySelectorAll(".home-catch-slide");
     var dots = carousel.querySelectorAll(".home-catch-dot");
+    var pauseBtn = document.getElementById("home-catch-pause");
     if (slides.length <= 1) return;
 
     if (prefersReducedMotion()) return; // CSS shows only active slide
 
     var current = 0;
     var timer = null;
+    var paused = false;
     var interval = 4500;
 
     function show(idx) {
@@ -948,10 +952,10 @@
       dots.forEach(function (d, i) {
         if (i === idx) {
           d.classList.add("is-active");
-          d.setAttribute("aria-selected", "true");
+          d.setAttribute("aria-pressed", "true");
         } else {
           d.classList.remove("is-active");
-          d.setAttribute("aria-selected", "false");
+          d.setAttribute("aria-pressed", "false");
         }
       });
       current = idx;
@@ -962,6 +966,7 @@
     }
 
     function start() {
+      if (paused) return;
       stop();
       timer = setInterval(next, interval);
     }
@@ -973,12 +978,33 @@
       }
     }
 
+    function setPaused(p) {
+      paused = p;
+      if (paused) {
+        stop();
+      } else {
+        start();
+      }
+      if (pauseBtn) {
+        pauseBtn.setAttribute("aria-pressed", String(paused));
+        pauseBtn.setAttribute("aria-label", paused ? "Resume auto-rotation" : "Pause auto-rotation");
+        var icon = pauseBtn.querySelector(".home-catch-pause-icon");
+        if (icon) icon.textContent = paused ? "▶" : "❚❚";
+      }
+    }
+
     dots.forEach(function (dot, idx) {
       dot.addEventListener("click", function () {
         show(idx);
         start(); // restart timer from the clicked slide
       });
     });
+
+    if (pauseBtn) {
+      pauseBtn.addEventListener("click", function () {
+        setPaused(!paused);
+      });
+    }
 
     carousel.addEventListener("mouseenter", stop);
     carousel.addEventListener("mouseleave", start);
@@ -1077,7 +1103,96 @@
     });
   }
 
+  // ── Adaptive theme (day / night states) ───────────────────────────────
+  // The Observatory breathes: light (Nordic day) by default, dark at night,
+  // following the visitor's local clock unless they pin a choice. Pinning
+  // persists; clicking "auto" returns to dawn/dusk mode.
+  var THEME_COLORS = { light: "#f6f3ec", dark: "#100e0a" };
+
+  function currentTheme() {
+    return document.documentElement.getAttribute("data-theme") || "dark";
+  }
+
+  function pinnedTheme() {
+    try {
+      var t = localStorage.getItem("kytos-theme");
+      return t === "light" || t === "dark" ? t : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function applyTheme(t, animate, pin) {
+    var root = document.documentElement;
+    if (animate && !prefersReducedMotion()) {
+      root.classList.add("theme-anim");
+      setTimeout(function () {
+        root.classList.remove("theme-anim");
+      }, 500);
+    }
+    root.setAttribute("data-theme", t);
+    // Let the 3D vessel world crossfade its sky/field to match the theme.
+    window.dispatchEvent(new CustomEvent("kytos:theme", { detail: { theme: t } }));
+    if (pin !== false) {
+      try {
+        localStorage.setItem("kytos-theme", t);
+      } catch (e) { /* private mode — session only */ }
+    }
+    var mc = document.querySelector('meta[name="theme-color"]');
+    if (mc) mc.setAttribute("content", THEME_COLORS[t === "dark" ? "dark" : "light"]);
+    syncThemeControls();
+  }
+
+  function dawnDuskTheme() {
+    var h = new Date().getHours();
+    return h >= 6 && h < 19 ? "light" : "dark";
+  }
+
+  function syncThemeControls() {
+    var btn = document.getElementById("theme-toggle");
+    var autoBtn = document.getElementById("theme-auto");
+    if (!btn) return;
+    var t = currentTheme();
+    btn.setAttribute("aria-label", "Switch to " + (t === "light" ? "dark" : "light") + " mode");
+    btn.setAttribute("title", t === "light" ? "It's day — switch to night" : "It's night — switch to day");
+    if (autoBtn) autoBtn.hidden = !pinnedTheme();
+    var mc = document.querySelector('meta[name="theme-color"]');
+    if (mc) mc.setAttribute("content", THEME_COLORS[t === "dark" ? "dark" : "light"]);
+  }
+
+  function initThemeToggle() {
+    var btn = document.getElementById("theme-toggle");
+    var autoBtn = document.getElementById("theme-auto");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      applyTheme(currentTheme() === "light" ? "dark" : "light", true);
+    });
+    if (autoBtn) {
+      autoBtn.addEventListener("click", function () {
+        try {
+          localStorage.removeItem("kytos-theme");
+        } catch (e) { /* ignore */ }
+        applyTheme(dawnDuskTheme(), true, false);
+        if (autoBtn) autoBtn.hidden = true;
+      });
+    }
+    syncThemeControls();
+    // While unpinned, re-check dawn/dusk when the tab returns or the hour
+    // changes — the site wakes and sleeps with the visitor.
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden && !pinnedTheme()) {
+        applyTheme(dawnDuskTheme(), false, false);
+      }
+    });
+    setInterval(function () {
+      if (!pinnedTheme()) {
+        applyTheme(dawnDuskTheme(), false, false);
+      }
+    }, 60000);
+  }
+
   function onReady() {
+    initThemeToggle();
     initPlotly();
     initVccRail();
     initKeyboardShortcuts();

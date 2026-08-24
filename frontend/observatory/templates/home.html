@@ -56,14 +56,18 @@
                 drug that doesn&rsquo;t work, discovered a year too late.
               </p>
             </div>
-            <div class="home-catch-dots" role="tablist" aria-label="Carousel navigation">
-              <button class="home-catch-dot is-active" role="tab"
-                      aria-selected="true" aria-label="Slide 1"></button>
-              <button class="home-catch-dot" role="tab"
-                      aria-selected="false" aria-label="Slide 2"></button>
-              <button class="home-catch-dot" role="tab"
-                      aria-selected="false" aria-label="Slide 3"></button>
-            </div>
+          <div class="home-catch-dots" role="group" aria-label="Carousel navigation">
+              <button class="home-catch-dot is-active" type="button"
+                      aria-pressed="true" aria-label="Show point 1 of 3"></button>
+              <button class="home-catch-dot" type="button"
+                      aria-pressed="false" aria-label="Show point 2 of 3"></button>
+              <button class="home-catch-dot" type="button"
+                      aria-pressed="false" aria-label="Show point 3 of 3"></button>
+          </div>
+          <button class="home-catch-pause" type="button" id="home-catch-pause"
+                  aria-pressed="false" aria-label="Pause auto-rotation">
+            <span class="home-catch-pause-icon" aria-hidden="true">❚❚</span>
+          </button>
           </div>
           <button class="button home-phase-cta t-stagger-line t-stagger-line--2"
                   type="button" data-next="3">
@@ -81,9 +85,9 @@
             {{ proof | safe }}
           </div>
           <a class="button home-phase-cta t-stagger-line t-stagger-line--2"
-             href="{{ run_href }}">View run #{{ run_index }} of {{ vcc_days }} →</a>
+             href="{{ run_href }}">View run #{{ run_index }}{{ day_stamp }} →</a>
           <button class="home-phase-back t-stagger-line t-stagger-line--3"
-                  type="button" data-back="1">
+                  type="button" data-back="2">
             ← Back
           </button>
         </div>
@@ -92,6 +96,7 @@
     </div>
   </div>
 </section>
+{% if chronicle_rail %}{{ chronicle_rail | safe }}{% endif %}
 {% else %}
 <section class="home-stage">
   <h1 class="home-headline">Waiting for the first run</h1>

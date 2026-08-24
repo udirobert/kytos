@@ -30,6 +30,7 @@ from _enrich_common import (
     download,
     env_key,
     load_facts,
+    media_committable,
     notice,
     openai_tts_client,
     record_pipeline_status,
@@ -164,6 +165,21 @@ def main(argv=None) -> int:
         url = fabric_video(hero, audio_path, args.resolution)
         video_path = run_dir / "visual" / "briefing.mp4"
         download(url, video_path)
+        if not media_committable(video_path):
+            # The full briefing is the watch-on-demand artifact: keep it
+            # locally (or object storage later) — the deployed Observatory
+            # only ships the ≤4MB clips that git+Netlify can host.
+            warn(
+                f"briefing.mp4 is {video_path.stat().st_size / 1048576:.1f}MB "
+                "— over the commit cap; keeping local, not publishing."
+            )
+            record_pipeline_status(
+                run_dir,
+                "briefing",
+                "failed",
+                "Briefing video exceeds the 4MB committed-media cap.",
+            )
+            return 0
         notice(f"briefing: wrote {video_path.relative_to(run_dir)}")
         set_visual_paths(run_dir, facts, briefing=str(video_path.relative_to(run_dir)))
         record_pipeline_status(

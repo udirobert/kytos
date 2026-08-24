@@ -23,6 +23,14 @@ from frontend.observatory.render import (  # noqa: E402 - after sys.path bootstr
 )
 from frontend.observatory.meta import render_robots_txt, render_sitemap_xml  # noqa: E402
 from frontend.observatory.runs import discover_runs  # noqa: E402
+from frontend.observatory.shorts import (  # noqa: E402
+    load_chronicle,
+    render_short,
+    render_shorts_index,
+)
+
+
+MEDIA_COMMIT_LIMIT = 4 * 1024 * 1024  # keep git happy + pages light (mirrors tools/_enrich_common)
 
 
 def _copy_tree(src: Path, dest: Path) -> None:
@@ -34,7 +42,45 @@ def _copy_tree(src: Path, dest: Path) -> None:
         if item.is_dir():
             shutil.copytree(item, target, dirs_exist_ok=True)
         else:
+            # Never ship a heavy video to the deployed site — the page can
+            # only reference clips that git+Netlify can actually host.
+            if item.suffix.lower() in (".mp4", ".webm", ".mov", ".mp3", ".wav"):
+                try:
+                    if item.stat().st_size > MEDIA_COMMIT_LIMIT:
+                        size_mb = item.stat().st_size / 1048576
+                        print(f"  skip {item} ({size_mb:.1f}MB) — over 4MB commit cap")
+                        continue
+                except OSError:
+                    pass
             shutil.copy2(item, target)
+
+
+def _compress_holo_screenshot(src: Path, dest: Path) -> None:
+    """Copy the Holo agent screenshot, downscaled + palette-quantized.
+
+    The raw Playwright capture (~0.4 MB) is only ever shown as a small
+    thumbnail in the Trust panel, so shipping it full-size bloats every run
+    page. Pillow is available in the dev and CI environments (transitive dep);
+    when it is missing or the image can't be processed, we degrade to a plain
+    copy — never block the build on a cosmetic optimization.
+    """
+    try:
+        from PIL import Image
+    except ImportError:
+        shutil.copy2(src, dest)
+        return
+    try:
+        img = Image.open(src)
+        img = img.convert("RGB")
+        # The Trust panel renders the shot at ~760px wide, cropped to ~140px
+        # tall — 640px wide is far past the effective display resolution.
+        img.thumbnail((640, 640))
+        # UI screenshots survive a 256-color palette visually intact and it
+        # shrinks the file several-fold vs truecolor PNG.
+        img = img.quantize(colors=256, method=Image.Quantize.MEDIANCUT)
+        img.save(dest, "PNG", optimize=True)
+    except Exception:
+        shutil.copy2(src, dest)
 
 
 def _copy_run_media(run_dir: Path, out_run_dir: Path) -> str:
@@ -64,9 +110,11 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
     # JS instead of serving the previous immutable-cached version.
     js_hash = hashlib.md5((static_src / "site.js").read_bytes()).hexdigest()[:8]
 
+    chronicle = load_chronicle(frontend_root.parent / "docs" / "chronicle")
     runs = discover_runs(experiments_dir)
     (out_dir / "index.html").write_text(
-        render_home(runs, root_prefix="", js_version=js_hash), encoding="utf-8"
+        render_home(runs, root_prefix="", js_version=js_hash, chronicle=chronicle),
+        encoding="utf-8",
     )
 
     about_dir = out_dir / "about"
@@ -94,7 +142,7 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         # independent-audit panel can show what the agent actually saw.
         holo_shot = run.path / "holo_screenshot.png"
         if holo_shot.is_file():
-            shutil.copy2(holo_shot, run_out / "holo_screenshot.png")
+            _compress_holo_screenshot(holo_shot, run_out / "holo_screenshot.png")
         html = render_run_detail(
             run,
             runs,
@@ -104,7 +152,32 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         )
         (run_out / "index.html").write_text(html, encoding="utf-8")
 
+    if chronicle.shorts:
+        shorts_root = out_dir / "shorts"
+        shorts_root.mkdir()
+        for shot in chronicle.shorts:
+            shot_dir = shorts_root / shot.slug
+            shot_dir.mkdir(parents=True)
+            media_src = chronicle.root / "media" / shot.slug
+            if media_src.is_dir():
+                _copy_tree(media_src, shot_dir)
+            (shot_dir / "index.html").write_text(
+                render_short(
+                    shot,
+                    chronicle,
+                    root_prefix="../../",
+                    js_version=js_hash,
+                ),
+                encoding="utf-8",
+            )
+        (shorts_root / "index.html").write_text(
+            render_shorts_index(chronicle, root_prefix="../", js_version=js_hash),
+            encoding="utf-8",
+        )
+
     sitemap_paths = ["/", "/about/", "/runs/"] + [f"/runs/{run.run_id}/" for run in runs]
+    if chronicle.shorts:
+        sitemap_paths += ["/shorts/"] + [f"/shorts/{shot.slug}/" for shot in chronicle.shorts]
     (out_dir / "robots.txt").write_text(render_robots_txt(), encoding="utf-8")
     (out_dir / "sitemap.xml").write_text(render_sitemap_xml(sitemap_paths), encoding="utf-8")
 

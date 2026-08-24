@@ -24,6 +24,11 @@
       "status": "skipped",
       "detail": "FAL_KEY not set \u2014 no briefing video generated.",
       "timestamp": "2026-08-24T07:01:24+00:00"
+    },
+    "presenter": {
+      "status": "done",
+      "detail": "TTS audio + fal Fabric presenter video generated (480p).",
+      "timestamp": "2026-08-23T21:40:08+00:00"
     }
   }
 }

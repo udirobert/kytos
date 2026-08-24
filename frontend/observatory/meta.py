@@ -14,7 +14,7 @@ SITE_DESCRIPTION = (
     "during the 2026 Virtual Cell Challenge."
 )
 SITE_AUTHOR = "Kytos"
-THEME_COLOR = "#070b12"
+THEME_COLOR = "#100e0a"
 TWITTER_HANDLE = ""  # optional @handle without @
 DEFAULT_OG_IMAGE = "static/og-image.jpg"
 FAVICON_PATH = "static/favicon.svg"

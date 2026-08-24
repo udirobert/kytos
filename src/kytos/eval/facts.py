@@ -40,6 +40,12 @@ def _visual_paths(run_dir: Path) -> dict[str, str]:
     mapping = {
         "hero": "visual/hero.png",
         "share_card": "visual/share-card.png",
+        # The Observatory cast: Dr. Kytos (presenter) is the anchor, the
+        # vessel is the instrument, the bulletin is the 8s hero clip, and the
+        # full briefing stays the watch-on-demand artifact (committed only
+        # when small enough for git+Netlify — see the 4MB cap in tools/).
+        "presenter": "visual/presenter.mp4",
+        "bulletin": "visual/bulletin.mp4",
         "briefing": "visual/briefing.mp4",
     }
     for key, rel in mapping.items():

@@ -151,6 +151,21 @@ def set_visual_paths(run_dir: Path, facts: dict, **paths: str | None) -> bool:
     return changed
 
 
+MAX_COMMITTED_VIDEO_BYTES = 4 * 1024 * 1024  # keep git happy + pages light
+
+
+def media_committable(dest: Path) -> bool:
+    """Whether a generated video is small enough to commit to the repo.
+
+    The Observatory deploys from git (Netlify) — anything over the cap stays
+    local or needs object storage; the enrichment ledger records why.
+    """
+    try:
+        return dest.stat().st_size <= MAX_COMMITTED_VIDEO_BYTES
+    except OSError:
+        return False
+
+
 def download(url: str, dest: Path, timeout: int = 180) -> None:
     """Download a URL to a file (fal media URLs are signed https links)."""
     dest.parent.mkdir(parents=True, exist_ok=True)

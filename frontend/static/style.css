@@ -1,15 +1,17 @@
 :root {
   /* ── Neutral Obsidian / Zinc Canvas (Replaces saturated deep-teal) ─── */
-  --bg: #090c10;
-  --bg-panel: #111620;
-  --bg-elevated: #18202d;
-  --bg-glass: rgba(17, 22, 32, 0.75);
+  /* ── Dusk: warm charcoal, not lab glass — the Observatory's night state
+     reads as a field journal at dusk, warm ink on warm shadow. ─── */
+  --bg: #100e0a;
+  --bg-panel: #191510;
+  --bg-elevated: #221d16;
+  --bg-glass: rgba(25, 21, 16, 0.75);
 
-  --ink: #f0f6fc;
-  --ink-bright: #ffffff;
-  --muted: #8b9bb4;
-  --line: rgba(240, 246, 252, 0.09);
-  --line-bright: rgba(240, 246, 252, 0.18);
+  --ink: #f2ecdf;
+  --ink-bright: #fbf7ec;
+  --muted: #a49883;
+  --line: rgba(242, 236, 223, 0.1);
+  --line-bright: rgba(242, 236, 223, 0.2);
 
   /* ── Semantic Accents ─── */
   --accent: #2dd4bf;
@@ -88,9 +90,9 @@ body {
 
 body {
   background:
-    radial-gradient(1200px 700px at 15% -8%, rgba(45, 212, 191, 0.08), transparent 65%),
-    radial-gradient(1000px 600px at 90% 12%, rgba(56, 189, 248, 0.06), transparent 60%),
-    radial-gradient(900px 900px at 50% 110%, rgba(45, 212, 191, 0.04), transparent 50%),
+    radial-gradient(1200px 700px at 15% -8%, rgba(251, 191, 36, 0.055), transparent 65%),
+    radial-gradient(1000px 600px at 90% 12%, rgba(45, 212, 191, 0.05), transparent 60%),
+    radial-gradient(900px 900px at 50% 110%, rgba(163, 230, 53, 0.03), transparent 50%),
     var(--bg);
   background-attachment: fixed;
   color: var(--ink);
@@ -105,6 +107,19 @@ body {
 ::selection {
   background: var(--accent);
   color: #042f2e;
+}
+
+/* Screen-reader-only text (About H1 etc.) — visually hidden, still indexed */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 a {
@@ -343,10 +358,10 @@ code {
   content: "";
   position: absolute;
   inset: 8% 4%;
-  border: 1px solid rgba(101, 232, 221, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.16);
   border-radius: 50% 46% 54% 44% / 46% 54% 43% 57%;
   transform: rotate(-8deg) translateY(calc(var(--bio-scroll, 0) * -18px));
-  box-shadow: inset 0 0 80px rgba(45, 212, 191, 0.045), 0 0 60px rgba(45, 212, 191, 0.04);
+  box-shadow: inset 0 0 80px rgba(251, 191, 36, 0.05), 0 0 60px rgba(251, 191, 36, 0.04);
 }
 
 .bio-atmosphere::after {
@@ -358,7 +373,7 @@ code {
   min-height: 220px;
   right: -8vw;
   top: 12%;
-  border: 1px solid rgba(184, 239, 121, 0.11);
+  border: 1px solid rgba(163, 230, 53, 0.13);
   border-radius: 47% 53% 58% 42% / 56% 44% 52% 48%;
   transform: rotate(18deg) translateY(calc(var(--bio-scroll, 0) * 26px));
 }
@@ -376,13 +391,13 @@ code {
   right: 7%;
   top: 18%;
   opacity: 0.28;
-  stroke: rgba(101, 232, 221, 0.75);
+  stroke: rgba(251, 191, 36, 0.6);
   stroke-width: 1.3;
   transform: translateY(calc(var(--bio-scroll, 0) * 34px)) rotate(3deg);
 }
 
 .bio-helix path:last-child {
-  stroke: rgba(184, 239, 121, 0.58);
+  stroke: rgba(163, 230, 53, 0.5);
   stroke-width: 1;
 }
 
@@ -392,7 +407,7 @@ code {
   left: -4%;
   bottom: 8%;
   opacity: 0.22;
-  stroke: rgba(184, 239, 121, 0.82);
+  stroke: rgba(163, 230, 53, 0.55);
   stroke-width: 1.4;
   transform: translateY(calc(var(--bio-scroll, 0) * -22px)) rotate(-5deg);
 }
@@ -401,9 +416,9 @@ code {
   position: absolute;
   width: 10px;
   height: 10px;
-  border: 1px solid rgba(101, 232, 221, 0.72);
+  border: 1px solid rgba(251, 191, 36, 0.75);
   border-radius: 50%;
-  box-shadow: 0 0 14px rgba(101, 232, 221, 0.36);
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.3);
   transform: translateY(calc(var(--bio-scroll, 0) * var(--drift, 1) * 14px));
 }
 
@@ -411,12 +426,12 @@ code {
   content: "";
   position: absolute;
   inset: -7px;
-  border: 1px solid rgba(101, 232, 221, 0.16);
+  border: 1px solid rgba(251, 191, 36, 0.18);
   border-radius: 50%;
 }
 
 .bio-organelle-a { left: 16%; top: 22%; --drift: -1; }
-.bio-organelle-b { left: 82%; top: 68%; width: 15px; height: 15px; border-color: rgba(184, 239, 121, 0.7); --drift: 1.4; }
+.bio-organelle-b { left: 82%; top: 68%; width: 15px; height: 15px; border-color: rgba(163, 230, 53, 0.7); --drift: 1.4; }
 .bio-organelle-c { left: 62%; top: 18%; width: 6px; height: 6px; --drift: -0.7; }
 
 .bio-membrane {
@@ -425,13 +440,13 @@ code {
   height: 10vw;
   min-width: 180px;
   min-height: 100px;
-  border: 1px solid rgba(101, 232, 221, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.13);
   border-radius: 50%;
   transform: rotate(-24deg) translateY(calc(var(--bio-scroll, 0) * var(--drift, 1) * 20px));
 }
 
 .bio-membrane-a { left: 24%; top: 10%; --drift: 0.8; }
-.bio-membrane-b { right: 22%; bottom: 10%; transform: rotate(28deg); --drift: -0.6; border-color: rgba(184, 239, 121, 0.1); }
+.bio-membrane-b { right: 22%; bottom: 10%; transform: rotate(28deg); --drift: -0.6; border-color: rgba(251, 191, 36, 0.12); }
 
 .bio-atmosphere-light { opacity: 0.46; }
 .bio-atmosphere-medium { opacity: 0.7; }
@@ -478,21 +493,42 @@ html[data-journey-state="trust"] .journey-progress span { background: var(--ceil
   display: none;
 }
 
-/* Dr. Kytos presenter background — full-bleed video on home */
-.home-presenter-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
+/* Dr. Kytos presenter — broadcast billboard below the home hero.
+   The vessel owns the hero; the anchor gets a framed stage with play
+   controls (autoplay-muted is an unreadable teaser behind headline text). */
+.home-presenter-section {
+  position: relative;
+  max-width: 720px;
+  margin: 2.5rem auto 4rem;
+  padding: 0 1.25rem;
 }
+
+.home-presenter-eyebrow {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--muted);
+}
+
 .home-presenter-video {
   display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   object-position: center top;
-  opacity: 0.35;
-  filter: saturate(0.7);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-float);
+}
+
+.home-presenter-section .home-presenter-video {
+  filter: none;
+  opacity: 1;
 }
 
 /* Full-bleed 3D vessel as background */
@@ -618,7 +654,7 @@ html.no-webgl .vessel-loading {
   opacity: 0;
   transform: translate(-50%, -100%) scale(0.9);
   transition: opacity 0.15s ease, transform 0.15s ease;
-  background: rgba(8, 20, 30, 0.92);
+  background: rgba(26, 18, 10, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(45, 212, 191, 0.35);
@@ -667,6 +703,52 @@ html.no-webgl .vessel-loading {
   letter-spacing: 0.08em;
   color: rgba(45, 212, 191, 0.7);
 }
+/* ── Vessel callout fragment assembly — the tooltip reveals like the vessel
+   founding itself ────────────────────────────────────────────────────────
+   The callout's glass doesn't just fade in: a field of fragment shards
+   sweeps, scatters outward, and dissolves as the solid signal body
+   assembles beneath it. Pure CSS — no GSAP, no new deps. Only kicks in
+   while `.frag-showing` is set by JS (both 3D raycast + SVG fallback paths);
+   the shard veil is pointer-transparent, a no-op under prefers-reduced-motion,
+   and never affects the main box's own opacity/position transition. */
+.vessel-callout::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transform-origin: center;
+  /* Jagged-cell texture: a cell's fragments with dark seams. Each tile is a
+     potential CRISPRi perturbation; the veil reads as "evidence not yet
+     assembled". */
+  background-image:
+    linear-gradient(90deg, rgba(18, 14, 10, 0) 0%, rgba(18, 14, 10, 0) 96%, rgba(18, 14, 10, 0.55) 96%, rgba(18, 14, 10, 0.55) 100%),
+    linear-gradient(0deg, rgba(18, 14, 10, 0) 0%, rgba(18, 14, 10, 0) 96%, rgba(18, 14, 10, 0.55) 96%, rgba(18, 14, 10, 0.55) 100%);
+  background-size: 9px 9px;
+  background-position: 0 0;
+  will-change: background-position, transform, opacity;
+}
+
+.vessel-callout.frag-showing::after {
+  animation: vessel-shard-in 520ms cubic-bezier(0.4, 0, 0.9, 0.6) forwards;
+}
+
+/* The shard field assembles left→right (the grid visibly marches while it
+   scatters outward and "goo-merges" via the blur), then dissolves into
+   nothing as the signal body hardens beneath it. Tile travel pools by exact
+   tile-sized steps so the mosaic sees itself together without popping. */
+@keyframes vessel-shard-in {
+  0%   { opacity: 1;                  transform: scale(0.9);  filter: blur(0px);   background-position: 0px 0px; }
+  40%  { opacity: 0.85;               transform: scale(1.03); filter: blur(1.6px); background-position: -9px -9px; }
+  75%  { opacity: 0.35;               transform: scale(1.1);  filter: blur(0.7px); background-position: -18px -18px; }
+  100% { opacity: 0;                  transform: scale(1.12); filter: blur(0px);   background-position: -27px -27px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vessel-callout.frag-showing::after { animation: none; opacity: 0; }
+}
 
 /* ── Vessel onboarding tooltip — first-visit explainer ─────────────────── */
 .vessel-onboard {
@@ -676,7 +758,7 @@ html.no-webgl .vessel-loading {
   transform: translateX(-50%) translateY(10px);
   z-index: 11;
   max-width: min(380px, 80vw);
-  background: rgba(8, 20, 30, 0.95);
+  background: rgba(26, 18, 10, 0.96);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(45, 212, 191, 0.3);
@@ -768,10 +850,10 @@ html.no-webgl .vessel-loading {
   padding: 2rem;
   background: radial-gradient(
     ellipse 70% 50% at 50% 45%,
-    rgba(8, 20, 30, 0.92) 0%,
-    rgba(8, 20, 30, 0.78) 35%,
-    rgba(8, 20, 30, 0.5) 60%,
-    rgba(8, 20, 30, 0.15) 85%,
+    rgba(24, 17, 10, 0.92) 0%,
+    rgba(24, 17, 10, 0.78) 35%,
+    rgba(24, 17, 10, 0.5) 60%,
+    rgba(24, 17, 10, 0.15) 85%,
     transparent 100%
   );
 }
@@ -940,35 +1022,72 @@ html.no-webgl .vessel-loading {
   color: #f0f7fa;
 }
 
-.home-catch-dots {
+.home-catch-controls {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
   margin-top: 0.75rem;
 }
 
+.home-catch-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* 24px hit area with a 7px visual dot — buttons, not glass beads */
 .home-catch-dot {
-  width: 7px;
-  height: 7px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: none;
   padding: 0;
-  background: rgba(45, 212, 191, 0.25);
+  background: transparent;
   cursor: pointer;
+}
+
+.home-catch-dot::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(45, 212, 191, 0.25);
   transition: background 0.3s ease, transform 0.3s ease;
 }
 
-.home-catch-dot.is-active {
+.home-catch-dot.is-active::before {
   background: var(--accent, #2dd4bf);
   transform: scale(1.3);
 }
 
-.home-catch-dot:hover {
+.home-catch-dot:hover::before {
   background: rgba(45, 212, 191, 0.6);
 }
 
 .home-catch-dot:focus-visible {
   outline: 2px solid var(--accent, #2dd4bf);
   outline-offset: 2px;
+}
+
+.home-catch-pause {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--line-bright);
+  background: rgba(26, 18, 10, 0.7);
+  color: var(--muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.home-catch-pause:hover {
+  color: var(--ink);
+  border-color: var(--accent);
 }
 
 /* Reduced motion: show first slide only, statically */
@@ -987,7 +1106,7 @@ html.no-webgl .vessel-loading {
   .home-catch-slide[aria-hidden="true"] {
     display: none;
   }
-  .home-catch-dots {
+  .home-catch-controls {
     display: none;
   }
 }
@@ -1009,7 +1128,7 @@ html.no-webgl .vessel-loading {
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
   border: 1px solid rgba(45, 212, 191, 0.4);
-  background: rgba(8, 20, 30, 0.75);
+  background: rgba(26, 18, 10, 0.78);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   font-family: var(--mono);
@@ -1029,7 +1148,7 @@ html.no-webgl .vessel-loading {
   border: 1px solid rgba(251, 191, 36, 0.4);
   background: rgba(251, 191, 36, 0.08);
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.7rem;
   font-weight: 500;
   letter-spacing: 0.03em;
   color: var(--warn);
@@ -1548,7 +1667,7 @@ html.no-webgl .vessel-loading {
 
 .run-card-metrics {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--muted);
   line-height: 1.45;
 }
@@ -1731,7 +1850,7 @@ a.run-insight-card:hover {
 
 .run-insight-eyebrow {
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -2056,7 +2175,7 @@ a.run-insight-card:hover {
 
 .run-hero {
   position: relative;
-  min-height: 72vh;
+  min-height: 56vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2093,16 +2212,16 @@ a.run-insight-card:hover {
   position: relative;
   z-index: 2;
   width: 100%;
-  min-height: 72vh;
+  min-height: 56vh;
   display: flex;
   flex-direction: column;
   padding: 0;
   background: radial-gradient(
     ellipse 75% 55% at 50% 40%,
-    rgba(8, 20, 30, 0.9) 0%,
-    rgba(8, 20, 30, 0.75) 35%,
-    rgba(8, 20, 30, 0.45) 65%,
-    rgba(8, 20, 30, 0.12) 88%,
+    rgba(24, 17, 10, 0.92) 0%,
+    rgba(24, 17, 10, 0.78) 35%,
+    rgba(24, 17, 10, 0.46) 65%,
+    rgba(24, 17, 10, 0.12) 88%,
     transparent 100%
   );
 }
@@ -2134,7 +2253,7 @@ a.run-insight-card:hover {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
-  background: rgba(17, 48, 74, 0.72);
+  background: rgba(26, 18, 10, 0.75);
   border: 1px solid rgba(45, 212, 191, 0.3);
   backdrop-filter: blur(6px);
   z-index: 3;
@@ -2170,8 +2289,8 @@ a.run-insight-card:hover {
   align-items: center;
   justify-content: center;
   gap: 1.2rem;
-  margin-top: 1.5rem;
-  padding: 0.6rem 1.4rem;
+  margin-top: 0.9rem;
+  padding: 0.45rem 1.1rem;
   border-radius: 999px;
   border: 1px solid var(--line-bright);
   background: var(--bg-glass);
@@ -2192,7 +2311,7 @@ a.run-insight-card:hover {
 .run-header {
   max-width: 960px;
   margin: 0 auto;
-  padding: 1rem 1.5rem 2rem;
+  padding: 0.7rem 1.5rem 1.2rem;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -2208,10 +2327,10 @@ a.run-insight-card:hover {
 
 .run-header-title {
   font-family: var(--serif);
-  font-size: clamp(1.35rem, 3vw, 2rem);
+  font-size: clamp(1.2rem, 2.6vw, 1.7rem);
   font-weight: 400;
   line-height: 1.15;
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.5rem;
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7), 0 0 32px rgba(8, 20, 30, 0.4);
 }
 
@@ -2219,7 +2338,7 @@ a.run-insight-card:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem 0.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .metric-pill {
@@ -2228,7 +2347,7 @@ a.run-insight-card:hover {
   padding: 0.2rem 0.55rem;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(22, 59, 92, 0.45);
+  background: rgba(28, 21, 12, 0.42);
   white-space: nowrap;
 }
 
@@ -2285,7 +2404,7 @@ a.run-insight-card:hover {
 .briefing-stamp-compact {
   left: 0.5rem;
   bottom: 0.5rem;
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   padding: 0.2rem 0.5rem;
 }
 
@@ -2300,7 +2419,7 @@ a.run-insight-card:hover {
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(22, 59, 92, 0.55);
+  background: rgba(28, 21, 12, 0.5);
 }
 
 .run-header-vessel {
@@ -2311,8 +2430,8 @@ a.run-insight-card:hover {
 .run-verdict {
   font-size: 0.82rem;
   color: var(--muted);
-  margin: 0 0 0.75rem;
-  padding: 0.55rem 0.75rem;
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.65rem;
   border-radius: 8px;
   border-left: 3px solid var(--warn);
   background: rgba(251, 191, 36, 0.06);
@@ -2322,16 +2441,16 @@ a.run-insight-card:hover {
   position: relative;
   max-width: 960px;
   margin: 0 auto;
-  padding: 0.75rem 1.5rem 3rem;
+  padding: 0.5rem 1.5rem 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.35rem;
 }
 
 /* ── Run inspect CTA: single action from hero to evidence ──────────────── */
 .run-inspect-cta {
   display: block;
-  margin: 1.5rem auto 0;
+  margin: 1rem auto 0;
   padding: 0.6rem 1.4rem;
   border: 1px solid var(--accent);
   border-radius: 999px;
@@ -2356,21 +2475,21 @@ a.run-insight-card:hover {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  min-height: 52px;
-  padding: 0.45rem 0.65rem;
-  margin: 0 0 0.45rem;
-  border: 1px solid rgba(101, 232, 221, 0.18);
+  min-height: 46px;
+  padding: 0.38rem 0.55rem;
+  margin: 0 0 0.35rem;
+  border: 1px solid rgba(251, 191, 36, 0.16);
   border-radius: 14px;
-  background: rgba(8, 20, 30, 0.82);
+  background: rgba(24, 17, 10, 0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 14px 34px rgba(8, 20, 30, 0.2);
+  box-shadow: 0 14px 34px rgba(20, 14, 8, 0.25);
 }
 
 .journey-label {
   flex: 0 0 auto;
   color: var(--muted);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   writing-mode: vertical-rl;
@@ -2402,7 +2521,8 @@ a.run-insight-card:hover {
   align-items: center;
   gap: 0.45rem;
   min-width: 0;
-  padding: 0.2rem 0.25rem;
+  min-height: 44px; /* tap-target floor — was 9×30px pills on mobile */
+  padding: 0.4rem 0.5rem;
   color: var(--muted);
   text-decoration: none;
   border-radius: 8px;
@@ -2423,8 +2543,8 @@ a.run-insight-card:hover {
   height: 1.65rem;
   border: 1px solid currentColor;
   border-radius: 50%;
-  background: rgba(8, 20, 30, 0.96);
-  font-size: 0.6rem;
+  background: rgba(24, 17, 10, 0.96);
+  font-size: 0.68rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2436,7 +2556,7 @@ a.run-insight-card:hover {
 
 .journey-step-copy strong {
   overflow: hidden;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2445,7 +2565,7 @@ a.run-insight-card:hover {
 .journey-step-copy small {
   overflow: hidden;
   color: var(--muted);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2563,7 +2683,7 @@ a.run-insight-card:hover {
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.85rem 1.1rem;
+  padding: 0.68rem 0.95rem;
   cursor: pointer;
   list-style: none;
   user-select: none;
@@ -2585,13 +2705,13 @@ a.run-insight-card:hover {
 
 .disclosure-title {
   font-family: var(--serif);
-  font-size: 1.05rem;
+  font-size: 0.96rem;
   font-weight: 400;
   color: var(--ink);
 }
 
 .disclosure-hint {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--muted);
   text-align: right;
   flex: 1;
@@ -2602,7 +2722,7 @@ a.run-insight-card:hover {
 }
 
 .disclosure-body {
-  padding: 0 1.1rem 1rem;
+  padding: 0 0.95rem 0.85rem;
   border-top: 1px solid var(--line);
 }
 
@@ -2624,11 +2744,11 @@ a.run-insight-card:hover {
   grid-template-columns: auto 1fr auto;
   gap: 0.3rem 0.65rem;
   align-items: start;
-  padding: 0.65rem 0.85rem;
+  padding: 0.55rem 0.72rem;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: var(--bg-panel);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -2712,6 +2832,8 @@ a.run-insight-card:hover {
 }
 
 .gene-evidence-link {
+  display: inline-block;
+  padding: 0.55rem 0.2rem; /* tap target floor for gene chips */
   color: var(--accent);
   text-decoration: none;
   border-bottom: 1px dotted rgba(45, 212, 191, 0.45);
@@ -2749,7 +2871,7 @@ a.run-insight-card:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(24, 17, 10, 0.6);
   border: 1px solid var(--line);
   padding: 0.2rem;
   border-radius: 999px;
@@ -3086,6 +3208,21 @@ a.run-insight-card:hover {
   border: 1px solid var(--line);
 }
 
+/* Inline (always-open) metrics chart in the Audit panel */
+.chart-block {
+  margin-top: 0.75rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(17, 22, 32, 0.45);
+}
+
+.chart-block-label {
+  margin: 0 0 0.2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
 .chart-details > summary {
   padding: 0.5rem 0.75rem;
   cursor: pointer;
@@ -3214,7 +3351,7 @@ a.run-insight-card:hover {
   justify-content: space-between;
   gap: 0.6rem;
   pointer-events: none;
-  font-size: 0.52rem;
+  font-size: 0.66rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
@@ -3233,7 +3370,7 @@ a.run-insight-card:hover {
   display: flex;
   gap: 0.35rem;
   pointer-events: none;
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   color: var(--ink);
 }
 
@@ -3351,7 +3488,7 @@ a.run-insight-card:hover {
 }
 
 .lit-count {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: var(--muted);
   margin-left: 0.35rem;
 }
@@ -3595,6 +3732,22 @@ a.run-insight-card:hover {
   flex-wrap: wrap;
   font-size: 0.68rem;
   color: var(--muted);
+}
+
+/* Vessel legend over the run hero — first-time visitors decode the readout */
+.run-hero-legend {
+  margin: 0.85rem 0 0;
+  font-size: 0.78rem;
+  opacity: 0.92;
+}
+
+.run-hero-legend .legend-item {
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(8, 20, 30, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--line);
 }
 
 .legend-item::before {
@@ -4300,7 +4453,7 @@ details summary {
   flex-direction: column;
   align-items: center;
   gap: 0.2rem;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--muted);
   text-align: center;
 }
@@ -4363,6 +4516,20 @@ details summary {
   }
 
   .journey-live-hint {
+    display: none;
+  }
+
+  /* Steps take a full row on mobile so each tap target is wide enough */
+  .evidence-journey {
+    flex-wrap: wrap;
+  }
+
+  .journey-steps {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .journey-progress {
     display: none;
   }
 
@@ -4830,3 +4997,637 @@ html.no-webgl .run-card:hover {
   .t-digit-group .t-digit { animation: none !important; }
   .t-text-swap { transition: none !important; }
 }
+
+/* ── Chronicle shorts ─────────────────────────────────────────────── */
+.page-short, .page-shorts { background: var(--bg); }
+
+.short-page, .shorts-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.short-eyebrow {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+
+.short-title, .shorts-title {
+  font-size: clamp(1.7rem, 4.5vw, 2.4rem);
+  line-height: 1.15;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.short-hook {
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+}
+
+.shorts-head .shorts-lede {
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 620px;
+  margin: 0 0 1.75rem;
+}
+
+.short-player { margin: 0 0 1.5rem; }
+.short-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 14px;
+  background: #000;
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+.short-player-cap {
+  font-size: 0.84rem;
+  color: var(--muted);
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+.short-card-title {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.75rem;
+}
+
+.short-plain, .short-card > p, .short-card p {
+  font-size: 1.08rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.term {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+  position: relative;
+  color: inherit;
+}
+.term:hover::after, .term:focus::after, .term:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  width: max-content;
+  max-width: 260px;
+  padding: 0.55rem 0.7rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-bright);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  white-space: normal;
+}
+
+.short-term-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+.term-item {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.term-item .term { color: inherit; }
+
+.short-source-row { margin-bottom: 1rem; }
+.short-source-row:last-child { margin-bottom: 0; }
+.short-source-title { margin: 0 0 0.25rem; font-size: 0.98rem; line-height: 1.5; }
+.short-source-title a { color: var(--accent); text-decoration: none; }
+.short-source-title a:hover { text-decoration: underline; }
+.short-source-who {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.short-deep { margin-top: 1.25rem; }
+.short-deep summary {
+  cursor: pointer;
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.short-deep p { font-size: 0.96rem; line-height: 1.6; color: var(--muted); }
+
+.short-tail {
+  margin-top: 2.5rem;
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.shorts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+.short-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg-panel);
+  overflow: hidden;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.short-card-link:hover, .short-card-link:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.short-card-poster {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+.short-card-body { padding: 1rem 1.1rem 1.15rem; }
+.short-card-eyebrow {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.4rem;
+}
+.short-card-link .short-card-title {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  margin: 0 0 0.45rem;
+  color: inherit;
+}
+.short-card-hook {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .short-page, .shorts-page { padding-top: 1.25rem; }
+  .term:hover::after { display: none; } /* touch: tooltips via the New-words list */
+}
+
+/* ── Chronicle rail (home) ────────────────────────────────────────── */
+.chronicle-rail {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+}
+.chronicle-rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.chronicle-rail-title {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+}
+.chronicle-rail-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+.chronicle-rail-link:hover { text-decoration: underline; }
+.chronicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+.chronicle-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg-panel);
+  overflow: hidden;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.chronicle-card:hover, .chronicle-card:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.chronicle-card-poster {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+.chronicle-card-body { padding: 1rem 1.1rem 1.15rem; }
+.chronicle-eyebrow {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.4rem;
+}
+.chronicle-card-title {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  margin: 0 0 0.45rem;
+}
+.chronicle-card-hook {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+.chronicle-card-plain {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   ADAPTIVE THEME — the Observatory breathes between day and night.
+   Light (Nordic day) is the default; dark is the night state. The theme
+   follows the visitor's local dawn/dusk unless they pin one explicitly.
+   Tokens override the dark `:root` block above (same specificity, later).
+   ════════════════════════════════════════════════════════════════════════ */
+
+:root[data-theme="light"] {
+  /* ── Nordic day — warm paper, not hospital white ──────────────────── */
+  --bg: #f6f3ec;
+  --bg-panel: #ffffff;
+  --bg-elevated: #eae6dc;
+  --bg-glass: rgba(255, 255, 255, 0.82);
+
+  --ink: #20242b;
+  --ink-bright: #111418;
+  --muted: #626b76;
+  --line: rgba(32, 36, 43, 0.12);
+  --line-bright: rgba(32, 36, 43, 0.22);
+
+  /* ── Semantic accents — deep teal keeps AA contrast on paper ──────── */
+  --accent: #0c6f63;
+  --accent-dim: rgba(12, 111, 99, 0.12);
+  --ceiling: #0369a1;
+  --warn: #a16207;
+  --warn-dim: rgba(161, 98, 7, 0.12);
+  --error: #be123c;
+  --error-dim: rgba(190, 18, 60, 0.12);
+  --success: #047857;
+  --success-dim: rgba(4, 120, 87, 0.12);
+
+  --glow-accent: 0 0 35px rgba(12, 111, 99, 0.13);
+  --glow-warn: 0 0 30px rgba(161, 98, 7, 0.14);
+  --shadow-float: 0 24px 60px rgba(32, 36, 43, 0.12), 0 2px 8px rgba(32, 36, 43, 0.05);
+  --shadow-glass: 0 20px 50px rgba(32, 36, 43, 0.1), 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+
+  color-scheme: light;
+}
+
+:root[data-theme="light"] body {
+  background:
+    radial-gradient(1200px 700px at 15% -8%, rgba(12, 111, 99, 0.06), transparent 65%),
+    radial-gradient(1000px 600px at 90% 12%, rgba(196, 150, 40, 0.05), transparent 60%),
+    radial-gradient(900px 900px at 50% 110%, rgba(12, 111, 99, 0.04), transparent 50%),
+    var(--bg);
+}
+
+:root[data-theme="light"] ::selection {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .site-header {
+  background: rgba(247, 245, 241, 0.84);
+}
+
+:root[data-theme="light"] .nav-link.is-active,
+:root[data-theme="light"] .nav-link:hover {
+  background: var(--bg-elevated);
+}
+
+/* ── Home hero: the vessel floats as a dark specimen on bright paper ──── */
+:root[data-theme="light"] .home-overlay {
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 45%,
+    rgba(249, 247, 242, 0.94) 0%,
+    rgba(249, 247, 242, 0.78) 40%,
+    rgba(249, 247, 242, 0.5) 65%,
+    rgba(249, 247, 242, 0.12) 85%,
+    transparent 100%
+  );
+}
+
+:root[data-theme="light"] .home-headline {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 8px 28px rgba(247, 245, 241, 0.7);
+}
+
+/* Run detail hero — the field reads bright in day mode too */
+:root[data-theme="light"] .run-hero-overlay {
+  background: radial-gradient(
+    ellipse 75% 55% at 50% 40%,
+    rgba(249, 247, 242, 0.94) 0%,
+    rgba(249, 247, 242, 0.78) 38%,
+    rgba(249, 247, 242, 0.48) 65%,
+    rgba(249, 247, 242, 0.14) 86%,
+    transparent 100%
+  );
+}
+
+:root[data-theme="light"] .run-hero-overlay .eyebrow,
+:root[data-theme="light"] .run-hero-overlay .run-header-title,
+:root[data-theme="light"] .run-hero-overlay .run-verdict,
+:root[data-theme="light"] .run-hero-overlay .breadcrumb a,
+:root[data-theme="light"] .run-hero-overlay .jk-hint {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 6px 20px rgba(247, 245, 241, 0.6);
+}
+
+:root[data-theme="light"] .home-subline,
+:root[data-theme="light"] .home-catch-slide {
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+:root[data-theme="light"] .home-catch-slide em {
+  color: var(--accent);
+}
+
+:root[data-theme="light"] .home-catch-dot::before {
+  background: rgba(12, 111, 99, 0.25);
+}
+
+:root[data-theme="light"] .home-catch-dot.is-active::before {
+  background: var(--accent);
+}
+
+:root[data-theme="light"] .home-catch-pause {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+:root[data-theme="light"] .home-catch-pause:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+:root[data-theme="light"] .home-proof {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(12, 111, 99, 0.35);
+  color: var(--accent);
+  text-shadow: none;
+}
+
+:root[data-theme="light"] .home-chip {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+:root[data-theme="light"] .vessel-loading-core {
+  border-color: rgba(12, 111, 99, 0.18);
+  background: radial-gradient(circle at 50% 50%, rgba(12, 111, 99, 0.14), transparent 70%);
+}
+
+:root[data-theme="light"] .vessel-loading-core::before {
+  border-color: rgba(12, 111, 99, 0.25);
+}
+
+:root[data-theme="light"] .vessel-loading-core::after {
+  border-color: rgba(12, 111, 99, 0.14);
+}
+
+:root[data-theme="light"] .vessel-callout,
+:root[data-theme="light"] .vessel-onboard {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(12, 111, 99, 0.32);
+  color: var(--ink);
+  box-shadow: 0 12px 40px rgba(32, 36, 43, 0.14);
+}
+
+:root[data-theme="light"] .vessel-callout-msg {
+  color: var(--muted);
+}
+
+:root[data-theme="light"] .vessel-callout-sub {
+  color: var(--muted);
+}
+
+:root[data-theme="light"] .vessel-onboard-close {
+  color: var(--accent);
+}
+
+:root[data-theme="light"] .run-strip {
+  background: rgba(12, 111, 99, 0.06);
+}
+
+:root[data-theme="light"] .presenter-badge,
+:root[data-theme="light"] .presenter-stamp {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--accent);
+  border-color: rgba(12, 111, 99, 0.3);
+}
+
+:root[data-theme="light"] .evidence-stat {
+  background: rgba(12, 111, 99, 0.05);
+}
+
+:root[data-theme="light"] .run-insight-card {
+  background: rgba(12, 111, 99, 0.045);
+  border-color: rgba(12, 111, 99, 0.22);
+}
+
+:root[data-theme="light"] .button {
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .button-secondary {
+  color: var(--accent);
+}
+
+/* Bio-motif strokes: brighter teal reads as faint fog on paper — ink them */
+/* Day bio-motifs run spring-green — morning light on the field journal. */
+:root[data-theme="light"] .bio-atmosphere::before {
+  border-color: rgba(101, 163, 13, 0.24);
+  box-shadow: inset 0 0 80px rgba(101, 163, 13, 0.06), 0 0 60px rgba(101, 163, 13, 0.05);
+}
+
+:root[data-theme="light"] .bio-atmosphere::after {
+  border-color: rgba(101, 163, 13, 0.2);
+}
+
+:root[data-theme="light"] .bio-helix {
+  stroke: rgba(101, 163, 13, 0.5);
+}
+
+:root[data-theme="light"] .bio-helix path:last-child {
+  stroke: rgba(101, 163, 13, 0.4);
+}
+
+:root[data-theme="light"] .bio-veins {
+  stroke: rgba(101, 163, 13, 0.5);
+}
+
+:root[data-theme="light"] .bio-organelle {
+  border-color: rgba(101, 163, 13, 0.62);
+  box-shadow: 0 0 14px rgba(101, 163, 13, 0.3);
+}
+
+:root[data-theme="light"] .bio-organelle::after {
+  border-color: rgba(101, 163, 13, 0.2);
+}
+
+:root[data-theme="light"] .bio-organelle-b {
+  border-color: rgba(101, 163, 13, 0.55);
+}
+
+:root[data-theme="light"] .bio-membrane {
+  border-color: rgba(101, 163, 13, 0.18);
+}
+
+:root[data-theme="light"] .term::after {
+  box-shadow: 0 12px 32px rgba(32, 36, 43, 0.12);
+}
+
+/* ── Theme switch choreography — colors crossfade, then release ──────── */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-anim *,
+  html.theme-anim *::before,
+  html.theme-anim *::after {
+    transition: background-color 0.45s ease, color 0.45s ease,
+      border-color 0.45s ease, fill 0.45s ease, stroke 0.45s ease,
+      box-shadow 0.45s ease !important;
+  }
+}
+
+/* ── Header theme controls ───────────────────────────────────────────── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--line-bright);
+  background: var(--bg-glass);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+.theme-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.theme-icon-sun {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-icon-sun {
+  display: block;
+}
+
+:root[data-theme="light"] .theme-icon-moon {
+  display: none;
+}
+
+.theme-auto {
+  border: none;
+  background: none;
+  padding: 0.2rem 0.35rem;
+  color: var(--muted);
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.theme-auto:hover {
+  color: var(--accent);
+}
+
+/* ── Nordic compactness pass — chronicle surfaces breathe, not bloat ─── */
+.chronicle-rail {
+  padding: 2.5rem 1.25rem 3.25rem;
+}
+
+.chronicle-rail-head {
+  margin-bottom: 1rem;
+}
+
+.chronicle-rail-title {
+  font-size: 1.35rem;
+}
+
+.chronicle-card-body,
+.short-card-body {
+  padding: 0.85rem 1rem 0.95rem;
+}
+
+.chronicle-card-hook {
+  margin-bottom: 0.35rem;
+}
+
+.short-page,
+.shorts-page {
+  padding-top: 1.75rem;
+  padding-bottom: 3.5rem;
+}
+
+.short-hook {
+  margin-bottom: 1.25rem;
+}
+
+.shorts-head .shorts-lede {
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 720px) {
+  .header-actions {
+    display: none;
+  }
+}
+

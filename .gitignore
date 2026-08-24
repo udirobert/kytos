@@ -31,10 +31,15 @@ frontend/dist/
 # Pioneer model ID cache (local; not committed — per-account)
 tools/.pioneer_model_id
 
-# Generated media assets (store in external object storage / LFS, not git)
-*.mp4
-*.webm
-*.mov
-*.mp3
-*.wav
+# Generated media assets — the Observatory ships run videos from git (Netlify
+# builds from the repo). Small clips ≤2MB are committed so the deployed site
+# actually has them; larger media stays ignored (external object storage).
+#
+# Size-capped carve-outs (kept in sync with tools/_enrich_common.py checks):
+*
+!*.mp4
+!*.mp3
+!*.wav
 broadcast-desk/
+# Re-ignore the heavy briefings (16MB) — they are for local enjoy/catalog only.
+run-*/visual/briefing.mp4

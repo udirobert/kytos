@@ -102,7 +102,8 @@ our Fabric briefings a **time series of one character's health across the
 | Move | Status | Why it matters |
 |---|---|---|
 | **Briefing series framing** — "Briefing #1 of ~12" stamped on the run page | ✅ done (2026-08-22) | signals a weekly cadence, not a one-off demo prop |
-| **The cell anchor** — the subject given a face (a friendly 3D cell with a glowing nucleus, inside the vessel-as-instrument) so Fabric's lip-sync is actually showcased | ✅ live (2026-08-22) | Fabric maps phonemes to **facial keypoints** — a faceless vessel wastes the model; the cell is the biology, the vessel is the instrument that holds it |
+| **Dr. Kytos presents** — the anchor (a named correspondent, not the vessel) speaks the broadcast; the vessel stays the instrument that shows where biology says we're wrong | ✅ live (`tools/render_presenter.py`, 2026-08-23) | Fabric maps phonemes to **facial keypoints** — a faceless vessel wastes the model; the anchor's face lip-syncs the newsroom script |
+| **The cell anchor** — the subject given a face (a friendly 3D cell with a glowing nucleus, inside the vessel-as-instrument) as the Fabric source frame | 🧪 superseded by Dr. Kytos presenter | the vessel is the instrument; the anchor is the presenter |
 | **The newsroom broadcast** — Tavily field research (`newsroom/research.json`) woven into a deterministic broadcast script the anchor speaks: opening, headline, audit self-own, "what the field is saying", sign-off | ✅ live (`enrich_newsroom.py`) | the briefing becomes a *product* (a news show), not a demo prop; extends the 78-day cadence naturally |
 | **The vessel testifies** — briefing speaks the grounded OpenAI digest incl. its own audit self-own | ✅ live | the character's honesty is the product |
 | **The sung sign-off** — ElevenLabs Music generates a short "Run #N anthem" (lyrics grounded in facts.json); the anchor breaks into song at the end | ✅ live (`render_anthem.py`, 2026-08-22) | nobody at a hackathon sings a scientific briefing; the 22s anthem is the demo's memorable close |
@@ -418,6 +419,11 @@ The Observatory is built with a modular, template-driven design system optimized
 
 ### 6. Beautiful UI Agentic Investigation Trace
 * **Living Lab Notebook:** Visualizes Dr. Kytos’s autonomous pipeline execution (`cell-eval` metric evaluation, `kytos.audit` invariant checks, `tavily` literature search, and `narrative` synthesis) as an AI-native step-by-step trace with status indicators and execution timings.
+
+### 7. Fragment-Assembly Vessel Callout
+* **Tooltips that assemble like the vessel founds itself:** when a crack/organelle is hovered (3D-raycast and SVG-fallback paths), the `.vessel-callout` doesn't just fade in — a **pure-CSS fragment field** marches across the glass, scatters outward, "goo-merges" through a mid-dissolve blur, then dissolves to zero as the legible signal body hardens beneath it. The motif borrows the coalescing-fragments idea from Codrops' *PixelGooeyTooltip* without its GSAP/SVG-filter deps.
+* **Zero new dependencies, zero template churn:** driven by a `.vessel-callout::after` pseudo-element + a 520ms `@keyframes vessel-shard-in`; wired via a single `frag-showing` class toggled in JS (both 3D and SVG callout paths stay at parity).
+* **Graceful by default:** pointer-transparent, entry-only, theme-agnostic `border-radius: inherit`, no-op under `prefers-reduced-motion` (plain fade), and never touches the tooltip's own opacity/position transition — so it is an enhancement, not a prerequisite.
 
 ---
 

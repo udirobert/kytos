@@ -43,6 +43,7 @@ cd "$ROOT/tools"
 "$PY" enrich_literature.py --run "../$RUN"
 "$PY" pioneer_ner.py --run "../$RUN"
 "$PY" render_visuals.py --run "../$RUN"
+"$PY" render_presenter.py --run "../$RUN"
 "$PY" render_briefing.py --run "../$RUN"
 
 cd "$ROOT"

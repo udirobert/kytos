@@ -1,6 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" class="{% if meta.needs_vessel %}vessel-pending{% endif %}">
 <head>
+  <script>
+    /* Theme boot — runs before CSS so there is never a wrong-theme flash.
+       Order: ?theme= demo override > pinned choice > local dawn/dusk (the
+       Observatory's day and night states follow the visitor's clock). */
+    (function () {
+      var t = null;
+      try {
+        var m = /[?&]theme=(light|dark)/.exec(location.search);
+        if (m) t = m[1];
+        if (!t) t = localStorage.getItem("kytos-theme");
+        if (t !== "light" && t !== "dark") {
+          var h = new Date().getHours();
+          t = h >= 6 && h < 19 ? "light" : "dark";
+        }
+      } catch (e) {
+        t = "light";
+      }
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
   {{ head_tags | safe }}
 </head>
 <body class="{{ body_class }}">
