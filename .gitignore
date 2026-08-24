@@ -31,15 +31,10 @@ frontend/dist/
 # Pioneer model ID cache (local; not committed — per-account)
 tools/.pioneer_model_id
 
-# Generated media assets — the Observatory ships run videos from git (Netlify
-# builds from the repo). Small clips ≤2MB are committed so the deployed site
-# actually has them; larger media stays ignored (external object storage).
-#
-# Size-capped carve-outs (kept in sync with tools/_enrich_common.py checks):
-*
-!*.mp4
-!*.mp3
-!*.wav
+# Generated media assets — Netlify builds on push, so small clips are committed.
+# The size cap (4MB) that decides committability lives in
+# tools/_enrich_common.py (media_committable) + frontend/build.py — the
+# gitignore must NOT use a blanket "*" or it silently hides new source/experiment
+# files. Only paths never to be committed are listed here.
 broadcast-desk/
-# Re-ignore the heavy briefings (16MB) — they are for local enjoy/catalog only.
-run-*/visual/briefing.mp4
+experiments/**/visual/briefing.mp4
