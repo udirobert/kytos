@@ -28,6 +28,9 @@ data/raw/
 # Observatory build output (generated locally; Netlify builds on push)
 frontend/dist/
 
+# Throwaway scratch (my one-off tooltip-reveal harness; rebroadcast renders)
+.tmp/
+
 # Pioneer model ID cache (local; not committed — per-account)
 tools/.pioneer_model_id
 
