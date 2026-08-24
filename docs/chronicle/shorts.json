@@ -1,0 +1,33 @@
+{
+  "series": "VCC 2025 Post-Mortem",
+  "shorts": [
+    {
+      "slug": "specimen-002-trapdoor",
+      "title": "A louder metric is not a truer one",
+      "hook": "In the 2025 challenge, a score with a volume knob partly measured confidence — not truth. This is why it matters.",
+      "published": "2026-08-23",
+      "plain_words": "In 2025, more than 1,200 teams competed to predict what happens when you switch off a single gene in one human cell type. They were graded on a score called PDS — can you tell switching gene A apart from switching gene B? And here's the catch: the 3rd-place team's own analysis showed the score had a volume knob — a louder guess scored higher even when it was wrong. The scoreboard was partly measuring confidence, not truth. That's exactly why the 2026 challenge switched to a broader, six-metric panel.",
+      "terms": ["PDS"],
+      "sources": [
+        {
+          "label": "Effects of Distance Metrics and Scaling on the Perturbation Discrimination Score",
+          "who": "Qiyuan Liu, Qirui Zhang, Jin-Hong Du, Siming Zhao, Jingshu Wang — Team Outlier, 3rd place in the 2025 challenge",
+          "id": "arXiv:2511.16954",
+          "url": "https://arxiv.org/abs/2511.16954"
+        },
+        {
+          "label": "Virtual Cell Challenge 2025 Wrap-Up",
+          "who": "Arc Institute",
+          "id": "arcinstitute.org",
+          "url": "https://arcinstitute.org/news/virtual-cell-challenge-2025-wrap-up"
+        }
+      ],
+      "deep": "The Perturbation Discrimination Score (PDS) asks: given the predicted expression shifts for a set of perturbations, can the model tell them apart — is each predicted effect closest to its own ground truth? Team Outlier's analysis (arXiv:2511.16954) shows PDS is highly sensitive to the choice of distance measure and to the scale of predicted effects: as prediction magnitude grows, L1-based PDS converges toward sign-cosine-like behavior, so predictions that are simply louder score better even when their direction is no more correct. In other words, the metric's geometry rewarded confidence over truth. Because no single metric captured model quality, the 2026 challenge scores final rankings with an aggregate across a broader panel of six metrics run through cell-eval.",
+      "media": {
+        "video": "video.mp4",
+        "poster": "poster.png",
+        "captions": "captions.vtt"
+      }
+    }
+  ]
+}

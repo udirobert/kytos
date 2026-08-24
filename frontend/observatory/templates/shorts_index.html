@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+{{ nav | safe }}
+<main class="shorts-page">
+  <header class="shorts-head">
+    <p class="short-eyebrow">KYTOS OBSERVATORY · CHRONICLE</p>
+    <h1 class="shorts-title">The Chronicle</h1>
+    <p class="shorts-lede">
+      One idea per clip. Plain words under every claim. Source on every card.
+    </p>
+  </header>
+
+  <div class="shorts-grid">
+    {% for card in cards %}
+    <a class="short-card-link" href="{{ card.href }}">
+      {% if card.poster %}
+      <img class="short-card-poster" src="{{ card.poster }}" alt="" loading="lazy">
+      {% endif %}
+      <div class="short-card-body">
+        <p class="short-card-eyebrow">{{ card.series }} · {{ card.published }}</p>
+        <h2 class="short-card-title">{{ card.title }}</h2>
+        <p class="short-card-hook">{{ card.hook }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <footer class="short-tail">
+    <a class="text-link" href="{{ home_href }}">Back to the Observatory</a>
+  </footer>
+</main>
+{% endblock %}
