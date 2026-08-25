@@ -1,9 +1,12 @@
 name: observatory-publish
 
-# The autonomy loop: a push touching experiments/ runs the deterministic core
-# (audit → facts), the partner enrichment (narrative → grounding check →
-# literature → NER → visuals → Fabric briefing), verification, and a build
-# smoke test — then commits the artifacts back so Netlify deploys them.
+# The autonomy loop: a push touching experiments/ runs the enrichment (audit →
+# facts), the partner enrichment (narrative → grounding check → literature → NER →
+# visuals → briefing), verification, and a build smoke test — then commits the
+# artifacts back so Netlify deploys them. Frontend-only pushes are intentionally
+# excluded: they cannot change experiment artifacts, so filtering them out stops
+# a follow-up bot commit after every routine UI push. See the churn guard in the
+# "Commit enrichment artifacts" step — timestamp-only diffs are never pushed.
 #
 # Secrets (all optional — every tool degrades to exit 0 without them):
 #   OPENAI_API_KEY, TAVILY_API_KEY, FAL_KEY, HAI_API_KEY
@@ -14,7 +17,6 @@ on:
       - "experiments/**"
       - "tools/**"
       - "src/**"
-      - "frontend/**"
       - ".github/workflows/observatory.yml"
   workflow_dispatch:
   schedule:
@@ -71,7 +73,24 @@ jobs:
           git add experiments
           if git diff --cached --quiet; then
             echo "no enrichment changes to commit"
-          else
-            git commit -m "[observatory-bot] enrichment artifacts ($GITHUB_SHA)"
-            git push
+            exit 0
           fi
+          # Churn guard: the enrichment tools re-stamp generated_at / pipeline
+          # status / fallback-render UTC times onto every run, so git sees a diff
+          # even when nothing meaningful changed. Normalize those ISO stamps away
+          # and compare the staged blob against HEAD; if every file is identical
+          # modulo the stamps, there is nothing to publish — skip the commit/push.
+          norm() { sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?([+-][0-9]{2}:[0-9]{2}|Z)?/<TS>/g'; }
+          meaningful=0
+          while IFS= read -r f; do
+            new=$(git show ":$f" 2>/dev/null | norm || true)
+            old=$(git show "HEAD:$f" 2>/dev/null | norm || true)
+            if [ "$new" != "$old" ]; then meaningful=1; fi
+          done < <(git diff --cached --name-only)
+          if [ "$meaningful" -eq 0 ]; then
+            echo "staged enrichment changes are timestamp-only; skipping commit"
+            git reset --quiet
+            exit 0
+          fi
+          git commit -m "[observatory-bot] enrichment artifacts ($GITHUB_SHA)"
+          git push
