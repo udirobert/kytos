@@ -5072,12 +5072,33 @@ html.no-webgl .run-card:hover {
 
 .term {
   text-decoration: underline dotted;
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
   cursor: help;
   position: relative;
   color: inherit;
 }
-.term:hover::after, .term:focus::after, .term:focus-visible::after {
+/* Frame-sweep reveal (adapted from Codrops TooltipTransition §2 — a 1px
+   hairline leads, then the body settles). The dotted underline stays as the
+   durable affordance; a single accent sweep draws under the word on hover
+   like the reference's framing lines — pure CSS, `--panel-ease` so it feels
+   like the rest of the site. */
+.term::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -3px;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: right 0.4s var(--panel-ease), opacity 0.4s var(--panel-ease);
+}
+.term:hover::before, .term:focus::before, .term:focus-visible::before {
+  right: 0;
+  opacity: 0.8;
+}
+.term::after {
   content: attr(data-tip);
   position: absolute;
   bottom: calc(100% + 8px);
@@ -5098,6 +5119,109 @@ html.no-webgl .run-card:hover {
   color: var(--muted);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
   white-space: normal;
+  pointer-events: none;
+  /* Hidden by default; on hover it settles up + un-scales from the trigger
+     word (transform-origin at the word), staged after the underline sweep. */
+  opacity: 0;
+  transform: translateY(6px) scale(0.97);
+  transform-origin: 0 100%;
+  transition:
+    opacity 0.26s var(--panel-ease),
+    transform 0.26s var(--panel-ease);
+}
+.term:hover::after, .term:focus::after, .term:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  /* let the underline frame lead so the body assembles inside it */
+  transition-delay: 120ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .term::before, .term::after { transition: none; }
+  .term:hover::after, .term:focus::after, .term:focus-visible::after {
+    transition-delay: 0s;
+  }
+}
+
+/* ── Term spotlight — FLIP the glossary word into a reading panel ─────────
+   The second lesson from Codrops TooltipTransition: a tooltip isn't teleported
+   from inline to a modal, the SAME element *morphs* there (GSAP Flip). Here the
+   reading panel captures the term's rect, then FLIPs (translate) to a centered
+   room — walking the page from "word" to "field" instead of jumping. Opening
+   and closing are kept interrupt-safe in JS (a close kills an in-flight open
+   and vice versa, like the reference's enter/leave timeline kill). Pure CSS
+   transitions; reduced-motion shows it instantly. */
+.spotlight-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(4, 3, 2, 0.45);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s var(--panel-ease);
+}
+.spotlight-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.spotlight-panel {
+  position: fixed;
+  z-index: 41;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(440px, 86vw);
+  max-height: min(72vh, 28rem);
+  overflow: auto;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-bright);
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  padding: 1.4rem 1.6rem;
+  visibility: hidden;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.spotlight-panel.is-open {
+  visibility: visible;
+  opacity: 1;
+  transition: transform 0.46s var(--panel-ease), opacity 0.3s var(--panel-ease);
+}
+.spotlight-panel.is-closing {
+  opacity: 0;
+}
+.spotlight-title {
+  font-family: var(--serif);
+  color: var(--ink);
+  font-size: 1.15rem;
+  margin: 0 0 0.4rem;
+}
+.spotlight-body {
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+  margin: 0;
+}
+.spotlight-hint {
+  display: block;
+  margin-top: 1rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* While the spotlight is up, quiet the inline hover hairlines so the two never
+   double up as the same word is framed on the page. */
+body.spotlight-open .term:hover::before,
+body.spotlight-open .term:hover::after { opacity: 0 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-panel,
+  .spotlight-backdrop { transition: none; }
 }
 
 .short-term-list {

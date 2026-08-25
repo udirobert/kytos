@@ -1191,6 +1191,127 @@
     }, 60000);
   }
 
+  // ── Term spotlight — FLIP + interrupt-and-recover (Codrops TooltipTransition) ─
+  // Two ideas ported from codrops/TooltipTransition, dependency-free:
+  //   1. Interrupt-and-recover: an in-flight open/close is cancelled by the next
+  //      one, so rapid click/ESC/click never leaves a half-animated state.
+  //   2. FLIP morph: the reading panel captures the term's inline rect, is shown
+  //      at its centered home, then animates back from that term rect — the word
+  //      "walks" into the panel rather than teleporting (GSAP Flip, ported by
+  //      hand with a CSS transition + inverse transform).
+  // Falls back to the plain CSS ::after tooltip + New-words list elsewhere.
+  function initTermSpotlight() {
+    var terms = document.querySelectorAll(".term[data-tip]");
+    if (!terms.length) return;
+
+    var backdrop = document.createElement("div");
+    backdrop.className = "spotlight-backdrop";
+    var panel = document.createElement("div");
+    panel.className = "spotlight-panel";
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "true");
+    panel.setAttribute("tabindex", "-1");
+    panel.innerHTML =
+      '<h3 class="spotlight-title"></h3>' +
+      '<p class="spotlight-body"></p>' +
+      '<span class="spotlight-hint">Esc to close</span>';
+    document.body.appendChild(backdrop);
+    document.body.appendChild(panel);
+
+    var title = panel.querySelector(".spotlight-title");
+    var body = panel.querySelector(".spotlight-body");
+
+    var openEl = null;
+    var openTimer = null;
+    var closeTimer = null;
+
+    function clearTimers() {
+      if (openTimer) { clearTimeout(openTimer); openTimer = null; }
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+    }
+
+    // Position the panel's transform so it sits exactly over `from` when seen
+    // through the `to` rect — the inverse of the jump we want to animate.
+    function offsetAt(from, to) {
+      var dx = from.left - to.left;
+      var dy = from.top - to.top;
+      return "translate(" + dx + "px, " + dy + "px)";
+    }
+
+    function closeSpotlight(restoreFocus) {
+      if (!openEl) return;
+      clearTimers();
+
+      // Reverse FLIP: ease back to the term it came from, then hide.
+      var to = panel.getBoundingClientRect();
+      var from = openEl.getBoundingClientRect();
+      if (!prefersReducedMotion()) {
+        panel.style.transform = "translate(-50%, -50%) " + offsetAt(from, to);
+        panel.style.transition = "none";
+        void panel.offsetHeight; // lay down the closing pose before the reverse
+        backdrop.classList.add("is-visible"); // keep the veil while it recedes
+      }
+      var term = openEl;
+      panel.classList.add("is-closing");
+      document.body.classList.remove("spotlight-open");
+      document.body.style.overflow = "";
+      openEl = null;
+
+      panel.style.transition = "";
+      panel.style.transform = "translate(-50%, -50%) " + offsetAt(from, to);
+      closeTimer = setTimeout(function () {
+        panel.classList.remove("is-open", "is-closing");
+        panel.style.transform = "";
+        backdrop.classList.remove("is-visible");
+      }, prefersReducedMotion() ? 0 : 360);
+      if (restoreFocus && term) term.focus();
+    }
+
+    function openSpotlight(term) {
+      // Interrupt-and-recover: a close already started? Cancel it and start clean.
+      if (openEl) closeSpotlight(false);
+      clearTimers();
+
+      title.textContent = term.textContent.replace(/\\s+/g, " ").trim();
+      body.textContent = term.getAttribute("data-tip") || "";
+      openEl = term;
+      document.body.classList.add("spotlight-open");
+      backdrop.classList.add("is-visible");
+
+      // FLIP: put the panel at its centered home, then + translate it back over
+      // the term's rect and ease it forward.
+      panel.classList.add("is-open");
+      var to = panel.getBoundingClientRect();
+      var from = term.getBoundingClientRect();
+      var offset = offsetAt(from, to);
+      if (!prefersReducedMotion()) {
+        panel.style.transform = "translate(-50%, -50%) " + offset;
+        panel.style.transition = "none";
+        void panel.offsetHeight;
+      }
+      panel.style.transition = "";
+      panel.style.transform = "translate(-50%, -50%)";
+      document.body.style.overflow = "hidden";
+      openTimer = setTimeout(function () {
+        panel.focus();
+      }, prefersReducedMotion() ? 0 : 460);
+    }
+
+    function onCloseRequest(e) {
+      if (e.type === "keydown" && e.key !== "Escape") return;
+      closeSpotlight(true);
+    }
+
+    terms.forEach(function (term) {
+      term.addEventListener("click", function (e) {
+        e.preventDefault();
+        openSpotlight(term);
+      });
+    });
+    backdrop.addEventListener("click", onCloseRequest);
+    document.addEventListener("keydown", onCloseRequest);
+  }
+
   function onReady() {
     initThemeToggle();
     initPlotly();
@@ -1213,6 +1334,7 @@
     initViewModeToggle();
     initHomeFlow();
     initAboutFlow();
+    initTermSpotlight();
   }
 
   if (document.readyState === "loading") {
