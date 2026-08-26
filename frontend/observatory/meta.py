@@ -130,7 +130,8 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
   {{
     "imports": {{
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+      "rapier": "https://cdn.skypack.dev/@dimforge/rapier3d-compat@0.14.0"
     }}
   }}
   </script>

@@ -7,6 +7,11 @@
     <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
     <div class="vessel-svg-fallback">{{ vessel_svg | safe }}</div>
     <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
+    <div class="cell-field-readout" id="cell-field-readout" role="status" aria-live="polite">
+      <span class="cell-field-readout-label">cursor perturbation</span>
+      <strong id="cell-field-intensity">00%</strong>
+      <span class="cell-field-readout-state" id="cell-field-state">idle</span>
+    </div>
     <script type="application/json" id="vessel-data">{{ vessel_json | safe }}</script>
   </div>
   {% if presenter_overlay %}
@@ -19,7 +24,7 @@
     {{ run_hero_legend | safe }}
   </div>
 </section>
-<main class="run-evidence">
+<main class="run-evidence" id="main-content" tabindex="-1">
   {{ evidence_journey | safe }}
   {{ panel_audit | safe }}
   {{ panel_evidence | safe }}

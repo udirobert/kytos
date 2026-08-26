@@ -3,7 +3,7 @@
 {% block content %}
 {{ nav | safe }}
 {% if latest %}
-<section class="home-stage">
+<main class="home-stage" id="main-content" tabindex="-1">
   {{ bio_atmosphere | safe }}
   {% if presenter_bg %}
   {{ presenter_bg | safe }}
@@ -15,6 +15,11 @@
         <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
         <div class="vessel-svg-fallback">{{ svg | safe }}</div>
         <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
+        <div class="cell-field-readout" id="cell-field-readout" role="status" aria-live="polite">
+          <span class="cell-field-readout-label">cursor perturbation</span>
+          <strong id="cell-field-intensity">00%</strong>
+          <span class="cell-field-readout-state" id="cell-field-state">idle</span>
+        </div>
         {{ vessel_onboard_html | safe }}
         <script type="application/json" id="vessel-data">{{ vessel_json | safe }}</script>
       </div>
@@ -25,21 +30,30 @@
 
         <!-- Phase 1: The Claim -->
         <div class="home-phase t-stagger is-shown is-active" data-phase="1">
-          <h1 class="home-headline t-stagger-line t-stagger-line--1">
+          <p class="home-kicker t-stagger-line t-stagger-line--1">
+            Open virtual-cell research <span>01 / 03</span>
+          </p>
+          <h1 class="home-headline t-stagger-line t-stagger-line--2">
             We publish every prediction — and
             <em>every time biology says we&rsquo;re wrong.</em>
           </h1>
-          <p class="home-subline t-stagger-line t-stagger-line--2">
-            Testing drugs in a computer instead of a lab.
+          <p class="home-subline t-stagger-line t-stagger-line--3">
+            Kytos predicts how unseen cells respond to CRISPRi, then exposes the
+            score, biological failures, evidence, and exact path to reproduce it.
           </p>
-          <button class="button home-phase-cta t-stagger-line t-stagger-line--3"
-                  type="button" data-next="2">
-            Why this matters →
-          </button>
+          <div class="home-action-row t-stagger-line t-stagger-line--4">
+            <button class="button home-phase-cta" type="button" data-next="2">
+              Why this matters →
+            </button>
+            <a class="button button-secondary" href="{{ run_href }}">Inspect latest run</a>
+          </div>
         </div>
 
         <!-- Phase 2: The Argument -->
         <div class="home-phase t-stagger" data-phase="2" hidden>
+          <p class="home-kicker t-stagger-line t-stagger-line--1">
+            Why the score is not enough <span>02 / 03</span>
+          </p>
           <div class="home-catch-carousel t-stagger-line t-stagger-line--1"
                id="home-catch-carousel"
                role="region" aria-label="Why this matters" aria-live="polite">
@@ -81,6 +95,9 @@
 
         <!-- Phase 3: Evidence + Action -->
         <div class="home-phase t-stagger" data-phase="3" hidden>
+          <p class="home-kicker t-stagger-line t-stagger-line--1">
+            Inspect the record <span>03 / 03</span>
+          </p>
           <div class="t-stagger-line t-stagger-line--1 home-proof-wrap">
             {{ proof | safe }}
           </div>
@@ -95,12 +112,35 @@
       </div>
     </div>
   </div>
+</main>
+<section class="product-principles" aria-labelledby="principles-title">
+  <div class="product-principles-head">
+    <p class="section-index">THE OBSERVATORY PROTOCOL</p>
+    <h2 id="principles-title">A model result is only useful when you can interrogate it.</h2>
+  </div>
+  <ol class="principle-grid">
+    <li>
+      <span class="principle-number">01</span>
+      <h3>Predict</h3>
+      <p>Forecast an unseen cellular context from its unperturbed basal state.</p>
+    </li>
+    <li>
+      <span class="principle-number">02</span>
+      <h3>Challenge</h3>
+      <p>Separate benchmark performance from biological sanity checks and warnings.</p>
+    </li>
+    <li>
+      <span class="principle-number">03</span>
+      <h3>Reproduce</h3>
+      <p>Publish metrics, source evidence, agent traces, provenance, and the command to rerun.</p>
+    </li>
+  </ol>
 </section>
 {% if chronicle_rail %}{{ chronicle_rail | safe }}{% endif %}
 {% else %}
-<section class="home-stage">
+<main class="home-stage" id="main-content" tabindex="-1">
   <h1 class="home-headline">Waiting for the first run</h1>
   <p class="home-lede">The Observatory lights up when the first experiment lands.</p>
-</section>
+</main>
 {% endif %}
 {% endblock %}

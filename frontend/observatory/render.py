@@ -324,7 +324,7 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
     return f"""
     <header class="site-header">
       <div class="brand">
-        <a href="{root_prefix}index.html" class="brand-mark">κύτος</a>
+        <a href="{root_prefix}index.html" class="brand-mark" aria-label="Kytos Observatory home">κ</a>
         <div class="brand-text">
           <span class="brand-name">Kytos Observatory</span>
         </div>
@@ -449,7 +449,8 @@ def _legend_items_html(vd: dict[str, Any]) -> str:
 
 def _home_vessel_legend_html(vd: dict[str, Any], *, about_href: str) -> str:
     return (
-        f'<p class="home-vessel-legend vessel-legend-inline">{_legend_items_html(vd)}</p>'
+        f'<p class="home-vessel-legend vessel-legend-inline">{_legend_items_html(vd)}'
+        '<span class="legend-item legend-field">field · move to perturb</span></p>'
         f'<p class="home-vessel-about-link">'
         f'<a href="{_h(about_href)}">What is the vessel?</a></p>'
     )
@@ -459,7 +460,8 @@ def _run_hero_legend_html(facts: dict) -> str:
     """Vessel legend floated over the run hero so first-time visitors can decode it."""
     return (
         f'<p class="vessel-legend run-hero-legend" aria-label="Vessel legend">'
-        f"{_legend_items_html(_vessel_data(facts))}</p>"
+        f"{_legend_items_html(_vessel_data(facts))}"
+        '<span class="legend-item legend-field">field · move to perturb</span></p>'
     )
 
 

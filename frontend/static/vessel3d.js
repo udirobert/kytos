@@ -862,6 +862,319 @@ function initVessel3D() {
   });
   setJourneyState(container.getAttribute("data-journey-state") || "audit");
 
+  // ── Organic cell field — a Rapier-powered interaction layer ─────────────
+  // The article's useful idea is not "more particles"; it is a small field of
+  // cells that makes pointer movement feel like a biological perturbation.
+  // Keep it behind the vessel so the vessel remains the run's readable state.
+  // Rapier is optional: a tiny kinematic fallback preserves the interaction if
+  // the CDN is unavailable, while reduced-motion visitors get no moving field.
+  var cellField = null;
+
+  function createCellField(RAPIER) {
+    var fieldGroup = new THREE.Group();
+    fieldGroup.position.set(0, 0, -2.8);
+    fieldGroup.renderOrder = -1;
+    scene.add(fieldGroup);
+
+    var fieldCount = lowPerf ? 34 : 68;
+    var fieldBounds = { x: 5.0, y: 3.05, z: 0.42 };
+    var cellGeo = new THREE.IcosahedronGeometry(1, lowPerf ? 1 : 2);
+    var cellMat = new THREE.MeshBasicMaterial({
+      color: 0x2dd4bf,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    var glowMat = new THREE.MeshBasicMaterial({
+      color: 0x2dd4bf,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    var cellsMesh = new THREE.InstancedMesh(cellGeo, cellMat, fieldCount);
+    var glowMesh = new THREE.InstancedMesh(cellGeo, glowMat, fieldCount);
+    var maxLinks = lowPerf ? 34 : 96;
+    var linkGeometry = new THREE.BufferGeometry();
+    var linkPositions = new Float32Array(maxLinks * 6);
+    linkGeometry.setAttribute("position", new THREE.BufferAttribute(linkPositions, 3));
+    linkGeometry.setDrawRange(0, 0);
+    var linkMat = new THREE.LineBasicMaterial({
+      color: 0x2dd4bf,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    var links = new THREE.LineSegments(linkGeometry, linkMat);
+    cellsMesh.frustumCulled = false;
+    glowMesh.frustumCulled = false;
+    links.frustumCulled = false;
+    fieldGroup.add(links);
+    fieldGroup.add(glowMesh);
+    fieldGroup.add(cellsMesh);
+
+    var dummy = new THREE.Object3D();
+    var glowDummy = new THREE.Object3D();
+    var radii = [];
+    var positions = [];
+    var velocities = [];
+    var bodies = [];
+    var fieldRaycaster = new THREE.Raycaster();
+    var fieldPointer = new THREE.Vector2();
+    var fieldHit = new THREE.Vector3();
+    var fieldPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -fieldGroup.position.z);
+    var pointerTarget = { x: 0, y: 0, z: 0 };
+    var pointerActive = false;
+    var pointerSpeed = 0;
+    var lastPointerAt = 0;
+    var readout = document.getElementById("cell-field-readout");
+    var readoutValue = document.getElementById("cell-field-intensity");
+    var readoutState = document.getElementById("cell-field-state");
+    var lastReadoutAt = -1;
+    var lastReadoutPct = -1;
+    var lastReadoutState = "";
+    var physicsWorld = null;
+    var cursorBody = null;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function seedPosition(index) {
+      var radius = 0.13 + Math.random() * 0.18;
+      var x = 0;
+      var y = 0;
+      var z = 0;
+      var attempts = 0;
+      do {
+        x = (Math.random() - 0.5) * fieldBounds.x * 1.8;
+        y = (Math.random() - 0.5) * fieldBounds.y * 1.8;
+        z = (Math.random() - 0.5) * fieldBounds.z * 1.4;
+        attempts += 1;
+      } while (
+        attempts < 18 &&
+        positions.some(function (p, previous) {
+          var dx = p.x - x;
+          var dy = p.y - y;
+          var minDistance = radii[previous] + radius + 0.035;
+          return dx * dx + dy * dy < minDistance * minDistance;
+        })
+      );
+      radii[index] = radius;
+      positions[index] = { x: x, y: y, z: z };
+      velocities[index] = { x: 0, y: 0, z: 0 };
+      return { x: x, y: y, z: z };
+    }
+
+    if (RAPIER) {
+      try {
+        physicsWorld = new RAPIER.World({ x: 0, y: 0, z: 0 });
+        physicsWorld.timestep = 1 / 60;
+        function addWall(x, y, z, hx, hy, hz) {
+          var body = physicsWorld.createRigidBody(
+            RAPIER.RigidBodyDesc.fixed().setTranslation(x, y, z),
+          );
+          physicsWorld.createCollider(RAPIER.ColliderDesc.cuboid(hx, hy, hz), body);
+        }
+        addWall(0, fieldBounds.y + 0.25, 0, fieldBounds.x + 0.25, 0.25, fieldBounds.z + 0.25);
+        addWall(0, -fieldBounds.y - 0.25, 0, fieldBounds.x + 0.25, 0.25, fieldBounds.z + 0.25);
+        addWall(fieldBounds.x + 0.25, 0, 0, 0.25, fieldBounds.y + 0.25, fieldBounds.z + 0.25);
+        addWall(-fieldBounds.x - 0.25, 0, 0, 0.25, fieldBounds.y + 0.25, fieldBounds.z + 0.25);
+        addWall(0, 0, fieldBounds.z + 0.25, fieldBounds.x + 0.25, fieldBounds.y + 0.25, 0.25);
+        addWall(0, 0, -fieldBounds.z - 0.25, fieldBounds.x + 0.25, fieldBounds.y + 0.25, 0.25);
+        cursorBody = physicsWorld.createRigidBody(
+          RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(20, 20, 20),
+        );
+        physicsWorld.createCollider(RAPIER.ColliderDesc.ball(0.72), cursorBody);
+
+        for (var ri = 0; ri < fieldCount; ri++) {
+          var seeded = seedPosition(ri);
+          var bodyDesc = RAPIER.RigidBodyDesc.dynamic()
+            .setTranslation(seeded.x, seeded.y, seeded.z)
+            .setGravityScale(0)
+            .setLinearDamping(2.4)
+            .setAngularDamping(2.4);
+          var body = physicsWorld.createRigidBody(bodyDesc);
+          physicsWorld.createCollider(
+            RAPIER.ColliderDesc.ball(radii[ri]).setRestitution(0.14).setFriction(0.1),
+            body,
+          );
+          bodies.push(body);
+        }
+      } catch (error) {
+        physicsWorld = null;
+        cursorBody = null;
+        bodies = [];
+      }
+    }
+
+    if (!physicsWorld) {
+      for (var mi = 0; mi < fieldCount; mi++) seedPosition(mi);
+    }
+
+    function updatePointer(event) {
+      var rect = container.getBoundingClientRect();
+      var inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+      pointerActive = inside;
+      if (!inside) return;
+      fieldPointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      fieldPointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      fieldRaycaster.setFromCamera(fieldPointer, camera);
+      if (fieldRaycaster.ray.intersectPlane(fieldPlane, fieldHit)) {
+        var nextX = clamp(fieldHit.x, -fieldBounds.x, fieldBounds.x);
+        var nextY = clamp(fieldHit.y, -fieldBounds.y, fieldBounds.y);
+        var now = performance.now();
+        if (lastPointerAt) {
+          var elapsed = Math.max(0.016, (now - lastPointerAt) / 1000);
+          var moved = Math.hypot(nextX - pointerTarget.x, nextY - pointerTarget.y);
+          pointerSpeed = clamp(moved / elapsed / 5.5, 0, 1);
+        }
+        lastPointerAt = now;
+        pointerTarget.x = nextX;
+        pointerTarget.y = nextY;
+      }
+    }
+    window.addEventListener("pointermove", updatePointer, { passive: true });
+
+    function step(dt, t) {
+      pointerSpeed *= Math.pow(0.01, dt);
+      var perturbation = pointerActive ? pointerSpeed : 0;
+      cellMat.color.lerp(journeyTargetColor, 0.035);
+      glowMat.color.copy(cellMat.color);
+      linkMat.color.copy(cellMat.color);
+      cellMat.opacity = (0.28 + perturbation * 0.08) * fadeFactor("field");
+      glowMat.opacity = (0.075 + perturbation * 0.09) * fadeFactor("field");
+      linkMat.opacity = (0.045 + perturbation * 0.1) * fadeFactor("field");
+
+      if (readout && readoutValue && readoutState && t - lastReadoutAt > 0.12) {
+        var intensityPct = Math.round(perturbation * 20) * 5;
+        var state = intensityPct > 65 ? "active" : intensityPct > 18 ? "moving" : "idle";
+        if (intensityPct !== lastReadoutPct || state !== lastReadoutState) {
+          readoutValue.textContent = String(intensityPct).padStart(2, "0") + "%";
+          readoutState.textContent = state;
+          lastReadoutPct = intensityPct;
+          lastReadoutState = state;
+        }
+        readout.style.setProperty("--perturbation", perturbation.toFixed(3));
+        lastReadoutAt = t;
+      }
+
+      if (physicsWorld) {
+        if (cursorBody) {
+          cursorBody.setNextKinematicTranslation(
+            pointerActive
+              ? pointerTarget
+              : { x: 20, y: 20, z: 20 },
+          );
+        }
+        bodies.forEach(function (body, index) {
+          body.applyImpulse({
+            x: Math.sin(t * 0.55 + index) * 0.0008,
+            y: Math.cos(t * 0.47 + index * 1.7) * 0.0008,
+            z: Math.sin(t * 0.31 + index * 0.8) * 0.0003,
+          }, true);
+        });
+        physicsWorld.step();
+        bodies.forEach(function (body, index) {
+          var p = body.translation();
+          positions[index].x = p.x;
+          positions[index].y = p.y;
+          positions[index].z = p.z;
+        });
+      } else {
+        for (var fi = 0; fi < fieldCount; fi++) {
+          var position = positions[fi];
+          var velocity = velocities[fi];
+          velocity.x += Math.sin(t * 0.55 + fi) * dt * 0.012;
+          velocity.y += Math.cos(t * 0.47 + fi * 1.7) * dt * 0.012;
+          if (pointerActive) {
+            var dx = position.x - pointerTarget.x;
+            var dy = position.y - pointerTarget.y;
+            var distance = Math.max(0.2, Math.sqrt(dx * dx + dy * dy));
+            var force = Math.max(0, 1 - distance / 1.5) * dt * 2.2;
+            velocity.x += (dx / distance) * force;
+            velocity.y += (dy / distance) * force;
+          }
+          velocity.x *= Math.pow(0.12, dt);
+          velocity.y *= Math.pow(0.12, dt);
+          position.x += velocity.x * dt;
+          position.y += velocity.y * dt;
+          if (position.x < -fieldBounds.x || position.x > fieldBounds.x) velocity.x *= -0.8;
+          if (position.y < -fieldBounds.y || position.y > fieldBounds.y) velocity.y *= -0.8;
+          position.x = clamp(position.x, -fieldBounds.x, fieldBounds.x);
+          position.y = clamp(position.y, -fieldBounds.y, fieldBounds.y);
+        }
+      }
+
+      for (var ui = 0; ui < fieldCount; ui++) {
+        var fp = positions[ui];
+        var proximity = 0;
+        if (pointerActive) {
+          var pdx = fp.x - pointerTarget.x;
+          var pdy = fp.y - pointerTarget.y;
+          proximity = Math.max(0, 1 - Math.sqrt(pdx * pdx + pdy * pdy) / 1.8);
+        }
+        var breath = 1 + Math.sin(t * 1.25 + ui * 0.7) * 0.06;
+        var swell = 1 + proximity * (0.14 + perturbation * 0.2);
+        dummy.position.set(fp.x, fp.y, fp.z);
+        dummy.rotation.set(0, t * 0.08 + ui, 0);
+        dummy.scale.setScalar(radii[ui] * breath * swell);
+        dummy.updateMatrix();
+        cellsMesh.setMatrixAt(ui, dummy.matrix);
+        glowDummy.position.copy(dummy.position);
+        glowDummy.rotation.copy(dummy.rotation);
+        glowDummy.scale.setScalar(radii[ui] * breath * (2.2 + proximity * 0.8));
+        glowDummy.updateMatrix();
+        glowMesh.setMatrixAt(ui, glowDummy.matrix);
+      }
+
+      var linkCount = 0;
+      for (var li = 0; li < fieldCount && linkCount < maxLinks; li++) {
+        for (var lj = li + 1; lj < fieldCount && linkCount < maxLinks; lj++) {
+          var linkDx = positions[li].x - positions[lj].x;
+          var linkDy = positions[li].y - positions[lj].y;
+          var linkDz = positions[li].z - positions[lj].z;
+          var linkLimit = radii[li] + radii[lj] + 0.34 + perturbation * 0.16;
+          if (linkDx * linkDx + linkDy * linkDy + linkDz * linkDz > linkLimit * linkLimit) continue;
+          var linkOffset = linkCount * 6;
+          linkPositions[linkOffset] = positions[li].x;
+          linkPositions[linkOffset + 1] = positions[li].y;
+          linkPositions[linkOffset + 2] = positions[li].z;
+          linkPositions[linkOffset + 3] = positions[lj].x;
+          linkPositions[linkOffset + 4] = positions[lj].y;
+          linkPositions[linkOffset + 5] = positions[lj].z;
+          linkCount += 1;
+        }
+      }
+      linkGeometry.setDrawRange(0, linkCount * 2);
+      linkGeometry.attributes.position.needsUpdate = true;
+      cellsMesh.instanceMatrix.needsUpdate = true;
+      glowMesh.instanceMatrix.needsUpdate = true;
+    }
+
+    return { step: step };
+  }
+
+  function loadCellField() {
+    if (reducedMotion) return;
+    import("rapier")
+      .then(function (module) {
+        var RAPIER = module.default || module;
+        return Promise.resolve(RAPIER.init()).then(function () {
+          cellField = createCellField(RAPIER);
+        });
+      })
+      .catch(function () {
+        cellField = createCellField(null);
+      });
+  }
+
   // ── Controls ─────────────────────────────────────────────────────────────
   // Interactive: judges can drag to rotate and scroll to zoom. Auto-rotate
   // pauses on interaction and resumes after 3s of idle — this makes the
@@ -1051,8 +1364,10 @@ function initVessel3D() {
   if (typeof ResizeObserver !== "undefined") {
     new ResizeObserver(resize).observe(container);
   }
+  loadCellField();
 
   // ── Animation loop ───────────────────────────────────────────────────────
+
   var clock = new THREE.Clock();
   var fillT = reducedMotion ? 1 : 0;
   var fillDuration = 1.8;
@@ -1072,6 +1387,7 @@ function initVessel3D() {
     droplets: { start: 2.6, dur: 0.6 },
     particles: { start: 0.2, dur: 1.0 },
     dna: { start: 1.5, dur: 1.5 },
+    field: { start: 0.5, dur: 1.4 },
   };
   var entranceDone = reducedMotion;
   if (entranceDone) {
@@ -1092,6 +1408,10 @@ function initVessel3D() {
     requestAnimationFrame(animate);
     var dt = Math.min(clock.getDelta(), 0.05);
     var t = clock.getElapsedTime();
+
+    if (cellField) {
+      cellField.step(dt, t);
+    }
 
     // World palette crossfades between day and dusk as the theme changes.
     themeBlend += (themeTarget - themeBlend) * 0.03;

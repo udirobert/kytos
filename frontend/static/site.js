@@ -1055,6 +1055,8 @@
       });
     }
 
+    goTo(1); // ensure phase 1 starts visible
+
     flow.querySelectorAll("[data-next]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         goTo(parseInt(btn.dataset.next, 10));
