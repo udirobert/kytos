@@ -3864,7 +3864,8 @@ a.run-insight-card:hover {
   }
 }
 
-html.no-webgl .cell-field-readout {
+html.no-webgl .cell-field-readout,
+html.no-webgl .legend-field {
   display: none;
 }
 

@@ -1162,7 +1162,34 @@ function initVessel3D() {
   }
 
   function loadCellField() {
-    if (reducedMotion) return;
+    var readoutEl = document.getElementById("cell-field-readout");
+    function hideFieldUi() {
+      if (readoutEl) readoutEl.style.display = "none";
+      document.querySelectorAll(".legend-field").forEach(function (el) {
+        el.style.display = "none";
+      });
+    }
+    // No field ⇒ no live instrument: hide the readout and legend hint so
+    // visitors never see a frozen "00% idle" gauge.
+    if (reducedMotion) {
+      hideFieldUi();
+      return;
+    }
+    // The field is a cursor-perturbation interaction: touch visitors have no
+    // pointer to perturb with, so skip the layer entirely on coarse pointers.
+    // Low-power machines keep a light kinematic field and never pay the
+    // ~1 MB Rapier WASM download.
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      hideFieldUi();
+      return;
+    }
+    function loadFallback() {
+      cellField = createCellField(null);
+    }
+    if (lowPerf) {
+      loadFallback();
+      return;
+    }
     import("rapier")
       .then(function (module) {
         var RAPIER = module.default || module;
@@ -1170,9 +1197,7 @@ function initVessel3D() {
           cellField = createCellField(RAPIER);
         });
       })
-      .catch(function () {
-        cellField = createCellField(null);
-      });
+      .catch(loadFallback);
   }
 
   // ── Controls ─────────────────────────────────────────────────────────────

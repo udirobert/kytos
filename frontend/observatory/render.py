@@ -492,7 +492,7 @@ def _chronicle_rail_html(chronicle, *, root_prefix: str) -> str:
     cards = ""
     for it in items:
         poster = (
-            f'<img class="chronicle-card-poster" src="{root_prefix}shorts/{it["href"]}"'
+            f'<img class="chronicle-card-poster" src="{root_prefix}shorts/{it["poster"]}"'
             f' alt="" loading="lazy">'
             if it.get("poster")
             else ""
