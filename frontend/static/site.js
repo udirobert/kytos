@@ -1314,6 +1314,46 @@
     document.addEventListener("keydown", onCloseRequest);
   }
 
+  // ── Chronicle rail: hover video preview ─────────────────────────────────
+  // Home visitors can feel the clip before clicking through. The <video>
+  // ships with preload="none" + data-preview-src, so the ~1 MB MP4 is only
+  // fetched on first hover/focus, and only on fine-pointer devices — touch
+  // visitors never trigger it and never download it.
+  function initChroniclePreview() {
+    var previews = document.querySelectorAll(".chronicle-card-preview");
+    if (!previews.length) return;
+    if (prefersReducedMotion()) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    function ensureLoaded(video) {
+      if (!video.src && video.dataset.previewSrc) {
+        video.src = video.dataset.previewSrc;
+        video.load();
+      }
+    }
+    previews.forEach(function (video) {
+      var card = video.closest(".chronicle-card");
+      if (!card) return;
+      card.addEventListener("mouseenter", function () {
+        ensureLoaded(video);
+        var play = video.play();
+        if (play && play.catch) play.catch(function () {});
+      });
+      card.addEventListener("mouseleave", function () {
+        video.pause();
+      });
+      // Keyboard parity: focusing the card link previews like hover.
+      card.addEventListener("focusin", function () {
+        ensureLoaded(video);
+        var play = video.play();
+        if (play && play.catch) play.catch(function () {});
+      });
+      card.addEventListener("focusout", function () {
+        video.pause();
+      });
+    });
+  }
+
   function onReady() {
     initThemeToggle();
     initPlotly();
@@ -1337,6 +1377,7 @@
     initHomeFlow();
     initAboutFlow();
     initTermSpotlight();
+    initChroniclePreview();
   }
 
   if (document.readyState === "loading") {

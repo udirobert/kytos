@@ -476,6 +476,7 @@ def _chronicle_short_summary(chronicle) -> list[dict]:
             {
                 "href": f"{short.slug}/index.html",
                 "poster": f"{short.slug}/{med.get('poster', '')}" if med.get("poster") else "",
+                "video": f"{short.slug}/{med.get('video', '')}" if med.get("video") else "",
                 "title": short.title,
                 "hook": short.hook,
                 "plain": short.plain_words,
@@ -497,9 +498,23 @@ def _chronicle_rail_html(chronicle, *, root_prefix: str) -> str:
             if it.get("poster")
             else ""
         )
+        # Hover preview: a muted loop over the poster, loaded lazily and only
+        # driven by pointer/focus (see initChroniclePreview in site.js).
+        # Touch devices never trigger it, so they keep paying only for the
+        # poster image.
+        preview = (
+            f'<video class="chronicle-card-preview" muted loop playsinline'
+            f' preload="none" data-preview-src="{_h(root_prefix)}shorts/{_h(it["video"])}"'
+            f' aria-hidden="true" tabindex="-1"></video>'
+            if it.get("video")
+            else ""
+        )
         cards += f'''
         <a class="chronicle-card" href="{root_prefix}shorts/{it["href"]}">
-          {poster}
+          <div class="chronicle-card-media">
+            {poster}
+            {preview}
+          </div>
           <div class="chronicle-card-body">
             <p class="chronicle-eyebrow">CHRONICLE · {it["published"]}</p>
             <h3 class="chronicle-card-title">{it["title"]}</h3>
