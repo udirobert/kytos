@@ -109,6 +109,30 @@ body {
   color: #042f2e;
 }
 
+/* ── Living backdrop — raw-WebGL shader field behind every page ─────────
+   Fixed, opaque, painted before content. Colors are tuned to the theme
+   palettes, so panels and glass read exactly as they did over the static
+   gradients — with motion under them. Removed by site.js if WebGL or the
+   shader is unavailable, leaving the CSS gradient backdrop intact. */
+#kytos-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* With the shader running, the body's static radial gradients are fully
+   covered — swap to flat theme colors to skip painting them. */
+html.has-backdrop {
+  background: var(--bg);
+}
+
+html.has-backdrop body {
+  background: none;
+}
+
 /* Screen-reader-only text (About H1 etc.) — visually hidden, still indexed */
 .visually-hidden {
   position: absolute;

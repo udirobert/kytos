@@ -1354,7 +1354,196 @@
     });
   }
 
+  // ── Living backdrop — shader-driven ambient field, every page ──────────
+  // Inspired by shader-portfolio backdrops (fluid, warm, cursor-aware), but
+  // built on raw WebGL so non-vessel pages don't pay for three.js. The field
+  // is an FBM-noise blob drift over the theme palette, with a soft pointer
+  // light. Guards: no WebGL → CSS gradients stay; reduced motion → one
+  // static frame; low-perf → smaller buffer + 30 fps; hidden tab → paused.
+  function initBackdrop() {
+    if (document.getElementById("kytos-backdrop")) return;
+    if (!probeWebGL()) return;
+
+    var canvas = document.createElement("canvas");
+    canvas.id = "kytos-backdrop";
+    canvas.setAttribute("aria-hidden", "true");
+    document.body.insertBefore(canvas, document.body.firstChild);
+
+    var gl = null;
+    try {
+      gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, stencil: false, powerPreference: "low-power" });
+    } catch (e) {
+      gl = null;
+    }
+    if (!gl) {
+      canvas.remove();
+      return;
+    }
+
+    var reduced = prefersReducedMotion();
+    var lowPerf = window.matchMedia("(max-width: 768px)").matches ||
+      (window.devicePixelRatio || 1) < 1.5;
+    var SCALE = lowPerf ? 0.35 : 0.5;
+    var FRAME_MS = lowPerf ? 1000 / 30 : 1000 / 45;
+
+    var VS = [
+      "attribute vec2 aPos;",
+      "void main() { gl_Position = vec4(aPos, 0.0, 1.0); }",
+    ].join("\n");
+    var FS = [
+      "precision mediump float;",
+      "uniform vec2 uRes;",
+      "uniform float uTime;",
+      "uniform vec2 uPointer;",
+      "uniform float uTheme;",   // 0 = dusk, 1 = day
+      "float hash(vec2 p) {",
+      "  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);",
+      "}",
+      "float noise(vec2 p) {",
+      "  vec2 i = floor(p), f = fract(p);",
+      "  vec2 u = f * f * (3.0 - 2.0 * f);",
+      "  return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x),",
+      "             mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);",
+      "}",
+      "float fbm(vec2 p) {",
+      "  float v = 0.0, a = 0.5;",
+      "  for (int i = 0; i < 4; i++) {",
+      "    v += a * noise(p);",
+      "    p = p * 2.03 + vec2(9.7, 3.1);",
+      "    a *= 0.5;",
+      "  }",
+      "  return v;",
+      "}",
+      "void main() {",
+      "  vec2 uv = gl_FragCoord.xy / uRes;",
+      "  vec2 p = (uv - 0.5) * vec2(uRes.x / uRes.y, 1.0);",
+      "  float t = uTime * 0.035;",
+      "  // Two slow-drifting noise domains → blob fields.",
+      "  float n1 = fbm(p * 1.6 + vec2(t, -t * 0.7));",
+      "  float n2 = fbm(p * 2.4 - vec2(t * 0.6, t) + n1 * 0.8);",
+      "  // Dusk: warm charcoal + amber + faint teal. Day: paper + spring fog.",
+      "  vec3 duskBase = vec3(0.063, 0.055, 0.039);",
+      "  vec3 duskWarm = vec3(0.62, 0.42, 0.14);",
+      "  vec3 duskCool = vec3(0.11, 0.52, 0.47);",
+      "  vec3 dayBase = vec3(0.965, 0.953, 0.925);",
+      "  vec3 dayWarm = vec3(0.93, 0.80, 0.55);",
+      "  vec3 dayCool = vec3(0.55, 0.82, 0.76);",
+      "  vec3 base = mix(duskBase, dayBase, uTheme);",
+      "  vec3 warm = mix(duskWarm, dayWarm, uTheme);",
+      "  vec3 cool = mix(duskCool, dayCool, uTheme);",
+      "  float warmAmt = smoothstep(0.48, 0.85, n1) * 0.34;",
+      "  float coolAmt = smoothstep(0.55, 0.92, n2) * (0.20 + uTheme * 0.18);",
+      "  vec3 col = base;",
+      "  col = mix(col, warm, warmAmt);",
+      "  col = mix(col, cool, coolAmt);",
+      "  // Pointer light: a soft glow that follows the cursor, damped.",
+      "  vec2 lp = (uPointer - 0.5) * vec2(uRes.x / uRes.y, 1.0);",
+      "  float ld = length(p - lp);",
+      "  float light = smoothstep(0.55, 0.0, ld) * 0.10;",
+      "  col += mix(cool, warm, 0.35) * light;",
+      // Subtle edge vignette keeps text contrast stable over the drifting field.
+      "  float vig = smoothstep(1.25, 0.35, length(p));",
+      "  col *= mix(0.72, 1.0, vig);",
+      "  gl_FragColor = vec4(col, 1.0);",
+      "}",
+    ].join("\n");
+
+    function shader(type, src) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) return null;
+      return s;
+    }
+    var vs = shader(gl.VERTEX_SHADER, VS);
+    var fs = shader(gl.FRAGMENT_SHADER, FS);
+    var prog = vs && fs ? gl.createProgram() : null;
+    if (prog) {
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) prog = null;
+    }
+    if (!prog) {
+      canvas.remove();
+      return; // CSS gradients carry the backdrop
+    }
+    gl.useProgram(prog);
+
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    var aPos = gl.getAttribLocation(prog, "aPos");
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    var uRes = gl.getUniformLocation(prog, "uRes");
+    var uTime = gl.getUniformLocation(prog, "uTime");
+    var uPointer = gl.getUniformLocation(prog, "uPointer");
+    var uTheme = gl.getUniformLocation(prog, "uTheme");
+
+    function resize() {
+      var w = Math.max(2, Math.round(window.innerWidth * SCALE));
+      var h = Math.max(2, Math.round(window.innerHeight * SCALE));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+        gl.viewport(0, 0, w, h);
+      }
+    }
+    window.addEventListener("resize", resize, { passive: true });
+    resize();
+
+    // Eased pointer (0..1 space); eases from center on load.
+    var px = 0.5, py = 0.5, tx = 0.5, ty = 0.5;
+    window.addEventListener("pointermove", function (e) {
+      tx = e.clientX / window.innerWidth;
+      ty = 1 - e.clientY / window.innerHeight;
+    }, { passive: true });
+
+    // Theme blend eases toward the Observatory's day/dusk state.
+    var themeV = document.documentElement.getAttribute("data-theme") === "light" ? 1 : 0;
+    var themeTargetV = themeV;
+    window.addEventListener("kytos:theme", function (e) {
+      themeTargetV = e.detail && e.detail.theme === "light" ? 1 : 0;
+    });
+
+    var start = performance.now();
+    var lastFrame = 0;
+    var paused = false;
+    document.addEventListener("visibilitychange", function () {
+      paused = document.hidden;
+      if (!paused) {
+        lastFrame = 0;
+        requestAnimationFrame(frame);
+      }
+    });
+
+    function frame(now) {
+      if (paused) return;
+      var elapsed = now - start;
+      if (reduced && now > start + 120) return; // one frame holds the field
+      if (now - lastFrame < FRAME_MS) {
+        requestAnimationFrame(frame);
+        return;
+      }
+      lastFrame = now;
+      px += (tx - px) * 0.06;
+      py += (ty - py) * 0.06;
+      themeV += (themeTargetV - themeV) * 0.03;
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.uniform1f(uTime, elapsed / 1000);
+      gl.uniform2f(uPointer, px, py);
+      gl.uniform1f(uTheme, themeV);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    document.documentElement.classList.add("has-backdrop");
+  }
+
   function onReady() {
+    initBackdrop();
     initThemeToggle();
     initPlotly();
     initVccRail();
