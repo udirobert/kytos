@@ -1467,6 +1467,22 @@ html.no-webgl .vessel-loading {
   margin-top: 1rem;
 }
 
+/* Phase orienter — mirrors the home kicker so both guided flows share one
+   visual language (label + position in the sequence). */
+.about-kicker {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.about-kicker span {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
 .about-phase-back {
   margin-top: 0.75rem;
   padding: 0;
@@ -1677,6 +1693,14 @@ html.no-webgl .vessel-loading {
   border-radius: 4px;
   background: rgba(45, 212, 191, 0.08);
   border: 1px solid rgba(45, 212, 191, 0.15);
+}
+
+.run-card-headline {
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
 
 .run-card-metrics {
@@ -2458,7 +2482,7 @@ a.run-insight-card:hover {
   padding: 0.5rem 1.5rem 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 1.25rem;
 }
 
 /* ── Run inspect CTA: single action from hero to evidence ──────────────── */
@@ -5388,6 +5412,8 @@ body.spotlight-open .term:hover::after { opacity: 0 !important; }
 
 .short-tail {
   margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
   display: flex;
   gap: 1.25rem;
   align-items: center;
@@ -5412,6 +5438,7 @@ body.spotlight-open .term:hover::after { opacity: 0 !important; }
 .short-card-link:hover, .short-card-link:focus-visible {
   border-color: var(--accent);
   transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
 .short-card-poster {
   width: 100%;
