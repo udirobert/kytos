@@ -181,3 +181,19 @@ Observatory maintenance stays with **C**; **A** feeds new runs into `experiments
 | **Shared** | ✅ ruff/format/secrets green; pre-commit passes; harness e2e tests added (`tests/test_harness.py` — 21 tests total) |
 
 *Integration checklist: k001 folder complete → enrichment committed → `dist/` builds offline → deploy → demo script in [`observatory.md §7`](observatory.md#7-demo-script-2-minutes).*
+
+## Compute update (2026-09-05)
+
+The 8 GB arm64 Mac cannot hold the full 2025 Atlas or run full 2026 `vcc prep`.
+Adjust the post-Milestone tracks:
+
+- **A (data/eval)** — still owns the submission harness and `cell-eval`; full
+  ceiling/Atlas prep runs on a **32 GB+ VPS or rented instance**. Local is for
+  small dry-runs and meta.json provenance.
+- **B (Layer A)** — training and cross-corpus gene transfer also external; the
+  Mac is for small shape checks and the sparse baseline.
+- **C (Layer B + Observatory)** — Observatory build stays local; any real
+  cell-distribution sampler (flow-matching, etc.) is external.
+
+This does not change the artifact contract; `experiments/<run>/` stays small and
+`meta.json` records the remote host / commit / reproduce command.

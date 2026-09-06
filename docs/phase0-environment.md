@@ -14,6 +14,23 @@ env resolves to torch 2.12.1; full suite: 89/89 green in one command
 (`uv run pytest`). `.venv-science` (uv-managed CPython 3.12.8, cell-eval +
 pdex) remains the eval environment.
 
+## Compute reality (updated 2026-09-05)
+
+This Mac has **8 GB RAM** (`sysctl hw.memsize` confirms 8 GiB). That is enough
+to install the env, run `vcc prep --dry-run` on small subsets, generate sparse
+baselines (e.g. `tools/run_k003_mean_shift.py`), and work on the Observatory.
+It is **not** enough to:
+
+- run a full `vcc prep` on a 2026 panel (peak ~28 GB),
+- hold the 2025 Atlas source (6.9 GB) and prep it,
+- run `cell-eval run` on the full 2025 validation,
+- train any real Layer A/B model or sample real control-cell distributions.
+
+For those tasks the default is an **external machine** (Kaggle free GPU for
+smoke tests, Vast/RunPod hourly for `vcc prep` / training, a 32 GB+ VPS if a
+persistent cron is needed). See `docs/release-infrastructure.md §4` and
+`docs/architecture.md §4` for the compute ladder and platform ordering.
+
 ## Core inference/env stack
 
 | Package | Why |

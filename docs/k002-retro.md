@@ -77,3 +77,17 @@ which renders the same philosophy on the Trust panel.
 
 See [`data/README.md`](../data/README.md#vcc2025-k002--restore-guide) for the
 concrete restore path.
+
+## k003 reality (2026-09-05)
+
+The k002 disk discipline is still right, but the next constraint is **RAM**, not
+disk. This Mac has 8 GB, so:
+
+- Full `vcc prep` for the 2026 panel (~28 GB peak) and the 2025 Atlas prep
+  (~13 GB peak) are **not local**.
+- The first 2026 submission, `k003-mean-shift-validation`, had to be a
+  top-300-sparse baseline to fit. It scored the same as the random `vcc sample`
+  floor (~-0.948) because it does not differentiate targets.
+- k003 proves the **external-first compute rule**: write the script locally,
+  generate a submittable `.vcc` if it is small, but anything with real
+  per-target/cell distribution must run on a 32 GB+ machine.

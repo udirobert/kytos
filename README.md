@@ -16,9 +16,12 @@ literature evidence, and video briefings for community scrutiny.
 |---|---|---|
 | **k001** | Audit-probe — deliberately fails its own audit (ACTB shifted +2.10 log2FC) | `probe` |
 | **k002** | First real run — VCC 2025 validation, 98,927 cells, 50 targets, cell-eval 0.8.2 | `real` (subsample) |
+| **k003** | Sparse mean-shift baseline — VCC 2026 validation, 360k cells, 300 targets × 3 contexts, `vcc` 0.2.0 | `real` (submitted; score -0.948) |
 
-See [`experiments/README.md`](experiments/README.md) for run details and
-[`docs/k002-retro.md`](docs/k002-retro.md) for process notes.
+See [`experiments/README.md`](experiments/README.md) for run details,
+[`docs/k002-retro.md`](docs/k002-retro.md) for process notes, and
+[`docs/k002-retro.md#k003-reality`](docs/k002-retro.md#k003-reality-2026-09-05) for
+the k003 external-first compute lesson.
 
 ## Quick start
 
@@ -46,6 +49,7 @@ python frontend/build.py --experiments experiments/ --out frontend/dist/
 | [`docs/competitive-landscape.md`](docs/competitive-landscape.md) | Problem, evidence, wedge, adjacent projects |
 | [`docs/architecture.md`](docs/architecture.md) | Model stack ADR: Layer A (gene transfer) + Layer B (cell sampler) |
 | [`docs/observatory.md`](docs/observatory.md) | Observatory UX, partners, hackathon scope |
+| [`AGENTS.md`](AGENTS.md) | Agent operating rules: compute, secrets, VCC limits |
 | [`docs/milestone-0-worksplit.md`](docs/milestone-0-worksplit.md) | Three-developer parallel split |
 | [`docs/code-organization.md`](docs/code-organization.md) | Repo layout, backend & frontend stack |
 | [`docs/release-infrastructure.md`](docs/release-infrastructure.md) | Where artifacts live: GitHub, Hugging Face, Kaggle, VPS |
@@ -77,6 +81,14 @@ Phase 0 complete: submission harness, audit rules, enrichment tools
 trust layer (planted-signal, narrative grounding, Holo VLM audit),
 CI autonomy loop, k001 + k002 runs committed.
 
-Next: **k003** (full-depth cell-eval scoring), then Layer A/B model →
-final H5AD submission by Nov 5. See
-[`docs/architecture.md §7`](docs/architecture.md) for open gating decisions.
+**2026-09-05:** k003 pipeline proven: VCC 2026 `controls` downloaded, `vcc`
+logged in, sparse mean-shift baseline submitted and scored (overall -0.948).
+The 8 GB arm64 Mac is too small for full `vcc prep`, Atlas prep, or real
+cell-distribution sampling; docs and `AGENTS.md` now mandate
+**external-first compute** (VPS / Vast / RunPod / Kaggle / Brev) for heavy
+work.
+
+Next: provision a 32 GB+ worker, run a real control-cell resampling baseline,
+then train a Layer A per-target model → final H5AD submission by Nov 5. See
+[`docs/architecture.md §4`](docs/architecture.md#4-compute-ladder-do-not-design-around-brev)
+and [`AGENTS.md`](AGENTS.md) for the compute rules.

@@ -92,26 +92,33 @@ the free-GPU test bench.
 
 ## 4. Compute ladder (and when a VPS is worth it)
 
-Decision: **no VPS yet.** Phase 0–1 runs on the local arm64 Mac + Kaggle free
-GPU. A VPS becomes worth it when one of these is true:
+**Updated 2026-09-05.** The primary dev machine has **8 GB RAM** (arm64 Mac),
+so the default is now **external first**: the Mac is only for docs, small
+sparse baselines, and `vcc prep --dry-run` on subsets. Anything that touches the
+full 2026 panel, the 2025 Atlas, or a real cell-distribution sampler runs on a
+machine with **≥32 GB RAM** (or a GPU instance).
 
-1. **Layer B training at scale** (flow-matching on the full corpus) — sustained
+A VPS / rented instance is worth it for:
+
+1. **Full `vcc prep` on a real 2026 panel** — peak ~28 GB; cannot fit locally.
+2. **2025 Atlas download + prep** — 6.9 GB source and ~13 GB peak scratch.
+3. **Layer B training at scale** (flow-matching on the full corpus) — sustained
    GPU hours that the Mac can't do and Kaggle's weekly quota can't absorb.
-2. **The laptop can't be the cron** — weekly digests / enrichment that must run
+4. **The laptop can't be the cron** — weekly digests / enrichment that must run
    even when the Mac is closed.
 
-When that happens, the options, cheapest first:
+Options, cheapest first:
 
 | Option | Fit | Notes |
 |---|---|---|
-| **Rented GPU by the hour** (Vast.ai / RunPod / later Brev credits) | bursty training | pay only for training; no monthly commitment |
-| **VPS with 1× T4 / 16 GB** | sustained training + cron | matches the Phase 0–1 compute ladder; monthly cost |
-| VPS CPU-only | cron + data staging only | if training stays on rented GPU |
+| **Kaggle free GPU** | smoke tests, EDA, small notebooks | weekly quota; use the ratiocine two-phase pattern first |
+| **Rented CPU/GPU by the hour** (Vast.ai / RunPod) | full `vcc prep`, bursts of training | pick ≥32 GB system RAM for `vcc prep`; pay only for use |
+| **VPS with 1× T4 / 32 GB+** | sustained training + cron | only if a long-running worker is needed |
 
-**What a VPS would run (when it exists):** training jobs, the corpus on disk,
-weekly digests + enrichment cron. **What it would not run:** the Observatory
-(Netlify does that — no backend during the challenge) and it is never the
-source of truth (GitHub/HF are). A VPS is a worker, not a store.
+**What a VPS / rented instance runs:** heavy data prep, `vcc prep`, `cell-eval`
+runs, training. **What it does not run:** the Observatory (Netlify does that —
+no backend during the challenge), and it is never the source of truth (GitHub/HF
+are). External compute is a worker, not a store.
 
 ---
 

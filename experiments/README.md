@@ -22,6 +22,13 @@ prediction outputs.
   Scoring matrix subsampled (200 cells/pert + 3,000 controls, seed 0) —
   full-depth run pending k003. Process notes:
   [`docs/k002-retro.md`](../docs/k002-retro.md).
+- `k003-mean-shift-validation` — first **VCC 2026** submission (2026-09-05):
+  360,000 cells, 300 targets × 3 contexts (`A`, `B`, `C`), `vcc` 0.2.0.
+  Sparse top-300 control-gene mean-shift baseline. Overall `score_avg` -0.948,
+  equal to the random `vcc sample` floor, because the prediction does not
+  discriminate targets. Proved the end-to-end 2026 submit pipeline; the next
+  run needs external 32 GB+ compute for real per-target cell resampling.
+  Script: [`tools/run_k003_mean_shift.py`](../tools/run_k003_mean_shift.py).
 
 ```bash
 # Dev A — assemble deterministic artifacts

@@ -1,0 +1,24 @@
+{
+  "run_id": "k003-mean-shift-validation",
+  "created_at": "2026-09-05T12:48:42Z",
+  "model_name": "kytos-k003-mean-shift",
+  "n_contexts": 3,
+  "n_targets": 300,
+  "cells_per_pert": 400,
+  "genes_per_cell": 300,
+  "cells": 360000,
+  "genes": 18533,
+  "vcc_status": "published",
+  "vcc_score_avg": -0.9477,
+  "vcc_metrics": {
+    "perturbation_discrimination_pds": 0.0,
+    "expression_accuracy_mse": 0.0,
+    "de_logfc_accuracy_nmae": -5.7717,
+    "de_direction_fidelity_fid": -0.0393,
+    "de_direction_reach_reach": 0.1229,
+    "de_significance_overlap_jac": 0.0017
+  },
+  "note": "Sparse top-300 control-gene baseline; scored the same as the random vcc sample floor because it does not discriminate targets. Pipeline proven; next run needs real per-target cell resampling on 32 GB+ external compute.",
+  "prediction_sha256": "df7e298e3c1809f0a0f8ac6036c1b1a4997139f99e7368806d34af0b8bb8e9c5",
+  "vcc_entry_id": ""
+}

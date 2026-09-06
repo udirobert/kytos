@@ -111,9 +111,17 @@ gene namespace under the `expected_genelist`. Wraps in a reproducible artifact
 
 ## 4. Compute ladder (do not design around Brev)
 
+**Updated 2026-09-05:** the primary dev machine has only **8 GB RAM** (arm64
+Mac). That is enough for dry-runs, sparse baseline `.vcc` generation, and code
+docs, but it is *not* enough for a full 2026 `vcc prep` (peak ~28 GB), a full
+2025 Atlas prep (peak ~13 GB), or any real cell-distribution sampler. Treat the
+Mac as the orchestration + small-dry-run node; the heavy work lives elsewhere.
+
 | Window | Envelope | Use |
 |---|---|---|
-| Phase 0–1 | T4 / 16 GB | gene-level head smoke tests; baseline + ceiling |
+| Local (8 GB arm64 Mac) | 6–8 GB free | dry-runs; docs; sparse 300-gene baselines; `vcc prep --dry-run` on small subsets |
+| Phase 0–1 smoke tests | Kaggle free GPU / 16 GB | small `cell-eval` and model smoke tests; validate shapes |
+| Phase 0–1 real runs | 32 GB+ VPS / Vast / RunPod | full `vcc prep`; Atlas 2025 prep; `cell-eval run --ceiling`; Layer A smoke |
 | Phase 2+ | cloud / Brev (post-prize) | Layer B cell sampling at scale |
 
 `ratiocine` lesson: know the envelope early; a prize-time credit is too late to
