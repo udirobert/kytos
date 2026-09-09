@@ -397,6 +397,7 @@ function initVessel3D() {
       label: cd.rule || "audit warning",
       message: cd.message || "",
       target: cd.target || "audit",
+      gene: cd.gene || "",
     };
     crackMeshes.push(crackMesh);
     cracksGroup.add(crackMesh);
@@ -1217,14 +1218,18 @@ function initVessel3D() {
   controls.enableZoom = true;
   controls.target.set(0, 0, 0);
 
-  // Idle detection — resume auto-rotate after 3s of no user interaction
+  // One gentle intro orbit so the 3D form registers, then yield to the user.
+  // After the intro we never auto-resume — the vessel stays still while you
+  // read; the cell-field underneath keeps the living motion.
   var idleTimer = null;
   function onUserInteraction() {
     controls.autoRotate = false;
     if (idleTimer) clearTimeout(idleTimer);
-    idleTimer = setTimeout(function () {
-      if (!reducedMotion) controls.autoRotate = true;
-    }, 3000);
+  }
+  if (!reducedMotion) {
+    idleTimer = setTimeout(function () { controls.autoRotate = false; }, 5200);
+  } else {
+    controls.autoRotate = false;
   }
   renderer.domElement.addEventListener("pointerdown", onUserInteraction);
   renderer.domElement.addEventListener("wheel", onUserInteraction, { passive: true });
@@ -1308,14 +1313,40 @@ function initVessel3D() {
     calloutEl.setAttribute("aria-hidden", "true");
   }
 
-  function navigateToTarget(target) {
+  function focusGeneLink(gene) {
+    if (!gene) return null;
+    var el = document.querySelector(
+      '.gene-evidence-link[data-gene="' + gene + '"]'
+    );
+    if (!el) return null;
+    // Open the audit gene block / flag row so the highlighted link is in view.
+    var panel = document.getElementById("audit");
+    if (panel && panel.tagName === "DETAILS") panel.open = true;
+    var row = el.closest("li.flag-row");
+    if (row) {
+      row.classList.add("is-crack-focus");
+      if (row._focusTimer) clearTimeout(row._focusTimer);
+      row._focusTimer = setTimeout(function () {
+        row.classList.remove("is-crack-focus");
+      }, 2800);
+    }
+    return el;
+  }
+
+  function navigateToTarget(target, gene) {
     if (!target) return;
     var el = document.getElementById(target);
+    // A crack points at a specific gene — jump straight to that gene's link
+    // inside the audit panel, not just the top of the panel.
+    if (gene) {
+      var geneEl = focusGeneLink(gene) || el;
+      if (geneEl) el = geneEl;
+    }
     if (el && el.tagName === "DETAILS") {
       el.open = true;
     }
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
     } else if (target === "audit") {
       // Fall back to the main content
       var main = document.querySelector(".run-evidence");
@@ -1350,7 +1381,9 @@ function initVessel3D() {
 
   function onClickRay(e) {
     if (!interactablesReady || !hoveredObj) return;
-    navigateToTarget(hoveredObj.userData.target);
+    var gene =
+      hoveredObj.userData.type === "crack" ? hoveredObj.userData.gene || "" : "";
+    navigateToTarget(hoveredObj.userData.target, gene);
     hideCallout();
   }
 
@@ -1690,7 +1723,12 @@ function initVessel3D() {
     focusCrack: function (indexOrLabel) {
       if (typeof indexOrLabel === "string") {
         for (var i = 0; i < crackMeshes.length; i++) {
-          if (crackMeshes[i].userData.label === indexOrLabel || (crackMeshes[i].userData.message && crackMeshes[i].userData.message.indexOf(indexOrLabel) !== -1)) {
+          if (
+            crackMeshes[i].userData.gene === indexOrLabel ||
+            crackMeshes[i].userData.label === indexOrLabel ||
+            (crackMeshes[i].userData.message &&
+              crackMeshes[i].userData.message.indexOf(indexOrLabel) !== -1)
+          ) {
             indexOrLabel = i;
             break;
           }

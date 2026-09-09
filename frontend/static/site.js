@@ -835,19 +835,34 @@
 
     cracks.forEach(function (crack) {
       crack.style.cursor = "pointer";
+      var rule = crack.getAttribute("data-rule") || "audit warning";
+      var gene = crack.getAttribute("data-gene") || "";
+      var calloutText = gene ? "⚠️ " + rule + " · " + gene : "⚠️ " + rule;
       crack.addEventListener("mouseenter", function (e) {
-        showSvgCallout("⚠️ Audit Warning: Rule violation detected", e);
+        showSvgCallout(calloutText, e);
       });
       crack.addEventListener("mousemove", function (e) {
-        showSvgCallout("⚠️ Audit Warning: Rule violation detected", e);
+        showSvgCallout(calloutText, e);
       });
       crack.addEventListener("mouseleave", hideSvgCallout);
       crack.addEventListener("click", function () {
         openDisclosure("audit");
-        var auditEl = document.getElementById("audit");
-        if (auditEl) {
-          auditEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        var target = null;
+        if (gene) {
+          target = document.querySelector('.gene-evidence-link[data-gene="' + gene + '"]');
+          if (target) {
+            var row = target.closest("li.flag-row");
+            if (row) {
+              row.classList.add("is-crack-focus");
+              if (row._focusTimer) clearTimeout(row._focusTimer);
+              row._focusTimer = setTimeout(function () {
+                row.classList.remove("is-crack-focus");
+              }, 2800);
+            }
+          }
         }
+        var focusEl = target || document.getElementById("audit");
+        if (focusEl) focusEl.scrollIntoView({ behavior: "smooth", block: "center" });
       });
     });
 
@@ -920,156 +935,7 @@
     } catch (e) {}
   }
 
-  // ── Home catch carousel ──────────────────────────────────────────────────
-  // Auto-rotating 3-slide argument on the hero. Pauses on hover, click dots
-  // to jump. Falls back to static first slide under reduced-motion.
-  function initHomeCatchCarousel() {
-    var carousel = document.getElementById("home-catch-carousel");
-    if (!carousel) return;
-
-    var slides = carousel.querySelectorAll(".home-catch-slide");
-    var dots = carousel.querySelectorAll(".home-catch-dot");
-    var pauseBtn = document.getElementById("home-catch-pause");
-    if (slides.length <= 1) return;
-
-    if (prefersReducedMotion()) return; // CSS shows only active slide
-
-    var current = 0;
-    var timer = null;
-    var paused = false;
-    var interval = 4500;
-
-    function show(idx) {
-      slides.forEach(function (s, i) {
-        if (i === idx) {
-          s.classList.add("is-active");
-          s.setAttribute("aria-hidden", "false");
-        } else {
-          s.classList.remove("is-active");
-          s.setAttribute("aria-hidden", "true");
-        }
-      });
-      dots.forEach(function (d, i) {
-        if (i === idx) {
-          d.classList.add("is-active");
-          d.setAttribute("aria-pressed", "true");
-        } else {
-          d.classList.remove("is-active");
-          d.setAttribute("aria-pressed", "false");
-        }
-      });
-      current = idx;
-    }
-
-    function next() {
-      show((current + 1) % slides.length);
-    }
-
-    function start() {
-      if (paused) return;
-      stop();
-      timer = setInterval(next, interval);
-    }
-
-    function stop() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-    }
-
-    function setPaused(p) {
-      paused = p;
-      if (paused) {
-        stop();
-      } else {
-        start();
-      }
-      if (pauseBtn) {
-        pauseBtn.setAttribute("aria-pressed", String(paused));
-        pauseBtn.setAttribute("aria-label", paused ? "Resume auto-rotation" : "Pause auto-rotation");
-        var icon = pauseBtn.querySelector(".home-catch-pause-icon");
-        if (icon) icon.textContent = paused ? "▶" : "❚❚";
-      }
-    }
-
-    dots.forEach(function (dot, idx) {
-      dot.addEventListener("click", function () {
-        show(idx);
-        start(); // restart timer from the clicked slide
-      });
-    });
-
-    if (pauseBtn) {
-      pauseBtn.addEventListener("click", function () {
-        setPaused(!paused);
-      });
-    }
-
-    carousel.addEventListener("mouseenter", stop);
-    carousel.addEventListener("mouseleave", start);
-
-    // Pause when tab is hidden
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) {
-        stop();
-      } else {
-        start();
-      }
-    });
-
-    start();
-  }
-
-  // ── Home flow: 3-phase guided disclosure ───────────────────────────────────
-  // Each phase shows 3 things. Clicking the CTA closes the current phase and
-  // opens the next. Back returns to phase 1. The carousel auto-starts when
-  // phase 2 becomes active, and stops when it leaves.
-  function initHomeFlow() {
-    var flow = document.getElementById("home-flow");
-    if (!flow) return;
-
-    var phases = flow.querySelectorAll(".home-phase");
-    var carouselStarted = false;
-
-    function goTo(n) {
-      phases.forEach(function (p) {
-        var phaseNum = parseInt(p.dataset.phase, 10);
-        if (phaseNum === n) {
-          p.hidden = false;
-          p.classList.add("is-active");
-          // Re-trigger stagger entrance
-          p.classList.remove("is-shown");
-          void p.offsetHeight;
-          p.classList.add("is-shown");
-          // Start carousel when entering phase 2
-          if (phaseNum === 2 && !carouselStarted) {
-            carouselStarted = true;
-            initHomeCatchCarousel();
-          }
-        } else {
-          p.classList.remove("is-active");
-          p.classList.remove("is-shown");
-          p.hidden = true;
-        }
-      });
-    }
-
-    goTo(1); // ensure phase 1 starts visible
-
-    flow.querySelectorAll("[data-next]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        goTo(parseInt(btn.dataset.next, 10));
-      });
-    });
-    flow.querySelectorAll("[data-back]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        goTo(parseInt(btn.dataset.back, 10));
-      });
-    });
-  }
-
-  // ── About flow: 3-phase guided disclosure ─────────────────────────────────
+// ── About flow: 3-phase guided disclosure ─────────────────────────────────
   function initAboutFlow() {
     var flow = document.getElementById("about-flow");
     if (!flow) return;
@@ -1542,8 +1408,55 @@
     document.documentElement.classList.add("has-backdrop");
   }
 
+  // ── Home scroll-driven narrative ─────────────────────────────────────────
+  // The home story is now scroll-driven (not a gated 3-phase deck). Each
+  // phase reveals its stagger lines when it scrolls into view, and the fixed
+  // '01 / 03' indicator tracks the active phase.
+  function initHomeScroll() {
+    var phases = document.querySelectorAll(".home-scroll-phase");
+    if (!phases.length) return;
+    var prog = document.getElementById("home-progress-num");
+    if (typeof IntersectionObserver === "undefined") {
+      phases.forEach(function (p) { p.classList.add("is-shown"); });
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-shown");
+            if (prog) {
+              var n = entry.target.getAttribute("data-phase");
+              if (n) prog.textContent = ("0" + n).slice(-2);
+            }
+          }
+        });
+      },
+      { threshold: 0.5, rootMargin: "-20% 0px -20% 0px" }
+    );
+    phases.forEach(function (p) { io.observe(p); });
+  }
+
+  // ── "See the full scientific record" — one click expands everything ──────
+  function initFullRecordCta() {
+    document.querySelectorAll("[data-mode-cta]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.getAttribute("data-mode-cta");
+        var target = document.querySelector('.btn-mode[data-mode="' + mode + '"]');
+        if (target) {
+          target.click();
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    });
+  }
+
   function onReady() {
-    initBackdrop();
+    // The live WebGL shader backdrop was retired in favour of the body's
+    // static radial-gradient field — calmer, cheaper, and the vessel (on
+    // home + run pages) is now the only live WebGL surface. initBackdrop()
+    // is kept for reference but no longer booted.
+    // initBackdrop();
     initThemeToggle();
     initPlotly();
     initVccRail();
@@ -1563,10 +1476,11 @@
     initVesselOnboard();
     initSvgVesselInteractivity();
     initViewModeToggle();
-    initHomeFlow();
+    initHomeScroll();
     initAboutFlow();
     initTermSpotlight();
     initChroniclePreview();
+    initFullRecordCta();
   }
 
   if (document.readyState === "loading") {

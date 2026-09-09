@@ -5,113 +5,103 @@
 {% if latest %}
 <main class="home-stage" id="main-content" tabindex="-1">
   {{ bio_atmosphere | safe }}
+
+  {# Persistent vessel: stays fixed behind the scrolling narrative so the
+     hero is present for the whole story, then yields to the sections below. #}
+  <div class="home-vessel-column vessel-3d-container vessel-home" id="vessel-canvas">
+    {% if hero_img %}{{ hero_img | safe }}{% endif %}
+    <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
+    <div class="vessel-svg-fallback">{{ svg | safe }}</div>
+    <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
+    <div class="cell-field-readout" id="cell-field-readout" role="status" aria-live="polite">
+      <span class="cell-field-readout-label">your probe</span>
+      <strong id="cell-field-intensity">00%</strong>
+      <span class="cell-field-readout-state" id="cell-field-state">ready</span>
+    </div>
+    <div class="home-vessel-caption" aria-hidden="true">
+      <strong>Fill</strong> = how close we are to the best possible score
+      &middot; <strong>amber cracks</strong> = genes where the model is biologically wrong
+    </div>
+    {{ vessel_onboard_html | safe }}
+    <script type="application/json" id="vessel-data">{{ vessel_json | safe }}</script>
+  </div>
+
+  {# Scrolling narrative: the vessel stays fixed while this column moves past
+     it. Empty space passes pointer events through to the vessel so cracks stay
+     interactive; text and CTAs remain selectable / clickable. #}
+  <div class="home-copy-column">
+    <div class="home-progress" id="home-progress" aria-hidden="true">
+      <span id="home-progress-num">01</span> / 03
+    </div>
+
+    <!-- 01 — The Claim -->
+    <section class="home-scroll-phase t-stagger is-shown" data-phase="1">
+      <p class="home-kicker t-stagger-line t-stagger-line--1">
+        Open virtual-cell research <span>01 / 03</span>
+      </p>
+      <h1 class="home-headline t-stagger-line t-stagger-line--2">
+        We publish every prediction &mdash; and
+        <em>every place biology says we&rsquo;re wrong.</em>
+      </h1>
+      <p class="home-subline t-stagger-line t-stagger-line--3">
+        Kytos predicts how cells respond when a gene is silenced. For every run we publish
+        the score, the biological failures the score misses, the evidence behind them, and
+        the commands to reproduce it.
+      </p>
+      <div class="home-action-row t-stagger-line t-stagger-line--4">
+        <a class="button" href="{{ run_href }}">Inspect latest run &rarr;</a>
+        <a class="button button-secondary home-scroll-hint" href="#home-argument">Why this matters &darr;</a>
+      </div>
+    </section>
+
+    <!-- 02 — The Argument (scannable all at once, not auto-rotated) -->
+    <section class="home-scroll-phase t-stagger" data-phase="2" id="home-argument">
+      <p class="home-kicker t-stagger-line t-stagger-line--1">
+        Why the score is not enough <span>02 / 03</span>
+      </p>
+      <h2 class="home-arg-title t-stagger-line t-stagger-line--2">Looks right. Is wrong.</h2>
+      <ol class="home-arg-steps">
+        <li class="t-stagger-line t-stagger-line--3">
+          <strong>Models that score well can still be biologically wrong.</strong>
+          A good number is not a working prediction.
+        </li>
+        <li class="t-stagger-line t-stagger-line--4">
+          <strong>Most evals only check whether the output looks right</strong>
+          &mdash; not whether it <em>is</em> right.
+        </li>
+        <li class="t-stagger-line t-stagger-line--5">
+          <strong>In drug prediction, &ldquo;looks right but is wrong&rdquo;</strong>
+          is a drug that doesn&rsquo;t work, discovered a year too late.
+        </li>
+      </ol>
+      <p class="home-arg-tail t-stagger-line t-stagger-line--6">
+        The score tells you how close the answer is. The cracks tell you where it&rsquo;s
+        biologically wrong &mdash; and only the cracks can stop a bad prediction before it
+        reaches the lab.
+      </p>
+    </section>
+
+    <!-- 03 — Evidence + Action -->
+    <section class="home-scroll-phase t-stagger" data-phase="3">
+      <p class="home-kicker t-stagger-line t-stagger-line--1">
+        Inspect the record <span>03 / 03</span>
+      </p>
+      <div class="t-stagger-line t-stagger-line--2 home-proof-wrap">
+        {{ proof | safe }}
+      </div>
+      <a class="button home-phase-cta t-stagger-line t-stagger-line--3"
+         href="{{ run_href }}">View run #{{ run_index }}{{ day_stamp }} &rarr;</a>
+      <a class="button button-secondary t-stagger-line t-stagger-line--4"
+         href="{{ runs_href }}">Compare every run &rarr;</a>
+    </section>
+  </div>
+
   {% if presenter_bg %}
+  {# Once the story ends, the presenter stage covers the fixed vessel with an
+     opaque plate so the briefing gets a clean stage of its own. #}
   {{ presenter_bg | safe }}
   {% endif %}
-  <div class="home-hero-grid">
-    <div class="home-vessel-column">
-      <div class="vessel-fullscreen vessel-3d-container vessel-home" id="vessel-canvas">
-        {% if hero_img %}{{ hero_img | safe }}{% endif %}
-        <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
-        <div class="vessel-svg-fallback">{{ svg | safe }}</div>
-        <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
-        <div class="cell-field-readout" id="cell-field-readout" role="status" aria-live="polite">
-          <span class="cell-field-readout-label">cursor perturbation</span>
-          <strong id="cell-field-intensity">00%</strong>
-          <span class="cell-field-readout-state" id="cell-field-state">idle</span>
-        </div>
-        {{ vessel_onboard_html | safe }}
-        <script type="application/json" id="vessel-data">{{ vessel_json | safe }}</script>
-      </div>
-      {{ vessel_legend | safe }}
-    </div>
-    <div class="home-copy-column home-overlay">
-      <div class="home-overlay-content home-flow" id="home-flow">
-
-        <!-- Phase 1: The Claim -->
-        <div class="home-phase t-stagger is-shown is-active" data-phase="1">
-          <p class="home-kicker t-stagger-line t-stagger-line--1">
-            Open virtual-cell research <span>01 / 03</span>
-          </p>
-          <h1 class="home-headline t-stagger-line t-stagger-line--2">
-            We publish every prediction — and
-            <em>every time biology says we&rsquo;re wrong.</em>
-          </h1>
-          <p class="home-subline t-stagger-line t-stagger-line--3">
-            Kytos predicts how unseen cells respond to CRISPRi, then exposes the
-            score, biological failures, evidence, and exact path to reproduce it.
-          </p>
-          <div class="home-action-row t-stagger-line t-stagger-line--4">
-            <button class="button home-phase-cta" type="button" data-next="2">
-              Why this matters →
-            </button>
-            <a class="button button-secondary" href="{{ run_href }}">Inspect latest run</a>
-          </div>
-        </div>
-
-        <!-- Phase 2: The Argument -->
-        <div class="home-phase t-stagger" data-phase="2" hidden>
-          <p class="home-kicker t-stagger-line t-stagger-line--1">
-            Why the score is not enough <span>02 / 03</span>
-          </p>
-          <div class="home-catch-carousel t-stagger-line t-stagger-line--1"
-               id="home-catch-carousel"
-               role="region" aria-label="Why this matters" aria-live="polite">
-            <div class="home-catch-track">
-              <p class="home-catch-slide is-active" data-slide="0">
-                Models that score well can still be biologically wrong.
-              </p>
-              <p class="home-catch-slide" data-slide="1" aria-hidden="true">
-                Most evals check if the output looks right &mdash; not if it
-                <em>is</em> right.
-              </p>
-              <p class="home-catch-slide" data-slide="2" aria-hidden="true">
-                In drug prediction, &ldquo;looks right but is wrong&rdquo; is a
-                drug that doesn&rsquo;t work, discovered a year too late.
-              </p>
-            </div>
-          <div class="home-catch-dots" role="group" aria-label="Carousel navigation">
-              <button class="home-catch-dot is-active" type="button"
-                      aria-pressed="true" aria-label="Show point 1 of 3"></button>
-              <button class="home-catch-dot" type="button"
-                      aria-pressed="false" aria-label="Show point 2 of 3"></button>
-              <button class="home-catch-dot" type="button"
-                      aria-pressed="false" aria-label="Show point 3 of 3"></button>
-          </div>
-          <button class="home-catch-pause" type="button" id="home-catch-pause"
-                  aria-pressed="false" aria-label="Pause auto-rotation">
-            <span class="home-catch-pause-icon" aria-hidden="true">❚❚</span>
-          </button>
-          </div>
-          <button class="button home-phase-cta t-stagger-line t-stagger-line--2"
-                  type="button" data-next="3">
-            See the evidence →
-          </button>
-          <button class="home-phase-back t-stagger-line t-stagger-line--3"
-                  type="button" data-back="1">
-            ← Back
-          </button>
-        </div>
-
-        <!-- Phase 3: Evidence + Action -->
-        <div class="home-phase t-stagger" data-phase="3" hidden>
-          <p class="home-kicker t-stagger-line t-stagger-line--1">
-            Inspect the record <span>03 / 03</span>
-          </p>
-          <div class="t-stagger-line t-stagger-line--1 home-proof-wrap">
-            {{ proof | safe }}
-          </div>
-          <a class="button home-phase-cta t-stagger-line t-stagger-line--2"
-             href="{{ run_href }}">View run #{{ run_index }}{{ day_stamp }} →</a>
-          <button class="home-phase-back t-stagger-line t-stagger-line--3"
-                  type="button" data-back="2">
-            ← Back
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
+  {{ vessel_legend | safe }}
 </main>
 {% if chronicle_rail %}{{ chronicle_rail | safe }}{% endif %}
 {% else %}

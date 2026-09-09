@@ -62,9 +62,8 @@ METRIC_LABELS: dict[str, str] = {
 # First-visit vessel onboarding tooltip — shared by home + run detail.
 _VESSEL_ONBOARD_HTML = """\
         <div class="vessel-onboard" id="vessel-onboard" hidden>
-          <p><strong>Liquid fill</strong> = room to improve ·
-          <strong>amber cracks</strong> = where biology says we&rsquo;re wrong.</p>
-          <p class="vessel-onboard-hint">Drag to rotate · click cracks for details</p>
+          <p><strong>Fill level</strong> = how close we are to the best possible score · <strong>amber cracks</strong> = genes where the model is biologically wrong.</p>
+          <p class="vessel-onboard-hint">Drag to rotate · click a crack to see the evidence</p>
           <button class="vessel-onboard-close" type="button"
                   aria-label="Dismiss">Got it</button>
         </div>
@@ -584,13 +583,13 @@ def render_home(
             presenter_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(presenter)}"
             poster_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(hero)}" if hero else ""
             presenter_bg = """\
-            <section class="home-presenter-section" aria-label="Dr. Kytos presents">
+            <section class="home-presenter-section" aria-label="Run briefing">
               <span class="home-presenter-eyebrow">
-                KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT · DR. KYTOS PRESENTS</span>
+                KYTOS OBSERVATORY · RUN BRIEFING</span>
               <video class="home-presenter-video" src="{presenter_src}"
                      muted loop playsinline controls preload="metadata"
                      poster="{poster_src}"
-                     aria-label="Dr. Kytos run briefing playback"></video>
+                     aria-label="Run briefing playback"></video>
             </section>
             """.format(
                 presenter_src=_h(presenter_src),
@@ -1318,7 +1317,7 @@ def _presenter_overlay(run: RunSummary, root_prefix: str, visual: dict) -> str:
     <div class="run-hero-presenter">
       <video class="run-hero-presenter-video" src="{src}"
              autoplay muted loop playsinline preload="metadata"{poster}></video>
-      <div class="run-hero-presenter-badge">KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT</div>
+      <div class="run-hero-presenter-badge">KYTOS OBSERVATORY · RUN BRIEFING</div>
     </div>
     """
 
@@ -1345,8 +1344,8 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
           <video class="presenter-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}" preload="none"></video>
           <div class="presenter-overlay">
-            <span class="presenter-badge">KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT</span>
-            <span class="presenter-stamp">correspondent · Dr. Kytos</span>
+            <span class="presenter-badge">KYTOS OBSERVATORY · RUN BRIEFING</span>
+            <span class="presenter-stamp">auto-generated from facts.json</span>
           </div>
         </div>
         """
@@ -1357,9 +1356,9 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
         <div class="hero-fullscreen hero-video">
           <video class="briefing-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}" preload="none"></video>
-          <span class="briefing-stamp">kytos newsroom · run #1 of 78 · the cell speaks</span>
+          <span class="briefing-stamp">kytos observatory · run briefing · grounded in facts.json</span>
           <button class="briefing-unmute" type="button" hidden
-                  aria-label="Unmute the cell briefing">♪ unmute — the cell sings</button>
+                  aria-label="Unmute the run briefing">♪ unmute — hear the briefing</button>
         </div>
         """
     if hero:
@@ -1409,6 +1408,7 @@ def _vessel_data(facts: dict) -> dict:
                 "rule": fl.get("rule", "audit"),
                 "message": fl.get("message", ""),
                 "target": "audit",
+                "gene": (fl.get("genes") or [""])[0],
             }
         )
 
@@ -1433,8 +1433,8 @@ def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "v
     fill_y = 236 - int(fill / 100 * 190)  # liquid surface y (bottom = 236)
     # Membrane stress marks (audit warnings) on the cell's edge
     cracks = "".join(
-        f'<path class="vessel-crack" d="M {72 + i * 12} {150 + (i % 3) * 14} l {10 + i} {26 + i}"/>'
-        for i in range(min(warns, 6))
+        f'<path class="vessel-crack" data-gene="{_h(c["gene"])}" data-rule="{_h(c["rule"])}" d="M {72 + i * 12} {150 + (i % 3) * 14} l {10 + i} {26 + i}"/>'
+        for i, c in enumerate(vd["cracks"])
     )
     # Vesicles (info flags) floating in the cytoplasm
     droplets = "".join(
@@ -2078,8 +2078,8 @@ def _confession_banner(facts: dict, run_id: str) -> str:
     rules = ", ".join(f"<code>{_h(f.get('rule', '?'))}</code>" for f in warns[:3])
     return f"""
     <div class="confession-banner">
-      <p class="eyebrow">Audit confession — this run fails its own rules</p>
-      <p>{len(warns)} warning(s) on our published baseline: {rules}.</p>
+      <p class="eyebrow">Audit confession</p>
+      <p>{len(warns)} warning(s) on this run: {rules}. — we publish every failure, not just the scores.</p>
     </div>
     """
 
