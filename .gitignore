@@ -30,6 +30,9 @@ data/raw/
 .env.local
 .env.*.local
 
+# Kilo agent config (local)
+.kilo/
+
 # Observatory build output (generated locally; Netlify builds on push)
 frontend/dist/
 

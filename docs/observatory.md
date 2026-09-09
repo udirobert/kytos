@@ -202,9 +202,9 @@ Skip for Milestone 0: gamification (XP, quizzes, flashcards) from Cell Architect
 
 | Page | Layout | Vessel |
 |---|---|---|
-| **Home** | Full-bleed 3D vessel fills the viewport; headline + lede + CTA float over it with radial gradient scrim; glass data readout strip (fill %, audit, days left) pinned at bottom; scroll hint | Full-screen background, scroll-driven camera pull-back |
+| **Home** | Full-bleed 3D vessel fills the viewport; scroll-driven narrative (claim → argument → evidence) with fixed 01/03 indicator; primary CTA visible on first screen; self-documenting caption (fill = ceiling headroom; cracks = biological failures) docked at vessel base | Full-screen background, one gentle intro orbit then yields (no auto-resume); pointer-events pass-through on copy gutter so cracks stay interactive while reading |
 | **Runs** | Card grid — each card shows severity dot + fill % badge + headline + metrics | — |
-| **Run detail** | Full-bleed 3D vessel hero (min-height 100vh) with title + metric summary + data strip overlay; evidence panels flow in a centered 760px column below with scroll-reveal | Full-screen background, auto-rotate + parallax |
+| **Run detail** | Full-bleed 3D vessel hero (min-height 100vh) with title + metric summary + data strip overlay; evidence panels flow in a centered 760px column below with scroll-reveal; "See the full scientific record" CTA expands every panel in one click | Full-screen background, auto-rotate + drag; bidirectional crack↔gene wiring (click crack → highlight gene row; click gene → orbit camera to crack) |
 | **Critique** | Links to GitHub Discussions; pre-registered hypotheses per run | — |
 
 ### Run detail (the load-bearing view)
@@ -218,7 +218,9 @@ Skip for Milestone 0: gamification (XP, quizzes, flashcards) from Cell Architect
    when trained; base model or regex fallback otherwise); label-colored chips, aggregate
    stats in hero strip.
 6. **Narrative block** — OpenAI digest with **inline source links** to `facts.json`.
-7. **Provenance footer** — commit, seed, hashes, reproduce command.
+7. **"See the full scientific record" CTA** — one click expands every evidence panel
+   (Briefing → Full record) for first-time visitors.
+8. **Provenance footer** — commit, seed, hashes, reproduce command.
 
 All evidence panels are glassmorphism cards (`backdrop-filter: blur`, translucent
 background) that fade in via IntersectionObserver as they enter the viewport.
@@ -277,6 +279,9 @@ python frontend/build.py --experiments experiments/ --out frontend/dist/
 2. Enrichment failures: empty `literature/` or fallback `narrative/`; site still builds.
 3. All media committed under `visual/`; referenced from `facts.json`.
 4. Spend caps on partner API calls per run (poker lesson).
+5. Pipeline artifacts (`pipeline_status.json`, `verification/narrative_check.json`)
+   are **runtime outputs** — they are gitignored and regenerated on every run.
+   Only commit them if you need to freeze a verification baseline for a PR.
 
 ---
 
@@ -365,8 +370,30 @@ labels from base GLiNER2 + regex fallback → upload JSONL → synthetic `/gener
   experiments/tools/src/frontend (+ weekly cron) → test gate → per-run
   enrichment → build smoke → bot commits artifacts back. Degrades gracefully
   without secrets.
-- k001 critique link 404 fixed; runs-header atmosphere containment fixed;
-  literature rail scrubbed of scrape residue and deduped.
+- **PR #1 — Observatory UX pass (2026-09-09, merged).** Scroll-driven home
+  replaces the gated 3-phase deck; vessel stays fixed behind the narrative
+  and yields to opaque presenter plates. Copy space passes pointer events
+  through to the vessel so cracks stay interactive while reading. Vessel
+  self-documents with a persistent caption (fill = ceiling headroom; cracks
+  = biological failures). Bidirectional crack↔gene wiring: 3D/SVG cracks
+  carry `data-gene`; clicking a crack highlights the matching gene row with
+  a teal pulse, and clicking a gene orbits the vessel camera to its crack.
+  Motion refined: one gentle intro orbit then yields (no auto-resume).
+  Retired the per-page live WebGL shader backdrop for the static radial
+  gradient field — vessel is now the only live WebGL surface. Palette
+  tightened to single teal accent (lime retired); base font 14→16px.
+  Copy sharpened: "every place biology says we're wrong", "your probe · 00%
+  · ready", "Evidence trail", "Briefing / Full record", confession banner
+  ("we publish every failure, not just the scores"). De-emphasized the
+  theatrical correspondent persona ("Dr. Kytos / newsroom / the cell speaks")
+  → data-grounded "RUN BRIEFING · grounded in facts.json". Dead CSS/JS from
+  the old gated deck and catch-carousel swept.
+- **Pipeline determinism fix (2026-09-09).** Removed wall-clock `utcnow()`
+  timestamps from the fallback narrative path in `tools/render_narrative.py`
+  and from `tools/check_narrative.py` so `narrative/report.md` and
+  `verification/narrative_check.json` are byte-stable across runs on the same
+  `facts.json`. Regenerated k001/k002: 4/4 checks passed, 18/16 numbers
+  grounded. Added both output files to `.gitignore` (runtime artifacts).
 
 ### Later (Aug → Nov 2026)
 

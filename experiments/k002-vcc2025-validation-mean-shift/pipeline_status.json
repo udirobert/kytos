@@ -8,7 +8,7 @@
     "narrative": {
       "status": "fallback",
       "detail": "Deterministic fallback digest (no API key or LLM call failed).",
-      "timestamp": "2026-09-07T11:51:02+00:00"
+      "timestamp": "2026-09-09T17:40:23+00:00"
     },
     "literature": {
       "status": "skipped",

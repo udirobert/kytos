@@ -1,6 +1,6 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-09-05** after the first real `vcc submit` from this repo.
+> Last updated **2026-09-09** after merging Observatory UX pass (PR #1) and fixing pipeline determinism.
 
 This file is the ground truth for any agent working on the Kytos 2026 Virtual
 Cell Challenge repo. It overrides generic assumptions about "local dev" because
@@ -17,6 +17,8 @@ the primary dev machine is **memory- and disk-constrained**.
 - **Not useful for:** full `vcc prep`, full `cell-eval run`, training, holding
   the 2025 Atlas (6.9 GB source), or any full-panel 2026 prediction that is
   denser than top-300 sparse.
+- **Jinja2 is available** in the local `.venv`; `python3 frontend/build.py` works
+  and has been verified after PR #1. Do not assume the build is blocked.
 
 When an action would exceed 8 GB, **stop and route it to an external machine**.
 Do not attempt to "just run it" and hope swap saves you.
@@ -54,7 +56,7 @@ to git.
 
 ---
 
-## 4. VCC / CLI facts (state as of 2026-09-05)
+## 4. VCC / CLI facts (state as of 2026-09-09)
 
 - `vcc` is logged in as `ungethe@gmail.com` / team `Udi Ngethe`.
 - `vcc` version `0.2.0` is installed in `.venv-science/bin/`.
