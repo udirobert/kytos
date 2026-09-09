@@ -67,8 +67,7 @@ def fallback_digest(facts: dict) -> str:
     lines = [
         f"# {facts.get('run_id', 'run')} — run digest",
         "",
-        f"> Fallback digest rendered deterministically from `facts.json` (no LLM call). "
-        f"Generated {utcnow()} UTC.",
+        "> Fallback digest rendered deterministically from `facts.json` (no LLM call).",
         "",
         "## Headline",
         f"{facts.get('headline', 'no headline in facts.json')}",
@@ -173,10 +172,7 @@ def main(argv=None) -> int:
         except Exception as exc:
             warn(f"OpenAI call failed ({exc}); using fallback digest")
     if text is None:
-        text = (
-            f"<!-- kytos narrative · generated_by=fallback · {utcnow()} UTC -->\n\n"
-            f"{fallback_digest(facts)}"
-        )
+        text = f"<!-- kytos narrative · generated_by=fallback -->\n\n{fallback_digest(facts)}"
         notice("narrative: deterministic fallback digest (no API key or call failed)")
         record_pipeline_status(
             run_dir,

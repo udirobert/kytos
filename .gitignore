@@ -33,6 +33,11 @@ data/raw/
 # Observatory build output (generated locally; Netlify builds on push)
 frontend/dist/
 
+# Generated pipeline artifacts — these change on every run and should not
+# be committed. Regenerate via `tools/run_enrichment.sh` in CI or locally.
+experiments/*/verification/narrative_check.json
+experiments/*/pipeline_status.json
+
 # Throwaway scratch (my one-off tooltip-reveal harness; rebroadcast renders)
 .tmp/
 

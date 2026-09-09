@@ -26,7 +26,6 @@ import argparse
 import json
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -256,7 +255,6 @@ def main(argv: list[str] | None = None) -> int:
         payload = {
             "status": "skip",
             "summary": "no narrative to check",
-            "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "cases": [],
         }
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -278,7 +276,6 @@ def main(argv: list[str] | None = None) -> int:
     payload = {
         "status": "pass" if failed == 0 else "fail",
         "summary": summary,
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "cases": [{"name": name, "ok": ok, "detail": detail} for name, ok, detail in results],
     }
     out_path.write_text(json.dumps(payload, indent=2) + "\n")
