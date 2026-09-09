@@ -972,11 +972,13 @@ html.no-webgl .vessel-loading {
 }
 .home-progress #home-progress-num { color: var(--accent); }
 
-/* Self-documenting vessel caption, docked at the base of the fixed hero */
+/* Self-documenting vessel caption, docked just above the readout so the
+   vessel explains itself without a tutorial. Fades out while the first-visit
+   onboarding tooltip is on screen (they share the lower-center zone). */
 .home-vessel-caption {
   position: absolute;
   left: 50%;
-  bottom: 1.4rem;
+  bottom: clamp(5rem, 13vh, 6.5rem);
   transform: translateX(-50%);
   max-width: min(92vw, 40rem);
   padding: 0.45rem 1rem;
@@ -988,8 +990,13 @@ html.no-webgl .vessel-loading {
   text-align: center;
   pointer-events: none;
   text-wrap: balance;
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 .home-vessel-caption strong { color: var(--ink); font-weight: 500; }
+.home-vessel-column:has(.vessel-onboard.is-visible) .home-vessel-caption {
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px);
+}
 
 /* The argument, scannable all at once (replaces the auto-rotating carousel) */
 .home-arg-title {

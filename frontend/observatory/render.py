@@ -583,13 +583,13 @@ def render_home(
             presenter_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(presenter)}"
             poster_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(hero)}" if hero else ""
             presenter_bg = """\
-            <section class="home-presenter-section" aria-label="Dr. Kytos presents">
+            <section class="home-presenter-section" aria-label="Run briefing">
               <span class="home-presenter-eyebrow">
-                KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT · DR. KYTOS PRESENTS</span>
+                KYTOS OBSERVATORY · RUN BRIEFING</span>
               <video class="home-presenter-video" src="{presenter_src}"
                      muted loop playsinline controls preload="metadata"
                      poster="{poster_src}"
-                     aria-label="Dr. Kytos run briefing playback"></video>
+                     aria-label="Run briefing playback"></video>
             </section>
             """.format(
                 presenter_src=_h(presenter_src),
@@ -1317,7 +1317,7 @@ def _presenter_overlay(run: RunSummary, root_prefix: str, visual: dict) -> str:
     <div class="run-hero-presenter">
       <video class="run-hero-presenter-video" src="{src}"
              autoplay muted loop playsinline preload="metadata"{poster}></video>
-      <div class="run-hero-presenter-badge">KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT</div>
+      <div class="run-hero-presenter-badge">KYTOS OBSERVATORY · RUN BRIEFING</div>
     </div>
     """
 
@@ -1344,8 +1344,8 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
           <video class="presenter-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}" preload="none"></video>
           <div class="presenter-overlay">
-            <span class="presenter-badge">KYTOS OBSERVATORY · BIOLOGICAL FIELD REPORT</span>
-            <span class="presenter-stamp">correspondent · Dr. Kytos</span>
+            <span class="presenter-badge">KYTOS OBSERVATORY · RUN BRIEFING</span>
+            <span class="presenter-stamp">auto-generated from facts.json</span>
           </div>
         </div>
         """
@@ -1356,9 +1356,9 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
         <div class="hero-fullscreen hero-video">
           <video class="briefing-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}" preload="none"></video>
-          <span class="briefing-stamp">kytos newsroom · run #1 of 78 · the cell speaks</span>
+          <span class="briefing-stamp">kytos observatory · run briefing · grounded in facts.json</span>
           <button class="briefing-unmute" type="button" hidden
-                  aria-label="Unmute the cell briefing">♪ unmute — the cell sings</button>
+                  aria-label="Unmute the run briefing">♪ unmute — hear the briefing</button>
         </div>
         """
     if hero:
