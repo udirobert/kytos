@@ -8,9 +8,9 @@
     <div class="vessel-svg-fallback">{{ vessel_svg | safe }}</div>
     <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
     <div class="cell-field-readout" id="cell-field-readout" role="status" aria-live="polite">
-      <span class="cell-field-readout-label">cursor perturbation</span>
+      <span class="cell-field-readout-label">your probe</span>
       <strong id="cell-field-intensity">00%</strong>
-      <span class="cell-field-readout-state" id="cell-field-state">idle</span>
+      <span class="cell-field-readout-state" id="cell-field-state">ready</span>
     </div>
     <script type="application/json" id="vessel-data">{{ vessel_json | safe }}</script>
   </div>
@@ -30,5 +30,9 @@
   {{ panel_evidence | safe }}
   {{ panel_narrative | safe }}
   {{ panel_trust | safe }}
+  <div class="run-fullrecord-cta">
+    <p class="run-fullrecord-lede">Want every metric, plot, and audit trace open at once?</p>
+    <button class="button" type="button" data-mode-cta="science">See the full scientific record &rarr;</button>
+  </div>
 </main>
 {% endblock %}

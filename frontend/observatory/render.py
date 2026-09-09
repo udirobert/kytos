@@ -62,9 +62,8 @@ METRIC_LABELS: dict[str, str] = {
 # First-visit vessel onboarding tooltip — shared by home + run detail.
 _VESSEL_ONBOARD_HTML = """\
         <div class="vessel-onboard" id="vessel-onboard" hidden>
-          <p><strong>Liquid fill</strong> = room to improve ·
-          <strong>amber cracks</strong> = where biology says we&rsquo;re wrong.</p>
-          <p class="vessel-onboard-hint">Drag to rotate · click cracks for details</p>
+          <p><strong>Fill level</strong> = how close we are to the best possible score · <strong>amber cracks</strong> = genes where the model is biologically wrong.</p>
+          <p class="vessel-onboard-hint">Drag to rotate · click a crack to see the evidence</p>
           <button class="vessel-onboard-close" type="button"
                   aria-label="Dismiss">Got it</button>
         </div>
@@ -1409,6 +1408,7 @@ def _vessel_data(facts: dict) -> dict:
                 "rule": fl.get("rule", "audit"),
                 "message": fl.get("message", ""),
                 "target": "audit",
+                "gene": (fl.get("genes") or [""])[0],
             }
         )
 
@@ -1433,8 +1433,8 @@ def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "v
     fill_y = 236 - int(fill / 100 * 190)  # liquid surface y (bottom = 236)
     # Membrane stress marks (audit warnings) on the cell's edge
     cracks = "".join(
-        f'<path class="vessel-crack" d="M {72 + i * 12} {150 + (i % 3) * 14} l {10 + i} {26 + i}"/>'
-        for i in range(min(warns, 6))
+        f'<path class="vessel-crack" data-gene="{_h(c["gene"])}" data-rule="{_h(c["rule"])}" d="M {72 + i * 12} {150 + (i % 3) * 14} l {10 + i} {26 + i}"/>'
+        for i, c in enumerate(vd["cracks"])
     )
     # Vesicles (info flags) floating in the cytoplasm
     droplets = "".join(
@@ -2078,8 +2078,8 @@ def _confession_banner(facts: dict, run_id: str) -> str:
     rules = ", ".join(f"<code>{_h(f.get('rule', '?'))}</code>" for f in warns[:3])
     return f"""
     <div class="confession-banner">
-      <p class="eyebrow">Audit confession — this run fails its own rules</p>
-      <p>{len(warns)} warning(s) on our published baseline: {rules}.</p>
+      <p class="eyebrow">Audit confession</p>
+      <p>{len(warns)} warning(s) on this run: {rules}. — we publish every failure, not just the scores.</p>
     </div>
     """
 

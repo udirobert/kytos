@@ -1,5 +1,5 @@
 <nav class="evidence-journey" id="evidence-journey" aria-label="Run evidence journey">
-  <span class="journey-label">specimen trail</span>
+  <span class="journey-label">Evidence trail</span>
   <div class="journey-steps">
     {% for step in steps %}
     <a class="journey-step journey-step-{{ step.accent }}" href="#{{ step.id }}" data-journey-target="{{ step.id }}">
@@ -10,14 +10,14 @@
   </div>
   <span class="journey-progress" aria-hidden="true"><span></span></span>
   <div class="view-mode-toggle" id="view-mode-toggle"
-       role="group" aria-label="Observatory mode">
+       role="group" aria-label="View mode">
     <button type="button" class="btn-mode active" data-mode="broadcast"
-            title="Broadcast Mode: Video and vessel focus">
-      <span class="mode-icon">🎙️</span> Broadcast
+            title="Briefing: the video briefing and the vessel">
+      <span class="mode-icon">🎙️</span> Briefing
     </button>
     <button type="button" class="btn-mode" data-mode="science"
-            title="Deep Science Mode: Expand all metrics, volcano plots, and audit traces">
-      <span class="mode-icon">🔬</span> Science
+            title="Full record: every metric, plot, and audit trace">
+      <span class="mode-icon">🔬</span> Full record
     </button>
   </div>
   <span class="journey-live" aria-live="polite">

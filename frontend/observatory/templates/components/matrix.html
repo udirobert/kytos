@@ -1,7 +1,7 @@
 <section class="runs-matrix-section">
   <div class="runs-matrix-header">
     <h2>Cross-experiment matrix</h2>
-    <p class="muted">Side-by-side scorecard — selected metrics (DE recall, Pearson Δ), ceiling headroom, and biological sanity flags. The full six-metric breakdown lives on each run page.</p>
+    <p class="muted">Every run, side by side — how accurate, how much room is left, and whether it passes our biology checks. The full six-metric breakdown (DE recall, Pearson Δ, ceiling headroom) is on each run page.</p>
   </div>
   <div class="runs-matrix-wrap">
     <table class="runs-matrix-table">
@@ -10,10 +10,10 @@
           <th>Run ID</th>
           <th>Strategy</th>
           <th>Status</th>
-          <th>Ceiling headroom</th>
-          <th>DE gene recall</th>
-          <th>Pearson Δ</th>
-          <th>Audit</th>
+          <th aria-label="Ceiling headroom — how much room is left to improve">Ceiling headroom</th>
+          <th aria-label="DE gene recall — how many true hits the model found">DE gene recall</th>
+          <th aria-label="Pearson Δ — correlation gap vs the best achievable">Pearson Δ</th>
+          <th aria-label="Audit — did it pass our biological sanity checks">Audit</th>
           <th></th>
         </tr>
       </thead>

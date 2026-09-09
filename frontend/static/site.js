@@ -835,19 +835,34 @@
 
     cracks.forEach(function (crack) {
       crack.style.cursor = "pointer";
+      var rule = crack.getAttribute("data-rule") || "audit warning";
+      var gene = crack.getAttribute("data-gene") || "";
+      var calloutText = gene ? "⚠️ " + rule + " · " + gene : "⚠️ " + rule;
       crack.addEventListener("mouseenter", function (e) {
-        showSvgCallout("⚠️ Audit Warning: Rule violation detected", e);
+        showSvgCallout(calloutText, e);
       });
       crack.addEventListener("mousemove", function (e) {
-        showSvgCallout("⚠️ Audit Warning: Rule violation detected", e);
+        showSvgCallout(calloutText, e);
       });
       crack.addEventListener("mouseleave", hideSvgCallout);
       crack.addEventListener("click", function () {
         openDisclosure("audit");
-        var auditEl = document.getElementById("audit");
-        if (auditEl) {
-          auditEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        var target = null;
+        if (gene) {
+          target = document.querySelector('.gene-evidence-link[data-gene="' + gene + '"]');
+          if (target) {
+            var row = target.closest("li.flag-row");
+            if (row) {
+              row.classList.add("is-crack-focus");
+              if (row._focusTimer) clearTimeout(row._focusTimer);
+              row._focusTimer = setTimeout(function () {
+                row.classList.remove("is-crack-focus");
+              }, 2800);
+            }
+          }
         }
+        var focusEl = target || document.getElementById("audit");
+        if (focusEl) focusEl.scrollIntoView({ behavior: "smooth", block: "center" });
       });
     });
 
@@ -1542,8 +1557,55 @@
     document.documentElement.classList.add("has-backdrop");
   }
 
+  // ── Home scroll-driven narrative ─────────────────────────────────────────
+  // The home story is now scroll-driven (not a gated 3-phase deck). Each
+  // phase reveals its stagger lines when it scrolls into view, and the fixed
+  // '01 / 03' indicator tracks the active phase.
+  function initHomeScroll() {
+    var phases = document.querySelectorAll(".home-scroll-phase");
+    if (!phases.length) return;
+    var prog = document.getElementById("home-progress-num");
+    if (typeof IntersectionObserver === "undefined") {
+      phases.forEach(function (p) { p.classList.add("is-shown"); });
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-shown");
+            if (prog) {
+              var n = entry.target.getAttribute("data-phase");
+              if (n) prog.textContent = ("0" + n).slice(-2);
+            }
+          }
+        });
+      },
+      { threshold: 0.5, rootMargin: "-20% 0px -20% 0px" }
+    );
+    phases.forEach(function (p) { io.observe(p); });
+  }
+
+  // ── "See the full scientific record" — one click expands everything ──────
+  function initFullRecordCta() {
+    document.querySelectorAll("[data-mode-cta]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.getAttribute("data-mode-cta");
+        var target = document.querySelector('.btn-mode[data-mode="' + mode + '"]');
+        if (target) {
+          target.click();
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    });
+  }
+
   function onReady() {
-    initBackdrop();
+    // The live WebGL shader backdrop was retired in favour of the body's
+    // static radial-gradient field — calmer, cheaper, and the vessel (on
+    // home + run pages) is now the only live WebGL surface. initBackdrop()
+    // is kept for reference but no longer booted.
+    // initBackdrop();
     initThemeToggle();
     initPlotly();
     initVccRail();
@@ -1563,10 +1625,11 @@
     initVesselOnboard();
     initSvgVesselInteractivity();
     initViewModeToggle();
-    initHomeFlow();
+    initHomeScroll();
     initAboutFlow();
     initTermSpotlight();
     initChroniclePreview();
+    initFullRecordCta();
   }
 
   if (document.readyState === "loading") {

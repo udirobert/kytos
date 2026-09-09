@@ -23,6 +23,10 @@
   --error-dim: rgba(244, 63, 94, 0.15);
   --success: #10b981;
   --success-dim: rgba(16, 185, 129, 0.15);
+  /* Lime retired: the single brand accent is teal. The bulletin used --lime as
+     a distinct green; alias it to the accent so it stays on-palette (and no
+     longer resolves to an undefined token). */
+  --lime: var(--accent);
 
   /* ── Typography Tokens ─── */
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -92,12 +96,12 @@ body {
   background:
     radial-gradient(1200px 700px at 15% -8%, rgba(251, 191, 36, 0.055), transparent 65%),
     radial-gradient(1000px 600px at 90% 12%, rgba(45, 212, 191, 0.05), transparent 60%),
-    radial-gradient(900px 900px at 50% 110%, rgba(163, 230, 53, 0.03), transparent 50%),
+    radial-gradient(900px 900px at 50% 110%, rgba(45, 212, 191, 0.025), transparent 50%),
     var(--bg);
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -520,10 +524,38 @@ html[data-journey-state="trust"] .journey-progress span { background: var(--ceil
 }
 
 .home-vessel-column {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
+  display: grid;
+  place-items: center;
 }
+
+/* The 3D canvas / SVG fallback sit at the back; the scrim dims them in the
+   reading zone so copy stays legible while the vessel still glows at the
+   edges. The scrim never blocks pointer events, so cracks stay clickable. */
+.home-vessel-column canvas,
+.home-vessel-column .vessel-svg-fallback { z-index: 0; }
+.home-vessel-column::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 62% 56% at 50% 44%,
+    rgba(16, 14, 10, 0.86) 0%,
+    rgba(16, 14, 10, 0.58) 46%,
+    rgba(16, 14, 10, 0.16) 80%,
+    transparent 100%
+  );
+}
+.home-vessel-column .vessel-loading,
+.home-vessel-column .cell-field-readout,
+.home-vessel-container .vessel-callout,
+.home-vessel-column .vessel-callout,
+.home-vessel-column .home-vessel-caption,
+.home-vessel-column .vessel-onboard { z-index: 2; }
 
 .home-vessel-bg,
 .home-vessel-legend,
@@ -536,9 +568,18 @@ html[data-journey-state="trust"] .journey-progress span { background: var(--ceil
    controls (autoplay-muted is an unreadable teaser behind headline text). */
 .home-presenter-section {
   position: relative;
+  z-index: 3;                 /* opaque plate covers the fixed vessel */
+  width: 100%;
+  margin: 0;
+  padding: 4rem 1.25rem;
+  background: var(--bg);
+  background-attachment: fixed;
+}
+.home-presenter-section .home-presenter-eyebrow,
+.home-presenter-section .home-presenter-video {
   max-width: 720px;
-  margin: 2.5rem auto 4rem;
-  padding: 0 1.25rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .home-presenter-eyebrow {
@@ -876,91 +917,140 @@ html.no-webgl .vessel-loading {
 }
 
 /* Overlay: gradient scrim + centered content */
-.home-overlay {
+/* ── Home narrative: scroll-driven storytelling over the fixed vessel ────── */
+/* The copy column scrolls past the persistent vessel. Empty space passes
+   pointer events through to the vessel (drag to rotate, hover cracks); text
+   and CTAs stay selectable. Each phase is roughly one screen of reading. */
+.home-copy-column {
   position: relative;
   z-index: 2;
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background: radial-gradient(
-    ellipse 70% 50% at 50% 45%,
-    rgba(24, 17, 10, 0.92) 0%,
-    rgba(24, 17, 10, 0.78) 35%,
-    rgba(24, 17, 10, 0.5) 60%,
-    rgba(24, 17, 10, 0.15) 85%,
-    transparent 100%
-  );
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  pointer-events: none;        /* the vessel stays interactive in the gutters */
 }
-
-.home-overlay-content {
-  max-width: 700px;
-  position: relative;
-}
-
-/* ── Home flow: 3-phase guided disclosure ──────────────────────────────── */
-/* Each phase shows 3 things. Advancing closes the current phase and opens
-   the next. The container height animates between phases to avoid jumps. */
-.home-flow {
-  position: relative;
-}
-
-.home-phase {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-
-/* display: flex would override the hidden attribute — restore it */
-.home-phase[hidden] {
-  display: none !important;
-}
-
-.home-phase.is-active {
-  position: relative;
-  opacity: 1;
+.home-copy-column a,
+.home-copy-column button,
+.home-copy-column .button,
+.home-copy-column h1,
+.home-copy-column h2,
+.home-copy-column h3,
+.home-copy-column p,
+.home-copy-column li,
+.home-copy-column ol,
+.home-copy-column .home-proof {
   pointer-events: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .home-phase { transition: none !important; }
+.home-scroll-phase {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.15rem;
+  padding: 4rem 0;
+}
+.home-scroll-phase:last-child { padding-bottom: 8rem; }
+
+@media (max-width: 720px) {
+  .home-scroll-phase { min-height: 86vh; }
 }
 
-.home-phase-cta {
-  margin-top: 0.5rem;
-}
-
-.home-phase-back {
-  margin-top: 0.75rem;
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--muted);
+/* Fixed phase indicator — the '01 / 03' structure survives a silent scroll */
+.home-progress {
+  position: fixed;
+  top: 5.2rem;
+  right: 1.5rem;
+  z-index: 40;
   font-family: var(--mono);
-  font-size: 0.78rem;
-  cursor: pointer;
-  transition: color 0.2s ease;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  pointer-events: none;
 }
+.home-progress #home-progress-num { color: var(--accent); }
 
-.home-phase-back:hover {
-  color: var(--ink);
+/* Self-documenting vessel caption, docked at the base of the fixed hero */
+.home-vessel-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 1.4rem;
+  transform: translateX(-50%);
+  max-width: min(92vw, 40rem);
+  padding: 0.45rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  text-align: center;
+  pointer-events: none;
+  text-wrap: balance;
 }
+.home-vessel-caption strong { color: var(--ink); font-weight: 500; }
 
-.home-proof-wrap {
+/* The argument, scannable all at once (replaces the auto-rotating carousel) */
+.home-arg-title {
+  font-family: var(--serif);
+  font-size: clamp(2.1rem, 5vw, 3.1rem);
+  line-height: 1.05;
+  margin: 0;
   text-align: center;
 }
+.home-arg-steps {
+  counter-reset: step;
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  max-width: 36rem;
+}
+.home-arg-steps li {
+  position: relative;
+  padding-left: 2.6rem;
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+.home-arg-steps li::before {
+  content: counter(step, decimal-leading-zero);
+  counter-increment: step;
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+.home-arg-steps strong { color: var(--ink-bright); font-weight: 600; }
+.home-arg-tail {
+  margin-top: 1.5rem;
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+}
+.home-scroll-hint { font-size: 0.86rem; opacity: 0.9; }
 
-.home-stage .vessel-3d-container,
+.home-phase-cta { margin-top: 0.5rem; }
+.home-proof-wrap { text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .home-scroll-phase { transition: none !important; }
+}
+
+/* The home vessel column is fixed (see .home-vessel-column) so the hero
+   stays present through the whole scroll narrative; only the run-detail
+   vessel is absolutely positioned within its hero. */
 .run-hero .vessel-3d-container {
   position: absolute;
   inset: 0;
@@ -2530,6 +2620,21 @@ a.run-insight-card:hover {
   transform: translateY(-1px);
 }
 
+/* ── "See the full scientific record" — expand everything, one click ──────── */
+.run-fullrecord-cta {
+  margin: 1.25rem auto 0;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg-glass);
+}
+.run-fullrecord-lede {
+  margin: 0 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.96rem;
+}
+
 .evidence-journey {
   position: sticky;
   top: 0.7rem;
@@ -2904,6 +3009,23 @@ a.run-insight-card:hover {
 .gene-evidence-link:hover {
   color: var(--ink);
   border-bottom-color: var(--ink);
+}
+
+/* A crack in the vessel (3D or SVG) points at this gene row — flash it so the
+   connection between the amber crack and the genes we got wrong is felt. */
+.flag-row.is-crack-focus {
+  background: var(--accent-dim);
+  box-shadow: inset 0 0 0 1px var(--accent), 0 0 22px rgba(45, 212, 191, 0.18);
+  border-radius: 8px;
+  animation: crack-focus-pulse 1.4s ease-out 1;
+}
+@keyframes crack-focus-pulse {
+  0%   { box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 rgba(45, 212, 191, 0); }
+  35%  { box-shadow: inset 0 0 0 1px var(--accent), 0 0 28px rgba(45, 212, 191, 0.28); }
+  100% { box-shadow: inset 0 0 0 1px var(--accent), 0 0 22px rgba(45, 212, 191, 0.18); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flag-row.is-crack-focus { animation: none; }
 }
 
 .flag-discuss-btn {
@@ -5049,12 +5171,12 @@ html.no-webgl .home-about-link {
   }
 }
 
-html.no-webgl .home-stage .vessel-fullscreen .vessel-svg-fallback {
+html.no-webgl .home-vessel-column .vessel-svg-fallback {
   opacity: 1;
 }
 
-html.no-webgl .home-stage .vessel-fullscreen .vessel-svg-fallback .vessel-svg,
-html.no-webgl .home-stage .vessel-fullscreen .vessel-svg-fallback .home-vessel {
+html.no-webgl .home-vessel-column .vessel-svg-fallback .vessel-svg,
+html.no-webgl .home-vessel-column .vessel-svg-fallback .home-vessel {
   width: min(420px, 88%);
   max-height: min(380px, 50vh);
   filter: drop-shadow(0 0 40px rgba(45, 212, 191, 0.28));
@@ -5543,9 +5665,18 @@ body.spotlight-open .term:hover::after { opacity: 0 !important; }
 
 /* ── Chronicle rail (home) ────────────────────────────────────────── */
 .chronicle-rail {
-  max-width: 1060px;
-  margin: 0 auto;
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  background: var(--bg);
+  background-attachment: fixed;
   padding: 3rem 1.25rem 4rem;
+}
+.chronicle-rail-head,
+.chronicle-grid {
+  max-width: 1060px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .chronicle-rail-head {
   display: flex;
