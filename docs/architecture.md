@@ -111,7 +111,7 @@ gene namespace under the `expected_genelist`. Wraps in a reproducible artifact
 
 ## 4. Compute ladder (do not design around Brev)
 
-**Updated 2026-09-05:** the primary dev machine has only **8 GB RAM** (arm64
+**Updated 2026-09-10:** the primary dev machine has only **8 GB RAM** (arm64
 Mac). That is enough for dry-runs, sparse baseline `.vcc` generation, and code
 docs, but it is *not* enough for a full 2026 `vcc prep` (peak ~28 GB), a full
 2025 Atlas prep (peak ~13 GB), or any real cell-distribution sampler. Treat the
@@ -120,8 +120,8 @@ Mac as the orchestration + small-dry-run node; the heavy work lives elsewhere.
 | Window | Envelope | Use |
 |---|---|---|
 | Local (8 GB arm64 Mac) | 6–8 GB free | dry-runs; docs; sparse 300-gene baselines; `vcc prep --dry-run` on small subsets |
-| Phase 0–1 smoke tests | Kaggle free GPU / 16 GB | small `cell-eval` and model smoke tests; validate shapes |
-| Phase 0–1 real runs | 32 GB+ VPS / Vast / RunPod | full `vcc prep`; Atlas 2025 prep; `cell-eval run --ceiling`; Layer A smoke |
+| Phase 0–1 smoke tests | Kaggle free CPU/GPU / 13–16 GB | small `cell-eval` and model smoke tests; validate shapes — **live:** `udingethe/vcc2026-controls` (632 MB) + notebook `udingethe/kytos-k004-kaggle-smoke` v2 (10–20 targets × 3 contexts, real resampling vs ContextConditioned Layer A/B) |
+| Phase 0–1 real runs | 32 GB+ VPS / Vast / RunPod | full `vcc prep`; Atlas 2025 prep; `cell-eval run --ceiling`; full 300-target k004 (360k cells) |
 | Phase 2+ | cloud / Brev (post-prize) | Layer B cell sampling at scale |
 
 `ratiocine` lesson: know the envelope early; a prize-time credit is too late to
@@ -182,28 +182,25 @@ phase shows 3 things at a time; selecting one closes the previous.
 
 | Window | Milestone |
 |---|---|
-| **2026-08-22 (today)** | Observatory Milestone 0: `frontend/`, `facts.json`, enrichment tools, k001 page; hackathon submit |
-| **Late Aug** | install `cell-eval`; baseline through harness → `cell-eval run --ceiling` |
-| **Early Sep** | inspect validation basal: gene-set overlap with public corpora; unlock Level-A context features; lock normalization |
-| **Mid Sep** | gene-level transfer head; train on Replogle multi-line; simulate held-out-cell; pre-register rules |
-| **Early Oct** | decide Layer A/B split; freeze + test submission with exact gene list & AnnData gating |
+| **2026-08-22** | Observatory Milestone 0: `frontend/`, `facts.json`, enrichment tools, k001 page; hackathon submit ✓ |
+| **Late Aug** | install `cell-eval`; baseline through harness → `cell-eval run --ceiling` ✓ (`cell-eval` 0.8.2 in `.venv-science`) |
+| **Early Sep** | inspect validation basal: gene-set overlap; k003 VCC 2026 sparse baseline (300 targets, `vcc` 0.2.0, score -0.948) ✓ |
+| **2026-09-10** | **k004 Kaggle smoke:** `vcc2026-controls` dataset + real resampling vs ContextConditioned Layer A/B (10–20 targets × 3 contexts) — free tier ✓ |
+| **Mid Sep** | promote k004 to 300-target on 32 GB Vast/RunPod; `vcc prep --dry-run` → `vcc submit`; lock normalization (counts vs log1p Gate 3) |
+| **Late Sep–Oct** | gene-level transfer head; train on Replogle multi-line; decide Layer A/B split; freeze AnnData gating |
 | **Late Oct → Nov 5** | test set (Oct 22); audit → ensembled final → capped submissions |
 
-**Status (2026-08-22, hackathon day):** Milestone 0 landed and deployed —
-facts assembler, audit rules, k001 seed, sixteen enrichment tools
-(degrade-verified), frontend (`frontend/build.py` → `dist/`, Playwright-verified
-desktop + mobile), deploy via Netlify (`netlify.toml`). Live enrichment run in
-progress; harness e2e tests added.
+**Status (2026-09-10):** k001–k003 baselines committed; **k004 Kaggle smoke live:**
+`udingethe/vcc2026-controls` (632 MB, private) + notebook `udingethe/kytos-k004-kaggle-smoke` v2
+validate real control-cell resampling vs `ContextConditionedTransfer`+
+`AdditiveTransportSampler` on 10–20 targets × 3 contexts (free tier); 300-target
+full (360k cells) gated on 32 GB Vast/RunPod.
 
-**Science-track status (2026-08-22, live):** `cell-eval 0.8.2` + `anndata`
-installed in a **native arm64 `.venv-science`** (Python 3.12.8 — the Rosetta
-x86_64 3.12 has no llvmlite/numba wheels). The harness contract was **verified
-against cell-eval source** and fixed: obs column is `target_gene`, control
-label `non-targeting` (was `perturbation`/`control` — a mismatch that would
-have broken the first real `cell-eval run`). The harness output now passes
-`cell-eval prep` end-to-end, and the harness tests run the real H5AD branch
-(36 tests green in both envs). Next: real Atlas 2025 data → k001
-`run --ceiling`.
+**Science-track status (2026-09-10):** `cell-eval 0.8.2` + `anndata` in
+`.venv-science` (arm64 3.12.8) with harness verified (`target_gene` /
+`non-targeting`). k003 (`vcc` 0.2.0) scored -0.948 (random floor). k004
+local dry-runs: 5 targets × 1 context — resample 11.9M nnz vs layer 22.9M nnz,
+knockdown e.g. ACLY 4.83→2.80 Δ-2.03 ✓; 10×3 contexts 69.6M vs 136.7M nnz.
 
 ---
 

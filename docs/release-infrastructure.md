@@ -88,11 +88,19 @@ Secondary to HF for versioning; primary for two things:
 Kaggle never holds the canonical version — HF does. Kaggle is the mirror +
 the free-GPU test bench.
 
+**Live (2026-09-10):** **Dataset** `udingethe/vcc2026-controls` (632 MB, private;
+`context_A/B/C.h5ad` 215/201/216 MB + `gene_names.csv`/`pert_counts.csv`/`manifest.json`;
+via `tools/kaggle_bundle.py`) + **Notebook** `udingethe/kytos-k004-kaggle-smoke`
+(v2, CPU, `enable_internet=true`, `dataset_sources=["udingethe/vcc2026-controls"]`)
+smoke-tests real control-cell resampling vs `ContextConditionedTransfer` +
+`AdditiveTransportSampler` (`notebooks/kaggle_k004_smoke.ipynb` / `.py`,
+`notebooks/README.md`). See `experiments/README.md` k004.
+
 ---
 
 ## 4. Compute ladder (and when a VPS is worth it)
 
-**Updated 2026-09-05.** The primary dev machine has **8 GB RAM** (arm64 Mac),
+**Updated 2026-09-10.** The primary dev machine has **8 GB RAM** (arm64 Mac),
 so the default is now **external first**: the Mac is only for docs, small
 sparse baselines, and `vcc prep --dry-run` on subsets. Anything that touches the
 full 2026 panel, the 2025 Atlas, or a real cell-distribution sampler runs on a
@@ -111,8 +119,8 @@ Options, cheapest first:
 
 | Option | Fit | Notes |
 |---|---|---|
-| **Kaggle free GPU** | smoke tests, EDA, small notebooks | weekly quota; use the ratiocine two-phase pattern first |
-| **Rented CPU/GPU by the hour** (Vast.ai / RunPod) | full `vcc prep`, bursts of training | pick ≥32 GB system RAM for `vcc prep`; pay only for use |
+| **Kaggle free GPU/CPU** | smoke tests, EDA, small notebooks | weekly quota; use the ratiocine two-phase pattern first — live: `vcc2026-controls` dataset + `k004` notebook (10–20 targets × 3 contexts) |
+| **Rented CPU/GPU by the hour** (Vast.ai / RunPod) | full `vcc prep`, bursts of training | pick ≥32 GB system RAM for `vcc prep`; pay only for use — next: promote k004 to 300-target (360k cells) |
 | **VPS with 1× T4 / 32 GB+** | sustained training + cron | only if a long-running worker is needed |
 
 **What a VPS / rented instance runs:** heavy data prep, `vcc prep`, `cell-eval`
@@ -173,7 +181,4 @@ script and its commit hash ride along in each dataset/model card and each
 
 ---
 
-*Next: stand up the HF org + first dataset when Atlas 2025 lands; add the
-Kaggle mirror + first smoke-test notebook at the same time. See
-[`phase0-environment.md`](phase0-environment.md) for the install and
-[`architecture.md`](architecture.md) §3 for the corpus priority order.*
+*Status 2026-09-10: Kaggle Dataset `udingethe/vcc2026-controls` + Notebook `udingethe/kytos-k004-kaggle-smoke` v2 live (private); `notebooks/kaggle_k004_smoke.py` validated locally (10×3 → 69.6M vs 136.7M nnz). Next: promote k004 to 300-target on 32 GB Vast/RunPod, then HF Datasets mirror. See [`notebooks/README.md`](../notebooks/README.md) and [`architecture.md`](architecture.md) §4.*

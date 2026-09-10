@@ -29,6 +29,15 @@ prediction outputs.
   discriminate targets. Proved the end-to-end 2026 submit pipeline; the next
   run needs external 32 GB+ compute for real per-target cell resampling.
   Script: [`tools/run_k003_mean_shift.py`](../tools/run_k003_mean_shift.py).
+- `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): real control-cell
+  resampling baseline (preserves dispersion) vs `ContextConditionedTransfer` +
+  `AdditiveTransportSampler` (first non-trivial Layer A/B). 10–20 targets × 3
+  contexts (12k–24k cells, 140MB–2.4GB) — validates wiring without densifying
+  26GB dense. Live **Kaggle Dataset** `udingethe/vcc2026-controls` (632 MB,
+  private) + **Notebook** `udingethe/kytos-k004-kaggle-smoke` (v2, CPU). Scripts:
+  [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /
+  [`notebooks/kaggle_k004_smoke.ipynb`](../notebooks/kaggle_k004_smoke.ipynb);
+  bundle: [`tools/kaggle_bundle.py`](../tools/kaggle_bundle.py).
 
 ```bash
 # Dev A — assemble deterministic artifacts

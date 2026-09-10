@@ -17,6 +17,7 @@ literature evidence, and video briefings for community scrutiny.
 | **k001** | Audit-probe — deliberately fails its own audit (ACTB shifted +2.10 log2FC) | `probe` |
 | **k002** | First real run — VCC 2025 validation, 98,927 cells, 50 targets, cell-eval 0.8.2 | `real` (subsample) |
 | **k003** | Sparse mean-shift baseline — VCC 2026 validation, 360k cells, 300 targets × 3 contexts, `vcc` 0.2.0 | `real` (submitted; score -0.948) |
+| **k004** | Kaggle smoke — real control resampling vs ContextConditioned Layer A/B, 10–20 targets × 3 contexts (Kaggle free tier) | `real` (smoke; dataset `udingethe/vcc2026-controls` + notebook `kytos-k004-kaggle-smoke` v2) |
 
 See [`experiments/README.md`](experiments/README.md) for run details,
 [`docs/k002-retro.md`](docs/k002-retro.md) for process notes, and
@@ -88,7 +89,13 @@ cell-distribution sampling; docs and `AGENTS.md` now mandate
 **external-first compute** (VPS / Vast / RunPod / Kaggle / Brev) for heavy
 work.
 
-Next: provision a 32 GB+ worker, run a real control-cell resampling baseline,
-then train a Layer A per-target model → final H5AD submission by Nov 5. See
+**2026-09-10:** k004 Kaggle smoke live: `udingethe/vcc2026-controls` (632 MB,
+private) + notebook `udingethe/kytos-k004-kaggle-smoke` v2 validate real
+control-cell resampling vs `ContextConditionedTransfer`+`AdditiveTransportSampler`
+on 10–20 targets × 3 contexts without densifying 26GB. 300-target full (360k cells)
+still needs 32 GB Vast/RunPod.
+
+Next: promote k004 to full 300-target on 32 GB worker, `vcc prep --dry-run` →
+`vcc submit` (≤2/day), then train Layer A per-target. See
 [`docs/architecture.md §4`](docs/architecture.md#4-compute-ladder-do-not-design-around-brev)
 and [`AGENTS.md`](AGENTS.md) for the compute rules.
