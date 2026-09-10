@@ -29,12 +29,19 @@ prediction outputs.
   discriminate targets. Proved the end-to-end 2026 submit pipeline; the next
   run needs external 32 GB+ compute for real per-target cell resampling.
   Script: [`tools/run_k003_mean_shift.py`](../tools/run_k003_mean_shift.py).
-- `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): real control-cell
-  resampling baseline (preserves dispersion) vs `ContextConditionedTransfer` +
-  `AdditiveTransportSampler` (first non-trivial Layer A/B). 10–20 targets × 3
-  contexts (12k–24k cells, 140MB–2.4GB) — validates wiring without densifying
-  26GB dense. Live **Kaggle Dataset** `udingethe/vcc2026-controls` (632 MB,
-  private) + **Notebook** `udingethe/kytos-k004-kaggle-smoke` (v2, CPU). Scripts:
+- `k004-real-resampling-validation` — full-panel VCC 2026 baseline on Modal
+  (2026-09-10): 360,000 cells, 300 targets × 3 contexts, real control-cell
+  resampling (preserves single-cell dispersion). `vcc prep` + `vcc submit`
+  passed. Overall score **-0.304** (rank 765), a large improvement over k003
+  (-0.948). `pds` is still near zero because the prediction is not yet
+  target-specific. Cost ~$0.43 on a 64 GiB / 4-core Modal Function.
+  Script: [`tools/run_k004_real_resampling.py`](../tools/run_k004_real_resampling.py);
+  launcher: [`tools/modal_k004_submit.py`](../tools/modal_k004_submit.py);
+  meta: [`experiments/k004-real-resampling-validation/meta.json`](k004-real-resampling-validation/meta.json).
+- `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
+  resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
+  Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**
+  `udingethe/kytos-k004-kaggle-smoke` (v2, CPU). Scripts:
   [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /
   [`notebooks/kaggle_k004_smoke.ipynb`](../notebooks/kaggle_k004_smoke.ipynb);
   bundle: [`tools/kaggle_bundle.py`](../tools/kaggle_bundle.py).

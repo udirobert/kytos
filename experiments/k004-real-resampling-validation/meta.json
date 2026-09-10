@@ -1,0 +1,48 @@
+{
+  "run_id": "k004-real-resampling-validation",
+  "status": "submitted",
+  "model_name": "kytos-k004-real-resampling",
+  "entry_id": "shuPZE16WqnNxBix0QpQ",
+  "created_at": "2026-09-10T22:32:27Z",
+  "completed_at": "2026-09-11T00:07:05+01:00",
+  "modal_app_id": "ap-ttpHRaoPBLT3MHYtwaSacF",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": ["A", "B", "C"],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2084989102
+  },
+  "prediction": {
+    "h5ad": "experiments/k004-real-resampling-validation/prediction.h5ad",
+    "vcc": "experiments/k004-real-resampling-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "note": "produced on Modal; not persisted locally because the files exceed local storage and git limits"
+  },
+  "scores": {
+    "rank": 765,
+    "overall": -0.30393828687302354,
+    "pds": -0.008793183848092795,
+    "mse": 0,
+    "nmae": -0.005315350038233764,
+    "fid": -1.7158363561875756,
+    "reach": -0.01111025211954357,
+    "jac": -0.08257457904469546,
+    "partition": "val",
+    "panel": "vcc2026-val-1",
+    "anchor_set": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4"
+  },
+  "cost_estimate_usd": 0.43,
+  "cost_note": "64 GiB / 4-core Modal Function for ~35 min at $0.000194/s, plus a short image build",
+  "script": "tools/modal_k004_submit.py",
+  "runner": "tools/run_k004_real_resampling.py",
+  "commit": "570570c"
+}

@@ -1,6 +1,6 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-09-09** after merging Observatory UX pass (PR #1) and fixing pipeline determinism.
+> Last updated **2026-09-11** after the k004 Modal full-panel submission.
 
 This file is the ground truth for any agent working on the Kytos 2026 Virtual
 Cell Challenge repo. It overrides generic assumptions about "local dev" because
@@ -34,7 +34,7 @@ Do not attempt to "just run it" and hope swap saves you.
 | Atlas 2025 download + prep | Source 6.9 GB, peak ~13 GB | 32 GB RAM + ~50 GB disk | VPS scratch disk |
 | Layer A training (gene transfer) | Torch + corpus in memory | 16+ GB GPU or 32 GB RAM | Kaggle free GPU for smoke, then Vast/RunPod/Brev |
 | Layer B / flow-matching | Sustained GPU | 24+ GB GPU | Brev / cloud GPU |
-| Real control-cell resampling for 2026 panel | 360k cells × dense matrix | 32 GB RAM | VPS / rented instance |
+| Real control-cell resampling for 2026 panel | 360k cells × dense matrix | 32 GB RAM | Modal, VPS, Vast/RunPod |
 
 ---
 
@@ -44,11 +44,15 @@ Cheapest / fastest-first for an agent asked to choose:
 
 1. **Kaggle Notebooks** — free GPU/TPU; first stop for smoke tests and EDA on
    public corpora. Use the ratiocine two-phase pattern.
-2. **Vast.ai / RunPod** — hourly rented GPU/CPU; best for bursts of `vcc prep`
-   or training. Pick an instance with ≥32 GB system RAM for non-GPU work.
-3. **Brev.dev** — once the challenge credits arrive; do not design around them
+2. **Modal** — serverless Functions/Sandboxes with ≥32 GiB RAM and GPUs;
+   excellent for `vcc prep` and controlled 360k-cell runs when you do not want
+   to rent a full VPS by the hour. Pay by the second; keep data in a Modal
+   Volume if needed.
+3. **Vast.ai / RunPod** — hourly rented GPU/CPU; best for long training bursts.
+   Pick an instance with ≥32 GB system RAM for non-GPU work.
+4. **Brev.dev** — once the challenge credits arrive; do not design around them
    until they are in the account.
-4. **Monthly VPS** — only if a persistent cron or long training run is needed.
+5. **Monthly VPS** — only if a persistent cron or long training run is needed.
 
 The repo's `data/raw/` and `experiments/` stay **small**; the external machine
 pulls corpora from Hugging Face / Kaggle and writes only small artifacts back
@@ -68,6 +72,11 @@ to git.
   daily slots for real models.
 - A `kytos-k003-mean-shift` sparse baseline has also been submitted and scored
   the same (~-0.948). It is a valid pipeline test, not a competitive model.
+- A `kytos-k004-real-resampling` full-panel baseline (real control-cell
+  resampling, 360k cells × 18.5k genes) was generated and submitted on Modal.
+  It scored **overall -0.304** (rank 765), confirming real single-cell
+  dispersion helps, while `pds` stays near zero until a target-specific signal
+  is added.
 
 ---
 
