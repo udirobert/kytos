@@ -88,6 +88,10 @@ to git.
   effectively k004-layer-a-b plus four real signatures. The `.vcc` is stored
   on the `kytos-vcc` Modal Volume and can be submitted when the daily
   allowance resets.
+- A `kytos-k006-replogle-prior` model was submitted on Modal combining the
+  2025 Atlas with the Replogle K562 genome-wide Perturb-seq bulk (9,866
+  targets), covering **272/300** 2026 targets. It scored **overall -0.021**
+  (rank 534), with `pds` 0.265 and `nmae` -0.074.
 
 ---
 

@@ -1,0 +1,56 @@
+{
+  "run_id": "k006-replogle-prior-validation",
+  "status": "submitted",
+  "model_name": "kytos-k006-replogle-prior",
+  "entry_id": "yEQjC4gwx7vK4VI9jbaL",
+  "created_at": "2026-09-11T06:16:22Z",
+  "published_at": "2026-09-11T06:30:00Z",
+  "modal_app_id": "ap-ZmCk7FqjUDyNwFUQpqKehu",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": ["A", "B", "C"],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2067845228
+  },
+  "prediction": {
+    "h5ad": "experiments/k006-replogle-prior-validation/prediction.h5ad",
+    "vcc": "experiments/k006-replogle-prior-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "volume_path": "/kytos-vol/k006-replogle-prior",
+    "note": "produced on Modal and persisted to the kytos-vcc Modal Volume; not committed to git"
+  },
+  "model": {
+    "atlas_targets": 50,
+    "atlas_used": 272,
+    "replogle_targets": 9866,
+    "replogle_used": 272,
+    "fallback_targets": 28,
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "scores": {
+    "overall": -0.020970621329154924,
+    "rank": 534,
+    "pds": 0.264620728105189,
+    "mse": 0.0,
+    "nmae": -0.07443987253508122,
+    "fid": -0.35913806796541753,
+    "reach": 0.06190554431759452,
+    "jac": -0.01877205989721429
+  },
+  "cost_estimate_usd": 0.75,
+  "cost_note": "64 GiB / 4-core Modal Function for ~15 min build + prep + persist, plus a 357 MB Replogle download",
+  "script": "tools/modal_k006_replogle_prior.py",
+  "runner": "tools/run_k006_replogle_prior.py",
+  "commit": "2ff188f"
+}

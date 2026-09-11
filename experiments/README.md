@@ -55,6 +55,14 @@ prediction outputs.
   [`tools/run_k005_atlas_prior.py`](../tools/run_k005_atlas_prior.py);
   launcher: [`tools/modal_k005_atlas_prior.py`](../tools/modal_k005_atlas_prior.py);
   meta: [`experiments/k005-atlas-prior-validation/meta.json`](k005-atlas-prior-validation/meta.json).
+- `k006-replogle-prior-validation` — **Replogle K562 GWPS + Atlas prior**
+  (2026-09-11): combined VCC 2025 validation (50 targets) with Replogle K562
+  genome-wide Perturb-seq bulk (9,866 targets), covering **272/300** 2026
+  targets. Submitted; score **overall -0.021** (rank 534), `pds` 0.265, `nmae`
+  -0.074. Script:
+  [`tools/run_k006_replogle_prior.py`](../tools/run_k006_replogle_prior.py);
+  launcher: [`tools/modal_k006_replogle_prior.py`](../tools/modal_k006_replogle_prior.py);
+  meta: [`experiments/k006-replogle-prior-validation/meta.json`](k006-replogle-prior-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

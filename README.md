@@ -20,6 +20,7 @@ literature evidence, and video briefings for community scrutiny.
 | **k004-resample** | Real control-cell resampling baseline — VCC 2026 validation, 360k cells, 300 targets × 3 contexts, `vcc` 0.2.0 on Modal 64 GiB | `real` (submitted; score -0.304, rank 765) |
 | **k004-layer-a-b** | Context-conditioned gene transfer + log1p transport (Layer A/B) — first target-specific Kytos model on Modal 64 GiB | `real` (submitted; score -0.149, rank 656) |
 | **k005-atlas-prior** | 2025 Atlas perturbation prior + log1p transport — real per-target signatures where the 2025 validation overlaps (4/300 targets) | `real` (built; `.vcc` on Modal Volume, not yet submitted) |
+| **k006-replogle-prior** | Replogle K562 GWPS + 2025 Atlas prior + log1p transport — real signatures for 272/300 targets | `real` (submitted; score -0.021, rank 534) |
 
 See [`experiments/README.md`](experiments/README.md) for run details,
 [`docs/k002-retro.md`](docs/k002-retro.md) for process notes, and
@@ -106,8 +107,15 @@ validation**, so the model is effectively k004-layer-a-b plus four real
 signatures; a larger perturbation atlas (e.g., full Arc Perturb-seq / Replogle)
 is needed to cover the 2026 panel.
 
-Next: submit k005 once the daily allowance resets, then build a broader
-perturbation prior (more CRISPRi screens) or train a learned Layer A on the
-2025 data to generalize to unseen 2026 targets.
+**2026-09-11:** k006 Replogle-prior on Modal: combined the 2025 Atlas (50
+targets) with the Replogle K562 genome-wide Perturb-seq bulk (9,866 targets).
+This gave real perturbation signatures for **272/300** 2026 targets. The model
+was submitted and scored **overall -0.021** (rank 534), a large improvement
+over k004-layer-a-b (-0.149). `pds` improved to **0.265** and `nmae` to
+**-0.074**, confirming that real perturbation signatures drive the score.
+
+Next: improve the remaining 28 fallback targets (e.g., other CRISPRi datasets),
+tune `noise_scale` / `knockdown_efficiency`, and consider a learned Layer A
+that generalizes from the 2025/Replogle data to unseen contexts.
 See [`docs/architecture.md §4`](docs/architecture.md#4-compute-ladder-do-not-design-around-brev)
 and [`AGENTS.md`](AGENTS.md) for compute rules.
