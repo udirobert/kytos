@@ -1,0 +1,197 @@
+[
+  {
+    "text": "Louder",
+    "start": 0.07,
+    "end": 0.34
+  },
+  {
+    "text": "predictions",
+    "start": 0.41,
+    "end": 1
+  },
+  {
+    "text": "scored",
+    "start": 1.09,
+    "end": 1.38
+  },
+  {
+    "text": "higher",
+    "start": 1.38,
+    "end": 1.72
+  },
+  {
+    "text": "in",
+    "start": 1.76,
+    "end": 1.91
+  },
+  {
+    "text": "the",
+    "start": 1.91,
+    "end": 2.14
+  },
+  {
+    "text": "2025",
+    "start": 2.14,
+    "end": 3.06
+  },
+  {
+    "text": "challenge,",
+    "start": 3.06,
+    "end": 3.86
+  },
+  {
+    "text": "even",
+    "start": 3.86,
+    "end": 4.08
+  },
+  {
+    "text": "when",
+    "start": 4.08,
+    "end": 4.24
+  },
+  {
+    "text": "wrong.",
+    "start": 4.24,
+    "end": 4.74
+  },
+  {
+    "text": "It",
+    "start": 5.07,
+    "end": 5.12
+  },
+  {
+    "text": "was",
+    "start": 5.12,
+    "end": 5.33
+  },
+  {
+    "text": "a",
+    "start": 5.33,
+    "end": 5.34
+  },
+  {
+    "text": "microphone",
+    "start": 5.41,
+    "end": 6
+  },
+  {
+    "text": "set",
+    "start": 6.09,
+    "end": 6.27
+  },
+  {
+    "text": "for",
+    "start": 6.27,
+    "end": 6.47
+  },
+  {
+    "text": "volume,",
+    "start": 6.47,
+    "end": 7
+  },
+  {
+    "text": "not",
+    "start": 7,
+    "end": 7.2
+  },
+  {
+    "text": "for",
+    "start": 7.2,
+    "end": 7.4
+  },
+  {
+    "text": "truth.",
+    "start": 7.4,
+    "end": 8
+  },
+  {
+    "text": "A",
+    "start": 8.07,
+    "end": 8.1
+  },
+  {
+    "text": "louder",
+    "start": 8.1,
+    "end": 8.69
+  },
+  {
+    "text": "metric",
+    "start": 8.69,
+    "end": 9.27
+  },
+  {
+    "text": "is",
+    "start": 9.37,
+    "end": 9.48
+  },
+  {
+    "text": "not",
+    "start": 9.48,
+    "end": 9.78
+  },
+  {
+    "text": "a",
+    "start": 9.78,
+    "end": 9.88
+  },
+  {
+    "text": "truer",
+    "start": 9.88,
+    "end": 10.36
+  },
+  {
+    "text": "one.",
+    "start": 10.38,
+    "end": 11
+  },
+  {
+    "text": "Source",
+    "start": 11.07,
+    "end": 11.34
+  },
+  {
+    "text": "distance",
+    "start": 11.41,
+    "end": 11.89
+  },
+  {
+    "text": "metrics",
+    "start": 11.89,
+    "end": 12.3
+  },
+  {
+    "text": "and",
+    "start": 12.37,
+    "end": 12.53
+  },
+  {
+    "text": "scaling",
+    "start": 12.53,
+    "end": 13
+  },
+  {
+    "text": "on",
+    "start": 13,
+    "end": 13.11
+  },
+  {
+    "text": "the",
+    "start": 13.11,
+    "end": 13.24
+  },
+  {
+    "text": "perturbation",
+    "start": 13.29,
+    "end": 13.92
+  },
+  {
+    "text": "discrimination",
+    "start": 13.92,
+    "end": 14.36
+  },
+  {
+    "text": "score.",
+    "start": 14.84,
+    "end": 15
+  }
+]

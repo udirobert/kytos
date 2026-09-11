@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+      }
+      body { font-family: "Inter", sans-serif; }
+      .mono { font-family: "IBM Plex Mono", monospace; }
+      .serif { font-family: "Instrument Serif", serif; }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        background: #0a0a0f;
+      }
+      .clip { position: absolute; inset: 0; }
+
+      .kicker {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 28px;
+        letter-spacing: 0.32em;
+        color: #2dd4bf;
+        text-transform: uppercase;
+      }
+
+      /* ── anchor: host dominates the center band, overlays float over him ── */
+      #anchor {
+        position: absolute;
+        left: 0;
+        top: 610px;
+        width: 1080px;
+        overflow: hidden;
+        transform-origin: 540px 300px;
+      }
+      #anchor video { display: block; width: 100%; height: auto; }
+      /* darken his band's top/bottom edges so overlay text always reads */
+      #anchor::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg,
+          rgba(10,10,15,0.55) 0%, rgba(10,10,15,0) 18%,
+          rgba(10,10,15,0) 78%, rgba(10,10,15,0.6) 100%);
+      }
+
+      #anchor-tag {
+        position: absolute;
+        left: 56px;
+        bottom: 26px;
+        top: auto;
+        right: auto;
+        z-index: 30;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 20px;
+        letter-spacing: 0.24em;
+        color: #0a0a0f;
+        background: #2dd4bf;
+        padding: 10px 18px;
+        border-radius: 8px;
+      }
+
+      /* floating cards that sit ON his frame */
+      .card {
+        position: absolute;
+        background: rgba(14, 14, 20, 0.92);
+        border: 1px solid rgba(45, 212, 191, 0.4);
+        border-radius: 18px;
+        padding: 28px 32px;
+        backdrop-filter: blur(6px);
+        z-index: 20;
+      }
+
+      /* ── scene 1: louder scored higher ── */
+      #s1-kicker { left: 0; top: 180px; width: 100%; text-align: center; }
+      #s1-line {
+        left: 0; top: 250px; width: 100%;
+        font-family: "Instrument Serif", serif;
+        font-size: 92px;
+        color: #ebebf2;
+        text-align: center;
+        line-height: 1.1;
+      }
+      #s1-line .amber { color: #f59e0b; font-style: italic; }
+      #s1-chip {
+        left: 330px; top: 480px;
+        right: auto; bottom: auto;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 26px;
+        letter-spacing: 0.18em;
+        color: #f59e0b;
+        border: 1.5px solid #f59e0b;
+        border-radius: 999px;
+        padding: 14px 30px;
+        background: rgba(10,10,15,0.75);
+        text-align: center;
+      }
+      /* the score meter rising on the left */
+      #s1-meter { left: 70px; top: 240px; width: 120px; height: 320px; }
+      #s1-bar { position: absolute; bottom: 0; left: 0; width: 64px; height: 0; background: #f59e0b; border-radius: 8px 8px 0 0; }
+      #s1-barlabel { position: absolute; bottom: -46px; left: -18px; font-family: "IBM Plex Mono", monospace; font-size: 20px; color: #f59e0b; letter-spacing: 0.14em; background: rgba(10,10,15,0.9); padding: 6px 14px; border-radius: 6px; }
+
+      /* ── scene 2: the volume dial ── */
+      #s2-card {
+        left: 540px; top: 1180px; width: 480px; height: 330px;
+      }
+      #s2-label {
+        left: 60px; top: 1230px; width: 440px;
+        font-family: "Instrument Serif", serif;
+        font-size: 64px;
+        color: #ebebf2;
+        line-height: 1.12;
+      }
+      #s2-label .dim { color: #8c8c9e; font-style: italic; }
+      .dial-label { font-family: "IBM Plex Mono", monospace; font-size: 20px; letter-spacing: 0.2em; }
+
+      /* ── karaoke captions — 3-word chunks, bottom-center pill ── */
+      .cap {
+        position: absolute;
+        left: 0; top: 1700px; width: 100%;
+        text-align: center;
+        pointer-events: none;
+      }
+      .cap span {
+        display: inline-block;
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 44px;
+        letter-spacing: 0.02em;
+        color: #fff;
+        background: rgba(10, 10, 15, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+        padding: 18px 40px;
+      }
+
+      /* ── scene 3: aphorism ── */
+      #s3-line {
+        left: 0; top: 1240px; width: 100%;
+        font-family: "Instrument Serif", serif;
+        font-size: 76px;
+        color: #ebebf2;
+        text-align: center;
+        line-height: 1.18;
+        padding: 0 60px;
+      }
+      #s3-line .amber { color: #f59e0b; font-style: italic; }
+      #s3-line .teal { color: #2dd4bf; font-style: italic; }
+
+      /* ── scene 4: source card ── */
+      #s4-card {
+        left: 90px; top: 1310px; width: 900px; padding: 30px 36px;
+        bottom: auto;
+        border: 1px solid #26262e;
+      }
+      #s4-src { font-family: "IBM Plex Mono", monospace; font-size: 26px; color: #ebebf2; }
+      #s4-src .dim { color: #8c8c9e; font-size: 22px; }
+      #s4-glos { margin-top: 14px; font-family: "Inter", sans-serif; font-size: 24px; color: #8c8c9e; }
+      #s4-glos b { color: #2dd4bf; font-weight: 600; }
+      #s4-url { margin-top: 18px; font-family: "IBM Plex Mono", monospace; font-size: 22px; letter-spacing: 0.2em; color: #2dd4bf; }
+      #s4-kicker { left: 0; top: 160px; width: 100%; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="specimen-002-trapdoor-v2" data-width="1080" data-height="1920" data-duration="15.53">
+
+      <!-- anchor: persistent host, dominates center band the entire clip -->
+      <div id="anchor">
+        <video id="anchor-video" src="assets/anchor.mp4" muted playsinline data-start="0" data-duration="15.53"></video>
+        <div id="anchor-tag" class="clip" data-start="0.4" data-duration="4.0" data-layout-allow-occlusion data-layout-allow-overlap data-layout-allow-overflow>DR. KYTOS</div>
+      </div>
+
+      <!-- s1: 0–4.5 — louder predictions scored higher -->
+      <div id="s1-kicker" class="clip kicker" data-start="0" data-duration="4.4">THE 2025 CHALLENGE</div>
+      <div id="s1-line" class="clip" data-start="0.2" data-duration="4.2">Louder predictions<span class="amber" style="display:block">scored higher</span></div>
+      <div id="s1-chip" class="clip" data-start="2.4" data-duration="2.0">EVEN WHEN WRONG</div>
+      <div id="s1-meter" class="clip" data-start="0.6" data-duration="3.8">
+        <div id="s1-bar"></div>
+        <div id="s1-barlabel">SCORE</div>
+      </div>
+
+      <!-- s2: 4.5–9 — microphone set for volume, not truth -->
+      <div id="s2-label" class="clip" data-start="4.6" data-duration="3.5">A microphone<span style="display:block">set for <span class="dim">volume</span>,</span><span style="display:block">not for</span> <em style="color:#f87171;font-style:italic">truth</em></div>
+      <div id="s2-card" class="clip card" data-start="4.7" data-duration="3.4">
+        <svg width="416" height="270" viewBox="0 0 416 270">
+          <!-- gauge arc -->
+          <path d="M 48 210 A 160 160 0 0 1 368 210" fill="none" stroke="#26262e" stroke-width="10" stroke-linecap="round"/>
+          <path id="dial-fill" d="M 48 210 A 160 160 0 0 1 368 210" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round"/>
+          <!-- TRUTH threshold tick at ~65% -->
+          <line x1="318" y1="86" x2="300" y2="112" stroke="#f87171" stroke-width="5" stroke-linecap="round"/>
+          <text x="330" y="70" class="dial-label" fill="#f87171" font-size="19" text-anchor="middle">TRUTH</text>
+          <text x="48" y="255" class="dial-label" fill="#8c8c9e" text-anchor="middle">QUIET</text>
+          <text x="368" y="255" class="dial-label" fill="#8c8c9e" text-anchor="middle">LOUD</text>
+          <!-- needle -->
+          <g id="dial-needle" transform="rotate(-72 208 210)" data-layout-allow-overflow>
+            <line x1="208" y1="210" x2="208" y2="84" stroke="#ebebf2" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="208" cy="210" r="14" fill="#ebebf2"/>
+          </g>
+          <text x="208" y="46" class="dial-label" fill="#f59e0b" text-anchor="middle" font-size="22">VOLUME</text>
+        </svg>
+      </div>
+
+      <!-- s3: 8.2–11.6 — the aphorism (VO lands ~8.07) -->
+      <div id="s3-line" class="clip" data-start="8.2" data-duration="3.1">A <span class="amber">louder</span> metric is not<span style="display:block">a <span class="teal">truer</span> one.</span></div>
+
+      <!-- s4: 11.5–15.53 — source + glossary + site (VO "Source" ~11.07) -->
+      <div id="s4-kicker" class="clip kicker" data-start="11.5" data-duration="4.03">KYTOS CHRONICLE</div>
+      <div id="s4-card" class="clip card" data-start="11.5" data-duration="4.03">
+        <div id="s4-src">arXiv:2511.16954 <span class="dim">— distance metrics &amp; scaling on PDS</span></div>
+        <div id="s4-glos"><b>PDS</b> — perturbation discrimination score</div>
+        <div id="s4-url">kytosapp.netlify.app</div>
+      </div>
+
+      <!-- karaoke captions — generated from assets/transcript.json -->
+      <div id="caps"></div>
+
+      <audio id="vo" src="assets/vo.mp3" data-start="0"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const root = document.getElementById("root");
+      const tl = gsap.timeline({ paused: true });
+
+      /* karaoke captions — 3-word chunks baked from assets/transcript.json */
+      const CAPS = [
+        [0.07, 1.38, "Louder predictions scored"],
+        [1.38, 2.14, "higher in the"],
+        [2.14, 4.08, "2025 challenge, even"],
+        [4.08, 4.74, "when wrong."],
+        [5.07, 5.41, "It was a"],
+        [5.41, 6.47, "microphone set for"],
+        [6.47, 7.40, "volume, not for"],
+        [7.40, 8.07, "truth."],
+        [8.07, 9.37, "A louder metric"],
+        [9.37, 9.88, "is not a"],
+        [9.88, 11.07, "truer one."],
+        [11.07, 12.37, "Source: distance metrics"],
+        [12.37, 13.11, "and scaling on"],
+        [13.11, 14.84, "the perturbation discrimination"],
+        [14.84, 15.53, "score."],
+      ];
+      const capsHost = document.getElementById("caps");
+      CAPS.forEach(([start, end, text], i) => {
+        const div = document.createElement("div");
+        div.className = "cap";
+        div.dataset.start = start;
+        div.dataset.duration = end - start;
+        div.innerHTML = `<span>${text}</span>`;
+        capsHost.appendChild(div);
+        tl.fromTo(div.firstElementChild,
+          { y: 18, opacity: 0, scale: 0.92 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.26, ease: "back.out(2)" }, start);
+      });
+
+      /* host stays put — dominant, stable. Only gentle presence. */
+      const anchor = document.getElementById("anchor");
+      gsap.set(anchor, { scale: 1.12 });
+      /* micro punch-ins at each sentence boundary — he reacts, doesn't move */
+      tl.to(anchor, { scale: 1.16, duration: 0.35, ease: "power2.out" }, 4.6);
+      tl.to(anchor, { scale: 1.12, duration: 0.4, ease: "power2.inOut" }, 5.2);
+      tl.to(anchor, { scale: 1.16, duration: 0.35, ease: "power2.out" }, 8.0);
+      tl.to(anchor, { scale: 1.12, duration: 0.4, ease: "power2.inOut" }, 8.6);
+      tl.to(anchor, { scale: 1.15, duration: 0.4, ease: "power2.out" }, 11.1);
+      tl.to(anchor, { scale: 1.12, duration: 0.5, ease: "power2.inOut" }, 11.7);
+
+      /* s1 — the score bar climbs, then the wrong chip lands */
+      tl.fromTo("#s1-bar", { height: 0 }, { height: 300, duration: 1.6, ease: "power3.out" }, 0.7);
+      tl.fromTo("#s1-chip", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2)" }, 2.4);
+
+      /* s2 — needle sweeps LOUD, crossing the TRUTH tick */
+      tl.fromTo("#dial-needle",
+        { rotation: -72 },
+        { rotation: 62, duration: 1.7, ease: "power2.inOut", transformOrigin: "208px 210px" }, 5.2);
+      const dialFill = document.getElementById("dial-fill");
+      const dialLen = dialFill.getTotalLength();
+      gsap.set(dialFill, { strokeDasharray: dialLen, strokeDashoffset: dialLen });
+      tl.to(dialFill, { strokeDashoffset: dialLen * 0.15, duration: 1.7, ease: "power2.inOut" }, 5.2);
+      tl.fromTo("#s2-card", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 4.7);
+      tl.fromTo("#s2-label", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 4.7);
+
+      /* s3 — aphorism rises as the line starts (~8.07) */
+      tl.fromTo("#s3-line", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 8.3);
+
+      /* s4 — card slides up as "Source" lands (~11.07) */
+      tl.fromTo("#s4-card", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, 11.5);
+      tl.fromTo("#s4-kicker", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 11.5);
+
+      window.__timelines[root.dataset.compositionId] = tl;
+    </script>
+  </body>
+</html>
