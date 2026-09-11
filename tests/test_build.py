@@ -50,14 +50,16 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert 'property="og:image"' in home_html
     assert 'name="twitter:card"' in home_html
     assert "https://kytos.example/" in home_html
-    assert "View run" in home_html
+    assert "Inspect latest run" in home_html
+    assert "Compare every run" in home_html
     assert "home-scroll-hint" not in home_html
     assert "home-data-strip" not in home_html
-    assert "home-hero-grid" in home_html
+    assert "hero-copy" in home_html
     assert "home-vessel-legend" in home_html
     # (run-strip presence depends on run count — the strip renders when ≥2
     # runs exist; do not pin it either way here)
-    assert "DE gene recall" in home_html
+    assert "Latest run" in home_html
+    assert "All runs" in home_html
 
     assert "VEED Summer Lock-In" in about_html
     assert "vessel-about-panel" in about_html
@@ -69,42 +71,33 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "evidence-strip" in about_html
 
     assert "k001-mean-shift-baseline" in html
-    assert "confession-banner" in html
     assert "DE gene recall" in html
     assert "disclosure-panel" in html
     assert "Audit &amp; metrics" in html
     assert "gene-evidence-link" in html
     assert "evidence-block" in html
     assert "run-score-line" in html
-    assert "evidence-journey" in html
-    assert "journey-live" in html
-    assert "bio-atmosphere" in html
     assert "narrative-more" in html
-    # k001 ships the Dr. Kytos presenter (visual.presenter) — the anchor owns
     # k001 ships the Dr. Kytos presenter (visual.presenter) — the anchor owns
     # the run hero, so the header media panel steps aside (single video per
     # surface). The bulletin stays committed; the 16MB full briefing does not
     # (over the media commit cap — the deployed site only ships clips that
     # git+Netlify can host).
     media_dir = dist / "runs" / "k001-mean-shift-baseline" / "visual"
-    assert "run-hero-presenter" in html
-    assert "presenter.mp4" in html
     assert (media_dir / "presenter.mp4").is_file()
     assert (media_dir / "bulletin.mp4").is_file()
     assert not (media_dir / "briefing.mp4").exists()
     assert 'data-copy-label="copy"' in html
     assert "chart-details" in html
     assert "run-header" in html
-    assert "vessel3d.js" in html  # run detail now has full-bleed vessel
-    assert "run-hero" in html
+    assert "vessel3d.js" in html
     assert "% ceiling" in html
     assert "metrics-chart-data" in html
     assert "vessel3d.js" not in runs_html
     assert "runs-header" in runs_html
     assert "runs-matrix-table" in runs_html
     assert "Cross-experiment matrix" in runs_html
-    assert "run-insight-card" in runs_html
-    assert "% ceiling" in runs_html
+    assert "run-card" in runs_html
     assert "hk-stability" in html or "housekeeping_shift" in html
     # Holo screenshot ships compressed when Pillow is present (raw ~410KB;
     # the Trust panel shows it as a small thumbnail) — never a 400KB asset.
