@@ -1,0 +1,63 @@
+{
+  "run_id": "k007-neighbor-prior-validation",
+  "status": "submitted",
+  "model_name": "kytos-k007-neighbor-prior",
+  "entry_id": "e0ejeoXsivnlV0qdTPCf",
+  "created_at": "2026-09-11T19:53:48Z",
+  "published_at": "2026-09-11T21:05:00Z",
+  "modal_app_id": "ap-AFouRLY6YWfRotvec3YMGL",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": ["A", "B", "C"],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2079268932
+  },
+  "prediction": {
+    "h5ad": "experiments/k007-neighbor-prior-validation/prediction.h5ad",
+    "vcc": "experiments/k007-neighbor-prior-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "volume_path": "/kytos-vol/k007-neighbor-prior",
+    "note": "produced on Modal and persisted to the kytos-vcc Modal Volume; not committed to git"
+  },
+  "model": {
+    "mode": "replogle_prior+neighbor_imputation",
+    "dispatch": {"real": 816, "neighbor": 54, "fallback": 30},
+    "neighbor_gate": {"min_partners": 2, "min_score": 0.7, "topk": 5},
+    "imputed_targets": [
+      "ABCD1", "EPHB2", "HEATR6", "KIF21B", "MAPK7", "MLKL", "NICN1",
+      "PARP3", "PBLD", "PDK3", "PSMB9", "RAB11FIP5", "SEMA4F", "SOCS5",
+      "SPATA20", "TAF4", "TDRD7", "TTBK2"
+    ],
+    "orphan_targets": [
+      "CAPRIN2", "PHF11", "SLC44A1", "SNN", "TBC1D19", "TESK2",
+      "TMEM104", "TMEM79", "TXNDC16", "ZC2HC1A"
+    ],
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "scores": {
+    "overall": -0.015898401717720424,
+    "rank": 534,
+    "pds": 0.26909240374245913,
+    "mse": 0.0,
+    "nmae": 0.002009342687818346,
+    "fid": -0.4029147933228767,
+    "reach": 0.058192828197426556,
+    "jac": -0.021770191611149875
+  },
+  "cost_estimate_usd": 0.9,
+  "cost_note": "64 GiB / 4-core Modal Function ~15 min build + prep + persist, plus 357 MB Replogle download",
+  "script": "tools/run_k007_neighbor_prior.py",
+  "runner": "tools/modal_k007_neighbor_prior.py",
+  "commit": "0566ffd"
+}

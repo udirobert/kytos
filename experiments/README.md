@@ -63,6 +63,15 @@ prediction outputs.
   [`tools/run_k006_replogle_prior.py`](../tools/run_k006_replogle_prior.py);
   launcher: [`tools/modal_k006_replogle_prior.py`](../tools/modal_k006_replogle_prior.py);
   meta: [`experiments/k006-replogle-prior-validation/meta.json`](k006-replogle-prior-validation/meta.json).
+- `k007-neighbor-prior-validation` — **STRING-neighbor imputation**
+  (2026-09-11): the 28 k006 fallback targets are unscreened in every Replogle
+  arm; for the 18 with confident STRING partners, deltas are imputed as a
+  score-weighted mean of partner signatures (validated in-corpus against
+  held-out GWPS genes). Submitted; score **overall -0.0159** (rank 534),
+  `nmae` -0.074 → +0.002, `pds` 0.265 → 0.269, `fid` -0.36 → -0.40. Script:
+  [`tools/run_k007_neighbor_prior.py`](../tools/run_k007_neighbor_prior.py);
+  launcher: [`tools/modal_k007_neighbor_prior.py`](../tools/modal_k007_neighbor_prior.py);
+  meta: [`experiments/k007-neighbor-prior-validation/meta.json`](k007-neighbor-prior-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

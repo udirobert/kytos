@@ -1,0 +1,37 @@
+{
+  "run_id": "k007-neighbor-prior-validation",
+  "created": "2026-09-11",
+  "headline": "STRING-neighbor imputation for the 28 unscreened targets — 18 recovered with real signature shape",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": -0.015898401717720424,
+    "pds": 0.26909240374245913,
+    "mse": 0.0,
+    "nmae": 0.002009342687818346,
+    "fid": -0.4029147933228767,
+    "reach": 0.058192828197426556,
+    "jac": -0.021770191611149875
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "STRING-complex/pathway partners share perturbation deltas (validated in-corpus: median 36th discrimination percentile vs 50% random; strong-partner genes top 5%)",
+    "Neighbor-imputed deltas beat the hand-tuned fallback on nmae and pds for the 18 gated targets"
+  ],
+  "next_steps": [
+    "k008: heterogeneous per-cell knockdown (eta ~ N(1, ~0.4)) — measured Atlas eta spread ~1.1 median; fid is the dominant deficit",
+    "Context-conditioned calibration — map K562 signatures to target contexts",
+    "Learned Layer A — generalize perturbation signatures to unseen targets",
+    "Transport parameter sweep (knockdown_efficiency, attenuation, noise) — held out to avoid leaderboard overfit"
+  ],
+  "provenance": {
+    "commit": "0566ffd",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation",
+    "code": "tools/run_k007_neighbor_prior.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 interactions (score>=0.5)"
+  },
+  "visual": {},
+  "log": "The 28 fallback genes are genuinely unscreened (absent from K562 GWPS, K562 essential, and RPE1 screens; no alias recovery). Neighbor imputation from STRING partners recovered real signature shape for 18 of them (PSMB9->proteasome, TAF4->TFIID, MAPK7->MAP2K5/MEF2, MLKL->necroptosis). Score -0.0159 vs k006 -0.0210; nmae swung -0.074 -> +0.002; fid worsened slightly (-0.36 -> -0.40), sharpening the case that distribution shape — not signature means — is the deficit."
+}
