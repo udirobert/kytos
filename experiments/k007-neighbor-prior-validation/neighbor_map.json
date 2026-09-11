@@ -1,0 +1,1122 @@
+{
+ "ABCD1": [
+  {
+   "gene": "ABCD3",
+   "score": 0.98
+  },
+  {
+   "gene": "PEX19",
+   "score": 0.95
+  },
+  {
+   "gene": "SLC27A2",
+   "score": 0.93
+  },
+  {
+   "gene": "PEX3",
+   "score": 0.91
+  },
+  {
+   "gene": "SPAST",
+   "score": 0.89
+  },
+  {
+   "gene": "PEX13",
+   "score": 0.84
+  },
+  {
+   "gene": "BCAP31",
+   "score": 0.84
+  },
+  {
+   "gene": "PEX11B",
+   "score": 0.81
+  },
+  {
+   "gene": "PEX16",
+   "score": 0.78
+  },
+  {
+   "gene": "ACBD5",
+   "score": 0.77
+  },
+  {
+   "gene": "SLC25A17",
+   "score": 0.76
+  },
+  {
+   "gene": "PEX14",
+   "score": 0.75
+  },
+  {
+   "gene": "ACSL3",
+   "score": 0.74
+  },
+  {
+   "gene": "PEX26",
+   "score": 0.74
+  },
+  {
+   "gene": "PEX2",
+   "score": 0.72
+  }
+ ],
+ "CAPRIN2": [
+  {
+   "gene": "LRP5",
+   "score": 0.82
+  },
+  {
+   "gene": "CCNY",
+   "score": 0.55
+  }
+ ],
+ "EPHB2": [
+  {
+   "gene": "RASA1",
+   "score": 0.98
+  },
+  {
+   "gene": "ABL1",
+   "score": 0.96
+  },
+  {
+   "gene": "EFNA1",
+   "score": 0.94
+  },
+  {
+   "gene": "ITSN1",
+   "score": 0.94
+  },
+  {
+   "gene": "EFNA3",
+   "score": 0.92
+  },
+  {
+   "gene": "EFNA4",
+   "score": 0.92
+  },
+  {
+   "gene": "EPHB4",
+   "score": 0.81
+  },
+  {
+   "gene": "ITSN2",
+   "score": 0.81
+  },
+  {
+   "gene": "CDC42",
+   "score": 0.79
+  },
+  {
+   "gene": "PICK1",
+   "score": 0.75
+  },
+  {
+   "gene": "SDCBP",
+   "score": 0.74
+  },
+  {
+   "gene": "NCK2",
+   "score": 0.7
+  },
+  {
+   "gene": "FYN",
+   "score": 0.7
+  },
+  {
+   "gene": "RABIF",
+   "score": 0.69
+  },
+  {
+   "gene": "EPHB6",
+   "score": 0.67
+  }
+ ],
+ "HEATR6": [
+  {
+   "gene": "NCOA3",
+   "score": 0.94
+  },
+  {
+   "gene": "ESR1",
+   "score": 0.8
+  },
+  {
+   "gene": "INTS2",
+   "score": 0.58
+  },
+  {
+   "gene": "E2F1",
+   "score": 0.58
+  },
+  {
+   "gene": "NCOA1",
+   "score": 0.58
+  },
+  {
+   "gene": "AR",
+   "score": 0.58
+  },
+  {
+   "gene": "NCOA2",
+   "score": 0.57
+  },
+  {
+   "gene": "DLL3",
+   "score": 0.56
+  },
+  {
+   "gene": "NCOA6",
+   "score": 0.56
+  },
+  {
+   "gene": "ETV4",
+   "score": 0.53
+  },
+  {
+   "gene": "KAT2B",
+   "score": 0.52
+  },
+  {
+   "gene": "APPBP2",
+   "score": 0.5
+  },
+  {
+   "gene": "CCND1",
+   "score": 0.5
+  }
+ ],
+ "KIF21B": [
+  {
+   "gene": "KIF11",
+   "score": 0.7
+  },
+  {
+   "gene": "KIFC2",
+   "score": 0.7
+  },
+  {
+   "gene": "KIFC3",
+   "score": 0.68
+  },
+  {
+   "gene": "KIFC1",
+   "score": 0.67
+  },
+  {
+   "gene": "KIFAP3",
+   "score": 0.67
+  },
+  {
+   "gene": "KIF21A",
+   "score": 0.66
+  },
+  {
+   "gene": "KIF2A",
+   "score": 0.65
+  },
+  {
+   "gene": "KIF1B",
+   "score": 0.64
+  },
+  {
+   "gene": "KIF1A",
+   "score": 0.64
+  },
+  {
+   "gene": "KIF16B",
+   "score": 0.64
+  },
+  {
+   "gene": "KLC2",
+   "score": 0.63
+  },
+  {
+   "gene": "KIF5B",
+   "score": 0.63
+  },
+  {
+   "gene": "KIF13A",
+   "score": 0.63
+  },
+  {
+   "gene": "KIF1C",
+   "score": 0.63
+  },
+  {
+   "gene": "KLC1",
+   "score": 0.62
+  }
+ ],
+ "MAPK7": [
+  {
+   "gene": "MAP2K5",
+   "score": 1.0
+  },
+  {
+   "gene": "MEF2A",
+   "score": 0.97
+  },
+  {
+   "gene": "MEF2C",
+   "score": 0.96
+  },
+  {
+   "gene": "RPS6KA3",
+   "score": 0.95
+  },
+  {
+   "gene": "NFE2L2",
+   "score": 0.95
+  },
+  {
+   "gene": "NR4A1",
+   "score": 0.93
+  },
+  {
+   "gene": "RPS6KA1",
+   "score": 0.93
+  },
+  {
+   "gene": "AKAP1",
+   "score": 0.84
+  },
+  {
+   "gene": "MAP3K2",
+   "score": 0.81
+  },
+  {
+   "gene": "KLF2",
+   "score": 0.75
+  },
+  {
+   "gene": "MEF2D",
+   "score": 0.73
+  },
+  {
+   "gene": "FOS",
+   "score": 0.72
+  },
+  {
+   "gene": "JUN",
+   "score": 0.69
+  },
+  {
+   "gene": "MAPKAPK5",
+   "score": 0.69
+  },
+  {
+   "gene": "PRKACA",
+   "score": 0.64
+  }
+ ],
+ "MLKL": [
+  {
+   "gene": "RIPK1",
+   "score": 1.0
+  },
+  {
+   "gene": "PGAM5",
+   "score": 0.99
+  },
+  {
+   "gene": "CASP8",
+   "score": 0.97
+  },
+  {
+   "gene": "FADD",
+   "score": 0.97
+  },
+  {
+   "gene": "CHMP1A",
+   "score": 0.95
+  },
+  {
+   "gene": "CHMP3",
+   "score": 0.94
+  },
+  {
+   "gene": "HSP90AA1",
+   "score": 0.94
+  },
+  {
+   "gene": "CHMP1B",
+   "score": 0.94
+  },
+  {
+   "gene": "HSP90AB1",
+   "score": 0.94
+  },
+  {
+   "gene": "TRPM7",
+   "score": 0.93
+  },
+  {
+   "gene": "CHMP2A",
+   "score": 0.92
+  },
+  {
+   "gene": "CHMP4A",
+   "score": 0.91
+  },
+  {
+   "gene": "VPS4A",
+   "score": 0.91
+  },
+  {
+   "gene": "VPS4B",
+   "score": 0.91
+  },
+  {
+   "gene": "CHMP5",
+   "score": 0.91
+  }
+ ],
+ "NICN1": [
+  {
+   "gene": "TPGS2",
+   "score": 0.97
+  },
+  {
+   "gene": "TPGS1",
+   "score": 0.97
+  },
+  {
+   "gene": "C11orf49",
+   "score": 0.82
+  },
+  {
+   "gene": "NONO",
+   "score": 0.62
+  },
+  {
+   "gene": "SMG8",
+   "score": 0.59
+  },
+  {
+   "gene": "FTSJ3",
+   "score": 0.52
+  }
+ ],
+ "PARP3": [
+  {
+   "gene": "CASP3",
+   "score": 0.92
+  },
+  {
+   "gene": "CASP9",
+   "score": 0.91
+  },
+  {
+   "gene": "CASP7",
+   "score": 0.91
+  },
+  {
+   "gene": "PARG",
+   "score": 0.82
+  },
+  {
+   "gene": "XRCC6",
+   "score": 0.77
+  },
+  {
+   "gene": "PARP6",
+   "score": 0.74
+  },
+  {
+   "gene": "TNKS",
+   "score": 0.73
+  },
+  {
+   "gene": "TNKS2",
+   "score": 0.71
+  },
+  {
+   "gene": "BRCA1",
+   "score": 0.71
+  },
+  {
+   "gene": "PARP12",
+   "score": 0.69
+  },
+  {
+   "gene": "PARP14",
+   "score": 0.69
+  },
+  {
+   "gene": "HPF1",
+   "score": 0.68
+  },
+  {
+   "gene": "PRKDC",
+   "score": 0.68
+  },
+  {
+   "gene": "ZC3HAV1",
+   "score": 0.66
+  },
+  {
+   "gene": "TRPT1",
+   "score": 0.63
+  }
+ ],
+ "PBLD": [
+  {
+   "gene": "STRAP",
+   "score": 0.98
+  },
+  {
+   "gene": "ODC1",
+   "score": 0.7
+  },
+  {
+   "gene": "AZIN1",
+   "score": 0.7
+  },
+  {
+   "gene": "ATOH7",
+   "score": 0.67
+  },
+  {
+   "gene": "RUFY2",
+   "score": 0.59
+  },
+  {
+   "gene": "ACY1",
+   "score": 0.59
+  },
+  {
+   "gene": "CNDP2",
+   "score": 0.51
+  }
+ ],
+ "PDK3": [
+  {
+   "gene": "DLAT",
+   "score": 1.0
+  },
+  {
+   "gene": "PDHA1",
+   "score": 0.99
+  },
+  {
+   "gene": "PDHB",
+   "score": 0.96
+  },
+  {
+   "gene": "PDHX",
+   "score": 0.96
+  },
+  {
+   "gene": "DLD",
+   "score": 0.94
+  },
+  {
+   "gene": "PDK2",
+   "score": 0.84
+  },
+  {
+   "gene": "PDK1",
+   "score": 0.83
+  },
+  {
+   "gene": "STAT5A",
+   "score": 0.78
+  },
+  {
+   "gene": "HDHD5",
+   "score": 0.75
+  },
+  {
+   "gene": "PDP2",
+   "score": 0.74
+  },
+  {
+   "gene": "FOXD4",
+   "score": 0.63
+  },
+  {
+   "gene": "FOXO4",
+   "score": 0.63
+  },
+  {
+   "gene": "CYCS",
+   "score": 0.62
+  },
+  {
+   "gene": "CLPP",
+   "score": 0.61
+  },
+  {
+   "gene": "MIF",
+   "score": 0.61
+  }
+ ],
+ "PHF11": [
+  {
+   "gene": "SETDB2",
+   "score": 0.99
+  },
+  {
+   "gene": "SART1",
+   "score": 0.6
+  },
+  {
+   "gene": "CDADC1",
+   "score": 0.59
+  },
+  {
+   "gene": "NMI",
+   "score": 0.57
+  },
+  {
+   "gene": "CAB39L",
+   "score": 0.55
+  },
+  {
+   "gene": "SP100",
+   "score": 0.53
+  },
+  {
+   "gene": "TRIM5",
+   "score": 0.53
+  },
+  {
+   "gene": "FNDC3A",
+   "score": 0.52
+  },
+  {
+   "gene": "ITM2B",
+   "score": 0.51
+  },
+  {
+   "gene": "CSNK2B",
+   "score": 0.5
+  },
+  {
+   "gene": "SETDB1",
+   "score": 0.5
+  }
+ ],
+ "PSMB9": [
+  {
+   "gene": "PSMB4",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMB7",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMA1",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMB10",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMA2",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMA7",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMB2",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMB3",
+   "score": 1.0
+  },
+  {
+   "gene": "POMP",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMA3",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMB1",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMA6",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMA4",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMA5",
+   "score": 1.0
+  },
+  {
+   "gene": "PSMB5",
+   "score": 1.0
+  }
+ ],
+ "RAB11FIP5": [
+  {
+   "gene": "RAB11A",
+   "score": 1.0
+  },
+  {
+   "gene": "RAB11B",
+   "score": 0.96
+  },
+  {
+   "gene": "RAB11FIP1",
+   "score": 0.93
+  },
+  {
+   "gene": "EHD1",
+   "score": 0.93
+  },
+  {
+   "gene": "RAB11FIP4",
+   "score": 0.9
+  },
+  {
+   "gene": "KIF3A",
+   "score": 0.77
+  },
+  {
+   "gene": "RAB4A",
+   "score": 0.72
+  },
+  {
+   "gene": "VIPAS39",
+   "score": 0.7
+  },
+  {
+   "gene": "KIF3B",
+   "score": 0.66
+  },
+  {
+   "gene": "VPS45",
+   "score": 0.65
+  },
+  {
+   "gene": "ARF6",
+   "score": 0.65
+  },
+  {
+   "gene": "NAPG",
+   "score": 0.6
+  },
+  {
+   "gene": "EXOC7",
+   "score": 0.58
+  },
+  {
+   "gene": "SFXN5",
+   "score": 0.57
+  },
+  {
+   "gene": "TFRC",
+   "score": 0.56
+  }
+ ],
+ "SEMA4F": [
+  {
+   "gene": "PLXNB1",
+   "score": 0.95
+  },
+  {
+   "gene": "PLXNB2",
+   "score": 0.95
+  }
+ ],
+ "SLC44A1": [
+  {
+   "gene": "LRRC8B",
+   "score": 0.55
+  }
+ ],
+ "SNN": [
+  {
+   "gene": "TXNDC11",
+   "score": 0.56
+  }
+ ],
+ "SOCS5": [
+  {
+   "gene": "JAK2",
+   "score": 0.95
+  },
+  {
+   "gene": "JAK1",
+   "score": 0.92
+  },
+  {
+   "gene": "STAT1",
+   "score": 0.92
+  },
+  {
+   "gene": "CUL5",
+   "score": 0.91
+  },
+  {
+   "gene": "SOCS3",
+   "score": 0.84
+  },
+  {
+   "gene": "STAT3",
+   "score": 0.84
+  },
+  {
+   "gene": "RNF7",
+   "score": 0.83
+  },
+  {
+   "gene": "ELOB",
+   "score": 0.83
+  },
+  {
+   "gene": "SOCS4",
+   "score": 0.82
+  },
+  {
+   "gene": "TYK2",
+   "score": 0.81
+  },
+  {
+   "gene": "STAT5B",
+   "score": 0.8
+  },
+  {
+   "gene": "STAT5A",
+   "score": 0.8
+  },
+  {
+   "gene": "STAT6",
+   "score": 0.77
+  },
+  {
+   "gene": "CISH",
+   "score": 0.73
+  },
+  {
+   "gene": "SOCS1",
+   "score": 0.73
+  }
+ ],
+ "SPATA20": [
+  {
+   "gene": "TYMS",
+   "score": 0.82
+  },
+  {
+   "gene": "HMBS",
+   "score": 0.81
+  },
+  {
+   "gene": "NDUFA10",
+   "score": 0.6
+  },
+  {
+   "gene": "PHYKPL",
+   "score": 0.57
+  }
+ ],
+ "TAF4": [
+  {
+   "gene": "TAF2",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF3",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF7",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF6",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF8",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF9",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF11",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF1",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF13",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF10",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF12",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF5",
+   "score": 1.0
+  },
+  {
+   "gene": "TBP",
+   "score": 1.0
+  },
+  {
+   "gene": "TAF9B",
+   "score": 1.0
+  },
+  {
+   "gene": "CREB1",
+   "score": 1.0
+  }
+ ],
+ "TBC1D19": [
+  {
+   "gene": "C11orf49",
+   "score": 0.65
+  },
+  {
+   "gene": "TBC1D13",
+   "score": 0.64
+  },
+  {
+   "gene": "TPGS1",
+   "score": 0.61
+  },
+  {
+   "gene": "TBC1D14",
+   "score": 0.59
+  },
+  {
+   "gene": "TBC1D22B",
+   "score": 0.57
+  },
+  {
+   "gene": "TBC1D10A",
+   "score": 0.57
+  },
+  {
+   "gene": "FEZ2",
+   "score": 0.56
+  },
+  {
+   "gene": "TBC1D7",
+   "score": 0.55
+  },
+  {
+   "gene": "TBC1D12",
+   "score": 0.55
+  },
+  {
+   "gene": "TBC1D20",
+   "score": 0.54
+  },
+  {
+   "gene": "TBC1D22A",
+   "score": 0.52
+  },
+  {
+   "gene": "RAB12",
+   "score": 0.52
+  },
+  {
+   "gene": "TBC1D10B",
+   "score": 0.52
+  },
+  {
+   "gene": "TBCK",
+   "score": 0.51
+  }
+ ],
+ "TDRD7": [
+  {
+   "gene": "CDK17",
+   "score": 0.95
+  },
+  {
+   "gene": "GABPB1",
+   "score": 0.83
+  },
+  {
+   "gene": "TACC1",
+   "score": 0.74
+  },
+  {
+   "gene": "PIWIL4",
+   "score": 0.71
+  },
+  {
+   "gene": "CDK16",
+   "score": 0.71
+  },
+  {
+   "gene": "FOXE3",
+   "score": 0.56
+  },
+  {
+   "gene": "PLD6",
+   "score": 0.55
+  },
+  {
+   "gene": "STAU1",
+   "score": 0.54
+  },
+  {
+   "gene": "GJA3",
+   "score": 0.51
+  },
+  {
+   "gene": "IFI35",
+   "score": 0.51
+  },
+  {
+   "gene": "TDRD3",
+   "score": 0.5
+  }
+ ],
+ "TESK2": [
+  {
+   "gene": "YWHAB",
+   "score": 0.53
+  }
+ ],
+ "TMEM104": [
+  {
+   "gene": "ANTKMT",
+   "score": 0.57
+  }
+ ],
+ "TMEM79": [
+  {
+   "gene": "TEX264",
+   "score": 0.68
+  },
+  {
+   "gene": "FLOT2",
+   "score": 0.54
+  },
+  {
+   "gene": "SMG5",
+   "score": 0.53
+  }
+ ],
+ "TTBK2": [
+  {
+   "gene": "CEP164",
+   "score": 0.99
+  },
+  {
+   "gene": "SPTBN2",
+   "score": 0.88
+  },
+  {
+   "gene": "ATXN10",
+   "score": 0.84
+  },
+  {
+   "gene": "ATXN7",
+   "score": 0.79
+  },
+  {
+   "gene": "ZWINT",
+   "score": 0.78
+  },
+  {
+   "gene": "CCP110",
+   "score": 0.76
+  },
+  {
+   "gene": "FBF1",
+   "score": 0.74
+  },
+  {
+   "gene": "CEP97",
+   "score": 0.73
+  },
+  {
+   "gene": "RAB3IP",
+   "score": 0.71
+  },
+  {
+   "gene": "SCLT1",
+   "score": 0.71
+  },
+  {
+   "gene": "CEP89",
+   "score": 0.68
+  },
+  {
+   "gene": "RAB8A",
+   "score": 0.65
+  },
+  {
+   "gene": "ATXN2",
+   "score": 0.61
+  },
+  {
+   "gene": "RAB11A",
+   "score": 0.6
+  },
+  {
+   "gene": "ARL13B",
+   "score": 0.6
+  }
+ ],
+ "TXNDC16": [
+  {
+   "gene": "FOXRED2",
+   "score": 0.92
+  },
+  {
+   "gene": "VDAC2",
+   "score": 0.65
+  },
+  {
+   "gene": "FLNA",
+   "score": 0.62
+  },
+  {
+   "gene": "STYX",
+   "score": 0.59
+  },
+  {
+   "gene": "DDHD1",
+   "score": 0.54
+  },
+  {
+   "gene": "OS9",
+   "score": 0.52
+  },
+  {
+   "gene": "DNAJC10",
+   "score": 0.52
+  },
+  {
+   "gene": "PSMC6",
+   "score": 0.51
+  }
+ ],
+ "ZC2HC1A": [
+  {
+   "gene": "RUFY3",
+   "score": 0.53
+  }
+ ]
+}
