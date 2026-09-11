@@ -1,8 +1,4 @@
 <section class="runs-matrix-section">
-  <div class="runs-matrix-header">
-    <h2>Cross-experiment matrix</h2>
-    <p class="muted">Every run, side by side — how accurate, how much room is left, and whether it passes our biology checks. The full six-metric breakdown (DE recall, Pearson Δ, ceiling headroom) is on each run page.</p>
-  </div>
   <div class="runs-matrix-wrap">
     <table class="runs-matrix-table">
       <thead>
@@ -10,9 +6,9 @@
           <th>Run ID</th>
           <th>Strategy</th>
           <th>Status</th>
-          <th aria-label="Ceiling headroom — how much room is left to improve">Ceiling headroom</th>
-          <th aria-label="DE gene recall — how many true hits the model found">DE gene recall</th>
-          <th aria-label="Pearson Δ — correlation gap vs the best achievable">Pearson Δ</th>
+          <th aria-label="Progress — how close the run is to the best achievable score">Progress</th>
+          <th aria-label="Score — primary leaderboard metric">Score</th>
+          <th aria-label="PDS — perturbation discrimination">PDS</th>
           <th aria-label="Audit — did it pass our biological sanity checks">Audit</th>
           <th></th>
         </tr>
@@ -29,15 +25,15 @@
           <td><code class="strategy-badge">{{ row.strategy }}</code></td>
           <td>{{ row.status_badge | safe }}</td>
           <td>
-            <div class="table-fill-bar-wrap" title="Ceiling headroom: {{ row.fill_pct }}%">
+            <div class="table-fill-bar-wrap" title="Progress: {{ row.fill_pct }}%">
               <span class="table-fill-val">{{ row.fill_pct }}%</span>
               <div class="table-fill-track">
                 <div class="table-fill-prog" style="width: {{ row.fill_pct }}%;"></div>
               </div>
             </div>
           </td>
-          <td class="table-metric">{{ row.recall_str }}</td>
-          <td class="table-metric">{{ row.pearson_str }}</td>
+          <td class="table-metric">{{ row.score_str }}</td>
+          <td class="table-metric">{{ row.pds_str }}</td>
           <td>{{ row.audit_badge | safe }}</td>
           <td><a class="btn-table-view" href="{{ row.href }}">Inspect →</a></td>
         </tr>

@@ -2,9 +2,15 @@
 
 {% block content %}
 {{ nav | safe }}
-{{ header | safe }}
 <main class="content" id="main-content" tabindex="-1">
-  {{ matrix | safe }}
+  {{ header | safe }}
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Cross-experiment matrix</h2>
+      <p class="muted">Every run, side by side — how accurate, how much room is left, and whether it passes our biology checks.</p>
+    </div>
+    {{ matrix | safe }}
+  </section>
   <div class="run-grid">
     {{ cards | safe }}
     {{ insight_cards | safe }}

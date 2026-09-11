@@ -1,0 +1,30 @@
+{
+  "run_id": "k003-mean-shift-validation",
+  "created": "2026-09-05",
+  "headline": "Sparse mean-shift pipeline test — VCC 2026 validation, 360k cells, 300 targets",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": -0.9477,
+    "pds": 0.0,
+    "mse": 0.0,
+    "nmae": -5.7717,
+    "fid": -0.0393,
+    "reach": 0.1229,
+    "jac": 0.0017
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 6,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "A constant per-target sparse slice will score near the bottom of the leaderboard",
+    "Perturbation discrimination will be zero because every target predicts the same control slice"
+  ],
+  "provenance": {
+    "commit": "e6b182c",
+    "seed": 0,
+    "strategy": "mean-shift",
+    "code": "tools/run_k003_mean_shift.py",
+    "data": "VCC 2026 controls (context_A/B/C.h5ad, gene_names.csv, pert_counts.csv)"
+  },
+  "visual": {}
+}

@@ -1,0 +1,30 @@
+{
+  "run_id": "k004-layer-a-b-validation",
+  "created": "2026-09-10",
+  "headline": "Context-conditioned Layer A/B — hand-tuned target knockdown + log1p transport",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": -0.14919597503500978,
+    "pds": 0.0019,
+    "mse": 0.0,
+    "nmae": -0.811,
+    "fid": -0.075,
+    "reach": -0.002,
+    "jac": -0.009
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 85,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "A target-specific knockdown prior will produce a positive pds",
+    "The DE signature will still be weak because the prior is hand-tuned, not learned"
+  ],
+  "provenance": {
+    "commit": "e6b182c",
+    "seed": 0,
+    "strategy": "layer-a-b",
+    "code": "tools/run_k004_layer_a_b.py",
+    "data": "VCC 2026 controls (context_A/B/C.h5ad, gene_names.csv, pert_counts.csv)"
+  },
+  "visual": {}
+}

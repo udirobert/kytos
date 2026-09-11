@@ -1,0 +1,30 @@
+{
+  "run_id": "k006-replogle-prior-validation",
+  "created": "2026-09-11",
+  "headline": "Replogle K562 GWPS + Atlas prior — real signatures for 272/300 targets",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": -0.020970621329154924,
+    "pds": 0.264620728105189,
+    "mse": 0.0,
+    "nmae": -0.07443987253508122,
+    "fid": -0.35913806796541753,
+    "reach": 0.06190554431759452,
+    "jac": -0.01877205989721429
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 98,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Broad CRISPRi coverage will dramatically improve pds and nmae",
+    "K562 signatures will transfer imperfectly to H1 hESC, leaving room for context-conditioned calibration"
+  ],
+  "provenance": {
+    "commit": "2ff188f",
+    "seed": 0,
+    "strategy": "replogle-prior",
+    "code": "tools/run_k006_replogle_prior.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas"
+  },
+  "visual": {}
+}

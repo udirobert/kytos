@@ -1,38 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="run-hero">
-  {{ bio_atmosphere | safe }}
-  <div class="vessel-fullscreen vessel-3d-container vessel-run" id="vessel-canvas">
-    <div class="vessel-loading"><div class="vessel-loading-core"></div></div>
-    <div class="vessel-svg-fallback">{{ vessel_svg | safe }}</div>
-    <div class="vessel-callout" id="vessel-callout" aria-hidden="true"></div>
-    <div class="cell-field-readout" id="cell-field-readout" role="status" aria-live="polite">
-      <span class="cell-field-readout-label">your probe</span>
-      <strong id="cell-field-intensity">00%</strong>
-      <span class="cell-field-readout-state" id="cell-field-state">ready</span>
-    </div>
-    <script type="application/json" id="vessel-data">{{ vessel_json | safe }}</script>
-  </div>
-  {% if presenter_overlay %}
-  {{ presenter_overlay | safe }}
-  {% endif %}
-  <div class="run-hero-overlay">
-    {{ nav | safe }}
-    {{ confession_banner | safe }}
-    {{ run_header | safe }}
-    {{ run_hero_legend | safe }}
-  </div>
-</section>
-<main class="run-evidence" id="main-content" tabindex="-1">
-  {{ evidence_journey | safe }}
-  {{ panel_audit | safe }}
-  {{ panel_evidence | safe }}
-  {{ panel_narrative | safe }}
-  {{ panel_trust | safe }}
-  <div class="run-fullrecord-cta">
-    <p class="run-fullrecord-lede">Want every metric, plot, and audit trace open at once?</p>
-    <button class="button" type="button" data-mode-cta="science">See the full scientific record &rarr;</button>
+{{ nav | safe }}
+<main class="content" id="main-content" tabindex="-1">
+  {{ run_header | safe }}
+  <div class="run-panels">
+    {{ panel_audit | safe }}
+    {{ panel_evidence | safe }}
+    {{ panel_narrative | safe }}
+    {{ panel_trust | safe }}
   </div>
 </main>
 {% endblock %}

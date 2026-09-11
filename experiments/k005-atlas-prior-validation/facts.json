@@ -1,0 +1,25 @@
+{
+  "run_id": "k005-atlas-prior-validation",
+  "created": "2026-09-11",
+  "headline": "2025 Atlas prior — real per-target signatures for the 4 overlapping 2026 targets",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": null,
+    "pds": null
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 85,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Real 2025 Atlas signatures will improve the 4 overlapping targets but leave the rest unchanged",
+    "The model will remain effectively k004-layer-a-b because only 4/300 targets have real signatures"
+  ],
+  "provenance": {
+    "commit": "d0c1548",
+    "seed": 0,
+    "strategy": "atlas-prior",
+    "code": "tools/run_k005_atlas_prior.py",
+    "data": "VCC 2026 controls + 2025 VCC validation Atlas (4/300 target overlap)"
+  },
+  "visual": {}
+}

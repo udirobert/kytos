@@ -62,7 +62,8 @@ METRIC_LABELS: dict[str, str] = {
 # First-visit vessel onboarding tooltip — shared by home + run detail.
 _VESSEL_ONBOARD_HTML = """\
         <div class="vessel-onboard" id="vessel-onboard" hidden>
-          <p><strong>Fill level</strong> = how close we are to the best possible score · <strong>amber cracks</strong> = genes where the model is biologically wrong.</p>
+          <p><strong>Fill level</strong> = how close we are to the best possible score ·
+             <strong>amber cracks</strong> = genes where the model is biologically wrong.</p>
           <p class="vessel-onboard-hint">Drag to rotate · click a crack to see the evidence</p>
           <button class="vessel-onboard-close" type="button"
                   aria-label="Dismiss">Got it</button>
@@ -323,7 +324,8 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
     return f"""
     <header class="site-header">
       <div class="brand">
-        <a href="{root_prefix}index.html" class="brand-mark" aria-label="Kytos Observatory home">κ</a>
+        <a href="{root_prefix}index.html" class="brand-mark"
+           aria-label="Kytos Observatory home">κ</a>
         <div class="brand-text">
           <span class="brand-name">Kytos Observatory</span>
         </div>
@@ -613,6 +615,11 @@ def render_home(
                 "run_href": run_href,
                 "runs_href": f"{root_prefix}runs/index.html",
                 "about_href": about_href,
+                "latest_run_id": latest.run_id,
+                "latest_headline": latest.facts.get("headline", latest.run_id),
+                "latest_metrics": _metrics_line_from_facts(latest.facts),
+                "latest_created": latest.facts.get("created", ""),
+                "matrix": _runs_comparison_matrix(runs, root_prefix=root_prefix),
             }
         )
 
@@ -983,27 +990,14 @@ def render_runs_index(
         </a>
         """
 
-    latest = runs[-1] if runs else None
-    if latest:
-        header_vessel = _vessel_svg(latest.facts, svg_class="vessel-mini runs-header-vessel")
-        run_count = f"{len(runs)} run{'s' if len(runs) != 1 else ''} published"
-        header = f"""
+    run_count = f"{len(runs)} run{'s' if len(runs) != 1 else ''} published" if runs else ""
+    header = f"""
         <section class="runs-header">
-          {_bio_atmosphere(variant="archive", density="light")}
-          <div class="runs-header-vessel-wrap">{header_vessel}</div>
           <h1>Experiment runs</h1>
           <p class="runs-header-sub">
             Metrics, ceiling headroom, and audit flags for every experiment.
-            Insight cards fill the grid until more runs ship.
           </p>
           <p class="runs-header-count">{run_count}</p>
-        </section>
-        """
-    else:
-        header = """
-        <section class="runs-header">
-          <h1>Experiment runs</h1>
-          <p class="runs-header-sub muted">Waiting for the first run with facts.json.</p>
         </section>
         """
 
@@ -1049,11 +1043,16 @@ def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../")
         )
 
         metrics = facts.get("headline_metrics") or {}
-        recall = metrics.get("DESigGenesRecall", metrics.get("de_sig_genes_recall"))
-        recall_str = f"{float(recall):.3f}" if recall is not None else "—"
-
-        pearson = metrics.get("pearson_delta")
-        pearson_str = f"{float(pearson):.3f}" if pearson is not None else "—"
+        if "overall" in metrics:
+            overall = metrics.get("overall")
+            score_str = f"{float(overall):.3f}" if overall is not None else "—"
+            pds = metrics.get("pds")
+            pds_str = f"{float(pds):.3f}" if pds is not None else "—"
+        else:
+            recall = metrics.get("DESigGenesRecall", metrics.get("de_sig_genes_recall"))
+            score_str = f"{float(recall):.3f}" if recall is not None else "—"
+            pearson = metrics.get("pearson_delta")
+            pds_str = f"{float(pearson):.3f}" if pearson is not None else "—"
 
         flags = facts.get("audit_flags") or []
         warns = sum(1 for f in flags if f.get("severity") in ("warn", "error"))
@@ -1074,8 +1073,8 @@ def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../")
                 "strategy": strategy,
                 "status_badge": status_badge,
                 "fill_pct": vd["fill_pct"],
-                "recall_str": recall_str,
-                "pearson_str": pearson_str,
+                "score_str": score_str,
+                "pds_str": pds_str,
                 "audit_badge": audit_badge,
             }
         )
@@ -1356,7 +1355,8 @@ def _stage_hero(visual: dict[str, Any], media_prefix: str, facts: dict) -> str:
         <div class="hero-fullscreen hero-video">
           <video class="briefing-video" src="{src}" autoplay muted loop playsinline
                  controls poster="{poster}" preload="none"></video>
-          <span class="briefing-stamp">kytos observatory · run briefing · grounded in facts.json</span>
+          <span class="briefing-stamp">kytos observatory · run briefing ·
+            grounded in facts.json</span>
           <button class="briefing-unmute" type="button" hidden
                   aria-label="Unmute the run briefing">♪ unmute — hear the briefing</button>
         </div>
@@ -1379,8 +1379,12 @@ def _vessel_data(facts: dict) -> dict:
     """
     ceiling = facts.get("ceiling_headroom") or {}
     metrics = facts.get("headline_metrics") or {}
-    values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
-    fill = int(round(100 * sum(values) / len(values))) if values else 0
+    vessel_fill = facts.get("vessel_fill")
+    if isinstance(vessel_fill, (int, float)):
+        fill = int(round(vessel_fill))
+    else:
+        values = [float(v) for v in ceiling.values() if isinstance(v, (int, float))]
+        fill = int(round(100 * sum(values) / len(values))) if values else 0
     fill = max(6, min(100, fill))
     flags = facts.get("audit_flags") or []
     warn_flags = [f for f in flags if f.get("severity") in ("warn", "error")]
@@ -1433,7 +1437,9 @@ def _vessel_svg(facts: dict, *, svg_class: str = "vessel-svg", clip_id: str = "v
     fill_y = 236 - int(fill / 100 * 190)  # liquid surface y (bottom = 236)
     # Membrane stress marks (audit warnings) on the cell's edge
     cracks = "".join(
-        f'<path class="vessel-crack" data-gene="{_h(c["gene"])}" data-rule="{_h(c["rule"])}" d="M {72 + i * 12} {150 + (i % 3) * 14} l {10 + i} {26 + i}"/>'
+        f'<path class="vessel-crack" data-gene="{_h(c["gene"])}" '
+        f'data-rule="{_h(c["rule"])}" '
+        f'd="M {72 + i * 12} {150 + (i % 3) * 14} l {10 + i} {26 + i}"/>'
         for i, c in enumerate(vd["cracks"])
     )
     # Vesicles (info flags) floating in the cytoplasm
@@ -1906,9 +1912,6 @@ def _run_header_compact(
       {status_badge}
       {score_line}
       {media}
-      <button class="run-inspect-cta" type="button" data-scroll-to="evidence-journey">
-        Inspect the evidence ↓
-      </button>
     </header>
     """
 
@@ -2079,7 +2082,8 @@ def _confession_banner(facts: dict, run_id: str) -> str:
     return f"""
     <div class="confession-banner">
       <p class="eyebrow">Audit confession</p>
-      <p>{len(warns)} warning(s) on this run: {rules}. — we publish every failure, not just the scores.</p>
+      <p>{len(warns)} warning(s) on this run: {rules}. —
+         we publish every failure, not just the scores.</p>
     </div>
     """
 

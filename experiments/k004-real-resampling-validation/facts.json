@@ -1,0 +1,30 @@
+{
+  "run_id": "k004-real-resampling-validation",
+  "created": "2026-09-10",
+  "headline": "Real control-cell resampling — VCC 2026 validation, 360k cells, 300 targets",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": -0.30393828687302354,
+    "pds": -0.009,
+    "mse": 0.0,
+    "nmae": -0.005,
+    "fid": -1.716,
+    "reach": -0.011,
+    "jac": -0.083
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 70,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Sampling real control cells will improve on the sparse baseline by preserving single-cell dispersion",
+    "Perturbation discrimination will still be near zero because every target shares the same control pool"
+  ],
+  "provenance": {
+    "commit": "e6b182c",
+    "seed": 0,
+    "strategy": "control-cell resampling",
+    "code": "tools/run_k004_real_resampling.py",
+    "data": "VCC 2026 controls (context_A/B/C.h5ad, gene_names.csv, pert_counts.csv)"
+  },
+  "visual": {}
+}
