@@ -83,8 +83,14 @@ def build_and_prep(max_targets: int = 0, submit: bool = False) -> dict:
     run_step("download controls", download_cmd)
 
     atlas_cmd = (
-        f"mkdir -p {ATLAS_DIR}\n"
-        f"curl -L --fail --retry 3 -o {ATLAS_DIR}/adata_Validation.h5ad {ATLAS_URL}\n"
+        f"mkdir -p /kytos-vol/atlas {ATLAS_DIR}\n"
+        "if [ -f /kytos-vol/atlas/adata_Validation.h5ad ]; then\n"
+        f"  cp /kytos-vol/atlas/adata_Validation.h5ad {ATLAS_DIR}/adata_Validation.h5ad\n"
+        "else\n"
+        "  curl -L --fail --retry 3 -o /kytos-vol/atlas/adata_Validation.h5ad "
+        f"{ATLAS_URL}\n"
+        f"  cp /kytos-vol/atlas/adata_Validation.h5ad {ATLAS_DIR}/adata_Validation.h5ad\n"
+        "fi\n"
         f"ls -lh {ATLAS_DIR}/adata_Validation.h5ad"
     )
     run_step("download 2025 Atlas validation", atlas_cmd)
