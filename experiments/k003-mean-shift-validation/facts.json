@@ -26,5 +26,6 @@
     "code": "tools/run_k003_mean_shift.py",
     "data": "VCC 2026 controls (context_A/B/C.h5ad, gene_names.csv, pert_counts.csv)"
   },
-  "visual": {}
+  "visual": {},
+  "log": "First real submission — a sparse top-300 mean-shift slice proved the pipeline end-to-end. Scored at the degenerate floor (-0.948) exactly as predicted: every target shares one control slice, so perturbation discrimination is zero."
 }

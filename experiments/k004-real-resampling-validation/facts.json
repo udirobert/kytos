@@ -26,5 +26,6 @@
     "code": "tools/run_k004_real_resampling.py",
     "data": "VCC 2026 controls (context_A/B/C.h5ad, gene_names.csv, pert_counts.csv)"
   },
-  "visual": {}
+  "visual": {},
+  "log": "Swapped the sparse slice for real single-cell resampling — 360k control cells with natural dispersion. Score jumped to -0.304: dispersion matters, but the targets were still indistinguishable."
 }

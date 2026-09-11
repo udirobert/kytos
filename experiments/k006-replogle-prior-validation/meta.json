@@ -34,6 +34,12 @@
     "replogle_targets": 9866,
     "replogle_used": 272,
     "fallback_targets": 28,
+    "fallback_genes": [
+      "ABCD1", "CAPRIN2", "EPHB2", "HEATR6", "KIF21B", "MAPK7", "MLKL",
+      "NICN1", "PARP3", "PBLD", "PDK3", "PHF11", "PSMB9", "RAB11FIP5",
+      "SEMA4F", "SLC44A1", "SNN", "SOCS5", "SPATA20", "TAF4", "TBC1D19",
+      "TDRD7", "TESK2", "TMEM104", "TMEM79", "TTBK2", "TXNDC16", "ZC2HC1A"
+    ],
     "knockdown_efficiency": 2.5,
     "attenuation_factor": 0.5,
     "noise_scale": 0.05

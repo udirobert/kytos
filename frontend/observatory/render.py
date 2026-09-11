@@ -628,8 +628,10 @@ def render_home(
                 "latest_created": latest.facts.get("created", ""),
                 "latest_rank": (latest.meta.get("scores") or {}).get("rank"),
                 "latest_overall": (latest.facts.get("headline_metrics") or {}).get("overall"),
+                "days_left": _days_to_vcc(),
                 "matrix": _runs_comparison_matrix(runs, root_prefix=root_prefix),
                 "trajectory": _score_trajectory_svg(runs),
+                "run_log": _run_log_section(runs, root_prefix=root_prefix),
             }
         )
 
@@ -986,6 +988,7 @@ def render_runs_index(
         delta = _run_card_delta(run, prev)
         mini_svg = _vessel_svg(run.facts, svg_class="vessel-mini")
         status_badge = _data_status_badge(run.facts, run.meta)
+        sparkline = _mini_sparkline(runs, run)
         cards += f"""
         <a class="run-card" href="{href}">
           <div class="run-card-vessel">{mini_svg}</div>
@@ -996,6 +999,7 @@ def render_runs_index(
             <span class="run-card-fill">{vd["fill_pct"]}%</span>
           </span>
           <span class="run-card-headline">{_h(run.facts.get("headline", ""))}</span>
+          {sparkline}
           <span class="run-card-metrics">{_h(m)}</span>
           {status_badge}
           {delta}
@@ -1102,6 +1106,37 @@ def _score_trajectory_svg(runs: list[RunSummary]) -> str:
       {caption}
     </div>
     """
+
+
+def _run_log_section(runs: list[RunSummary], *, root_prefix: str = "") -> str:
+    """The run log — one honest paragraph per run: what we tried, what happened.
+
+    facts.json `log` fields, rendered as a chronological timeline. This is the
+    narrative layer the matrix can't carry: why each score moved.
+    """
+    ordered = sorted(
+        runs,
+        key=lambda r: r.meta.get("created_at") or r.facts.get("created") or "",
+    )
+    entries = []
+    for run in ordered:
+        log = run.facts.get("log")
+        if not log:
+            continue
+        m = run.facts.get("headline_metrics") or {}
+        overall = m.get("overall")
+        score = f"{float(overall):+.3f}" if overall is not None else "not submitted"
+        score_cls = "log-score" if overall is not None else "log-score log-score-na"
+        entries.append(
+            f'<li class="log-entry">'
+            f'<a class="log-head" href="{root_prefix}runs/{_h(run.run_id)}/index.html">'
+            f'<span class="log-run">{_h(run.run_id)}</span>'
+            f'<span class="{score_cls}">{score}</span></a>'
+            f'<p class="log-text">{_h(log)}</p></li>'
+        )
+    if not entries:
+        return ""
+    return f'<ol class="run-log">{"".join(entries)}</ol>'
 
 
 def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
@@ -1345,6 +1380,7 @@ def render_run_detail(
         "scorecard": _metrics_scorecard(run, runs),
         "coverage": _coverage_panel(run),
         "next_steps": _next_steps_panel(run),
+        "log_text": facts.get("log"),
         "panel_audit": _disclosure_section(
             "Audit & metrics",
             _audit_summary(facts),
@@ -2046,6 +2082,56 @@ def _run_stat_grid(run: RunSummary) -> str:
 _VCC_METRIC_ORDER = ["overall", "pds", "mse", "nmae", "fid", "reach", "jac"]
 
 
+def _mini_sparkline(runs: list[RunSummary], current: RunSummary) -> str:
+    """Tiny trajectory sparkline for a run card — full climb, this run lit up.
+
+    Same data as the big trajectory chart but 120×32 and every dot except the
+    current run's is dimmed, so each card shows where it sits in the journey.
+    """
+    ordered = sorted(
+        runs,
+        key=lambda r: r.meta.get("created_at") or r.facts.get("created") or "",
+    )
+    pts = []
+    for run in ordered:
+        m = run.facts.get("headline_metrics") or {}
+        v = m.get("overall")
+        if v is not None:
+            pts.append((run.run_id, float(v)))
+    if len(pts) < 2 or all(rid != current.run_id for rid, _ in pts):
+        return ""
+
+    w, h, pad = 140, 34, 8
+    lo = min(v for _, v in pts)
+    hi = max(v for _, v in pts)
+    span = hi - lo if hi != lo else 1.0
+    n = len(pts)
+    step = (w - 2 * pad) / (n - 1)
+
+    def xy(i: int, v: float) -> tuple[float, float]:
+        return pad + i * step, pad + (1 - (v - lo) / span) * (h - 2 * pad)
+
+    poly = " ".join(f"{xy(i, v)[0]:.1f},{xy(i, v)[1]:.1f}" for i, (_, v) in enumerate(pts))
+    dots = ""
+    for i, (rid, v) in enumerate(pts):
+        cls = "spark-dot spark-dot-current" if rid == current.run_id else "spark-dot"
+        x, y = xy(i, v)
+        dots += f'<circle class="{cls}" cx="{x:.1f}" cy="{y:.1f}" r="3"/>'
+    return (
+        f'<svg class="run-sparkline" viewBox="0 0 {w} {h}" '
+        f'aria-hidden="true"><polyline class="spark-line" points="{poly}"/>{dots}</svg>'
+    )
+
+
+def _days_to_vcc() -> int | None:
+    """Days until the VCC submission deadline (2026-11-05). None once past."""
+    from datetime import datetime, timezone
+
+    end = datetime.fromisoformat(VCC_END.replace("Z", "+00:00"))
+    delta = end - datetime.now(timezone.utc)
+    return max(0, delta.days) if delta.days >= 0 else None
+
+
 def _metrics_scorecard(run: RunSummary, runs: list[RunSummary]) -> str:
     """All-metrics scorecard — every scored metric with best-in-series marked.
 
@@ -2094,12 +2180,20 @@ def _coverage_panel(run: RunSummary) -> str:
     if not total:
         return ""
     pct = round(100 * covered / total)
-    fb_note = (
-        f"<p class='muted'>The remaining {fallback} targets fell back to the "
-        "hand-tuned prior — that is the single largest remaining coverage gap.</p>"
-        if fallback
-        else ""
-    )
+    genes = model.get("fallback_genes") or []
+    fb_note = ""
+    if fallback:
+        fb_note = (
+            f"<p class='muted'>The remaining {fallback} targets fell back to the "
+            "hand-tuned prior — that is the single largest remaining coverage gap.</p>"
+        )
+        if genes:
+            chips = "".join(f'<code class="gene-chip">{_h(g)}</code>' for g in genes)
+            fb_note += (
+                f'<details class="fallback-genes"><summary>'
+                f"Show the {fallback} fallback targets</summary>"
+                f'<div class="gene-chip-list">{chips}</div></details>'
+            )
     return f"""
     <div class="coverage-block">
       <div class="coverage-bar" role="img"

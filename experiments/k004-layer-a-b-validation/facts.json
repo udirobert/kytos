@@ -26,5 +26,6 @@
     "code": "tools/run_k004_layer_a_b.py",
     "data": "VCC 2026 controls (context_A/B/C.h5ad, gene_names.csv, pert_counts.csv)"
   },
-  "visual": {}
+  "visual": {},
+  "log": "First target-specific model — a context-conditioned knockdown prior with log1p transport over real control cells. pds went positive for the first time (0.002); score reached -0.149."
 }

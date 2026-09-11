@@ -4,6 +4,7 @@
 {{ nav | safe }}
 <main class="content" id="main-content" tabindex="-1">
   {{ run_header | safe }}
+  {% if log_text %}<p class="run-log-lede">{{ log_text }}</p>{% endif %}
   {% if scorecard %}
   <section class="panel scorecard-panel">
     <div class="panel-header">

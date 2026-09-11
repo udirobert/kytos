@@ -19,6 +19,7 @@
         {% if latest_rank %}Rank <strong>{{ latest_rank }}</strong>{% endif %}
         {% if latest_overall is not none %} · Score <strong>{{ "%.3f" | format(latest_overall) }}</strong>{% endif %}
         · VCC 2026 validation
+        {% if days_left is not none %} · <span class="deadline">{{ days_left }} days to submit</span>{% endif %}
       </p>
       {% endif %}
       <div class="hero-actions">
@@ -55,6 +56,16 @@
       <p class="muted">The point of publishing every run is that the trajectory is honest — including the dead ends.</p>
     </div>
     {{ trajectory | safe }}
+  </section>
+  {% endif %}
+
+  {% if run_log %}
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Run log</h2>
+      <p class="muted">What we tried, what happened, what it cost — in order.</p>
+    </div>
+    {{ run_log | safe }}
   </section>
   {% endif %}
 

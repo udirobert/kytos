@@ -32,5 +32,6 @@
     "code": "tools/run_k006_replogle_prior.py",
     "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas"
   },
-  "visual": {}
+  "visual": {},
+  "log": "Replogle K562 genome-wide Perturb-seq — real CRISPRi signatures for 272 of 300 targets. Score -0.021, rank 534, pds 0.265. The 28 targets outside Replogle still use the hand-tuned prior."
 }

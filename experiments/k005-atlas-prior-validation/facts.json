@@ -21,5 +21,6 @@
     "code": "tools/run_k005_atlas_prior.py",
     "data": "VCC 2026 controls + 2025 VCC validation Atlas (4/300 target overlap)"
   },
-  "visual": {}
+  "visual": {},
+  "log": "Atlas-prior attempt — the 2025 validation set only overlaps 4 of 300 2026 targets. Built and verified but never submitted: coverage, not the prior, was the bottleneck. This run is why we went broad."
 }

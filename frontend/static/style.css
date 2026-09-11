@@ -765,6 +765,136 @@ code {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
+   DEADLINE, SPARKLINES, RUN LOG, GENE CHIPS
+   ════════════════════════════════════════════════════════════════════════ */
+
+.deadline {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.run-sparkline {
+  display: block;
+  width: 140px;
+  height: 34px;
+  margin: 0.25rem 0 0.15rem;
+}
+
+.spark-line {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.spark-dot {
+  fill: var(--line);
+}
+
+.spark-dot-current {
+  fill: var(--accent);
+  stroke: var(--bg-panel);
+  stroke-width: 1.5;
+}
+
+.run-log-lede {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ink);
+  max-width: 68ch;
+  margin: 0 0 1.5rem;
+  padding: 0 0.25rem;
+}
+
+.run-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.log-entry {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  text-decoration: none;
+  margin-bottom: 0.25rem;
+}
+
+.log-head:hover .log-run {
+  color: var(--accent);
+}
+
+.log-run {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.log-score {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.log-score-na {
+  color: var(--muted);
+}
+
+.log-text {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+
+.gene-chip {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  margin: 0.15rem 0.25rem 0.15rem 0;
+  color: var(--ink);
+}
+
+.gene-chip-list {
+  padding: 0.5rem 0 0.25rem;
+}
+
+.fallback-genes summary {
+  font-size: 0.85rem;
+  color: var(--accent);
+  cursor: pointer;
+  list-style: none;
+  padding: 0.35rem 0;
+}
+
+.fallback-genes summary::-webkit-details-marker {
+  display: none;
+}
+
+.fallback-genes summary::before {
+  content: "▸ ";
+}
+
+.fallback-genes[open] summary::before {
+  content: "▾ ";
+}
+
+/* ════════════════════════════════════════════════════════════════════════
    RUN CARDS + GRID
    ════════════════════════════════════════════════════════════════════════ */
 
