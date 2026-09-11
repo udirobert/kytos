@@ -619,7 +619,10 @@ def render_home(
                 "latest_headline": latest.facts.get("headline", latest.run_id),
                 "latest_metrics": _metrics_line_from_facts(latest.facts),
                 "latest_created": latest.facts.get("created", ""),
+                "latest_rank": (latest.meta.get("scores") or {}).get("rank"),
+                "latest_overall": (latest.facts.get("headline_metrics") or {}).get("overall"),
                 "matrix": _runs_comparison_matrix(runs, root_prefix=root_prefix),
+                "trajectory": _score_trajectory_svg(runs),
             }
         )
 
@@ -741,6 +744,8 @@ def _metrics_line_from_facts(facts: dict) -> str:
         elif ceil is not None and float(ceil) > 0:
             pct = int(round(100 * float(val) / float(ceil)))
             parts.append(f"{label} {pct}% ceiling")
+        elif isinstance(val, (int, float)):
+            parts.append(f"{label} {val:.3f}")
         else:
             parts.append(f"{label} {val}")
     warns = sum(1 for f in facts.get("audit_flags") or [] if f.get("severity") in ("warn", "error"))
@@ -1020,10 +1025,76 @@ def render_runs_index(
         "nav": _nav("runs", runs, root_prefix=root_prefix),
         "header": header,
         "matrix": matrix,
+        "trajectory": _score_trajectory_svg(runs),
         "cards": cards,
         "insight_cards": insight_cards,
     }
     return render_template("runs_index.html", **context)
+
+
+def _score_trajectory_svg(runs: list[RunSummary]) -> str:
+    """Simple SVG sparkline of overall VCC score across runs.
+
+    Scores are negative (lower is better in raw terms, but the leaderboard
+    normalizes so higher = better); we plot raw overall values with a filled
+    area so the improvement trend is immediately visible.
+    """
+    pts = []
+    for run in runs:
+        m = run.facts.get("headline_metrics") or {}
+        v = m.get("overall")
+        if v is not None:
+            pts.append((run.run_id, float(v), run))
+    # Chronological order — use meta.created_at (ISO) when present so k004
+    # resampling (before layer-a-b) sits in the right slot even though the
+    # directory names sort alphabetically.
+    pts.sort(key=lambda p: p[2].meta.get("created_at") or p[2].facts.get("created") or "")
+    pts = [(rid, v) for rid, v, _ in pts]
+    if len(pts) < 2:
+        return ""
+
+    w, h, pad = 640, 180, 34
+    lo = min(v for _, v in pts)
+    hi = max(v for _, v in pts)
+    span = hi - lo if hi != lo else 1.0
+    n = len(pts)
+    step = (w - 2 * pad) / (n - 1)
+
+    def xy(i: int, v: float) -> tuple[float, float]:
+        x = pad + i * step
+        y = pad + (1 - (v - lo) / span) * (h - 2 * pad)
+        return x, y
+
+    poly = " ".join(f"{xy(i, v)[0]:.1f},{xy(i, v)[1]:.1f}" for i, (_, v) in enumerate(pts))
+    area = f"{poly} {xy(n - 1, lo)[0]:.1f},{h - pad} {xy(0, lo)[0]:.1f},{h - pad}"
+    dots = "".join(
+        f'<circle class="traj-dot" cx="{xy(i, v)[0]:.1f}" cy="{xy(i, v)[1]:.1f}" r="4">'
+        f"<title>{_h(rid)} · {v:.3f}</title></circle>"
+        for i, (rid, v) in enumerate(pts)
+    )
+    labels = "".join(
+        f'<text class="traj-label" x="{xy(i, v)[0]:.1f}" y="{xy(i, v)[1] - 12:.1f}" '
+        f'text-anchor="middle">{v:.3f}</text>'
+        for i, (_, v) in enumerate(pts)
+    )
+    first, last = pts[0], pts[-1]
+    delta = last[1] - first[1]
+    caption = (
+        f'<p class="traj-caption">Score trajectory: '
+        f"<strong>{first[1]:.3f}</strong> → <strong>{last[1]:.3f}</strong> "
+        f"(Δ {delta:+.3f} over {n} runs)</p>"
+    )
+    return f"""
+    <div class="score-trajectory" role="img" aria-label="Score trajectory across runs">
+      <svg class="traj-svg" viewBox="0 0 {w} {h}" preserveAspectRatio="xMidYMid meet">
+        <polygon class="traj-area" points="{area}"/>
+        <polyline class="traj-line" points="{poly}"/>
+        {dots}
+        {labels}
+      </svg>
+      {caption}
+    </div>
+    """
 
 
 def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
@@ -1911,9 +1982,55 @@ def _run_header_compact(
       <h1 class="run-header-title">{_h(facts.get("headline", run.run_id))}</h1>
       {status_badge}
       {score_line}
+      {_run_stat_grid(run)}
       {media}
     </header>
     """
+
+
+def _run_stat_grid(run: RunSummary) -> str:
+    """Compact stat grid under the run header: rank, coverage, scale, cost.
+
+    Values come from meta.json — the run's own record — so the grid only
+    shows what actually happened (no placeholders).
+    """
+    meta = run.meta or {}
+    scores = meta.get("scores") or {}
+    model = meta.get("model") or {}
+    inp = meta.get("input") or {}
+    prov = run.facts.get("provenance") or {}
+
+    stats: list[tuple[str, str]] = []
+    rank = scores.get("rank")
+    if rank:
+        stats.append(("Leaderboard rank", f"#{rank}"))
+    overall = scores.get("overall")
+    if overall is not None:
+        stats.append(("Overall score", f"{float(overall):.3f}"))
+    cov = model.get("replogle_used") or model.get("atlas_used")
+    if cov:
+        stats.append(("Targets w/ real signature", f"{cov}/300"))
+    fb = model.get("fallback_targets")
+    if fb:
+        stats.append(("Fallback targets", str(fb)))
+    cells = inp.get("total_cells")
+    if cells:
+        stats.append(("Cells predicted", f"{int(cells):,}"))
+    cost = meta.get("cost_estimate_usd")
+    if cost:
+        stats.append(("Compute cost", f"${cost:.2f}"))
+    strategy = meta.get("strategy") or prov.get("strategy")
+    if strategy:
+        stats.append(("Strategy", str(strategy)))
+
+    if not stats:
+        return ""
+    items = "".join(
+        f'<div class="stat"><span class="stat-label">{_h(k)}</span>'
+        f'<span class="stat-val">{_h(v)}</span></div>'
+        for k, v in stats
+    )
+    return f'<div class="run-stat-grid">{items}</div>'
 
 
 def _run_header_media(visual: dict, facts: dict, *, run_path: Any = None) -> str:

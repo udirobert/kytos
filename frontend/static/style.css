@@ -433,6 +433,17 @@ code {
   margin: 0 0 1.5rem;
 }
 
+.hero-standing {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+}
+
+.hero-standing strong {
+  color: var(--accent);
+}
+
 .hero-actions {
   display: flex;
   gap: 0.75rem;
@@ -509,6 +520,91 @@ code {
   margin: 0.5rem 0 0;
   font-size: 0.75rem;
   text-align: center;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SCORE TRAJECTORY
+   ════════════════════════════════════════════════════════════════════════ */
+
+.score-trajectory {
+  margin: 0.5rem 0 0;
+}
+
+.traj-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+}
+
+.traj-area {
+  fill: var(--accent-dim);
+}
+
+.traj-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.traj-dot {
+  fill: var(--accent);
+  stroke: var(--bg-panel);
+  stroke-width: 2;
+}
+
+.traj-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  fill: var(--muted);
+}
+
+.traj-caption {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0;
+  text-align: center;
+}
+
+.traj-caption strong {
+  color: var(--accent);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   RUN STAT GRID
+   ════════════════════════════════════════════════════════════════════════ */
+
+.run-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0 0;
+}
+
+.stat {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.85rem;
+}
+
+.stat-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.15rem;
+}
+
+.stat-val {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
 }
 
 /* ════════════════════════════════════════════════════════════════════════

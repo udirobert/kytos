@@ -14,6 +14,13 @@
         publish the score, the biological failures the score misses, the evidence
         behind them, and the commands to reproduce it.
       </p>
+      {% if latest_rank or latest_overall is not none %}
+      <p class="hero-standing">
+        {% if latest_rank %}Rank <strong>{{ latest_rank }}</strong>{% endif %}
+        {% if latest_overall is not none %} · Score <strong>{{ "%.3f" | format(latest_overall) }}</strong>{% endif %}
+        · VCC 2026 validation
+      </p>
+      {% endif %}
       <div class="hero-actions">
         <a class="button" href="{{ run_href }}">Inspect latest run &rarr;</a>
         <a class="button button-secondary" href="{{ runs_href }}">Compare every run &rarr;</a>
@@ -40,6 +47,16 @@
       </div>
     </a>
   </section>
+
+  {% if trajectory %}
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Score trajectory</h2>
+      <p class="muted">The point of publishing every run is that the trajectory is honest — including the dead ends.</p>
+    </div>
+    {{ trajectory | safe }}
+  </section>
+  {% endif %}
 
   <section class="panel">
     <div class="panel-header">

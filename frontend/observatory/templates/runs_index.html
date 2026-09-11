@@ -4,6 +4,15 @@
 {{ nav | safe }}
 <main class="content" id="main-content" tabindex="-1">
   {{ header | safe }}
+  {% if trajectory %}
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Score trajectory</h2>
+      <p class="muted">Overall VCC score across runs — the story is the slope, not any single point.</p>
+    </div>
+    {{ trajectory | safe }}
+  </section>
+  {% endif %}
   <section class="panel">
     <div class="panel-header">
       <h2>Cross-experiment matrix</h2>
