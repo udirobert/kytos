@@ -101,6 +101,8 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
   <link rel="icon" href="{_h(icon_href)}" type="image/svg+xml" sizes="any">
   <link rel="apple-touch-icon" href="{_h(apple_href)}" sizes="180x180">
   <link rel="manifest" href="{_h(manifest_href)}">
+  <link rel="alternate" type="application/rss+xml" title="{_h(SITE_TITLE)}"
+        href="{_h(origin)}/feed.xml">
   <meta property="og:site_name" content="{_h(SITE_TITLE)}">
   <meta property="og:title" content="{_h(full_title)}">
   <meta property="og:description" content="{_h(meta.description)}">
@@ -161,4 +163,58 @@ def render_sitemap_xml(paths: list[str]) -> str:
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {urls}
 </urlset>
+"""
+
+
+def render_feed_xml(runs: list) -> str:
+    """RSS 2.0 feed of the run log — one item per run, newest first.
+
+    Every new run becomes a feed item carrying its score + log paragraph, so
+    subscribers see each submission the moment Netlify redeploys.
+    """
+    from email.utils import format_datetime
+    from datetime import datetime, timezone
+
+    origin = site_url()
+    items = []
+    dated = sorted(
+        runs,
+        key=lambda r: r.meta.get("created_at") or r.facts.get("created") or "",
+        reverse=True,
+    )
+    for run in dated:
+        facts = run.facts
+        m = facts.get("headline_metrics") or {}
+        overall = m.get("overall")
+        score = f"{float(overall):+.3f}" if overall is not None else "not submitted"
+        title = f"{run.run_id} — {score}"
+        link = f"{origin}/runs/{run.run_id}/"
+        desc = facts.get("log") or facts.get("headline") or run.run_id
+        raw = run.meta.get("created_at") or facts.get("created") or ""
+        try:
+            dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except ValueError:
+            dt = datetime.now(timezone.utc)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        pub = format_datetime(dt)
+        items.append(
+            f"""  <item>
+    <title>{html.escape(title)}</title>
+    <link>{html.escape(link)}</link>
+    <guid isPermaLink="true">{html.escape(link)}</guid>
+    <pubDate>{pub}</pubDate>
+    <description>{html.escape(desc)}</description>
+  </item>"""
+        )
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>{html.escape(SITE_TITLE)}</title>
+  <link>{html.escape(origin)}/</link>
+  <description>{html.escape(SITE_DESCRIPTION)}</description>
+  <atom:link href="{html.escape(origin)}/feed.xml" rel="self" type="application/rss+xml"/>
+{chr(10).join(items)}
+</channel>
+</rss>
 """

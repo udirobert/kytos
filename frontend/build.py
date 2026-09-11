@@ -21,8 +21,13 @@ from frontend.observatory.render import (  # noqa: E402 - after sys.path bootstr
     render_run_detail,
     render_runs_index,
 )
-from frontend.observatory.meta import render_robots_txt, render_sitemap_xml  # noqa: E402
+from frontend.observatory.meta import (  # noqa: E402
+    render_feed_xml,
+    render_robots_txt,
+    render_sitemap_xml,
+)
 from frontend.observatory.runs import discover_runs  # noqa: E402
+from frontend.observatory.sharecard import render_share_card  # noqa: E402
 from frontend.observatory.shorts import (  # noqa: E402
     load_chronicle,
     render_short,
@@ -129,10 +134,31 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         render_runs_index(runs, root_prefix="../", js_version=js_hash), encoding="utf-8"
     )
 
+    # Per-run OG share cards — a scored run gets a 1200×630 PNG with its
+    # actual result in the unfurl. Requires Pillow; runs without scores skip.
+    ordered_runs = sorted(
+        runs, key=lambda r: r.meta.get("created_at") or r.facts.get("created") or ""
+    )
+    traj = [
+        float((r.facts.get("headline_metrics") or {})["overall"])
+        for r in ordered_runs
+        if (r.facts.get("headline_metrics") or {}).get("overall") is not None
+    ]
+
     for run in runs:
         run_out = runs_dir / run.run_id
         run_out.mkdir(parents=True)
         media_prefix = _copy_run_media(run.path, run_out)
+        scores = run.meta.get("scores") or run.facts.get("headline_metrics") or {}
+        og_card = False
+        if scores.get("overall") is not None:
+            og_card = render_share_card(
+                run.run_id,
+                str(run.facts.get("headline") or run.run_id),
+                scores,
+                traj,
+                run_out / "og-card.png",
+            )
         # Provenance drill-down: ship the committed metrics CSVs next to the page
         # so every headline value links to its actual source file.
         metrics_src = run.path / "metrics"
@@ -149,6 +175,7 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
             root_prefix="../../",
             media_prefix=media_prefix,
             js_version=js_hash,
+            og_card=og_card,
         )
         (run_out / "index.html").write_text(html, encoding="utf-8")
 
@@ -180,6 +207,7 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         sitemap_paths += ["/shorts/"] + [f"/shorts/{shot.slug}/" for shot in chronicle.shorts]
     (out_dir / "robots.txt").write_text(render_robots_txt(), encoding="utf-8")
     (out_dir / "sitemap.xml").write_text(render_sitemap_xml(sitemap_paths), encoding="utf-8")
+    (out_dir / "feed.xml").write_text(render_feed_xml(runs), encoding="utf-8")
 
     print(f"Built {len(runs)} run(s) → {out_dir}")
 

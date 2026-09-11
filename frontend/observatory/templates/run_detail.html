@@ -13,6 +13,7 @@
     </div>
     {{ scorecard | safe }}
     {% if coverage %}{{ coverage | safe }}{% endif %}
+    {% if share_links %}{{ share_links | safe }}{% endif %}
   </section>
   {% endif %}
   {% if next_steps %}{{ next_steps | safe }}{% endif %}

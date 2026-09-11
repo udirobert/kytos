@@ -1244,6 +1244,7 @@ def render_run_detail(
     root_prefix: str = "../../",
     media_prefix: str = "",
     js_version: str = "",
+    og_card: bool = False,
 ) -> str:
     facts = run.facts
     metrics_names, scores, ceilings = data_mod.load_metrics(run.path / "metrics")
@@ -1340,7 +1341,9 @@ def render_run_detail(
     if headline_m:
         desc_bits.append(" · ".join(f"{k} {headline_m.get(k)}" for k in headline_m))
     run_desc = " ".join(desc_bits)[:300]
-    og_image = visual.get("hero")  # run-relative; meta.py resolves it
+    # Prefer the generated score card when build.py rendered one — it carries
+    # the actual result in the link unfurl, unlike a decorative hero.
+    og_image = "og-card.png" if og_card else visual.get("hero")
 
     meta = PageMeta(
         title=run.run_id,
@@ -1381,6 +1384,7 @@ def render_run_detail(
         "coverage": _coverage_panel(run),
         "next_steps": _next_steps_panel(run),
         "log_text": facts.get("log"),
+        "share_links": _share_links(run),
         "panel_audit": _disclosure_section(
             "Audit & metrics",
             _audit_summary(facts),
@@ -2224,6 +2228,40 @@ def _next_steps_panel(run: RunSummary) -> str:
       <summary><span class="disclosure-title">What&rsquo;s next</span></summary>
       <ul class="next-steps-list">{items}</ul>
     </details>"""
+
+
+def _share_links(run: RunSummary) -> str:
+    """Share row for a run page — pre-filled tweet intent + RSS link.
+
+    Turns readers into amplifiers: one click posts the score, rank and run
+    URL. Text is built from facts/meta so it always reflects the real result.
+    """
+    from frontend.observatory.meta import site_url
+
+    scores = run.meta.get("scores") or run.facts.get("headline_metrics") or {}
+    overall = scores.get("overall")
+    rank = scores.get("rank") or (run.meta.get("scores") or {}).get("rank")
+    if overall is None:
+        return ""
+    url = f"{site_url()}/runs/{run.run_id}/"
+    bits = [f"Kytos {run.run_id}: score {float(overall):+.3f}"]
+    if rank:
+        bits[0] += f", rank #{rank}"
+    bits.append("in the Virtual Cell Challenge 2026")
+    bits.append("— every run published, failures included")
+    text = " ".join(bits)
+    intent = (
+        f"https://twitter.com/intent/tweet?text={urllib.parse.quote(text)}"
+        f"&url={urllib.parse.quote(url)}"
+    )
+    return (
+        '<div class="share-row">'
+        f'<a class="share-link" href="{intent}" target="_blank" rel="noopener">'
+        "Share this run ↗</a>"
+        f'<a class="share-link share-link-muted" href="{_h(site_url())}/feed.xml">'
+        "RSS · every run</a>"
+        "</div>"
+    )
 
 
 def _run_header_media(visual: dict, facts: dict, *, run_path: Any = None) -> str:
