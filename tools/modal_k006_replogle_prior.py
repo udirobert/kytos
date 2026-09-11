@@ -138,6 +138,32 @@ def build_and_prep(max_targets: int = 0, submit: bool = False) -> dict:
     }
 
 
+@app.function(
+    image=modal.Image.debian_slim().apt_install("git", "curl", "unzip").pip_install("vcc-cli"),
+    timeout=60 * 60 * 2,
+    volumes={"/kytos-vol": vol},
+    secrets=[modal.Secret.from_name("kytos-vcc")],
+)
+def submit_from_volume() -> dict:
+    """Submit the persisted .vcc from the Modal Volume."""
+    vcc_path = "/kytos-vol/k006-replogle-prior/prediction.prep.vcc"
+    print(f"submitting {vcc_path}", flush=True)
+    result = subprocess.run(
+        [
+            "vcc",
+            "submit",
+            vcc_path,
+            "--model-name",
+            "kytos-k006-replogle-prior",
+            "--wait",
+        ],
+        stdout=None,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    return {"status": "ok", "returncode": result.returncode}
+
+
 @app.local_entrypoint()
 def main():
     result = build_and_prep.remote()
