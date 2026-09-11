@@ -190,16 +190,17 @@ def smoke_test() -> dict:
         f"  --raw-dir {RAW_DIR} \\\n"
         f"  --atlas-src {ATLAS_DIR}/adata_Validation.h5ad \\\n"
         f"  --out-dir {OUT_DIR}-smoke \\\n"
-        "  --contexts A \\\n"
+        "  --contexts A,B,C \\\n"
         "  --max-targets 30"
     )
     run_step("build k005 Atlas-prior smoke", build_cmd)
 
     prep_cmd = (
         f"cd {REPO_DIR}\n"
+        "head -n 31 data/raw/vcc2026/pert_counts.csv > /tmp/pert_counts_smoke.csv\n"
         "vcc prep --dry-run \\\n"
         f"  -g {RAW_DIR}/gene_names.csv \\\n"
-        f"  --perts {RAW_DIR}/pert_counts.csv \\\n"
+        "  --perts /tmp/pert_counts_smoke.csv \\\n"
         f"  {OUT_DIR}-smoke/prediction.h5ad"
     )
     run_step("vcc prep --dry-run", prep_cmd)
