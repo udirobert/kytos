@@ -1,0 +1,53 @@
+{
+  "run_id": "k004-layer-a-b-validation",
+  "status": "submitted",
+  "model_name": "kytos-k004-layer-a-b",
+  "entry_id": "EhWrsnmDz34D0OLfJYGv",
+  "created_at": "2026-09-11T00:15:44Z",
+  "completed_at": "2026-09-11T00:54:52+01:00",
+  "modal_app_id": "ap-uCMFW1C7PE6FL5Y8y9AUh8",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": ["A", "B", "C"],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2020509763
+  },
+  "prediction": {
+    "h5ad": "experiments/k004-layer-a-b-validation/prediction.h5ad",
+    "vcc": "experiments/k004-layer-a-b-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "note": "produced on Modal; not persisted locally because the files exceed local storage and git limits"
+  },
+  "scores": {
+    "rank": 656,
+    "overall": -0.14919597503500978,
+    "pds": 0.0018958041386124703,
+    "mse": 0,
+    "nmae": -0.8114418119149516,
+    "fid": -0.07472922418882484,
+    "reach": -0.00157021939196033,
+    "jac": -0.009330398852934315,
+    "partition": "val",
+    "panel": "vcc2026-val-1",
+    "anchor_set": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4"
+  },
+  "cost_estimate_usd": 0.75,
+  "cost_note": "64 GiB / 4-core Modal Function for ~54 min (build + write + prep + upload + scoring) at $0.000194/s, plus image build",
+  "script": "tools/modal_k004_layer_a_b_submit.py",
+  "runner": "tools/run_k004_layer_a_b.py",
+  "layer_a_b_params": {
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "commit": "a51c5d2"
+}

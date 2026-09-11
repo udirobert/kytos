@@ -1,6 +1,6 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-09-11** after the k004 Modal full-panel submission.
+> Last updated **2026-09-11** after the k004 Layer A/B Modal submission.
 
 This file is the ground truth for any agent working on the Kytos 2026 Virtual
 Cell Challenge repo. It overrides generic assumptions about "local dev" because
@@ -77,6 +77,11 @@ to git.
   It scored **overall -0.304** (rank 765), confirming real single-cell
   dispersion helps, while `pds` stays near zero until a target-specific signal
   is added.
+- A `kytos-k004-layer-a-b` full-panel target-specific model
+  (`ContextConditionedTransfer` + log1p `AdditiveTransportSampler`) was
+  submitted on Modal. It scored **overall -0.149** (rank 656) with `pds`
+  positive (0.0019), confirming the target-specific knockdown signal is
+  detectable.
 
 ---
 

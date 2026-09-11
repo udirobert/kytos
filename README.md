@@ -17,7 +17,8 @@ literature evidence, and video briefings for community scrutiny.
 | **k001** | Audit-probe — deliberately fails its own audit (ACTB shifted +2.10 log2FC) | `probe` |
 | **k002** | First real run — VCC 2025 validation, 98,927 cells, 50 targets, cell-eval 0.8.2 | `real` (subsample) |
 | **k003** | Sparse mean-shift baseline — VCC 2026 validation, 360k cells, 300 targets × 3 contexts, `vcc` 0.2.0 | `real` (submitted; score -0.948) |
-| **k004** | Real control-cell resampling baseline — VCC 2026 validation, 360k cells, 300 targets × 3 contexts, `vcc` 0.2.0 on Modal 64 GiB | `real` (submitted; score -0.304, rank 765) |
+| **k004-resample** | Real control-cell resampling baseline — VCC 2026 validation, 360k cells, 300 targets × 3 contexts, `vcc` 0.2.0 on Modal 64 GiB | `real` (submitted; score -0.304, rank 765) |
+| **k004-layer-a-b** | Context-conditioned gene transfer + log1p transport (Layer A/B) — first target-specific Kytos model on Modal 64 GiB | `real` (submitted; score -0.149, rank 656) |
 
 See [`experiments/README.md`](experiments/README.md) for run details,
 [`docs/k002-retro.md`](docs/k002-retro.md) for process notes, and
@@ -89,14 +90,17 @@ cell-distribution sampling; docs and `AGENTS.md` now mandate
 **external-first compute** (VPS / Vast / RunPod / Kaggle / Brev) for heavy
 work.
 
-**2026-09-10:** k004 full-panel run on Modal: real control-cell resampling
-(300 targets × 3 contexts × 400 cells) generated a 2.08B-nnz, 360k × 18,533
-prediction. `vcc prep` passed and `vcc submit` completed. Score: **overall -0.304**
-(rank 765) vs k003 -0.948. Modal cost: ~$0.43 (64 GiB / 4-core Function, ~35 min
-including upload). The big gain comes from real single-cell dispersion; `pds`
-is still near zero because the prediction is not yet target-specific.
+**2026-09-11:** k004 Layer A/B on Modal: context-conditioned gene transfer
+(ContextConditionedTransfer) + log1p transport (AdditiveTransportSampler) produced
+a target-specific 360k × 18,533 prediction. `vcc prep` and `vcc submit` passed.
+Score: **overall -0.149** (rank 656), improving on k004-resample (-0.304) and
+k003 (-0.948). `pds` is now positive (0.0019), confirming the target-specific
+knockdown signal is detectable. Modal cost: ~$0.75 (64 GiB / 4-core Function,
+~54 min). The next gains are in better secondary-effect modeling and real
+perturbation priors (2025 Atlas / public CRISPRi data).
 
-Next: add a target-specific perturbation signature (Layer A / gene-level
-transfer) to improve `pds` and `fid`, then run another Modal submission.
+Next: tune Layer A knockdown/attenuation parameters, incorporate cross-context
+priors, and optionally add real perturbation training data. Continue using
+Modal for full-panel submissions.
 See [`docs/architecture.md §4`](docs/architecture.md#4-compute-ladder-do-not-design-around-brev)
 and [`AGENTS.md`](AGENTS.md) for compute rules.

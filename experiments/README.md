@@ -38,6 +38,14 @@ prediction outputs.
   Script: [`tools/run_k004_real_resampling.py`](../tools/run_k004_real_resampling.py);
   launcher: [`tools/modal_k004_submit.py`](../tools/modal_k004_submit.py);
   meta: [`experiments/k004-real-resampling-validation/meta.json`](k004-real-resampling-validation/meta.json).
+- `k004-layer-a-b-validation` — first target-specific Kytos model on Modal
+  (2026-09-11): context-conditioned gene transfer (`ContextConditionedTransfer`)
+  + log1p transport (`AdditiveTransportSampler`). 360,000 cells, 300 targets
+  × 3 contexts. `vcc prep` + `vcc submit` passed. Overall score **-0.149**
+  (rank 656), with `pds` turning positive (0.0019). Cost ~$0.75 on a 64 GiB /
+  4-core Modal Function. Script: [`tools/run_k004_layer_a_b.py`](../tools/run_k004_layer_a_b.py);
+  launcher: [`tools/modal_k004_layer_a_b_submit.py`](../tools/modal_k004_layer_a_b_submit.py);
+  meta: [`experiments/k004-layer-a-b-validation/meta.json`](k004-layer-a-b-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**
