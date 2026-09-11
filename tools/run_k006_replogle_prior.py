@@ -1,15 +1,13 @@
-"""Kytos k005 — 2025 Atlas perturbation prior + log1p transport.
+"""Kytos k006 — Replogle K562 GWPS + optional 2025 Atlas prior + log1p transport.
 
-Uses the VCC 2025 validation set (public Arc bucket) to learn per-target
-perturbation signatures, then transfers them onto the 2026 control cells.
+Uses public perturbation datasets to cover as many 2026 targets as possible:
 
-For each 2026 target:
-  1. If the target was perturbed in the 2025 validation, use its real
-     log1p mean-shift delta (target_perturbed_mean - control_mean).
-  2. Otherwise, fall back to ContextConditionedTransfer (target knockdown).
-  3. Sample real control cells and apply the delta in log1p space.
+  1. VCC 2025 validation (optional, H1 hESC) — in-distribution prior.
+  2. Replogle K562 genome-wide Perturb-seq bulk — broad coverage (~272/300
+     2026 targets).
+  3. ContextConditionedTransfer fallback for any remaining targets.
 
-This is the first data-driven Layer A model for Kytos.
+For each target, the preferred delta is Atlas > Replogle > fallback.
 """
 
 from __future__ import annotations
@@ -28,87 +26,50 @@ from scipy import sparse
 REPO = Path(__file__).resolve().parent.parent
 if str(REPO / "src") not in sys.path:
     sys.path.insert(0, str(REPO / "src"))
+if str(REPO / "tools") not in sys.path:
+    sys.path.insert(0, str(REPO / "tools"))
 
-from kytos.features.basal import extract_basal_context  # noqa: E402
 from kytos.models.layer_a import ContextConditionedTransfer  # noqa: E402
 from kytos.models.layer_b import AdditiveTransportSampler  # noqa: E402
-from perturbation_priors import build_atlas_deltas  # noqa: E402
+from perturbation_priors import (  # noqa: E402
+    build_atlas_deltas,
+    build_replogle_deltas,
+)
+from run_k005_atlas_prior import (  # noqa: E402
+    CONTEXT_COL,
+    PERT_COL,
+    build_context_predictions,
+)
 
-PERT_COL = "target_gene"
-CONTEXT_COL = "context"
 
+def build_combined_deltas(
+    atlas_path: Path | None,
+    replogle_path: Path | None,
+    context_genes: list[str],
+    prefer_atlas: bool = True,
+) -> dict[str, np.ndarray]:
+    """Return a target→delta dict merging Atlas and Replogle priors."""
+    atlas_deltas: dict[str, np.ndarray] = {}
+    if atlas_path is not None and atlas_path.exists():
+        atlas_deltas = build_atlas_deltas(atlas_path, context_genes)
 
-def build_context_predictions(
-    context: str,
-    control_path: Path,
-    targets: list[str],
-    gene_order: list[str],
-    cells_per_pert: int,
-    rng: np.random.Generator,
-    atlas_deltas: dict[str, np.ndarray],
-    fallback: ContextConditionedTransfer,
-    sampler: AdditiveTransportSampler,
-) -> tuple[sparse.csr_matrix, pd.DataFrame]:
-    """Return a sparse prediction for one context using Atlas priors."""
-    print(f"[{context}] loading {control_path.name} ...", flush=True)
-    ctrl = ad.read_h5ad(str(control_path))
-    X_ctrl = ctrl.X.tocsr() if not sparse.isspmatrix_csr(ctrl.X) else ctrl.X
-    n_cells, n_genes = X_ctrl.shape
-    assert n_genes == len(gene_order)
+    replogle_deltas: dict[str, np.ndarray] = {}
+    if replogle_path is not None and replogle_path.exists():
+        replogle_deltas = build_replogle_deltas(replogle_path, context_genes)
 
-    basal = extract_basal_context(X_ctrl, gene_order)
+    combined: dict[str, np.ndarray] = {}
+    for tgt, delta in replogle_deltas.items():
+        combined[tgt] = delta
+    for tgt, delta in atlas_deltas.items():
+        if prefer_atlas or tgt not in combined:
+            combined[tgt] = delta
+
     print(
-        f"  basal: {n_cells} cells, mean nnz/cell {ctrl.X.nnz / ctrl.n_obs:.1f}",
+        f"[prior] combined deltas: atlas={len(atlas_deltas)} "
+        f"replogle={len(replogle_deltas)} combined={len(combined)}",
         flush=True,
     )
-
-    blocks: list[sparse.csr_matrix] = []
-    obs_parts: list[pd.DataFrame] = []
-    n_targets = len(targets)
-    used_atlas = 0
-    used_fallback = 0
-    for i, tgt in enumerate(targets):
-        if i % 50 == 0:
-            print(f"  [{context}] {i}/{n_targets} {tgt}", flush=True)
-
-        if tgt in atlas_deltas:
-            delta = atlas_deltas[tgt]
-            used_atlas += 1
-        else:
-            delta = fallback.predict_delta(tgt, basal)
-            used_fallback += 1
-
-        idx = rng.choice(n_cells, size=cells_per_pert, replace=True)
-        basal_slice = X_ctrl[idx].todense().astype(np.float32)
-
-        log_basal = np.log1p(basal_slice, out=np.empty_like(basal_slice))
-        seed = int(rng.integers(0, 1_000_000))
-        perturbed = sampler.sample_cells(
-            log_basal, delta.astype(np.float32), n_samples=cells_per_pert, seed=seed
-        )
-        perturbed = np.expm1(perturbed)
-        np.clip(perturbed, a_min=0.0, a_max=None, out=perturbed)
-        perturbed = np.rint(perturbed).astype(np.float32)
-
-        blocks.append(sparse.csr_matrix(perturbed))
-        obs_parts.append(
-            pd.DataFrame(
-                {
-                    PERT_COL: [tgt] * cells_per_pert,
-                    CONTEXT_COL: [context] * cells_per_pert,
-                }
-            )
-        )
-
-    X_pred = sparse.vstack(blocks, format="csr")
-    obs = pd.concat(obs_parts, ignore_index=True)
-    print(
-        f"  [{context}] built {X_pred.shape[0]} cells x {X_pred.shape[1]} genes, "
-        f"nnz {X_pred.nnz:,} ({X_pred.nnz / (X_pred.shape[0] * X_pred.shape[1]):.3%} dense), "
-        f"atlas={used_atlas} fallback={used_fallback}",
-        flush=True,
-    )
-    return X_pred, obs
+    return combined
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -117,12 +78,19 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--atlas-src",
         type=Path,
-        default=REPO / "data" / "raw" / "vcc2025" / "adata_Validation.h5ad",
+        default=None,
+        help="optional VCC 2025 validation h5ad",
+    )
+    ap.add_argument(
+        "--replogle-src",
+        type=Path,
+        required=True,
+        help="Replogle K562 GWPS raw bulk h5ad",
     )
     ap.add_argument(
         "--out-dir",
         type=Path,
-        default=REPO / "experiments" / "k005-atlas-prior-validation",
+        default=REPO / "experiments" / "k006-replogle-prior-validation",
     )
     ap.add_argument("--contexts", default="A,B,C", help="comma-separated contexts")
     ap.add_argument("--cells-per-pert", type=int, default=400)
@@ -131,6 +99,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--knockdown-efficiency", type=float, default=2.5)
     ap.add_argument("--attenuation-factor", type=float, default=0.5)
     ap.add_argument("--noise-scale", type=float, default=0.05)
+    ap.add_argument(
+        "--prefer-atlas",
+        action="store_true",
+        default=True,
+        help="prefer 2025 Atlas deltas over Replogle when both exist",
+    )
     args = ap.parse_args(argv)
 
     raw_dir: Path = args.raw_dir
@@ -147,11 +121,16 @@ def main(argv: list[str] | None = None) -> int:
     targets = all_targets[: args.max_targets] if args.max_targets else all_targets
     contexts = [c.strip() for c in args.contexts.split(",") if c.strip()]
 
-    if not args.atlas_src.exists():
-        print(f"missing atlas source {args.atlas_src}", file=sys.stderr)
+    if not args.replogle_src.exists():
+        print(f"missing replogle source {args.replogle_src}", file=sys.stderr)
         return 2
 
-    atlas_deltas = build_atlas_deltas(args.atlas_src, gene_order)
+    deltas = build_combined_deltas(
+        args.atlas_src,
+        args.replogle_src,
+        gene_order,
+        prefer_atlas=args.prefer_atlas,
+    )
 
     rng = np.random.default_rng(args.seed)
     fallback = ContextConditionedTransfer(
@@ -175,7 +154,7 @@ def main(argv: list[str] | None = None) -> int:
             gene_order,
             args.cells_per_pert,
             rng,
-            atlas_deltas,
+            deltas,
             fallback,
             sampler,
         )
@@ -199,9 +178,9 @@ def main(argv: list[str] | None = None) -> int:
     adata.write_h5ad(str(pred_path), compression="gzip")
 
     meta = {
-        "run_id": "k005-atlas-prior-validation",
+        "run_id": "k006-replogle-prior-validation",
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "mode": "atlas_prior",
+        "mode": "replogle_prior",
         "contexts": contexts,
         "n_targets": len(targets),
         "cells_per_pert": args.cells_per_pert,
@@ -209,8 +188,9 @@ def main(argv: list[str] | None = None) -> int:
         "n_genes": int(adata.shape[1]),
         "nnz": int(adata.X.nnz),
         "seed": args.seed,
-        "atlas_targets": len(atlas_deltas),
-        "atlas_src": str(args.atlas_src),
+        "atlas_src": str(args.atlas_src) if args.atlas_src else None,
+        "replogle_src": str(args.replogle_src),
+        "prefer_atlas": args.prefer_atlas,
     }
     (out_dir / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
 
