@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+      }
+      body { font-family: "Inter", sans-serif; }
+      .mono { font-family: "IBM Plex Mono", monospace; }
+      .serif { font-family: "Instrument Serif", serif; }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        background: #0a0a0f;
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* shared bits */
+      .kicker {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 30px;
+        letter-spacing: 0.32em;
+        color: #2dd4bf;
+        text-transform: uppercase;
+      }
+      .bigtext {
+        font-family: "Instrument Serif", serif;
+        color: #ebebf2;
+        text-align: center;
+        line-height: 1.08;
+      }
+      .subline {
+        font-family: "Inter", sans-serif;
+        color: #8c8c9e;
+        text-align: center;
+      }
+
+      /* scene 1 — one gene dims */
+      #s1-gene {
+        position: absolute;
+        left: 50%;
+        top: 44%;
+        width: 120px;
+        height: 120px;
+        margin-left: -60px;
+        margin-top: -60px;
+        border-radius: 50%;
+        background: #2dd4bf;
+      }
+      #s1-halo {
+        position: absolute;
+        left: 50%;
+        top: 44%;
+        width: 260px;
+        height: 260px;
+        margin-left: -130px;
+        margin-top: -130px;
+        border-radius: 50%;
+        border: 2px solid rgba(45, 212, 191, 0.35);
+      }
+      #s1-text {
+        position: absolute;
+        top: 56%;
+        width: 100%;
+        font-size: 96px;
+      }
+      #s1-sub {
+        position: absolute;
+        top: 66%;
+        width: 100%;
+        font-size: 34px;
+      }
+
+      /* scene 2 — the field floods */
+      #s2-grid {
+        position: absolute;
+        left: 40px;
+        top: 380px;
+        width: 1000px;
+        height: 1160px;
+      }
+      .gd {
+        position: absolute;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #26263f;
+      }
+      .gd.lit { background: #2dd4bf; }
+      #s2-text {
+        position: absolute;
+        top: 240px;
+        width: 100%;
+        font-size: 100px;
+      }
+      #s2-sub {
+        position: absolute;
+        top: 1600px;
+        width: 100%;
+        font-size: 34px;
+      }
+
+      /* scene 3 — the field's floor */
+      #s3-num {
+        position: absolute;
+        top: 34%;
+        width: 100%;
+        font-size: 220px;
+        font-weight: 600;
+        color: #ebebf2;
+        text-align: center;
+      }
+      #s3-sub {
+        position: absolute;
+        top: 52%;
+        width: 100%;
+        font-size: 44px;
+      }
+      #s3-floor {
+        position: absolute;
+        top: 62%;
+        width: 100%;
+        font-size: 40px;
+        color: #f59e0b;
+      }
+
+      /* scene 4 — the transfer */
+      #s4-chips {
+        position: absolute;
+        top: 500px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 36px;
+      }
+      .cellchip {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 38px;
+        padding: 26px 40px;
+        border: 1px solid #262634;
+        border-radius: 16px;
+        background: #12121a;
+        color: #ebebf2;
+      }
+      .cellchip.new { border-color: #2dd4bf; color: #2dd4bf; }
+      #s4-arrow { font-size: 60px; color: #2dd4bf; }
+      #s4-caption {
+        position: absolute;
+        top: 320px;
+        width: 100%;
+        font-size: 40px;
+      }
+      #s4-barwrap {
+        position: absolute;
+        left: 110px;
+        top: 760px;
+        width: 860px;
+      }
+      #s4-barlabel {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 30px;
+        color: #8c8c9e;
+        margin-bottom: 18px;
+      }
+      #s4-track {
+        width: 860px;
+        height: 56px;
+        border-radius: 10px;
+        background: #1c1c28;
+        overflow: hidden;
+      }
+      #s4-fill {
+        width: 100%;
+        height: 100%;
+        background: #2dd4bf;
+        transform-origin: left center;
+      }
+      #s4-count {
+        position: absolute;
+        top: 880px;
+        width: 100%;
+        font-size: 64px;
+        text-align: center;
+        color: #ebebf2;
+      }
+      #s4-note {
+        position: absolute;
+        top: 990px;
+        width: 100%;
+        font-size: 32px;
+        text-align: center;
+      }
+
+      /* scene 5 — payoff */
+      #s5-kicker {
+        position: absolute;
+        top: 380px;
+        width: 100%;
+        text-align: center;
+      }
+      #s5-score {
+        position: absolute;
+        top: 460px;
+        width: 100%;
+        font-size: 220px;
+        font-weight: 600;
+        color: #2dd4bf;
+        text-align: center;
+      }
+      #s5-rank {
+        position: absolute;
+        top: 760px;
+        width: 100%;
+        text-align: center;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 56px;
+        color: #ebebf2;
+      }
+      #s5-traj {
+        position: absolute;
+        left: 140px;
+        top: 1050px;
+      }
+      #s5-caption {
+        position: absolute;
+        top: 1340px;
+        width: 100%;
+        font-size: 34px;
+      }
+
+      /* scene 6 — aphorism + end card */
+      #s6-aph {
+        position: absolute;
+        top: 34%;
+        width: 100%;
+        font-size: 104px;
+        padding: 0 80px;
+      }
+      #s6-aph em { color: #2dd4bf; font-style: normal; }
+      #s6-card {
+        position: absolute;
+        top: 58%;
+        width: 100%;
+        text-align: center;
+      }
+      #s6-src {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 28px;
+        color: #8c8c9e;
+        margin-bottom: 26px;
+      }
+      #s6-url {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 40px;
+        color: #2dd4bf;
+      }
+      #s6-tag {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 26px;
+        color: #8c8c9e;
+        margin-top: 26px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="24.8"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- scene 1: cold open — one gene dims -->
+      <div id="s1" class="clip" data-start="0" data-duration="3" data-track-index="1">
+        <div id="s1-halo"></div>
+        <div id="s1-gene"></div>
+        <div id="s1-text" class="bigtext">TURN OFF ONE GENE</div>
+        <div id="s1-sub" class="subline">in a human cell</div>
+      </div>
+
+      <!-- scene 2: the field floods — predict the rest -->
+      <div id="s2" class="clip" data-start="3" data-duration="3" data-track-index="1">
+        <div id="s2-text" class="bigtext">PREDICT THE OTHER<span style="display:block">18,000</span></div>
+        <div id="s2-grid"></div>
+        <div id="s2-sub" class="subline">that is the Virtual Cell Challenge</div>
+      </div>
+
+      <!-- scene 3: context — the field's floor -->
+      <div id="s3" class="clip" data-start="6" data-duration="3" data-track-index="1">
+        <div id="s3-num" class="mono">1,200+</div>
+        <div id="s3-sub" class="subline">teams tried in 2025</div>
+        <div id="s3-floor" class="mono" style="text-align:center">most never beat the baseline</div>
+      </div>
+
+      <!-- scene 4: the transfer — borrowed catalog -->
+      <div id="s4" class="clip" data-start="9" data-duration="6" data-track-index="1">
+        <div id="s4-caption" class="subline">a genome-wide knockdown catalog, moved across cell types</div>
+        <div id="s4-chips">
+          <div class="cellchip">K562</div>
+          <div id="s4-arrow">&rarr;</div>
+          <div class="cellchip new">H1 hESC</div>
+        </div>
+        <div id="s4-barwrap">
+          <div id="s4-barlabel">TARGETS WITH REAL SIGNATURES</div>
+          <div id="s4-track"><div id="s4-fill"></div></div>
+        </div>
+        <div id="s4-count" class="mono"><span id="s4-n">0</span> / 300</div>
+        <div id="s4-note" class="subline">the 28 missing ones still use a hand-tuned guess</div>
+      </div>
+
+      <!-- scene 5: payoff — the ticker -->
+      <div id="s5" class="clip" data-start="15" data-duration="4" data-track-index="1">
+        <div id="s5-kicker" class="kicker">leaderboard &middot; run k006</div>
+        <div id="s5-score" class="mono">-0.948</div>
+        <div id="s5-rank">RANK <b style="color:#2dd4bf">#534</b> / 883</div>
+        <svg id="s5-traj" width="800" height="220" viewBox="0 0 800 220">
+          <polyline
+            id="s5-line"
+            points="40,190 290,110 540,92 760,40"
+            fill="none"
+            stroke="#2dd4bf"
+            stroke-width="4"
+          />
+          <circle cx="40" cy="190" r="7" fill="#5c5c70" />
+          <circle cx="290" cy="110" r="7" fill="#5c5c70" />
+          <circle cx="540" cy="92" r="7" fill="#5c5c70" />
+          <circle cx="760" cy="40" r="9" fill="#2dd4bf" />
+        </svg>
+        <div id="s5-caption" class="subline">four submissions &middot; about three dollars of compute</div>
+      </div>
+
+      <!-- scene 6: aphorism + source card -->
+      <div id="s6" class="clip" data-start="19" data-duration="5.8" data-track-index="1">
+        <div id="s6-aph" class="bigtext">Borrowed biology beat <em>invented biology.</em></div>
+        <div id="s6-card">
+          <div id="s6-src">(Source: Replogle et al., genome-scale Perturb-seq)</div>
+          <div id="s6-url">kytosapp.netlify.app</div>
+          <div id="s6-tag">every run published &middot; failures included</div>
+        </div>
+      </div>
+
+      <!-- VO: three lines placed on their beats (silence gaps are intentional) -->
+      <audio id="vo1" src="assets/vo-1.mp3" data-start="0.4"></audio>
+      <audio id="vo2" src="assets/vo-2.mp3" data-start="9.2"></audio>
+      <audio id="vo3" src="assets/vo-3.mp3" data-start="19.4"></audio>
+    </div>
+
+    <script>
+      const root = document.querySelector("[data-composition-id]");
+      const tl = gsap.timeline({ paused: true });
+
+      /* ── scene 2 dot field: deterministic grid + seeded jitter ── */
+      const grid = document.getElementById("s2-grid");
+      const COLS = 26, ROWS = 34, GX = 38, GY = 33;
+      const dots = [];
+      for (let i = 0; i < COLS * ROWS; i++) {
+        const d = document.createElement("div");
+        const lit = Math.sin(i * 12.9898) * 43758.5453 % 1 > 0.86;
+        d.className = "gd" + (lit ? " lit" : "");
+        const jx = Math.sin(i * 7.233) * 6;
+        const jy = Math.cos(i * 5.137) * 6;
+        d.style.left = (i % COLS) * GX + jx + "px";
+        d.style.top = Math.floor(i / COLS) * GY + jy + "px";
+        grid.appendChild(d);
+        dots.push(d);
+      }
+
+      /* ── scene 1 ── */
+      tl.fromTo("#s1-gene", { scale: 0, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.6, ease: "back.out(2)" }, 0.15);
+      tl.fromTo("#s1-halo", { scale: 0.6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.5 }, 0.3);
+      tl.fromTo("#s1-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.5 }, 0.55);
+      tl.fromTo("#s1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 0.9);
+      /* the gene goes dark — the silence */
+      tl.to("#s1-gene", { backgroundColor: "#26263f", scale: 0.82, duration: 0.45, ease: "power2.in" }, 1.7);
+      tl.to("#s1-halo", { autoAlpha: 0, duration: 0.4 }, 1.7);
+
+      /* ── scene 2 ── */
+      tl.fromTo("#s2-text", { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.45 }, 3.15);
+      tl.fromTo(dots, { autoAlpha: 0, scale: 0.3 }, { autoAlpha: 1, scale: 1, duration: 0.4, stagger: { each: 0.0011, from: "random" }, ease: "power1.out" }, 3.3);
+      tl.fromTo("#s2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 4.6);
+
+      /* ── scene 3 ── */
+      tl.fromTo("#s3-num", { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 6.15);
+      tl.fromTo("#s3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35 }, 6.5);
+      tl.fromTo("#s3-floor", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35 }, 7.1);
+
+      /* ── scene 4 ── */
+      tl.fromTo("#s4-caption", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.4 }, 9.15);
+      tl.fromTo("#s4-chips .cellchip:first-child", { autoAlpha: 0, x: -40 }, { autoAlpha: 1, x: 0, duration: 0.4 }, 9.5);
+      tl.fromTo("#s4-arrow", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: "back.out(2.5)" }, 9.9);
+      tl.fromTo("#s4-chips .cellchip.new", { autoAlpha: 0, x: 40 }, { autoAlpha: 1, x: 0, duration: 0.4 }, 10.2);
+      tl.fromTo("#s4-barwrap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35 }, 10.9);
+      tl.fromTo("#s4-fill", { scaleX: 0 }, { scaleX: 0.9067, duration: 2.0, ease: "power2.inOut" }, 11.2);
+      const cov = { v: 0 };
+      const covEl = document.getElementById("s4-n");
+      tl.to(cov, { v: 272, duration: 2.0, ease: "power2.inOut",
+        onUpdate: () => { covEl.textContent = Math.round(cov.v); } }, 11.2);
+      tl.fromTo("#s4-count", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 10.9);
+      tl.fromTo("#s4-note", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 13.4);
+
+      /* ── scene 5: ticker + trajectory ── */
+      tl.fromTo("#s5-kicker", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 15.1);
+      const scoreEl = document.getElementById("s5-score");
+      const tick = { v: -0.948 };
+      tl.fromTo(scoreEl, { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.3 }, 15.2);
+      tl.to(tick, { v: -0.021, duration: 2.6, ease: "power1.inOut",
+        onUpdate: () => { scoreEl.textContent = tick.v.toFixed(3); } }, 15.4);
+      const traj = document.getElementById("s5-line");
+      const trajLen = traj.getTotalLength();
+      gsap.set(traj, { strokeDasharray: trajLen, strokeDashoffset: trajLen });
+      tl.to(traj, { strokeDashoffset: 0, duration: 2.6, ease: "power1.inOut" }, 15.4);
+      tl.fromTo("#s5-rank", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "back.out(1.8)" }, 17.9);
+      tl.fromTo("#s5-caption", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 18.4);
+
+      /* ── scene 6: aphorism lands, card fades in ── */
+      tl.fromTo("#s6-aph", { autoAlpha: 0, y: 46 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }, 19.3);
+      tl.fromTo("#s6-card", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 20.4);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[root.dataset.compositionId] = tl;
+    </script>
+  </body>
+</html>

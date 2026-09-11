@@ -2,5 +2,13 @@
   "PDS": {
     "term": "PDS",
     "definition": "Can you tell one perturbation's effect apart from another's?"
+  },
+  "CRISPRi": {
+    "term": "CRISPRi",
+    "definition": "Turning a gene's volume down with a guide — a dimmer, not a switch."
+  },
+  "Perturb-seq": {
+    "term": "Perturb-seq",
+    "definition": "Silence one gene per cell across millions of cells, and read what changed — a catalog of cause and effect."
   }
 }

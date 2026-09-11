@@ -6,6 +6,8 @@ canonical list; each entry links to the short that introduced it.
 | Term | Digestible definition | Introduced by |
 |---|---|---|
 | PDS (perturbation discrimination score) | Can you tell one perturbation's effect apart from another's? | specimen-002 (trapdoor metric) |
+| CRISPRi | Turning a gene's volume down with a guide — a dimmer, not a switch. | specimen-003 (borrowed biology) |
+| Perturb-seq | Silence one gene per cell across millions of cells, and read what changed — a catalog of cause and effect. | specimen-003 (borrowed biology) |
 
 ## Voice rules
 
@@ -21,6 +23,4 @@ canonical list; each entry links to the short that introduced it.
 - MAE (mean absolute error) — the raw-error metric almost everyone lost.
 - Pearson Δ — the correlation-with-logs measure; a constant predictor has
   no value to report.
-- CRISPRi — turning a gene's volume down with a guide (a dimmer, not a
-  switch).
 - Zero-shot — predicting in a cell line you've never seen perturbed.

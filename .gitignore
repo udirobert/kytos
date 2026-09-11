@@ -54,3 +54,9 @@ tools/.pioneer_model_id
 # files. Only paths never to be committed are listed here.
 broadcast-desk/
 experiments/**/visual/briefing.mp4
+# HyperFrames clip projects — source is committed, build artifacts are not.
+chronicle/*/node_modules/
+chronicle/*/package-lock.json
+chronicle/*/renders/
+chronicle/*/snapshots/
+chronicle/*/.hyperframes/

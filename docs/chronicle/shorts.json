@@ -2,6 +2,34 @@
   "series": "VCC 2025 Post-Mortem",
   "shorts": [
     {
+      "slug": "specimen-003-borrowed-biology",
+      "title": "Borrowed biology beat invented biology",
+      "hook": "We moved a genome-wide CRISPRi screen into a cell type it never saw — 272 of 300 targets got real signatures.",
+      "published": "2026-09-11",
+      "plain_words": "The Virtual Cell Challenge asks: switch off one gene, predict what the other 18,000 do — in a cell type your model has never seen. Instead of inventing how genes respond, we borrowed a real catalog: Replogle's genome-wide CRISPRi screen, run in K562 cells, moved into H1 hESC. It gave 272 of the 300 targets genuine signatures, and our leaderboard score went from -0.149 to -0.021 — rank 534.",
+      "terms": ["CRISPRi", "Perturb-seq"],
+      "sources": [
+        {
+          "label": "Mapping information-rich genotype-phenotype landscapes with genome-scale Perturb-seq",
+          "who": "Replogle et al., Cell 2022",
+          "id": "doi:10.1016/j.cell.2022.05.013",
+          "url": "https://doi.org/10.1016/j.cell.2022.05.013"
+        },
+        {
+          "label": "k006 run evidence — scores, coverage, provenance",
+          "who": "Kytos Observatory",
+          "id": "k006-replogle-prior-validation",
+          "url": "https://kytosapp.netlify.app/runs/k006-replogle-prior-validation/"
+        }
+      ],
+      "deep": "k006 pairs two perturbation priors: the 2025 VCC Atlas (in-distribution H1 hESC validation cells) where it covers the target, and the Replogle K562 genome-wide Perturb-seq bulk signature otherwise. Per-target deltas are applied to real control cells via log1p transport with attenuation and noise. 272 of 300 targets used real signatures; the remaining 28 fell back to a hand-tuned context-conditioned prior. Result: overall -0.021 (from -0.149), pds 0.265, rank 534/883, ~$0.75 of Modal compute.",
+      "media": {
+        "video": "video.mp4",
+        "poster": "poster.png",
+        "captions": "captions.vtt"
+      }
+    },
+    {
       "slug": "specimen-002-trapdoor",
       "title": "A louder metric is not a truer one",
       "hook": "In the 2025 challenge, a score with a volume knob partly measured confidence — not truth. This is why it matters.",
