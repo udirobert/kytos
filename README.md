@@ -19,6 +19,7 @@ literature evidence, and video briefings for community scrutiny.
 | **k003** | Sparse mean-shift baseline — VCC 2026 validation, 360k cells, 300 targets × 3 contexts, `vcc` 0.2.0 | `real` (submitted; score -0.948) |
 | **k004-resample** | Real control-cell resampling baseline — VCC 2026 validation, 360k cells, 300 targets × 3 contexts, `vcc` 0.2.0 on Modal 64 GiB | `real` (submitted; score -0.304, rank 765) |
 | **k004-layer-a-b** | Context-conditioned gene transfer + log1p transport (Layer A/B) — first target-specific Kytos model on Modal 64 GiB | `real` (submitted; score -0.149, rank 656) |
+| **k005-atlas-prior** | 2025 Atlas perturbation prior + log1p transport — real per-target signatures where the 2025 validation overlaps (4/300 targets) | `real` (built; `.vcc` on Modal Volume, not yet submitted) |
 
 See [`experiments/README.md`](experiments/README.md) for run details,
 [`docs/k002-retro.md`](docs/k002-retro.md) for process notes, and
@@ -95,12 +96,18 @@ work.
 a target-specific 360k × 18,533 prediction. `vcc prep` and `vcc submit` passed.
 Score: **overall -0.149** (rank 656), improving on k004-resample (-0.304) and
 k003 (-0.948). `pds` is now positive (0.0019), confirming the target-specific
-knockdown signal is detectable. Modal cost: ~$0.75 (64 GiB / 4-core Function,
-~54 min). The next gains are in better secondary-effect modeling and real
-perturbation priors (2025 Atlas / public CRISPRi data).
+knockdown signal is detectable.
 
-Next: tune Layer A knockdown/attenuation parameters, incorporate cross-context
-priors, and optionally add real perturbation training data. Continue using
-Modal for full-panel submissions.
+**2026-09-11:** k005 Atlas-prior on Modal: downloaded the 2025 VCC validation
+(6.9 GB, 50 targets), computed per-target log1p mean-shift signatures, and
+applied them to the 2026 panel. `vcc prep` passed and the `.vcc` is persisted on
+the `kytos-vcc` Modal Volume. **Only 4/300 2026 targets overlap the 2025
+validation**, so the model is effectively k004-layer-a-b plus four real
+signatures; a larger perturbation atlas (e.g., full Arc Perturb-seq / Replogle)
+is needed to cover the 2026 panel.
+
+Next: submit k005 once the daily allowance resets, then build a broader
+perturbation prior (more CRISPRi screens) or train a learned Layer A on the
+2025 data to generalize to unseen 2026 targets.
 See [`docs/architecture.md §4`](docs/architecture.md#4-compute-ladder-do-not-design-around-brev)
 and [`AGENTS.md`](AGENTS.md) for compute rules.

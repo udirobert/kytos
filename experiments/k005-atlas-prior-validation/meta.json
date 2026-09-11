@@ -1,0 +1,45 @@
+{
+  "run_id": "k005-atlas-prior-validation",
+  "status": "built",
+  "model_name": "kytos-k005-atlas-prior",
+  "entry_id": null,
+  "created_at": "2026-09-11T01:51:42Z",
+  "completed_at": "2026-09-11T02:06:19+01:00",
+  "modal_app_id": "ap-XYV70AWe8Pnaag2hbgmmQm",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": ["A", "B", "C"],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2020631924
+  },
+  "prediction": {
+    "h5ad": "experiments/k005-atlas-prior-validation/prediction.h5ad",
+    "vcc": "experiments/k005-atlas-prior-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "volume_path": "/kytos-vol/k005-atlas-prior",
+    "note": "produced on Modal and persisted to the kytos-vcc Modal Volume; not committed to git"
+  },
+  "model": {
+    "atlas_targets": 50,
+    "atlas_used": 4,
+    "fallback_targets": 296,
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "scores": null,
+  "cost_estimate_usd": 0.75,
+  "cost_note": "64 GiB / 4-core Modal Function for ~15 min build + prep + persist, plus a 6.9 GB Atlas download",
+  "script": "tools/modal_k005_atlas_prior.py",
+  "runner": "tools/run_k005_atlas_prior.py",
+  "commit": "fa9e602"
+}

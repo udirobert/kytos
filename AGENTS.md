@@ -82,6 +82,12 @@ to git.
   submitted on Modal. It scored **overall -0.149** (rank 656) with `pds`
   positive (0.0019), confirming the target-specific knockdown signal is
   detectable.
+- A `kytos-k005-atlas-prior` model was built on Modal using the 2025 VCC
+  validation to compute real per-target log1p mean-shift signatures. Only
+  **4/300** 2026 targets overlapped the 2025 validation, so the model is
+  effectively k004-layer-a-b plus four real signatures. The `.vcc` is stored
+  on the `kytos-vcc` Modal Volume and can be submitted when the daily
+  allowance resets.
 
 ---
 

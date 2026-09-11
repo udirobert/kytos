@@ -46,6 +46,15 @@ prediction outputs.
   4-core Modal Function. Script: [`tools/run_k004_layer_a_b.py`](../tools/run_k004_layer_a_b.py);
   launcher: [`tools/modal_k004_layer_a_b_submit.py`](../tools/modal_k004_layer_a_b_submit.py);
   meta: [`experiments/k004-layer-a-b-validation/meta.json`](k004-layer-a-b-validation/meta.json).
+- `k005-atlas-prior-validation` — **2025 Atlas prior** (2026-09-11): per-target
+  log1p mean-shift deltas computed from the VCC 2025 validation (50 targets),
+  applied to 2026 control cells with log1p transport. Only **4/300** 2026
+  targets overlapped the 2025 validation, so the model is effectively
+  k004-layer-a-b plus four real signatures. `vcc prep` passed and the `.vcc`
+  is stored on the `kytos-vcc` Modal Volume (not submitted yet). Script:
+  [`tools/run_k005_atlas_prior.py`](../tools/run_k005_atlas_prior.py);
+  launcher: [`tools/modal_k005_atlas_prior.py`](../tools/modal_k005_atlas_prior.py);
+  meta: [`experiments/k005-atlas-prior-validation/meta.json`](k005-atlas-prior-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**
