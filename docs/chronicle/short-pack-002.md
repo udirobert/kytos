@@ -81,9 +81,30 @@ CRISPRi → coverage → Perturb-seq → Modal/compute-cost.
 
 `docs/chronicle/short-pack-002.md`
 → `docs/chronicle/scripts/specimen-003-*.md` (source of truth)
-→ `tools/render_presenter.py --script …` (TTS `shimmer` + Fabric talking head,
-bright anchor `drkytos-african-2.png`)
+→ `chronicle/specimen-003-borrowed-biology/` (HyperFrames composition;
+  anchor-hosted graphics — see below)
 → `docs/chronicle/media/<slug>/` (video + poster + captions.vtt)
 → `shorts.json` entry → rebuild → `/shorts/<slug>/`
 
-Spend per clip: 1 TTS call + 1 Fabric call. Cap: <4MB video (commit cap).
+Spend per clip: TTS calls only (~$0.01). Cap: <4MB video (commit cap).
+
+### Anchor format decision (2026-09-11)
+
+Specimen-003 v2 uses the **anchored-graphics hybrid**: the Dr. Kytos
+video is a persistent layer inside the HyperFrames composition — it is
+moved, shrunk to PiP, slid off for data beats, and punched back for the
+landing. VO is placed as timed `<audio>` elements.
+
+**Do NOT lip-sync future clips via Fabric.** It works (specimen-003
+`assets/anchor.mp4` is proof) but costs ~$2/clip for marginal benefit —
+a non-lip-synced host reading over motion graphics carries the same
+information at ~1% of the cost. Preferred anchors going forward, in
+order:
+
+1. A static/looping Dr. Kytos clip (idle animation, subtle motion —
+   e.g. a short Fabric/greenscreen loop reused across clips, or a
+   gently animated still).
+2. The specimen-002/003 Fabric output reused as b-roll where a face
+   helps (it's licensed footage we already own).
+3. Fabric only if a clip truly needs synced speech on camera — flag the
+   cost first.

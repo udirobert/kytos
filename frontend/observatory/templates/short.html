@@ -15,6 +15,11 @@
       {% if captions_src %}<track kind="captions" src="{{ captions_src }}" srclang="en" label="English" default>{% endif %}
     </video>
     <figcaption class="short-player-cap">{{ video_caption }}</figcaption>
+    {% if video_uri %}
+    <p class="short-provenance" title="Content-addressed, immutable copy on Grove">
+      immutable copy · <code>{{ video_uri }}</code>
+    </p>
+    {% endif %}
   </figure>
 
   <section class="panel short-card" aria-label="In plain words">

@@ -24,7 +24,8 @@
       ],
       "deep": "k006 pairs two perturbation priors: the 2025 VCC Atlas (in-distribution H1 hESC validation cells) where it covers the target, and the Replogle K562 genome-wide Perturb-seq bulk signature otherwise. Per-target deltas are applied to real control cells via log1p transport with attenuation and noise. 272 of 300 targets used real signatures; the remaining 28 fell back to a hand-tuned context-conditioned prior. Result: overall -0.021 (from -0.149), pds 0.265, rank 534/883, ~$0.75 of Modal compute.",
       "media": {
-        "video": "video.mp4",
+        "video": "https://api.grove.storage/c36cb3972c5d98857910f11b493ed65e410e74fba81e3f6e4db44abf294acfe2",
+        "video_uri": "lens://c36cb3972c5d98857910f11b493ed65e410e74fba81e3f6e4db44abf294acfe2",
         "poster": "poster.png",
         "captions": "captions.vtt"
       }

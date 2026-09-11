@@ -136,6 +136,7 @@ def render_short(
         "title": short.title,
         "hook": short.hook,
         "video_src": med.get("video", ""),
+        "video_uri": med.get("video_uri", ""),
         "poster_src": med.get("poster", ""),
         "captions_src": med.get("captions", ""),
         "plain_html": plain_html,

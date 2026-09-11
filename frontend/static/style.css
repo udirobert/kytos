@@ -2227,3 +2227,13 @@ code {
     gap: 0.25rem;
   }
 }
+
+/* short page: content-addressed provenance stamp */
+.short-provenance {
+  margin: 0.6rem 0 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--muted, #8c8c9e);
+  overflow-wrap: anywhere;
+}
+.short-provenance code { color: var(--accent, #2dd4bf); }
