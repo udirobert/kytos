@@ -66,13 +66,14 @@ def build_atlas_deltas(
     gene_index = {g: i for i, g in enumerate(atlas_genes)}
 
     obs = atlas.obs
-    control_mask = obs[PERT_COL] == CONTROL_LABEL
+    pert_col = obs[PERT_COL].to_numpy()
+    control_mask = pert_col == CONTROL_LABEL
     control_mean = np.asarray(X_log[control_mask].mean(axis=0)).ravel()
 
     targets = sorted({str(t) for t in obs.loc[~control_mask, PERT_COL].unique()})
     deltas: dict[str, np.ndarray] = {}
     for tgt in targets:
-        tgt_mask = obs[PERT_COL] == tgt
+        tgt_mask = pert_col == tgt
         tgt_mean = np.asarray(X_log[tgt_mask].mean(axis=0)).ravel()
         delta = tgt_mean - control_mean
 
