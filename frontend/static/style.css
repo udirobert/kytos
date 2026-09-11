@@ -608,6 +608,163 @@ code {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
+   SCORECARD
+   ════════════════════════════════════════════════════════════════════════ */
+
+.scorecard-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.scorecard-panel .panel-header {
+  padding: 1.25rem 1.5rem 0;
+  margin-bottom: 0;
+}
+
+.scorecard {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.scorecard th,
+.scorecard td {
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.scorecard th {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  background: var(--bg-elevated);
+  font-weight: 500;
+}
+
+.scorecard tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.scorecard tbody tr.score-row-best {
+  background: var(--accent-dim);
+}
+
+.score-name {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.score-val {
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.score-best {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   COVERAGE BAR
+   ════════════════════════════════════════════════════════════════════════ */
+
+.coverage-block {
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.coverage-bar {
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+}
+
+.coverage-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.coverage-label {
+  font-size: 0.85rem;
+  color: var(--ink);
+  margin: 0 0 0.35rem;
+}
+
+.coverage-label strong {
+  color: var(--accent);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   NEXT STEPS
+   ════════════════════════════════════════════════════════════════════════ */
+
+.next-steps {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.next-steps summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.next-steps summary::-webkit-details-marker {
+  display: none;
+}
+
+.next-steps summary:hover {
+  background: var(--bg-elevated);
+}
+
+.next-steps-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 1.5rem 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.next-step {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  font-size: 0.9rem;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+
+.next-step:last-child {
+  border-bottom: none;
+}
+
+.next-step-marker {
+  color: var(--accent);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
    RUN CARDS + GRID
    ════════════════════════════════════════════════════════════════════════ */
 

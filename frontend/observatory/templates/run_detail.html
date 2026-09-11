@@ -4,6 +4,17 @@
 {{ nav | safe }}
 <main class="content" id="main-content" tabindex="-1">
   {{ run_header | safe }}
+  {% if scorecard %}
+  <section class="panel scorecard-panel">
+    <div class="panel-header">
+      <h2>Scorecard</h2>
+      <p class="muted">All six VCC metrics — best-in-series is highlighted.</p>
+    </div>
+    {{ scorecard | safe }}
+    {% if coverage %}{{ coverage | safe }}{% endif %}
+  </section>
+  {% endif %}
+  {% if next_steps %}{{ next_steps | safe }}{% endif %}
   <div class="run-panels">
     {{ panel_audit | safe }}
     {{ panel_evidence | safe }}

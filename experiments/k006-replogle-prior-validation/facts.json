@@ -19,6 +19,12 @@
     "Broad CRISPRi coverage will dramatically improve pds and nmae",
     "K562 signatures will transfer imperfectly to H1 hESC, leaving room for context-conditioned calibration"
   ],
+  "next_steps": [
+    "Close the 28-target coverage gap — source CRISPRi signatures for the remaining targets",
+    "Tune transport parameters (knockdown_efficiency, attenuation_factor, noise_scale)",
+    "Context-conditioned calibration — map K562 signatures to H1 hESC",
+    "Learned Layer A — generalize perturbation signatures to unseen targets"
+  ],
   "provenance": {
     "commit": "2ff188f",
     "seed": 0,

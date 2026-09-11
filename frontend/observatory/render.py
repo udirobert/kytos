@@ -54,8 +54,15 @@ METRIC_LABELS: dict[str, str] = {
     "DESigGenesRecall": "DE gene recall",
     "de_sig_genes_recall": "DE gene recall",
     "pearson_delta": "Pearson Δ",
-    "mse": "MSE",
+    "mse": "Expression accuracy (mse)",
     "mae": "MAE",
+    "overall": "Overall score",
+    "pds": "Perturbation discrimination (pds)",
+    "nmae": "DE log-FC accuracy (nmae)",
+    "fid": "DE direction fidelity (fid)",
+    "reach": "DE direction reach (reach)",
+    "jac": "Significance overlap (jac)",
+    "rank": "Leaderboard rank",
 }
 
 
@@ -1335,6 +1342,9 @@ def render_run_detail(
         ),
         "run_hero_legend": _run_hero_legend_html(facts),
         "evidence_journey": _evidence_journey(warn_count),
+        "scorecard": _metrics_scorecard(run, runs),
+        "coverage": _coverage_panel(run),
+        "next_steps": _next_steps_panel(run),
         "panel_audit": _disclosure_section(
             "Audit & metrics",
             _audit_summary(facts),
@@ -2031,6 +2041,95 @@ def _run_stat_grid(run: RunSummary) -> str:
         for k, v in stats
     )
     return f'<div class="run-stat-grid">{items}</div>'
+
+
+_VCC_METRIC_ORDER = ["overall", "pds", "mse", "nmae", "fid", "reach", "jac"]
+
+
+def _metrics_scorecard(run: RunSummary, runs: list[RunSummary]) -> str:
+    """All-metrics scorecard — every scored metric with best-in-series marked.
+
+    VCC normalizes so higher is better on every metric. The best value across
+    all runs is highlighted so each run's standing is immediately legible.
+    """
+    scores = run.meta.get("scores") or {}
+    if not scores:
+        return ""
+    best: dict[str, float] = {}
+    for r in runs:
+        for k, v in (r.meta.get("scores") or {}).items():
+            if isinstance(v, (int, float)) and k != "rank":
+                if k not in best or v > best[k]:
+                    best[k] = v
+    rows = []
+    for key in _VCC_METRIC_ORDER:
+        v = scores.get(key)
+        if v is None:
+            continue
+        label = _metric_label(key)
+        is_best = isinstance(v, (int, float)) and best.get(key) == v
+        best_tag = '<span class="score-best">best</span>' if is_best else ""
+        rows.append(
+            f'<tr class="{"score-row-best" if is_best else ""}">'
+            f'<td class="score-name">{_h(label)}</td>'
+            f'<td class="score-val">{float(v):+.4f}</td>'
+            f"<td>{best_tag}</td></tr>"
+        )
+    if not rows:
+        return ""
+    return (
+        '<table class="scorecard"><thead><tr><th>Metric</th><th>Value</th><th></th></tr>'
+        f"</thead><tbody>{''.join(rows)}</tbody></table>"
+    )
+
+
+def _coverage_panel(run: RunSummary) -> str:
+    """Target coverage visual — real signatures vs fallback, as a bar + note."""
+    model = run.meta.get("model") or {}
+    covered = model.get("replogle_used") or model.get("atlas_used")
+    fallback = model.get("fallback_targets")
+    if not covered:
+        return ""
+    total = (covered or 0) + (fallback or 0)
+    if not total:
+        return ""
+    pct = round(100 * covered / total)
+    fb_note = (
+        f"<p class='muted'>The remaining {fallback} targets fell back to the "
+        "hand-tuned prior — that is the single largest remaining coverage gap.</p>"
+        if fallback
+        else ""
+    )
+    return f"""
+    <div class="coverage-block">
+      <div class="coverage-bar" role="img"
+           aria-label="{covered} of {total} targets have real CRISPRi signatures">
+        <div class="coverage-fill" style="width: {pct}%"></div>
+      </div>
+      <p class="coverage-label">
+        <strong>{covered}</strong> of <strong>{total}</strong> targets use real
+        CRISPRi signatures <span class="muted">({pct}%)</span>
+      </p>
+      {fb_note}
+    </div>"""
+
+
+def _next_steps_panel(run: RunSummary) -> str:
+    """'What's next' checklist — from facts.json next_steps, rendered as a
+    progressive-disclosure panel so the roadmap is visible but not noisy."""
+    steps = run.facts.get("next_steps") or []
+    if not steps:
+        return ""
+    items = "".join(
+        f'<li class="next-step"><span class="next-step-marker" aria-hidden="true">→</span>'
+        f"<span>{_h(s)}</span></li>"
+        for s in steps
+    )
+    return f"""
+    <details class="next-steps" open>
+      <summary><span class="disclosure-title">What&rsquo;s next</span></summary>
+      <ul class="next-steps-list">{items}</ul>
+    </details>"""
 
 
 def _run_header_media(visual: dict, facts: dict, *, run_path: Any = None) -> str:
