@@ -46,7 +46,7 @@ OUT_DIR = "/root/kytos/experiments/k006-replogle-prior-validation"
     memory=64 * 1024,
     cpu=4,
     volumes={"/kytos-vol": vol},
-    secrets=[modal.Secret.from_dotenv()],
+    secrets=[modal.Secret.from_name("kytos-vcc")],
 )
 def build_and_prep(max_targets: int = 0, submit: bool = False) -> dict:
     t_start = time.time()
