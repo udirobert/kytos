@@ -155,7 +155,7 @@ def submit_from_volume(kd_std: float = 0.4) -> dict:
             "submit",
             vcc_path,
             "--model-name",
-            "kytos-k008-kd-heterogeneity",
+            f"kytos-k008-kd-s{str(kd_std).replace('.', 'p')}",
             "--wait",
         ],
         stdout=None,
