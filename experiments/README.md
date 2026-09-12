@@ -83,6 +83,13 @@ prediction outputs.
   [`tools/run_k008_kd_heterogeneity.py`](../tools/run_k008_kd_heterogeneity.py);
   launcher: [`tools/modal_k008_kd_heterogeneity.py`](../tools/modal_k008_kd_heterogeneity.py);
   meta: [`experiments/k008-kd-heterogeneity-validation/meta.json`](k008-kd-heterogeneity-validation/meta.json).
+- `k008-kd-s0p7-validation` — **kd_std sweep point** (2026-09-12): identical
+  pipeline with `kd_std=0.7` (closer to the Atlas-measured ~1.1 median eta
+  spread). Submitted; **first positive overall score: +0.0007** (rank 519),
+  `fid` -0.388 → -0.334 (largest single-run fid gain), `nmae` +0.010,
+  `pds` 0.282, `reach` 0.067. Script:
+  [`tools/run_k008_kd_heterogeneity.py`](../tools/run_k008_kd_heterogeneity.py);
+  meta: [`experiments/k008-kd-s0p7-validation/meta.json`](k008-kd-s0p7-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

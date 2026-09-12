@@ -1,0 +1,37 @@
+{
+  "run_id": "k008-kd-s0p7-validation",
+  "created": "2026-09-12",
+  "headline": "kd_std=0.7 sweep point — first positive overall score (+0.0007); fid responds strongly to more KD heterogeneity",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.000747285304364725,
+    "pds": 0.28241286818874994,
+    "mse": 0.0,
+    "nmae": 0.010187820581075665,
+    "fid": -0.33415312872605113,
+    "reach": 0.06662900331727833,
+    "jac": -0.02059285153486445
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "kd_std=0.4 was conservative vs the Atlas-measured eta spread (~1.1 median per target); 0.7 should move fid further if the mechanism is real",
+    "fid improvement should not degrade signature metrics (nmae, pds) if the prior stack is sound"
+  ],
+  "next_steps": [
+    "kd_std=1.0 next — measured median is ~1.1; if fid keeps improving, the scalar-eta mechanism has more headroom; if it overshoots, interpolate",
+    "Residual covariance / full Layer B — scalar eta spreads along the delta axis only; off-direction correlation structure is the remaining deficit",
+    "k009: learned Layer A — context-conditioned K562 -> H1 hESC signature transfer, trained on the Atlas/K562 target overlap",
+    "Transport parameter sweep (knockdown_efficiency, attenuation, noise) — held out to avoid leaderboard overfit"
+  ],
+  "provenance": {
+    "commit": "2e160e2",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd(kd_std=0.7)",
+    "code": "tools/run_k008_kd_heterogeneity.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "Identical pipeline to k008 s0.4 except kd_std=0.7. Overall crossed zero: -0.0113 -> +0.0007, rank 519. fid -0.388 -> -0.334 (the largest single-run fid gain so far), nmae +0.007 -> +0.010, pds 0.272 -> 0.282, reach 0.062 -> 0.067. The scalar-eta mechanism has real headroom — the Atlas-measured spread (~1.1 median) suggests trying 1.0 next before concluding the mechanism is exhausted."
+}

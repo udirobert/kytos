@@ -102,6 +102,11 @@ to git.
   median). It scored **overall -0.0113** (rank 549), `fid` -0.388,
   `nmae` +0.007. Scalar KD heterogeneity helps modestly; the residual fid
   deficit is likely off-direction covariance (full Layer B problem).
+- A `kytos-k008-kd-s0p7` sweep point (`kd_std=0.7`) scored **overall
+  +0.0007** (rank 519) — the first positive score. `fid` -0.334, `nmae`
+  +0.010, `pds` 0.282. The Atlas measurement (~1.1 median eta std) suggests
+  `kd_std=1.0` is the next point to test; submissions are tagged
+  `kytos-k008-kd-s<p>` to keep sweep variants distinguishable.
 
 ---
 
