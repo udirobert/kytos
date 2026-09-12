@@ -92,6 +92,16 @@ to git.
   2025 Atlas with the Replogle K562 genome-wide Perturb-seq bulk (9,866
   targets), covering **272/300** 2026 targets. It scored **overall -0.021**
   (rank 534), with `pds` 0.265 and `nmae` -0.074.
+- A `kytos-k007-neighbor-prior` model imputed 18 of the 28 unscreened
+  targets from confident STRING partners (score >= 0.7, >= 2 partners,
+  top-5 score-weighted mean of partner deltas). It scored **overall
+  -0.0159** (rank 534), `nmae` +0.002, `fid` -0.403.
+- A `kytos-k008-kd-heterogeneity` model kept the k007 priors and replaced
+  the sampler with `HeterogeneousTransportSampler` (`kd_std=0.4`, per-cell
+  `eta ~ N(1, 0.4)` truncated at 0 — fit from Atlas eta spread ~1.1
+  median). It scored **overall -0.0113** (rank 549), `fid` -0.388,
+  `nmae` +0.007. Scalar KD heterogeneity helps modestly; the residual fid
+  deficit is likely off-direction covariance (full Layer B problem).
 
 ---
 

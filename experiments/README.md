@@ -72,6 +72,17 @@ prediction outputs.
   [`tools/run_k007_neighbor_prior.py`](../tools/run_k007_neighbor_prior.py);
   launcher: [`tools/modal_k007_neighbor_prior.py`](../tools/modal_k007_neighbor_prior.py);
   meta: [`experiments/k007-neighbor-prior-validation/meta.json`](k007-neighbor-prior-validation/meta.json).
+- `k008-kd-heterogeneity-validation` — **heterogeneous knockdown** (2026-09-12):
+  k007 priors unchanged; the sampler adds per-cell knockdown-strength
+  heterogeneity, `perturbed_i = basal_i + eta_i * delta + eps` with
+  `eta ~ N(1, 0.4)` truncated at 0 — parameter fit from Atlas measurements
+  (median per-target eta std ~1.1), not leaderboard tuning. Submitted; score
+  **overall -0.0113** (rank 549), `fid` -0.403 → -0.388, `nmae` +0.007,
+  `pds` 0.272. fid responded but modestly — scalar eta models spread along
+  the delta axis only. Script:
+  [`tools/run_k008_kd_heterogeneity.py`](../tools/run_k008_kd_heterogeneity.py);
+  launcher: [`tools/modal_k008_kd_heterogeneity.py`](../tools/modal_k008_kd_heterogeneity.py);
+  meta: [`experiments/k008-kd-heterogeneity-validation/meta.json`](k008-kd-heterogeneity-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

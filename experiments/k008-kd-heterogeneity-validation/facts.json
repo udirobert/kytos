@@ -1,0 +1,37 @@
+{
+  "run_id": "k008-kd-heterogeneity-validation",
+  "created": "2026-09-12",
+  "headline": "Heterogeneous per-cell knockdown (eta ~ N(1, 0.4)) on k007 priors — fid responds, overall improves to -0.0113",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": -0.011301323582245393,
+    "pds": 0.2723966867254746,
+    "mse": 0.0,
+    "nmae": 0.007199421649236704,
+    "fid": -0.38801415392463107,
+    "reach": 0.06150415844525723,
+    "jac": -0.020894054388809865
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Real perturbed cells spread along the delta direction (Atlas-measured eta std ~1.1 median per target); k006/k007 transport fixes eta == 1",
+    "Per-cell eta ~ N(1, 0.4), truncated at 0, should improve fid (distribution shape) without hurting signature metrics"
+  ],
+  "next_steps": [
+    "kd_std sweep (0.3 / 0.5 / 0.7), one submission per day — fid moved but modestly (-0.403 -> -0.388); find the optimum before the mechanism is exhausted",
+    "If the sweep plateaus: residual covariance / full Layer B — scalar eta spreads along delta but cannot generate off-direction correlation structure",
+    "k009: learned Layer A — context-conditioned K562 -> H1 hESC signature transfer, trained on the Atlas/K562 target overlap",
+    "Transport parameter sweep (knockdown_efficiency, attenuation, noise) — held out to avoid leaderboard overfit"
+  ],
+  "provenance": {
+    "commit": "f010ba6",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd",
+    "code": "tools/run_k008_kd_heterogeneity.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "k007 priors unchanged (dispatch real 816 / neighbor 54 / fallback 30); only the sampler changed: perturbed_i = basal_i + eta_i * delta + eps, eta ~ N(1, 0.4) clipped at 0, eps ~ N(0, 0.05). Overall -0.0159 -> -0.0113. fid improved modestly (-0.403 -> -0.388), nmae +0.002 -> +0.007, pds 0.269 -> 0.272. Hypothesis partially confirmed: scalar KD heterogeneity is real signal but small — it models spread along the delta axis only. The residual fid deficit likely lives in off-direction covariance, which needs the full Layer B sampler."
+}
