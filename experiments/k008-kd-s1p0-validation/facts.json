@@ -1,0 +1,37 @@
+{
+  "run_id": "k008-kd-s1p0-validation",
+  "created": "2026-09-13",
+  "headline": "kd_std=1.0 sweep point — overall +0.0152 (rank 509); fid gain accelerates as spread approaches Atlas-measured levels",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.015223824428193006,
+    "pds": 0.29657335541961033,
+    "mse": 0.0,
+    "nmae": 0.011342933295296342,
+    "fid": -0.2700135420376191,
+    "reach": 0.07291152776910136,
+    "jac": -0.01947132787723078
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "kd_std=1.0 sits at the Atlas-measured median per-target eta spread (~1.1); fid should keep improving if the scalar mechanism has headroom",
+    "The curve should bend soon — overspread beyond the true distribution should cost fid"
+  ],
+  "next_steps": [
+    "kd_std=1.3 bracket submitted same day — determines which side of the optimum we are on",
+    "Residual covariance / full Layer B — scalar eta spreads along the delta axis only; off-direction correlation structure is the remaining deficit",
+    "k009: learned Layer A — context-conditioned K562 -> H1 hESC signature transfer, trained on the Atlas/K562 target overlap",
+    "Transport parameter sweep (knockdown_efficiency, attenuation, noise) — held out to avoid leaderboard overfit"
+  ],
+  "provenance": {
+    "commit": "2e160e2",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd(kd_std=1.0)",
+    "code": "tools/run_k008_kd_heterogeneity.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "kd_std=1.0 scored overall +0.0152 (rank 509): fid -0.334 -> -0.270 (largest gain yet), pds 0.282 -> 0.297, reach 0.067 -> 0.073, nmae +0.011. Every component improved again — the mechanism is not exhausted at the Atlas median. Note the measured eta distribution is heavy-tailed (global std 2.32, p75 2.51) so values >1 may still help; s1.3 submitted as the bracket point."
+}

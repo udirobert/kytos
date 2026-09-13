@@ -107,6 +107,13 @@ to git.
   +0.010, `pds` 0.282. The Atlas measurement (~1.1 median eta std) suggests
   `kd_std=1.0` is the next point to test; submissions are tagged
   `kytos-k008-kd-s<p>` to keep sweep variants distinguishable.
+- A `kytos-k008-kd-s1p0` sweep point (`kd_std=1.0`) scored **overall
+  +0.0152** (rank 509), `fid` -0.270, `pds` 0.297, `nmae` +0.011 — every
+  component improved again at the Atlas-measured median spread.
+- A `kytos-k008-kd-s1p3` sweep point (`kd_std=1.3`) scored **overall
+  +0.0291** (rank 490), `fid` -0.209, `pds` 0.311 — fid gains still
+  ~0.06/step, not bending. Next probes: `kd_std` 1.7 and ~2.0 (Atlas
+  global eta std is 2.32).
 
 ---
 

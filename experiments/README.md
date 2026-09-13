@@ -90,6 +90,18 @@ prediction outputs.
   `pds` 0.282, `reach` 0.067. Script:
   [`tools/run_k008_kd_heterogeneity.py`](../tools/run_k008_kd_heterogeneity.py);
   meta: [`experiments/k008-kd-s0p7-validation/meta.json`](k008-kd-s0p7-validation/meta.json).
+- `k008-kd-s1p0-validation` — **kd_std=1.0** (2026-09-13): matches the
+  Atlas-measured median eta spread (~1.1). Submitted; score **overall
+  +0.0152** (rank 509), `fid` -0.334 → -0.270, `pds` 0.297, `nmae` +0.011,
+  `reach` 0.073 — every component improved; the mechanism was not
+  exhausted at the median. Meta:
+  [`experiments/k008-kd-s1p0-validation/meta.json`](k008-kd-s1p0-validation/meta.json).
+- `k008-kd-s1p3-validation` — **kd_std=1.3** (2026-09-13): sweep continues
+  upward — **overall +0.0291** (rank 490), `fid` -0.270 → -0.209, `pds`
+  0.311, `reach` 0.079, `nmae` +0.011 flat. fid gains still ~0.06/step;
+  the heavy right tail in measured eta (global std 2.32) explains why the
+  optimum sits above the median. Meta:
+  [`experiments/k008-kd-s1p3-validation/meta.json`](k008-kd-s1p3-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

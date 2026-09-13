@@ -1,0 +1,71 @@
+{
+  "run_id": "k008-kd-s1p0-validation",
+  "status": "submitted",
+  "model_name": "kytos-k008-kd-s1p0",
+  "entry_id": "9Uz3oJSkg6rFoKyNU62t",
+  "created_at": "2026-09-12T16:45:00Z",
+  "published_at": "2026-09-13T16:05:00Z",
+  "modal_app_id": "ap-Ksew0X9Wskj1V4yx1dCqP5",
+  "modal_build_app_id": "ap-9p5P3LOHlBzgUGpBvd3toA",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": ["A", "B", "C"],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2075508960
+  },
+  "prediction": {
+    "h5ad": "experiments/k008-kd-s1p0-validation/prediction.h5ad",
+    "vcc": "experiments/k008-kd-s1p0-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "volume_path": "/kytos-vol/k008-kd-heterogeneity-s1p0",
+    "note": "produced on Modal and persisted to the kytos-vcc Modal Volume; not committed to git"
+  },
+  "model": {
+    "mode": "replogle_prior+neighbor_imputation+heterogeneous_kd",
+    "dispatch": {"real": 816, "neighbor": 54, "fallback": 30},
+    "neighbor_gate": {"min_partners": 2, "min_score": 0.7, "topk": 5},
+    "sampler": {
+      "type": "HeterogeneousTransportSampler",
+      "eta": "Normal(1, kd_std), truncated at 0",
+      "kd_std": 1.0,
+      "noise_scale": 0.05
+    },
+    "kd_spread_evidence": "/kytos-vol/k008-kd-spread.json (Atlas eta measurement: mean 1.000, std 2.32 global / ~1.1 median per target)",
+    "imputed_targets": [
+      "ABCD1", "EPHB2", "HEATR6", "KIF21B", "MAPK7", "MLKL", "NICN1",
+      "PARP3", "PBLD", "PDK3", "PSMB9", "RAB11FIP5", "SEMA4F", "SOCS5",
+      "SPATA20", "TAF4", "TDRD7", "TTBK2"
+    ],
+    "orphan_targets": [
+      "CAPRIN2", "PHF11", "SLC44A1", "SNN", "TBC1D19", "TESK2",
+      "TMEM104", "TMEM79", "TXNDC16", "ZC2HC1A"
+    ],
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "scores": {
+    "overall": 0.015223824428193006,
+    "rank": 509,
+    "pds": 0.29657335541961033,
+    "mse": 0.0,
+    "nmae": 0.011342933295296342,
+    "fid": -0.2700135420376191,
+    "reach": 0.07291152776910136,
+    "jac": -0.01947132787723078
+  },
+  "cost_estimate_usd": 0.9,
+  "cost_note": "64 GiB / 4-core Modal Function ~15 min build + prep + persist; submission run uploads the persisted 3.1 GiB .vcc",
+  "script": "tools/run_k008_kd_heterogeneity.py",
+  "runner": "tools/modal_k008_kd_heterogeneity.py",
+  "commit": "2e160e2"
+}
