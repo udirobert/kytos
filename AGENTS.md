@@ -114,6 +114,12 @@ to git.
   +0.0291** (rank 490), `fid` -0.209, `pds` 0.311 — fid gains still
   ~0.06/step, not bending. Next probes: `kd_std` 1.7 and ~2.0 (Atlas
   global eta std is 2.32).
+- `kytos-k008-kd-s1p7` (`kd_std=1.7`) scored **overall +0.0429** (rank
+  477), `fid` -0.148; `nmae` began eroding (+0.008).
+- `kytos-k008-kd-s2p0` (`kd_std=2.0`) scored **overall +0.0511** (rank
+  462), `fid` -0.111, `nmae` +0.004 — the curve is bending near the
+  Atlas global std (2.32). Scalar sweep is saturating; next lever is
+  per-target spread or off-direction covariance (Layer B).
 
 ---
 

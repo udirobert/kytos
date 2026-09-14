@@ -102,6 +102,17 @@ prediction outputs.
   the heavy right tail in measured eta (global std 2.32) explains why the
   optimum sits above the median. Meta:
   [`experiments/k008-kd-s1p3-validation/meta.json`](k008-kd-s1p3-validation/meta.json).
+- `k008-kd-s1p7-validation` — **kd_std=1.7** (2026-09-14): **overall
+  +0.0429** (rank 477), `fid` -0.209 → -0.148, `pds` 0.326, `reach` 0.087.
+  `nmae` dipped +0.011 → +0.008 — first sign that overspread is blurring
+  DE log-FC signal. Meta:
+  [`experiments/k008-kd-s1p7-validation/meta.json`](k008-kd-s1p7-validation/meta.json).
+- `k008-kd-s2p0-validation` — **kd_std=2.0** (2026-09-14): **overall
+  +0.0511** (rank 462), `fid` -0.148 → -0.111 (gain shrinking: +0.037 vs
+  +0.061/step), `pds` 0.336, `reach` 0.091, `nmae` +0.004 (still eroding).
+  The scalar optimum sits around 2.0–2.3, matching the Atlas global eta
+  std (2.32). Next lever is per-target spread, not a bigger scalar. Meta:
+  [`experiments/k008-kd-s2p0-validation/meta.json`](k008-kd-s2p0-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

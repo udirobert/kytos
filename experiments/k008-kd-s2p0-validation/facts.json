@@ -1,0 +1,37 @@
+{
+  "run_id": "k008-kd-s2p0-validation",
+  "created": "2026-09-14",
+  "headline": "kd_std=2.0 — overall +0.0511 (rank 462); fid -0.111 but gains are shrinking and nmae is eroding — the scalar optimum is near",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.05105309587949433,
+    "pds": 0.3355809076260415,
+    "mse": 0.0,
+    "nmae": 0.004240276554130802,
+    "fid": -0.11105128273839891,
+    "reach": 0.09117044196768441,
+    "jac": -0.013621768132491769
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "kd_std=2.0 probes near the Atlas global eta std (2.32) — expected to be at or past the fid optimum",
+    "nmae erosion should continue as overspread blurs per-target DE log-FC signal"
+  ],
+  "next_steps": [
+    "Per-target kd_std — the global scalar overspreads strong-signature targets (Atlas per-target eta std ranges 0.18-5.23, anti-correlated with |delta|); per-target values fit the measurement instead of one compromise",
+    "Residual covariance / full Layer B — scalar eta spreads along the delta axis only; off-direction correlation structure is the remaining fid deficit",
+    "k009: learned Layer A — context-conditioned K562 -> H1 hESC signature transfer",
+    "Transport parameter sweep (knockdown_efficiency, attenuation, noise) — held out to avoid leaderboard overfit"
+  ],
+  "provenance": {
+    "commit": "2e160e2",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd(kd_std=2.0)",
+    "code": "tools/run_k008_kd_heterogeneity.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "kd_std=2.0 scored overall +0.0511 (rank 462): fid -0.148 -> -0.111 (+0.037, down from +0.061/step), pds 0.326 -> 0.336, reach 0.087 -> 0.091, jac -0.016 -> -0.014 — all still improving but the curve is bending. nmae eroded +0.008 -> +0.004 for the second consecutive step: overspread is blurring the DE signal. The scalar-eta optimum sits around 2.0-2.3; further scalar pushes trade nmae for fid at a worsening rate. The right next move is per-target spread, not a bigger global value."
+}

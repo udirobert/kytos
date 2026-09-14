@@ -1,0 +1,37 @@
+{
+  "run_id": "k008-kd-s1p7-validation",
+  "created": "2026-09-14",
+  "headline": "kd_std=1.7 — overall +0.0429 (rank 477); fid -0.148, the sweep curve still has not bent",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.04294798267028865,
+    "pds": 0.3258789991908604,
+    "mse": 0.0,
+    "nmae": 0.008248047295271546,
+    "fid": -0.1478685281485379,
+    "reach": 0.08720225186706489,
+    "jac": -0.015772874182927055
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "kd_std=1.7 probes above the Atlas per-target median (~1.1) toward the global std (2.32); continued fid gains would confirm the heavy right tail is real signal, not noise",
+    "nmae may start degrading as overspread dilutes per-target signature sharpness — watching for the trade-off"
+  ],
+  "next_steps": [
+    "kd_std=2.0 submitted same day — the last scalar point worth probing near the Atlas global std (2.32)",
+    "Per-target kd_std (Atlas-measured where available, |delta|-conditioned fallback) — the global scalar overspreads strong-signature targets",
+    "Residual covariance / full Layer B — scalar eta spreads along the delta axis only; off-direction correlation structure is the remaining deficit",
+    "k009: learned Layer A — context-conditioned K562 -> H1 hESC signature transfer"
+  ],
+  "provenance": {
+    "commit": "2e160e2",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd(kd_std=1.7)",
+    "code": "tools/run_k008_kd_heterogeneity.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "kd_std=1.7 scored overall +0.0429 (rank 477): fid -0.209 -> -0.148 (+0.061, same step size as before), pds 0.311 -> 0.326, reach 0.079 -> 0.087, jac improving. nmae dipped +0.011 -> +0.008 — the first sign of a trade-off: overspread is starting to blur the DE log-FC signal. The optimum is near; 2.0 is the ceiling probe."
+}
