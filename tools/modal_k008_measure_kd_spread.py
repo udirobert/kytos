@@ -6,6 +6,12 @@ heterogeneity (guide efficacy, dCas9-KRAB expression), so true perturbed
 populations spread along the delta direction. That missing spread is our
 leading hypothesis for k006's weak fid component (-0.359).
 
+v2 also records the basal-projection floor (control cells projected onto
+each delta direction, in eta units). Our sampler transports real control
+cells, so that component is already present in predictions; the
+knockdown-specific remainder is kd_std_est = sqrt(eta_std^2 -
+basal_eta_std^2). Writes /kytos-vol/k008-kd-spread-v2.json.
+
 This job projects each real perturbed Atlas cell onto its target's mean
 delta direction and reports the distribution of the projection coefficient
 eta_i: real cells should show mean~1 with substantial spread; our transport
@@ -57,6 +63,8 @@ def measure() -> dict:
         Xl = np.log1p(np.asarray(Xl))
 
     ctrl_mean = np.asarray(Xl[ctrl_mask].mean(axis=0)).ravel()
+    C = Xl[ctrl_mask]
+    Cd = C.todense() if hasattr(C, "todense") else np.asarray(C)
 
     targets = sorted(set(perts[~ctrl_mask]))
     print(f"targets: {len(targets)}", flush=True)
@@ -82,14 +90,24 @@ def measure() -> dict:
             Td = np.asarray(T)
         eta = np.asarray((Td - ctrl_mean) @ u).ravel() / dn
         all_eta.append(eta)
+        # Basal-projection noise floor: control cells projected onto the same
+        # direction, in the same eta units. This component of eta_std is already
+        # present in our sampler (we transport real control cells), so the
+        # knockdown-specific spread is sqrt(eta_std^2 - basal_eta_std^2).
+        basal_eta = np.asarray((Cd - ctrl_mean) @ u).ravel() / dn
+        basal_eta_std = float(np.std(basal_eta))
+        kd_std = float(np.sqrt(max(eta.var() - basal_eta_std**2, 0.0)))
         report[tgt] = {
             "n_cells": n,
             "eta_mean": float(np.mean(eta)),
             "eta_std": float(np.std(eta)),
+            "basal_eta_std": basal_eta_std,
+            "kd_std_est": kd_std,
             "delta_norm": float(dn),
         }
         print(
-            f"  {tgt:12s} n={n:4d} eta={np.mean(eta):.2f}+/-{np.std(eta):.2f} |delta|={dn:.2f}",
+            f"  {tgt:12s} n={n:4d} eta={np.mean(eta):.2f}+/-{np.std(eta):.2f} "
+            f"basal_eta_std={basal_eta_std:.2f} kd_std~{kd_std:.2f} |delta|={dn:.2f}",
             flush=True,
         )
 
@@ -101,9 +119,12 @@ def measure() -> dict:
         "eta_std_median_of_targets": float(
             np.median([r["eta_std"] for r in report.values()]) if report else 0.0
         ),
+        "kd_std_median_of_targets": float(
+            np.median([r["kd_std_est"] for r in report.values()]) if report else 0.0
+        ),
         "per_target": report,
     }
-    with open("/kytos-vol/k008-kd-spread.json", "w") as fh:
+    with open("/kytos-vol/k008-kd-spread-v2.json", "w") as fh:
         json.dump(summary, fh)
     vol.commit()
     return summary

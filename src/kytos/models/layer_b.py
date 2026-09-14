@@ -109,3 +109,46 @@ class HeterogeneousTransportSampler(BaseLayerB):
 
         np.clip(perturbed, a_min=0.0, a_max=None, out=perturbed)
         return perturbed
+
+
+@dataclass
+class GammaKnockdownSampler(BaseLayerB):
+    """HeterogeneousTransportSampler with eta ~ Gamma instead of truncated Normal.
+
+    eta ~ Gamma(shape=1/kd_std^2, scale=kd_std^2): mean is exactly 1.0, so
+    the applied delta stays unbiased (the truncated-normal eta inflated the
+    mean shift ~40% at kd_std=2.0, which eroded nmae across the sweep);
+    support is positive (no perturbation-direction reversal); and the
+    distribution is right-skewed, matching the heavy right tail in the
+    Atlas-measured eta distribution (median 1.09 vs global std 2.32).
+    """
+
+    noise_scale: float = 0.05
+    kd_std: float = 1.0
+
+    def sample_cells(
+        self,
+        X_basal: np.ndarray,
+        delta: np.ndarray,
+        n_samples: int,
+        *,
+        seed: int = 42,
+    ) -> np.ndarray:
+        rng = np.random.default_rng(seed)
+        n_basal = X_basal.shape[0]
+
+        if n_samples == n_basal:
+            indices = np.arange(n_basal)
+        else:
+            indices = rng.choice(n_basal, size=n_samples, replace=True)
+
+        sampled_basal = X_basal[indices].copy()
+
+        shape = 1.0 / (self.kd_std**2)
+        eta = rng.gamma(shape, self.kd_std**2, size=(n_samples, 1))
+
+        noise = rng.normal(0.0, self.noise_scale, size=sampled_basal.shape)
+        perturbed = sampled_basal + eta * delta[np.newaxis, :] + noise
+
+        np.clip(perturbed, a_min=0.0, a_max=None, out=perturbed)
+        return perturbed
