@@ -131,6 +131,7 @@ def main(argv: list[str] | None = None) -> int:
             neighbor_deltas,
             fallback,
             sampler,
+            library_cap="median",
         )
         ctx_blocks.append(X_pred)
         ctx_obs.append(obs)
@@ -176,7 +177,9 @@ def main(argv: list[str] | None = None) -> int:
             "type": "gamma",
             "noise_scale": args.noise_scale,
             "kd_std": args.kd_std,
+            "eta_max": 5.0,
         },
+        "library_cap": "median",
         "kd_spread_evidence": (
             "/kytos-vol/k008-kd-spread-v2.json (Atlas eta measurement with basal-projection floor)"
         ),

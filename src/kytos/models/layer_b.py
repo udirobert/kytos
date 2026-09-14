@@ -9,7 +9,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+
 import numpy as np
+from scipy.special import gammainc
 
 
 class BaseLayerB(ABC):
@@ -125,6 +127,7 @@ class GammaKnockdownSampler(BaseLayerB):
 
     noise_scale: float = 0.05
     kd_std: float = 1.0
+    eta_max: float = 5.0
 
     def sample_cells(
         self,
@@ -145,7 +148,18 @@ class GammaKnockdownSampler(BaseLayerB):
         sampled_basal = X_basal[indices].copy()
 
         shape = 1.0 / (self.kd_std**2)
-        eta = rng.gamma(shape, self.kd_std**2, size=(n_samples, 1))
+        scale = self.kd_std**2
+        eta = rng.gamma(shape, scale, size=(n_samples, 1))
+        # Atlas-measured eta tops out ~5.2; uncapped gamma tails produce
+        # cells whose count totals exceed the VCC 1e6 per-cell cap. After
+        # capping, renormalize to E[eta]=1 so the applied delta stays
+        # unbiased (E[min(G,c)] = k*t*F(k+1; c/t) + c*(1-F(k; c/t))).
+        np.clip(eta, a_min=0.0, a_max=self.eta_max, out=eta)
+        x = self.eta_max / scale
+        capped_mean = shape * scale * gammainc(shape + 1.0, x) + self.eta_max * (
+            1.0 - gammainc(shape, x)
+        )
+        eta /= capped_mean
 
         noise = rng.normal(0.0, self.noise_scale, size=sampled_basal.shape)
         perturbed = sampled_basal + eta * delta[np.newaxis, :] + noise

@@ -104,13 +104,27 @@ def build_context_predictions(
     neighbor_deltas: dict[str, np.ndarray],
     fallback: ContextConditionedTransfer,
     sampler: AdditiveTransportSampler,
+    library_cap: float | str | None = None,
 ) -> tuple[sparse.csr_matrix, pd.DataFrame, dict]:
-    """Sparse prediction for one context: real > neighbor-imputed > fallback."""
+    """Sparse prediction for one context: real > neighbor-imputed > fallback.
+
+    library_cap rescales cells whose post-rounding count total exceeds the
+    cap: a number, or "median" for the context's median control library
+    size. Backstop for heavy-tailed samplers whose extreme draws would
+    otherwise trip the VCC 1e6 per-cell count limit.
+    """
     print(f"[{context}] loading {control_path.name} ...", flush=True)
     ctrl = ad.read_h5ad(str(control_path))
     X_ctrl = ctrl.X.tocsr() if not sparse.isspmatrix_csr(ctrl.X) else ctrl.X
     n_cells, n_genes = X_ctrl.shape
     assert n_genes == len(gene_order)
+
+    if isinstance(library_cap, str):
+        if library_cap != "median":
+            raise ValueError(f"unknown library_cap {library_cap!r}")
+        lib_sizes = np.asarray(X_ctrl.sum(axis=1)).ravel()
+        library_cap = float(np.median(lib_sizes))
+        print(f"  library_cap=median -> {library_cap:.0f}", flush=True)
 
     basal = extract_basal_context(X_ctrl, gene_order)
     print(
@@ -149,6 +163,13 @@ def build_context_predictions(
         perturbed = np.expm1(perturbed)
         np.clip(perturbed, a_min=0.0, a_max=None, out=perturbed)
         perturbed = np.rint(perturbed).astype(np.float32)
+
+        if library_cap:
+            totals = perturbed.sum(axis=1, keepdims=True)
+            over = totals > library_cap
+            if over.any():
+                scale = np.where(over, library_cap / np.maximum(totals, 1.0), 1.0)
+                perturbed = np.rint(perturbed * scale)
 
         blocks.append(sparse.csr_matrix(perturbed))
         obs_parts.append(
