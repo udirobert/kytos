@@ -165,11 +165,11 @@ def build_context_predictions(
         perturbed = np.rint(perturbed).astype(np.float32)
 
         if library_cap:
-            totals = perturbed.sum(axis=1, keepdims=True)
+            totals = np.asarray(perturbed.sum(axis=1)).ravel()
             over = totals > library_cap
             if over.any():
                 scale = np.where(over, library_cap / np.maximum(totals, 1.0), 1.0)
-                perturbed = np.rint(perturbed * scale)
+                perturbed = np.rint(perturbed * scale[:, np.newaxis])
 
         blocks.append(sparse.csr_matrix(perturbed))
         obs_parts.append(
