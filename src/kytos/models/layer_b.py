@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 import numpy as np
 from scipy.special import gammainc
+from scipy.stats import norm
 
 
 class BaseLayerB(ABC):
@@ -80,10 +81,18 @@ class HeterogeneousTransportSampler(BaseLayerB):
     sigma ~1.1 including basal projection noise, ~0.2-0.9 for
     strong-signature targets. kd_std controls that spread; eta is
     truncated at 0 (no reversal of the perturbation direction).
+
+    mean_correct=True divides eta by E[max(0, N(1, sigma))] =
+    cdf(1/sigma) + sigma * pdf(1/sigma) — the mean of the *clipped*
+    distribution (negative mass piles at eta=0, ~1.40 at kd_std=2.0),
+    so the applied delta stays mean-1. Shape stays symmetric around the
+    corrected mean — the k009 gamma runs showed the leaderboard rewards
+    that shape, not a skewed density.
     """
 
     noise_scale: float = 0.05
     kd_std: float = 0.4
+    mean_correct: bool = False
 
     def sample_cells(
         self,
@@ -105,6 +114,9 @@ class HeterogeneousTransportSampler(BaseLayerB):
 
         eta = rng.normal(1.0, self.kd_std, size=(n_samples, 1))
         np.clip(eta, a_min=0.0, a_max=None, out=eta)
+        if self.mean_correct:
+            z = 1.0 / self.kd_std
+            eta /= norm.cdf(z) + self.kd_std * norm.pdf(z)
 
         noise = rng.normal(0.0, self.noise_scale, size=sampled_basal.shape)
         perturbed = sampled_basal + eta * delta[np.newaxis, :] + noise
