@@ -1,0 +1,314 @@
+{
+  "any_significant": false,
+  "per_target": {
+    "bcr_abl1": {
+      "sig": false,
+      "winner": {
+        "best_known_rank": 2.0,
+        "cutoff": 8.0,
+        "distal_upweight": false,
+        "hamiltonian": "laplacian",
+        "hit_list_top5": [
+          {
+            "graph_node": 87,
+            "rank": 1,
+            "resname": "ASN",
+            "resseq": 316,
+            "score": 0.044773297452680695
+          },
+          {
+            "graph_node": 89,
+            "rank": 2,
+            "resname": "VAL",
+            "resseq": 318,
+            "score": 0.044773297452680695
+          },
+          {
+            "graph_node": 90,
+            "rank": 3,
+            "resname": "GLN",
+            "resseq": 319,
+            "score": 0.044773297452680695
+          },
+          {
+            "graph_node": 112,
+            "rank": 4,
+            "resname": "ASN",
+            "resseq": 341,
+            "score": 0.044773297452680695
+          },
+          {
+            "graph_node": 113,
+            "rank": 5,
+            "resname": "LEU",
+            "resseq": 342,
+            "score": 0.044773297452680695
+          }
+        ],
+        "mean_known_rank": 66.2,
+        "meta": {
+          "backend": "exact_unitary_eigh",
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "n_nodes": 48,
+          "n_sources": 19,
+          "n_times": 16,
+          "t_max": 10.0
+        },
+        "n_found_active": 12,
+        "n_known_in_top_k": 1,
+        "n_sources": 81,
+        "recovery": {
+          "best_known_rank": 2.0,
+          "known_ranks": [
+            {
+              "rank": 181.0,
+              "resseq": 298,
+              "score": 0.01861371434908126
+            },
+            {
+              "rank": 2.0,
+              "resseq": 317,
+              "score": 0.044773297452680695
+            },
+            {
+              "rank": 32.0,
+              "resseq": 334,
+              "score": 0.04280838096224785
+            },
+            {
+              "rank": 57.0,
+              "resseq": 370,
+              "score": 0.032263944866655354
+            },
+            {
+              "rank": 59.0,
+              "resseq": 379,
+              "score": 0.03052170249080845
+            }
+          ],
+          "mean_known_rank": 66.2,
+          "n_known": 5,
+          "n_known_in_top_k": 1,
+          "n_known_on_graph": 5,
+          "top_k": 5
+        },
+        "resolution": "coarse",
+        "score_mode": "ctqw_t10",
+        "source_mode": "active_plus_neighbors"
+      },
+      "z": -1.0924040928340126
+    },
+    "cardiac_myosin": {
+      "sig": false,
+      "winner": {
+        "best_known_rank": 3.0,
+        "cutoff": 9.0,
+        "distal_upweight": true,
+        "hamiltonian": "laplacian",
+        "hit_list_top5": [
+          {
+            "graph_node": 165,
+            "rank": 1,
+            "resname": "ASN",
+            "resseq": 171,
+            "score": 1.3237023050215242
+          },
+          {
+            "graph_node": 166,
+            "rank": 2,
+            "resname": "GLN",
+            "resseq": 172,
+            "score": 1.3237023050215242
+          },
+          {
+            "graph_node": 660,
+            "rank": 3,
+            "resname": "HIS",
+            "resseq": 666,
+            "score": 1.3237023050215242
+          },
+          {
+            "graph_node": 723,
+            "rank": 4,
+            "resname": "ALA",
+            "resseq": 729,
+            "score": 0.9684489863337175
+          },
+          {
+            "graph_node": 738,
+            "rank": 5,
+            "resname": "LYS",
+            "resseq": 744,
+            "score": 0.9684489863337175
+          }
+        ],
+        "mean_known_rank": 280.0,
+        "meta": {
+          "backend": "exact_unitary_eigh",
+          "distal_upweight": true,
+          "hamiltonian": "laplacian",
+          "n_nodes": 56,
+          "n_sources": 5,
+          "n_times": 16,
+          "t_max": 10.0
+        },
+        "n_found_active": 11,
+        "n_known_in_top_k": 1,
+        "n_sources": 11,
+        "recovery": {
+          "best_known_rank": 3.0,
+          "known_ranks": [
+            {
+              "rank": 178.0,
+              "resseq": 164,
+              "score": 0.2867700294897597
+            },
+            {
+              "rank": 72.0,
+              "resseq": 167,
+              "score": 0.44807817107774955
+            },
+            {
+              "rank": 181.0,
+              "resseq": 168,
+              "score": 0.2867700294897597
+            },
+            {
+              "rank": 3.0,
+              "resseq": 666,
+              "score": 1.3237023050215242
+            },
+            {
+              "rank": 540.0,
+              "resseq": 710,
+              "score": 0.10704686284483325
+            },
+            {
+              "rank": 428.0,
+              "resseq": 711,
+              "score": 0.16726072319505195
+            },
+            {
+              "rank": 429.0,
+              "resseq": 712,
+              "score": 0.16726072319505195
+            },
+            {
+              "rank": 344.0,
+              "resseq": 721,
+              "score": 0.18543441785609868
+            },
+            {
+              "rank": 345.0,
+              "resseq": 722,
+              "score": 0.18543441785609868
+            }
+          ],
+          "mean_known_rank": 280.0,
+          "n_known": 9,
+          "n_known_in_top_k": 1,
+          "n_known_on_graph": 9,
+          "top_k": 5
+        },
+        "resolution": "coarse",
+        "score_mode": "ctqw_t10",
+        "source_mode": "active"
+      },
+      "z": -1.2332992972105123
+    },
+    "kras_g12c": {
+      "sig": false,
+      "winner": {
+        "best_known_rank": 2.0,
+        "cutoff": 9.0,
+        "distal_upweight": false,
+        "hamiltonian": "adjacency",
+        "hit_list_top5": [
+          {
+            "graph_node": 10,
+            "rank": 1,
+            "resname": "ALA",
+            "resseq": 11,
+            "score": 0.041561929548768514
+          },
+          {
+            "graph_node": 26,
+            "rank": 2,
+            "resname": "HIS",
+            "resseq": 27,
+            "score": 0.04097355009883632
+          },
+          {
+            "graph_node": 27,
+            "rank": 3,
+            "resname": "PHE",
+            "resseq": 28,
+            "score": 0.04097355009883632
+          },
+          {
+            "graph_node": 18,
+            "rank": 4,
+            "resname": "LEU",
+            "resseq": 19,
+            "score": 0.03834796367600701
+          },
+          {
+            "graph_node": 19,
+            "rank": 5,
+            "resname": "THR",
+            "resseq": 20,
+            "score": 0.03834796367600701
+          }
+        ],
+        "mean_known_rank": 66.5,
+        "meta": {
+          "backend": "exact_unitary_eigh",
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "n_nodes": 32,
+          "n_sources": 15,
+          "n_times": 16,
+          "t_max": 10.0
+        },
+        "n_found_active": 15,
+        "n_known_in_top_k": 1,
+        "n_sources": 58,
+        "recovery": {
+          "best_known_rank": 2.0,
+          "known_ranks": [
+            {
+              "rank": 2.0,
+              "resseq": 12,
+              "score": 0.041561929548768514
+            },
+            {
+              "rank": 97.0,
+              "resseq": 96,
+              "score": 0.028503749318739578
+            },
+            {
+              "rank": 100.0,
+              "resseq": 99,
+              "score": 0.028503749318739578
+            },
+            {
+              "rank": 67.0,
+              "resseq": 117,
+              "score": 0.03403700030115702
+            }
+          ],
+          "mean_known_rank": 66.5,
+          "n_known": 4,
+          "n_known_in_top_k": 1,
+          "n_known_on_graph": 4,
+          "top_k": 5
+        },
+        "resolution": "coarse",
+        "score_mode": "ctqw_t10",
+        "source_mode": "active_plus_neighbors"
+      },
+      "z": -1.033484290445599
+    }
+  }
+}

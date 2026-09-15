@@ -26,6 +26,7 @@ into `experiments/<run-id>/`. None of them touch the inference path.
 | `run_cleveland_c004.py` | `.venv-cleveland` | `c004` edge-rewire randomization z-scores |
 | `run_cleveland_c005.py` | `.venv-cleveland` | `c005` H×T×resolution signal sweep |
 | `run_cleveland_c006.py` | `.venv-cleveland` + Qiskit | `c006` circuit packaging + Braket/Classiq exports |
+| `run_cleveland_c007.py` | `.venv-cleveland` | `c007` topology levers (cutoff/distal/residual) vs null |
 
 See [`docs/cleveland/`](../docs/cleveland/).
 

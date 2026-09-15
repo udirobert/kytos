@@ -1,0 +1,14 @@
+{
+  "flags": [
+    {
+      "detail": "cardiac_myosin P1 \u03c1=0.8230",
+      "id": "phase1_tightest_compression_margin",
+      "severity": "info"
+    },
+    {
+      "detail": "any_significant_z_lt_minus2=False",
+      "id": "null_significance",
+      "severity": "warn"
+    }
+  ]
+}

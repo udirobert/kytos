@@ -9,10 +9,10 @@ Run-IDs use the `cNNN-*` prefix (VCC keeps `kNNN-*`).
 | `c003-ctqw-compression-audit` | Full vs coarse CTQW; myosin compression preserves known-site signal |
 | `c004-randomization` | Phase 3 edge-rewire z-scores (not significant) |
 | `c005-signal-sweep` | H×T×resolution grid + null on winners (n.s.; better ranks) |
-| `c006-circuit-packaging` | Qiskit packaging fid=1.0; Braket/Classiq exports |
+| `c007-topology-levers` | Cutoff/neighbors/multiscale/residual/distal sweep; myosin best=3 |
 
 ```bash
-.venv-cleveland/bin/python tools/run_cleveland_c00{1..6}.py
+.venv-cleveland/bin/python tools/run_cleveland_c00{1..7}.py
 ```
 
 Method report: [`docs/cleveland/method-report.md`](../../docs/cleveland/method-report.md).

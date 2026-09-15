@@ -1,0 +1,6352 @@
+{
+  "any_significant": false,
+  "challenge": "cleveland-gqai-2026",
+  "method": "cutoff_multiscale_community_residual_sweep",
+  "phase": "3c_topology_levers",
+  "phase1_compression": {
+    "receipts": {
+      "bcr_abl1": {
+        "n_coarse": 48,
+        "n_full": 287,
+        "pass": true,
+        "spearman_rho": 0.8544
+      },
+      "cardiac_myosin": {
+        "margin_to_threshold": 0.023,
+        "n_coarse": 56,
+        "n_full": 795,
+        "note": "Tightest Phase 1 compression margin (threshold 0.8). If Phase 2 connectivity looks weaker here, ask whether coarse-graining held up \u2014 receipts are this \u03c1 and n_full\u2192n_coarse.",
+        "pass": true,
+        "spearman_rho": 0.823
+      },
+      "cmyc_max": {
+        "n_coarse": 32,
+        "n_full": 88,
+        "pass": true,
+        "spearman_rho": 0.9425
+      },
+      "kras_g12c": {
+        "n_coarse": 32,
+        "n_full": 169,
+        "pass": true,
+        "spearman_rho": 0.8573
+      }
+    },
+    "tightest_margin_to_threshold": 0.023,
+    "tightest_spearman_rho": 0.823,
+    "tightest_target": "cardiac_myosin"
+  },
+  "run_id": "c007-topology-levers",
+  "targets": {
+    "bcr_abl1": {
+      "empirical_p_best": 0.03333333333333333,
+      "empirical_p_mean": 0.2,
+      "known_allosteric_label": "Myristoyl pocket (Asciminib)",
+      "n_nodes": 287,
+      "n_null_used": 30,
+      "n_trials": 144,
+      "null_best_mean": 29.9,
+      "null_best_std": 36.394722997557835,
+      "null_mean": 110.96,
+      "null_std": 40.97384868256909,
+      "pdb_id": "1OPL",
+      "phase1_receipt": {
+        "n_coarse": 48,
+        "n_full": 287,
+        "pass": true,
+        "spearman_rho": 0.8544
+      },
+      "significant_better_than_null": false,
+      "target_id": "bcr_abl1",
+      "tightest_phase1_margin": false,
+      "top_trials": [
+        {
+          "best_known_rank": 2.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 87,
+              "rank": 1,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.044773297452680695
+            },
+            {
+              "graph_node": 89,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.044773297452680695
+            },
+            {
+              "graph_node": 90,
+              "rank": 3,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.044773297452680695
+            },
+            {
+              "graph_node": 112,
+              "rank": 4,
+              "resname": "ASN",
+              "resseq": 341,
+              "score": 0.044773297452680695
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "LEU",
+              "resseq": 342,
+              "score": 0.044773297452680695
+            }
+          ],
+          "mean_known_rank": 66.2,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 48,
+            "n_sources": 19,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 81,
+          "recovery": {
+            "best_known_rank": 2.0,
+            "known_ranks": [
+              {
+                "rank": 181.0,
+                "resseq": 298,
+                "score": 0.01861371434908126
+              },
+              {
+                "rank": 2.0,
+                "resseq": 317,
+                "score": 0.044773297452680695
+              },
+              {
+                "rank": 32.0,
+                "resseq": 334,
+                "score": 0.04280838096224785
+              },
+              {
+                "rank": 57.0,
+                "resseq": 370,
+                "score": 0.032263944866655354
+              },
+              {
+                "rank": 59.0,
+                "resseq": 379,
+                "score": 0.03052170249080845
+              }
+            ],
+            "mean_known_rank": 66.2,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 2.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 87,
+              "rank": 1,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.044961345444426405
+            },
+            {
+              "graph_node": 89,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.044961345444426405
+            },
+            {
+              "graph_node": 90,
+              "rank": 3,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.044961345444426405
+            },
+            {
+              "graph_node": 112,
+              "rank": 4,
+              "resname": "ASN",
+              "resseq": 341,
+              "score": 0.044961345444426405
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "LEU",
+              "resseq": 342,
+              "score": 0.044961345444426405
+            }
+          ],
+          "mean_known_rank": 66.2,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 81,
+          "recovery": {
+            "best_known_rank": 2.0,
+            "known_ranks": [
+              {
+                "rank": 181.0,
+                "resseq": 298,
+                "score": 0.017797413023196432
+              },
+              {
+                "rank": 2.0,
+                "resseq": 317,
+                "score": 0.044961345444426405
+              },
+              {
+                "rank": 32.0,
+                "resseq": 334,
+                "score": 0.04379114584148978
+              },
+              {
+                "rank": 57.0,
+                "resseq": 370,
+                "score": 0.031550826323566115
+              },
+              {
+                "rank": 59.0,
+                "resseq": 379,
+                "score": 0.03086268877854191
+              }
+            ],
+            "mean_known_rank": 66.2,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 2.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 87,
+              "rank": 1,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.0873338312662723
+            },
+            {
+              "graph_node": 89,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.0873338312662723
+            },
+            {
+              "graph_node": 90,
+              "rank": 3,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.0873338312662723
+            },
+            {
+              "graph_node": 112,
+              "rank": 4,
+              "resname": "ASN",
+              "resseq": 341,
+              "score": 0.0873338312662723
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "LEU",
+              "resseq": 342,
+              "score": 0.0873338312662723
+            }
+          ],
+          "mean_known_rank": 73.0,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 2.0,
+            "known_ranks": [
+              {
+                "rank": 132.0,
+                "resseq": 298,
+                "score": 0.014610295652484348
+              },
+              {
+                "rank": 2.0,
+                "resseq": 317,
+                "score": 0.0873338312662723
+              },
+              {
+                "rank": 30.0,
+                "resseq": 334,
+                "score": 0.06687158367663938
+              },
+              {
+                "rank": 76.0,
+                "resseq": 370,
+                "score": 0.02820647521201412
+              },
+              {
+                "rank": 125.0,
+                "resseq": 379,
+                "score": 0.015370358357511799
+              }
+            ],
+            "mean_known_rank": 73.0,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 2.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 87,
+              "rank": 1,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.08733599528112504
+            },
+            {
+              "graph_node": 89,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.08733599528112504
+            },
+            {
+              "graph_node": 90,
+              "rank": 3,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.08733599528112504
+            },
+            {
+              "graph_node": 112,
+              "rank": 4,
+              "resname": "ASN",
+              "resseq": 341,
+              "score": 0.08733599528112504
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "LEU",
+              "resseq": 342,
+              "score": 0.08733599528112504
+            }
+          ],
+          "mean_known_rank": 74.6,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 48,
+            "n_sources": 8,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 2.0,
+            "known_ranks": [
+              {
+                "rank": 143.0,
+                "resseq": 298,
+                "score": 0.015938416574910054
+              },
+              {
+                "rank": 2.0,
+                "resseq": 317,
+                "score": 0.08733599528112504
+              },
+              {
+                "rank": 30.0,
+                "resseq": 334,
+                "score": 0.0635876911202229
+              },
+              {
+                "rank": 62.0,
+                "resseq": 370,
+                "score": 0.030138819016840727
+              },
+              {
+                "rank": 136.0,
+                "resseq": 379,
+                "score": 0.01594502749887454
+              }
+            ],
+            "mean_known_rank": 74.6,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 2.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 214,
+              "rank": 1,
+              "resname": "ALA",
+              "resseq": 443,
+              "score": 0.0025818040581453826
+            },
+            {
+              "graph_node": 150,
+              "rank": 2,
+              "resname": "ILE",
+              "resseq": 379,
+              "score": 0.00255046149656571
+            },
+            {
+              "graph_node": 21,
+              "rank": 3,
+              "resname": "ASN",
+              "resseq": 250,
+              "score": 0.0025023242411373256
+            },
+            {
+              "graph_node": 22,
+              "rank": 4,
+              "resname": "TYR",
+              "resseq": 251,
+              "score": 0.0024771038284133505
+            },
+            {
+              "graph_node": 20,
+              "rank": 5,
+              "resname": "PRO",
+              "resseq": 249,
+              "score": 0.0024118676773810105
+            }
+          ],
+          "mean_known_rank": 117.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 287,
+            "n_sources": 98,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 98,
+          "recovery": {
+            "best_known_rank": 2.0,
+            "known_ranks": [
+              {
+                "rank": 253.0,
+                "resseq": 298,
+                "score": -0.0010102567426944298
+              },
+              {
+                "rank": 100.0,
+                "resseq": 317,
+                "score": 0.00011497853257474988
+              },
+              {
+                "rank": 207.0,
+                "resseq": 334,
+                "score": -0.00048416036808186964
+              },
+              {
+                "rank": 23.0,
+                "resseq": 370,
+                "score": 0.0016322800089987972
+              },
+              {
+                "rank": 2.0,
+                "resseq": 379,
+                "score": 0.00255046149656571
+              }
+            ],
+            "mean_known_rank": 117.0,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 3.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 58,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 287,
+              "score": 0.09794133215190286
+            },
+            {
+              "graph_node": 87,
+              "rank": 2,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.09794133215190286
+            },
+            {
+              "graph_node": 89,
+              "rank": 3,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.09794133215190286
+            },
+            {
+              "graph_node": 90,
+              "rank": 4,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.09794133215190286
+            },
+            {
+              "graph_node": 106,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 335,
+              "score": 0.09794133215190286
+            }
+          ],
+          "mean_known_rank": 74.4,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 3.0,
+            "known_ranks": [
+              {
+                "rank": 118.0,
+                "resseq": 298,
+                "score": 0.017791681884106854
+              },
+              {
+                "rank": 3.0,
+                "resseq": 317,
+                "score": 0.09794133215190286
+              },
+              {
+                "rank": 31.0,
+                "resseq": 334,
+                "score": 0.05177605517364686
+              },
+              {
+                "rank": 164.0,
+                "resseq": 370,
+                "score": 0.014809096214321847
+              },
+              {
+                "rank": 56.0,
+                "resseq": 379,
+                "score": 0.030452346765357793
+              }
+            ],
+            "mean_known_rank": 74.4,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 3.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 58,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 287,
+              "score": 0.09939017372268386
+            },
+            {
+              "graph_node": 87,
+              "rank": 2,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.09939017372268386
+            },
+            {
+              "graph_node": 89,
+              "rank": 3,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.09939017372268386
+            },
+            {
+              "graph_node": 90,
+              "rank": 4,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.09939017372268386
+            },
+            {
+              "graph_node": 106,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 335,
+              "score": 0.09939017372268386
+            }
+          ],
+          "mean_known_rank": 75.6,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 48,
+            "n_sources": 7,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 3.0,
+            "known_ranks": [
+              {
+                "rank": 145.0,
+                "resseq": 298,
+                "score": 0.016818010095652
+              },
+              {
+                "rank": 3.0,
+                "resseq": 317,
+                "score": 0.09939017372268386
+              },
+              {
+                "rank": 31.0,
+                "resseq": 334,
+                "score": 0.04808400834201429
+              },
+              {
+                "rank": 131.0,
+                "resseq": 370,
+                "score": 0.01771518307012785
+              },
+              {
+                "rank": 68.0,
+                "resseq": 379,
+                "score": 0.025782145727434577
+              }
+            ],
+            "mean_known_rank": 75.6,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 3.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 58,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 287,
+              "score": 0.03823761422591892
+            },
+            {
+              "graph_node": 87,
+              "rank": 2,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.03823761422591892
+            },
+            {
+              "graph_node": 89,
+              "rank": 3,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.03823761422591892
+            },
+            {
+              "graph_node": 90,
+              "rank": 4,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.03823761422591892
+            },
+            {
+              "graph_node": 106,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 335,
+              "score": 0.03823761422591892
+            }
+          ],
+          "mean_known_rank": 86.6,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 98,
+          "recovery": {
+            "best_known_rank": 3.0,
+            "known_ranks": [
+              {
+                "rank": 175.0,
+                "resseq": 298,
+                "score": 0.02014765124396221
+              },
+              {
+                "rank": 3.0,
+                "resseq": 317,
+                "score": 0.03823761422591892
+              },
+              {
+                "rank": 31.0,
+                "resseq": 334,
+                "score": 0.03692276885371374
+              },
+              {
+                "rank": 105.0,
+                "resseq": 370,
+                "score": 0.025915177102688463
+              },
+              {
+                "rank": 119.0,
+                "resseq": 379,
+                "score": 0.024719105077633113
+              }
+            ],
+            "mean_known_rank": 86.6,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 3.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 58,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 287,
+              "score": 0.03800645804877041
+            },
+            {
+              "graph_node": 87,
+              "rank": 2,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.03800645804877041
+            },
+            {
+              "graph_node": 89,
+              "rank": 3,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.03800645804877041
+            },
+            {
+              "graph_node": 90,
+              "rank": 4,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.03800645804877041
+            },
+            {
+              "graph_node": 106,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 335,
+              "score": 0.03800645804877041
+            }
+          ],
+          "mean_known_rank": 88.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 48,
+            "n_sources": 24,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 98,
+          "recovery": {
+            "best_known_rank": 3.0,
+            "known_ranks": [
+              {
+                "rank": 182.0,
+                "resseq": 298,
+                "score": 0.018518218805726985
+              },
+              {
+                "rank": 3.0,
+                "resseq": 317,
+                "score": 0.03800645804877041
+              },
+              {
+                "rank": 31.0,
+                "resseq": 334,
+                "score": 0.03673827793058683
+              },
+              {
+                "rank": 105.0,
+                "resseq": 370,
+                "score": 0.025955416161820788
+              },
+              {
+                "rank": 119.0,
+                "resseq": 379,
+                "score": 0.023712855143964595
+              }
+            ],
+            "mean_known_rank": 88.0,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 3.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 53,
+              "rank": 1,
+              "resname": "LYS",
+              "resseq": 282,
+              "score": 0.0035444980637681397
+            },
+            {
+              "graph_node": 54,
+              "rank": 2,
+              "resname": "TYR",
+              "resseq": 283,
+              "score": 0.003389451828419747
+            },
+            {
+              "graph_node": 20,
+              "rank": 3,
+              "resname": "PRO",
+              "resseq": 249,
+              "score": 0.002375371938103655
+            },
+            {
+              "graph_node": 97,
+              "rank": 4,
+              "resname": "ARG",
+              "resseq": 326,
+              "score": 0.0020408676602950465
+            },
+            {
+              "graph_node": 23,
+              "rank": 5,
+              "resname": "ASP",
+              "resseq": 252,
+              "score": 0.0018531589776585936
+            }
+          ],
+          "mean_known_rank": 130.2,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 287,
+            "n_sources": 12,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 3.0,
+            "known_ranks": [
+              {
+                "rank": 115.0,
+                "resseq": 298,
+                "score": -3.0966542889082757e-06
+              },
+              {
+                "rank": 3.0,
+                "resseq": 317,
+                "score": 0.015896188701223883
+              },
+              {
+                "rank": 154.0,
+                "resseq": 334,
+                "score": -0.00016359261256334613
+              },
+              {
+                "rank": 179.0,
+                "resseq": 370,
+                "score": -0.0003217057477863435
+              },
+              {
+                "rank": 200.0,
+                "resseq": 379,
+                "score": -0.000537465536637373
+              }
+            ],
+            "mean_known_rank": 130.2,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 3.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 58,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 287,
+              "score": 0.023584967392258974
+            },
+            {
+              "graph_node": 87,
+              "rank": 2,
+              "resname": "ASN",
+              "resseq": 316,
+              "score": 0.023584967392258974
+            },
+            {
+              "graph_node": 89,
+              "rank": 3,
+              "resname": "VAL",
+              "resseq": 318,
+              "score": 0.023584967392258974
+            },
+            {
+              "graph_node": 90,
+              "rank": 4,
+              "resname": "GLN",
+              "resseq": 319,
+              "score": 0.023584967392258974
+            },
+            {
+              "graph_node": 106,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 335,
+              "score": 0.023584967392258974
+            }
+          ],
+          "mean_known_rank": 164.8,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 48,
+            "n_sources": 7,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 3.0,
+            "known_ranks": [
+              {
+                "rank": 164.0,
+                "resseq": 298,
+                "score": -0.002747111642344608
+              },
+              {
+                "rank": 3.0,
+                "resseq": 317,
+                "score": 0.023584967392258974
+              },
+              {
+                "rank": 239.0,
+                "resseq": 334,
+                "score": -0.009722788652641257
+              },
+              {
+                "rank": 199.0,
+                "resseq": 370,
+                "score": -0.006013140007872193
+              },
+              {
+                "rank": 219.0,
+                "resseq": 379,
+                "score": -0.00824236138699139
+              }
+            ],
+            "mean_known_rank": 164.8,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 5.0,
+          "cutoff": 8.0,
+          "distal_upweight": true,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "THR",
+              "resseq": 259,
+              "score": 0.007363137891172447
+            },
+            {
+              "graph_node": 97,
+              "rank": 2,
+              "resname": "ARG",
+              "resseq": 326,
+              "score": 0.005673644439269277
+            },
+            {
+              "graph_node": 232,
+              "rank": 3,
+              "resname": "GLY",
+              "resseq": 461,
+              "score": 0.005032126717507725
+            },
+            {
+              "graph_node": 66,
+              "rank": 4,
+              "resname": "ASP",
+              "resseq": 295,
+              "score": 0.004842556775719651
+            },
+            {
+              "graph_node": 69,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 298,
+              "score": 0.0037219958303704266
+            }
+          ],
+          "mean_known_rank": 111.6,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": true,
+            "hamiltonian": "adjacency",
+            "n_nodes": 287,
+            "n_sources": 81,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 81,
+          "recovery": {
+            "best_known_rank": 5.0,
+            "known_ranks": [
+              {
+                "rank": 5.0,
+                "resseq": 298,
+                "score": 0.0037219958303704266
+              },
+              {
+                "rank": 120.0,
+                "resseq": 317,
+                "score": -0.0
+              },
+              {
+                "rank": 127.0,
+                "resseq": 334,
+                "score": -0.0
+              },
+              {
+                "rank": 163.0,
+                "resseq": 370,
+                "score": -3.7801049520012724e-05
+              },
+              {
+                "rank": 143.0,
+                "resseq": 379,
+                "score": 0.0
+              }
+            ],
+            "mean_known_rank": 111.6,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 5.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 153,
+              "rank": 1,
+              "resname": "ASN",
+              "resseq": 382,
+              "score": 0.005307771162203122
+            },
+            {
+              "graph_node": 20,
+              "rank": 2,
+              "resname": "PRO",
+              "resseq": 249,
+              "score": 0.004640762641011995
+            },
+            {
+              "graph_node": 18,
+              "rank": 3,
+              "resname": "VAL",
+              "resseq": 247,
+              "score": 0.003976601524290501
+            },
+            {
+              "graph_node": 36,
+              "rank": 4,
+              "resname": "HIS",
+              "resseq": 265,
+              "score": 0.002649513056039267
+            },
+            {
+              "graph_node": 175,
+              "rank": 5,
+              "resname": "SER",
+              "resseq": 404,
+              "score": 0.0023863121936966566
+            }
+          ],
+          "mean_known_rank": 144.6,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 287,
+            "n_sources": 12,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 1,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 5.0,
+            "known_ranks": [
+              {
+                "rank": 188.0,
+                "resseq": 298,
+                "score": -0.0005085214602391639
+              },
+              {
+                "rank": 5.0,
+                "resseq": 317,
+                "score": 0.014110009620012342
+              },
+              {
+                "rank": 225.0,
+                "resseq": 334,
+                "score": -0.0011235404866976372
+              },
+              {
+                "rank": 53.0,
+                "resseq": 370,
+                "score": 0.00037062973444175755
+              },
+              {
+                "rank": 252.0,
+                "resseq": 379,
+                "score": -0.0017628451731534485
+              }
+            ],
+            "mean_known_rank": 144.6,
+            "n_known": 5,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 58,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 287,
+              "score": 0.06276015840605914
+            },
+            {
+              "graph_node": 59,
+              "rank": 2,
+              "resname": "ALA",
+              "resseq": 288,
+              "score": 0.06276015840605914
+            },
+            {
+              "graph_node": 91,
+              "rank": 3,
+              "resname": "LEU",
+              "resseq": 320,
+              "score": 0.06276015840605914
+            },
+            {
+              "graph_node": 104,
+              "rank": 4,
+              "resname": "ILE",
+              "resseq": 333,
+              "score": 0.06276015840605914
+            },
+            {
+              "graph_node": 105,
+              "rank": 5,
+              "resname": "THR",
+              "resseq": 334,
+              "score": 0.06276015840605914
+            }
+          ],
+          "mean_known_rank": 91.8,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 48,
+            "n_sources": 8,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 0,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 198.0,
+                "resseq": 298,
+                "score": 0.012106724265801326
+              },
+              {
+                "rank": 25.0,
+                "resseq": 317,
+                "score": 0.045202142288942725
+              },
+              {
+                "rank": 6.0,
+                "resseq": 334,
+                "score": 0.06276015840605914
+              },
+              {
+                "rank": 80.0,
+                "resseq": 370,
+                "score": 0.029610453499387502
+              },
+              {
+                "rank": 150.0,
+                "resseq": 379,
+                "score": 0.016460358129818338
+              }
+            ],
+            "mean_known_rank": 91.8,
+            "n_known": 5,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 58,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 287,
+              "score": 0.059178349379834995
+            },
+            {
+              "graph_node": 59,
+              "rank": 2,
+              "resname": "ALA",
+              "resseq": 288,
+              "score": 0.059178349379834995
+            },
+            {
+              "graph_node": 91,
+              "rank": 3,
+              "resname": "LEU",
+              "resseq": 320,
+              "score": 0.059178349379834995
+            },
+            {
+              "graph_node": 104,
+              "rank": 4,
+              "resname": "ILE",
+              "resseq": 333,
+              "score": 0.059178349379834995
+            },
+            {
+              "graph_node": 105,
+              "rank": 5,
+              "resname": "THR",
+              "resseq": 334,
+              "score": 0.059178349379834995
+            }
+          ],
+          "mean_known_rank": 92.6,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 0,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 212.0,
+                "resseq": 298,
+                "score": 0.011232017324445181
+              },
+              {
+                "rank": 35.0,
+                "resseq": 317,
+                "score": 0.04638397760101929
+              },
+              {
+                "rank": 6.0,
+                "resseq": 334,
+                "score": 0.059178349379834995
+              },
+              {
+                "rank": 82.0,
+                "resseq": 370,
+                "score": 0.02988643212302633
+              },
+              {
+                "rank": 128.0,
+                "resseq": 379,
+                "score": 0.01776512415824324
+              }
+            ],
+            "mean_known_rank": 92.6,
+            "n_known": 5,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 53,
+              "rank": 1,
+              "resname": "LYS",
+              "resseq": 282,
+              "score": 0.004145467050527249
+            },
+            {
+              "graph_node": 124,
+              "rank": 2,
+              "resname": "GLU",
+              "resseq": 353,
+              "score": 0.0023266978148323994
+            },
+            {
+              "graph_node": 43,
+              "rank": 3,
+              "resname": "TYR",
+              "resseq": 272,
+              "score": 0.0021333131945828667
+            },
+            {
+              "graph_node": 56,
+              "rank": 4,
+              "resname": "LEU",
+              "resseq": 285,
+              "score": 0.0017849194058482112
+            },
+            {
+              "graph_node": 54,
+              "rank": 5,
+              "resname": "TYR",
+              "resseq": 283,
+              "score": 0.0015471800654133106
+            }
+          ],
+          "mean_known_rank": 164.4,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 287,
+            "n_sources": 12,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 0,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 187.0,
+                "resseq": 298,
+                "score": -0.0007842468541013267
+              },
+              {
+                "rank": 6.0,
+                "resseq": 317,
+                "score": 0.01744399732295559
+              },
+              {
+                "rank": 240.0,
+                "resseq": 334,
+                "score": -0.001839779760500912
+              },
+              {
+                "rank": 176.0,
+                "resseq": 370,
+                "score": -0.0006235583956062684
+              },
+              {
+                "rank": 213.0,
+                "resseq": 379,
+                "score": -0.0011345641897089727
+              }
+            ],
+            "mean_known_rank": 164.4,
+            "n_known": 5,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 18,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 247,
+              "score": 0.006808483473005364
+            },
+            {
+              "graph_node": 36,
+              "rank": 2,
+              "resname": "HIS",
+              "resseq": 265,
+              "score": 0.004719839667624094
+            },
+            {
+              "graph_node": 28,
+              "rank": 3,
+              "resname": "GLU",
+              "resseq": 257,
+              "score": 0.003174332499149956
+            },
+            {
+              "graph_node": 144,
+              "rank": 4,
+              "resname": "LEU",
+              "resseq": 373,
+              "score": 0.0024714191707234474
+            },
+            {
+              "graph_node": 54,
+              "rank": 5,
+              "resname": "TYR",
+              "resseq": 283,
+              "score": 0.002320917881176658
+            }
+          ],
+          "mean_known_rank": 169.2,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 287,
+            "n_sources": 12,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 0,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 148.0,
+                "resseq": 298,
+                "score": -0.0004798304097227786
+              },
+              {
+                "rank": 6.0,
+                "resseq": 317,
+                "score": 0.019445977025127896
+              },
+              {
+                "rank": 258.0,
+                "resseq": 334,
+                "score": -0.0030190804738886084
+              },
+              {
+                "rank": 222.0,
+                "resseq": 370,
+                "score": -0.0016616246218490581
+              },
+              {
+                "rank": 212.0,
+                "resseq": 379,
+                "score": -0.0014495278234365095
+              }
+            ],
+            "mean_known_rank": 169.2,
+            "n_known": 5,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 7.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 43,
+              "rank": 1,
+              "resname": "TYR",
+              "resseq": 272,
+              "score": 0.011659328878706627
+            },
+            {
+              "graph_node": 18,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 247,
+              "score": 0.010330376653774767
+            },
+            {
+              "graph_node": 36,
+              "rank": 3,
+              "resname": "HIS",
+              "resseq": 265,
+              "score": 0.008803633134344286
+            },
+            {
+              "graph_node": 39,
+              "rank": 4,
+              "resname": "GLY",
+              "resseq": 268,
+              "score": 0.008274585386605105
+            },
+            {
+              "graph_node": 23,
+              "rank": 5,
+              "resname": "ASP",
+              "resseq": 252,
+              "score": 0.0072916416774024715
+            }
+          ],
+          "mean_known_rank": 94.0,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 0,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 7.0,
+            "known_ranks": [
+              {
+                "rank": 116.0,
+                "resseq": 298,
+                "score": 0.0018383539536329086
+              },
+              {
+                "rank": 7.0,
+                "resseq": 317,
+                "score": 0.03521170511606377
+              },
+              {
+                "rank": 26.0,
+                "resseq": 334,
+                "score": 0.005128978058209983
+              },
+              {
+                "rank": 169.0,
+                "resseq": 370,
+                "score": 0.0011546243155186823
+              },
+              {
+                "rank": 152.0,
+                "resseq": 379,
+                "score": 0.0013351515301658768
+              }
+            ],
+            "mean_known_rank": 94.0,
+            "n_known": 5,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 7.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 18,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 247,
+              "score": 0.013717399102997959
+            },
+            {
+              "graph_node": 43,
+              "rank": 2,
+              "resname": "TYR",
+              "resseq": 272,
+              "score": 0.012598780640491344
+            },
+            {
+              "graph_node": 36,
+              "rank": 3,
+              "resname": "HIS",
+              "resseq": 265,
+              "score": 0.011282708341873653
+            },
+            {
+              "graph_node": 23,
+              "rank": 4,
+              "resname": "ASP",
+              "resseq": 252,
+              "score": 0.009120919182800903
+            },
+            {
+              "graph_node": 39,
+              "rank": 5,
+              "resname": "GLY",
+              "resseq": 268,
+              "score": 0.008539266857276772
+            }
+          ],
+          "mean_known_rank": 96.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 287,
+            "n_sources": 12,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 0,
+          "n_sources": 12,
+          "recovery": {
+            "best_known_rank": 7.0,
+            "known_ranks": [
+              {
+                "rank": 124.0,
+                "resseq": 298,
+                "score": 0.0017026645000474223
+              },
+              {
+                "rank": 7.0,
+                "resseq": 317,
+                "score": 0.032146942089402324
+              },
+              {
+                "rank": 41.0,
+                "resseq": 334,
+                "score": 0.0044458303838812675
+              },
+              {
+                "rank": 144.0,
+                "resseq": 370,
+                "score": 0.0013965505540560108
+              },
+              {
+                "rank": 164.0,
+                "resseq": 379,
+                "score": 0.0010839056029559903
+              }
+            ],
+            "mean_known_rank": 96.0,
+            "n_known": 5,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 8.0,
+          "distal_upweight": true,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "THR",
+              "resseq": 259,
+              "score": 0.017533745738570843
+            },
+            {
+              "graph_node": 97,
+              "rank": 2,
+              "resname": "ARG",
+              "resseq": 326,
+              "score": 0.013365977200207609
+            },
+            {
+              "graph_node": 98,
+              "rank": 3,
+              "resname": "GLU",
+              "resseq": 327,
+              "score": 0.010435543235363658
+            },
+            {
+              "graph_node": 66,
+              "rank": 4,
+              "resname": "ASP",
+              "resseq": 295,
+              "score": 0.009488885274200057
+            },
+            {
+              "graph_node": 114,
+              "rank": 5,
+              "resname": "LEU",
+              "resseq": 343,
+              "score": 0.009322903934704675
+            }
+          ],
+          "mean_known_rank": 175.2,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": true,
+            "hamiltonian": "adjacency",
+            "n_nodes": 287,
+            "n_sources": 81,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 12,
+          "n_known_in_top_k": 0,
+          "n_sources": 81,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 8.0,
+                "resseq": 298,
+                "score": 0.008277780465191403
+              },
+              {
+                "rank": 248.0,
+                "resseq": 317,
+                "score": 0.0
+              },
+              {
+                "rank": 255.0,
+                "resseq": 334,
+                "score": 0.0
+              },
+              {
+                "rank": 94.0,
+                "resseq": 370,
+                "score": 0.0025851882357694916
+              },
+              {
+                "rank": 271.0,
+                "resseq": 379,
+                "score": 0.0
+              }
+            ],
+            "mean_known_rank": 175.2,
+            "n_known": 5,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 5,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active_plus_neighbors"
+        }
+      ],
+      "winner": {
+        "best_known_rank": 2.0,
+        "cutoff": 8.0,
+        "distal_upweight": false,
+        "hamiltonian": "laplacian",
+        "hit_list_top5": [
+          {
+            "graph_node": 87,
+            "rank": 1,
+            "resname": "ASN",
+            "resseq": 316,
+            "score": 0.044773297452680695
+          },
+          {
+            "graph_node": 89,
+            "rank": 2,
+            "resname": "VAL",
+            "resseq": 318,
+            "score": 0.044773297452680695
+          },
+          {
+            "graph_node": 90,
+            "rank": 3,
+            "resname": "GLN",
+            "resseq": 319,
+            "score": 0.044773297452680695
+          },
+          {
+            "graph_node": 112,
+            "rank": 4,
+            "resname": "ASN",
+            "resseq": 341,
+            "score": 0.044773297452680695
+          },
+          {
+            "graph_node": 113,
+            "rank": 5,
+            "resname": "LEU",
+            "resseq": 342,
+            "score": 0.044773297452680695
+          }
+        ],
+        "mean_known_rank": 66.2,
+        "meta": {
+          "backend": "exact_unitary_eigh",
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "n_nodes": 48,
+          "n_sources": 19,
+          "n_times": 16,
+          "t_max": 10.0
+        },
+        "n_found_active": 12,
+        "n_known_in_top_k": 1,
+        "n_sources": 81,
+        "recovery": {
+          "best_known_rank": 2.0,
+          "known_ranks": [
+            {
+              "rank": 181.0,
+              "resseq": 298,
+              "score": 0.01861371434908126
+            },
+            {
+              "rank": 2.0,
+              "resseq": 317,
+              "score": 0.044773297452680695
+            },
+            {
+              "rank": 32.0,
+              "resseq": 334,
+              "score": 0.04280838096224785
+            },
+            {
+              "rank": 57.0,
+              "resseq": 370,
+              "score": 0.032263944866655354
+            },
+            {
+              "rank": 59.0,
+              "resseq": 379,
+              "score": 0.03052170249080845
+            }
+          ],
+          "mean_known_rank": 66.2,
+          "n_known": 5,
+          "n_known_in_top_k": 1,
+          "n_known_on_graph": 5,
+          "top_k": 5
+        },
+        "resolution": "coarse",
+        "score_mode": "ctqw_t10",
+        "source_mode": "active_plus_neighbors"
+      },
+      "zscore_best_known_rank": -0.7665946516991529,
+      "zscore_mean_known_rank": -1.0924040928340126
+    },
+    "cardiac_myosin": {
+      "empirical_p_best": 0.1,
+      "empirical_p_mean": 0.06666666666666667,
+      "known_allosteric_label": "Mavacamten / SRX pocket (literature contacts)",
+      "n_nodes": 795,
+      "n_null_used": 30,
+      "n_trials": 72,
+      "null_best_mean": 72.33333333333333,
+      "null_best_std": 69.29414232761339,
+      "null_mean": 368.51851851851853,
+      "null_std": 71.77375250170866,
+      "pdb_id": "5TBY",
+      "phase1_receipt": {
+        "margin_to_threshold": 0.023,
+        "n_coarse": 56,
+        "n_full": 795,
+        "note": "Tightest Phase 1 compression margin (threshold 0.8). If Phase 2 connectivity looks weaker here, ask whether coarse-graining held up \u2014 receipts are this \u03c1 and n_full\u2192n_coarse.",
+        "pass": true,
+        "spearman_rho": 0.823
+      },
+      "significant_better_than_null": false,
+      "target_id": "cardiac_myosin",
+      "tightest_phase1_margin": true,
+      "top_trials": [
+        {
+          "best_known_rank": 3.0,
+          "cutoff": 9.0,
+          "distal_upweight": true,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 165,
+              "rank": 1,
+              "resname": "ASN",
+              "resseq": 171,
+              "score": 1.3237023050215242
+            },
+            {
+              "graph_node": 166,
+              "rank": 2,
+              "resname": "GLN",
+              "resseq": 172,
+              "score": 1.3237023050215242
+            },
+            {
+              "graph_node": 660,
+              "rank": 3,
+              "resname": "HIS",
+              "resseq": 666,
+              "score": 1.3237023050215242
+            },
+            {
+              "graph_node": 723,
+              "rank": 4,
+              "resname": "ALA",
+              "resseq": 729,
+              "score": 0.9684489863337175
+            },
+            {
+              "graph_node": 738,
+              "rank": 5,
+              "resname": "LYS",
+              "resseq": 744,
+              "score": 0.9684489863337175
+            }
+          ],
+          "mean_known_rank": 280.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": true,
+            "hamiltonian": "laplacian",
+            "n_nodes": 56,
+            "n_sources": 5,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 1,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 3.0,
+            "known_ranks": [
+              {
+                "rank": 178.0,
+                "resseq": 164,
+                "score": 0.2867700294897597
+              },
+              {
+                "rank": 72.0,
+                "resseq": 167,
+                "score": 0.44807817107774955
+              },
+              {
+                "rank": 181.0,
+                "resseq": 168,
+                "score": 0.2867700294897597
+              },
+              {
+                "rank": 3.0,
+                "resseq": 666,
+                "score": 1.3237023050215242
+              },
+              {
+                "rank": 540.0,
+                "resseq": 710,
+                "score": 0.10704686284483325
+              },
+              {
+                "rank": 428.0,
+                "resseq": 711,
+                "score": 0.16726072319505195
+              },
+              {
+                "rank": 429.0,
+                "resseq": 712,
+                "score": 0.16726072319505195
+              },
+              {
+                "rank": 344.0,
+                "resseq": 721,
+                "score": 0.18543441785609868
+              },
+              {
+                "rank": 345.0,
+                "resseq": 722,
+                "score": 0.18543441785609868
+              }
+            ],
+            "mean_known_rank": 280.0,
+            "n_known": 9,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 3.0,
+          "cutoff": 9.0,
+          "distal_upweight": true,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 165,
+              "rank": 1,
+              "resname": "ASN",
+              "resseq": 171,
+              "score": 1.3157319016152096
+            },
+            {
+              "graph_node": 166,
+              "rank": 2,
+              "resname": "GLN",
+              "resseq": 172,
+              "score": 1.3157319016152096
+            },
+            {
+              "graph_node": 660,
+              "rank": 3,
+              "resname": "HIS",
+              "resseq": 666,
+              "score": 1.3157319016152096
+            },
+            {
+              "graph_node": 723,
+              "rank": 4,
+              "resname": "ALA",
+              "resseq": 729,
+              "score": 0.7237418714725264
+            },
+            {
+              "graph_node": 738,
+              "rank": 5,
+              "resname": "LYS",
+              "resseq": 744,
+              "score": 0.7237418714725264
+            }
+          ],
+          "mean_known_rank": 294.22222222222223,
+          "meta": {
+            "distal_upweight": true,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 1,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 3.0,
+            "known_ranks": [
+              {
+                "rank": 195.0,
+                "resseq": 164,
+                "score": 0.2665599312868027
+              },
+              {
+                "rank": 63.0,
+                "resseq": 167,
+                "score": 0.41649989263562925
+              },
+              {
+                "rank": 198.0,
+                "resseq": 168,
+                "score": 0.2665599312868027
+              },
+              {
+                "rank": 3.0,
+                "resseq": 666,
+                "score": 1.3157319016152096
+              },
+              {
+                "rank": 613.0,
+                "resseq": 710,
+                "score": 0.0817403753078843
+              },
+              {
+                "rank": 476.0,
+                "resseq": 711,
+                "score": 0.12771933641856922
+              },
+              {
+                "rank": 477.0,
+                "resseq": 712,
+                "score": 0.12771933641856922
+              },
+              {
+                "rank": 311.0,
+                "resseq": 721,
+                "score": 0.1923896365195362
+              },
+              {
+                "rank": 312.0,
+                "resseq": 722,
+                "score": 0.1923896365195362
+              }
+            ],
+            "mean_known_rank": 294.22222222222223,
+            "n_known": 9,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 21.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 166,
+              "rank": 1,
+              "resname": "GLN",
+              "resseq": 172,
+              "score": 0.042933035330729175
+            },
+            {
+              "graph_node": 167,
+              "rank": 2,
+              "resname": "SER",
+              "resseq": 173,
+              "score": 0.042933035330729175
+            },
+            {
+              "graph_node": 168,
+              "rank": 3,
+              "resname": "ILE",
+              "resseq": 174,
+              "score": 0.042933035330729175
+            },
+            {
+              "graph_node": 169,
+              "rank": 4,
+              "resname": "LEU",
+              "resseq": 175,
+              "score": 0.042933035330729175
+            },
+            {
+              "graph_node": 170,
+              "rank": 5,
+              "resname": "ILE",
+              "resseq": 176,
+              "score": 0.042933035330729175
+            }
+          ],
+          "mean_known_rank": 552.3333333333334,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 21.0,
+            "known_ranks": [
+              {
+                "rank": 423.0,
+                "resseq": 164,
+                "score": 0.017388858481656486
+              },
+              {
+                "rank": 426.0,
+                "resseq": 167,
+                "score": 0.017388858481656486
+              },
+              {
+                "rank": 427.0,
+                "resseq": 168,
+                "score": 0.017388858481656486
+              },
+              {
+                "rank": 21.0,
+                "resseq": 666,
+                "score": 0.042933035330729175
+              },
+              {
+                "rank": 692.0,
+                "resseq": 710,
+                "score": 0.00822935170813416
+              },
+              {
+                "rank": 693.0,
+                "resseq": 711,
+                "score": 0.00822935170813416
+              },
+              {
+                "rank": 714.0,
+                "resseq": 712,
+                "score": 0.0080903556363007
+              },
+              {
+                "rank": 787.0,
+                "resseq": 721,
+                "score": 0.004430866324249053
+              },
+              {
+                "rank": 788.0,
+                "resseq": 722,
+                "score": 0.004430866324249053
+              }
+            ],
+            "mean_known_rank": 552.3333333333334,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 21.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 166,
+              "rank": 1,
+              "resname": "GLN",
+              "resseq": 172,
+              "score": 0.041111008346846306
+            },
+            {
+              "graph_node": 167,
+              "rank": 2,
+              "resname": "SER",
+              "resseq": 173,
+              "score": 0.041111008346846306
+            },
+            {
+              "graph_node": 168,
+              "rank": 3,
+              "resname": "ILE",
+              "resseq": 174,
+              "score": 0.041111008346846306
+            },
+            {
+              "graph_node": 169,
+              "rank": 4,
+              "resname": "LEU",
+              "resseq": 175,
+              "score": 0.041111008346846306
+            },
+            {
+              "graph_node": 170,
+              "rank": 5,
+              "resname": "ILE",
+              "resseq": 176,
+              "score": 0.041111008346846306
+            }
+          ],
+          "mean_known_rank": 566.5555555555555,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 56,
+            "n_sources": 6,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 21.0,
+            "known_ranks": [
+              {
+                "rank": 455.0,
+                "resseq": 164,
+                "score": 0.016298080390127513
+              },
+              {
+                "rank": 458.0,
+                "resseq": 167,
+                "score": 0.016298080390127513
+              },
+              {
+                "rank": 459.0,
+                "resseq": 168,
+                "score": 0.016298080390127513
+              },
+              {
+                "rank": 21.0,
+                "resseq": 666,
+                "score": 0.041111008346846306
+              },
+              {
+                "rank": 705.0,
+                "resseq": 710,
+                "score": 0.007773520834361449
+              },
+              {
+                "rank": 706.0,
+                "resseq": 711,
+                "score": 0.007773520834361449
+              },
+              {
+                "rank": 720.0,
+                "resseq": 712,
+                "score": 0.007098191107160951
+              },
+              {
+                "rank": 787.0,
+                "resseq": 721,
+                "score": 0.0036215970348590478
+              },
+              {
+                "rank": 788.0,
+                "resseq": 722,
+                "score": 0.0036215970348590478
+              }
+            ],
+            "mean_known_rank": 566.5555555555555,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 24.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 116,
+              "rank": 1,
+              "resname": "CYS",
+              "resseq": 122,
+              "score": 0.05100105199319813
+            },
+            {
+              "graph_node": 117,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 123,
+              "score": 0.05100105199319813
+            },
+            {
+              "graph_node": 118,
+              "rank": 3,
+              "resname": "THR",
+              "resseq": 124,
+              "score": 0.05100105199319813
+            },
+            {
+              "graph_node": 119,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 125,
+              "score": 0.05100105199319813
+            },
+            {
+              "graph_node": 120,
+              "rank": 5,
+              "resname": "ASN",
+              "resseq": 126,
+              "score": 0.05100105199319813
+            }
+          ],
+          "mean_known_rank": 265.22222222222223,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 56,
+            "n_sources": 5,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 24.0,
+            "known_ranks": [
+              {
+                "rank": 115.0,
+                "resseq": 164,
+                "score": 0.007019399788328731
+              },
+              {
+                "rank": 118.0,
+                "resseq": 167,
+                "score": 0.007019399788328731
+              },
+              {
+                "rank": 119.0,
+                "resseq": 168,
+                "score": 0.007019399788328731
+              },
+              {
+                "rank": 24.0,
+                "resseq": 666,
+                "score": 0.05100105199319813
+              },
+              {
+                "rank": 421.0,
+                "resseq": 710,
+                "score": -0.0007545564079063562
+              },
+              {
+                "rank": 422.0,
+                "resseq": 711,
+                "score": -0.0007545564079063562
+              },
+              {
+                "rank": 423.0,
+                "resseq": 712,
+                "score": -0.0007545564079063562
+              },
+              {
+                "rank": 372.0,
+                "resseq": 721,
+                "score": 0.0013051734627395409
+              },
+              {
+                "rank": 373.0,
+                "resseq": 722,
+                "score": 0.0013051734627395409
+              }
+            ],
+            "mean_known_rank": 265.22222222222223,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 24.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 116,
+              "rank": 1,
+              "resname": "CYS",
+              "resseq": 122,
+              "score": 0.060108565026289834
+            },
+            {
+              "graph_node": 117,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 123,
+              "score": 0.060108565026289834
+            },
+            {
+              "graph_node": 118,
+              "rank": 3,
+              "resname": "THR",
+              "resseq": 124,
+              "score": 0.060108565026289834
+            },
+            {
+              "graph_node": 119,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 125,
+              "score": 0.060108565026289834
+            },
+            {
+              "graph_node": 120,
+              "rank": 5,
+              "resname": "ASN",
+              "resseq": 126,
+              "score": 0.060108565026289834
+            }
+          ],
+          "mean_known_rank": 469.6666666666667,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 56,
+            "n_sources": 5,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 24.0,
+            "known_ranks": [
+              {
+                "rank": 332.0,
+                "resseq": 164,
+                "score": 0.019214679185897247
+              },
+              {
+                "rank": 335.0,
+                "resseq": 167,
+                "score": 0.019214679185897247
+              },
+              {
+                "rank": 336.0,
+                "resseq": 168,
+                "score": 0.019214679185897247
+              },
+              {
+                "rank": 24.0,
+                "resseq": 666,
+                "score": 0.060108565026289834
+              },
+              {
+                "rank": 626.0,
+                "resseq": 710,
+                "score": 0.010133600063679181
+              },
+              {
+                "rank": 627.0,
+                "resseq": 711,
+                "score": 0.010133600063679181
+              },
+              {
+                "rank": 628.0,
+                "resseq": 712,
+                "score": 0.010133600063679181
+              },
+              {
+                "rank": 659.0,
+                "resseq": 721,
+                "score": 0.009164819764960115
+              },
+              {
+                "rank": 660.0,
+                "resseq": 722,
+                "score": 0.009164819764960115
+              }
+            ],
+            "mean_known_rank": 469.6666666666667,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 24.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 116,
+              "rank": 1,
+              "resname": "CYS",
+              "resseq": 122,
+              "score": 0.14707803389128046
+            },
+            {
+              "graph_node": 117,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 123,
+              "score": 0.14707803389128046
+            },
+            {
+              "graph_node": 118,
+              "rank": 3,
+              "resname": "THR",
+              "resseq": 124,
+              "score": 0.14707803389128046
+            },
+            {
+              "graph_node": 119,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 125,
+              "score": 0.14707803389128046
+            },
+            {
+              "graph_node": 120,
+              "rank": 5,
+              "resname": "ASN",
+              "resseq": 126,
+              "score": 0.14707803389128046
+            }
+          ],
+          "mean_known_rank": 485.6666666666667,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 56,
+            "n_sources": 5,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 24.0,
+            "known_ranks": [
+              {
+                "rank": 264.0,
+                "resseq": 164,
+                "score": 0.017923126843109982
+              },
+              {
+                "rank": 267.0,
+                "resseq": 167,
+                "score": 0.017923126843109982
+              },
+              {
+                "rank": 268.0,
+                "resseq": 168,
+                "score": 0.017923126843109982
+              },
+              {
+                "rank": 24.0,
+                "resseq": 666,
+                "score": 0.14707803389128046
+              },
+              {
+                "rank": 660.0,
+                "resseq": 710,
+                "score": 0.006690428927802078
+              },
+              {
+                "rank": 661.0,
+                "resseq": 711,
+                "score": 0.006690428927802078
+              },
+              {
+                "rank": 662.0,
+                "resseq": 712,
+                "score": 0.006690428927802078
+              },
+              {
+                "rank": 782.0,
+                "resseq": 721,
+                "score": 0.0037843758746142586
+              },
+              {
+                "rank": 783.0,
+                "resseq": 722,
+                "score": 0.0037843758746142586
+              }
+            ],
+            "mean_known_rank": 485.6666666666667,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 24.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 116,
+              "rank": 1,
+              "resname": "CYS",
+              "resseq": 122,
+              "score": 0.056365696625514584
+            },
+            {
+              "graph_node": 117,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 123,
+              "score": 0.056365696625514584
+            },
+            {
+              "graph_node": 118,
+              "rank": 3,
+              "resname": "THR",
+              "resseq": 124,
+              "score": 0.056365696625514584
+            },
+            {
+              "graph_node": 119,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 125,
+              "score": 0.056365696625514584
+            },
+            {
+              "graph_node": 120,
+              "rank": 5,
+              "resname": "ASN",
+              "resseq": 126,
+              "score": 0.056365696625514584
+            }
+          ],
+          "mean_known_rank": 493.1111111111111,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 56,
+            "n_sources": 14,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 80,
+          "recovery": {
+            "best_known_rank": 24.0,
+            "known_ranks": [
+              {
+                "rank": 459.0,
+                "resseq": 164,
+                "score": 0.013959093365901417
+              },
+              {
+                "rank": 462.0,
+                "resseq": 167,
+                "score": 0.013959093365901417
+              },
+              {
+                "rank": 463.0,
+                "resseq": 168,
+                "score": 0.013959093365901417
+              },
+              {
+                "rank": 24.0,
+                "resseq": 666,
+                "score": 0.056365696625514584
+              },
+              {
+                "rank": 502.0,
+                "resseq": 710,
+                "score": 0.01319488313930553
+              },
+              {
+                "rank": 503.0,
+                "resseq": 711,
+                "score": 0.01319488313930553
+              },
+              {
+                "rank": 504.0,
+                "resseq": 712,
+                "score": 0.01319488313930553
+              },
+              {
+                "rank": 760.0,
+                "resseq": 721,
+                "score": 0.004647250963678191
+              },
+              {
+                "rank": 761.0,
+                "resseq": 722,
+                "score": 0.004647250963678191
+              }
+            ],
+            "mean_known_rank": 493.1111111111111,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 24.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 116,
+              "rank": 1,
+              "resname": "CYS",
+              "resseq": 122,
+              "score": 0.05832832480256491
+            },
+            {
+              "graph_node": 117,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 123,
+              "score": 0.05832832480256491
+            },
+            {
+              "graph_node": 118,
+              "rank": 3,
+              "resname": "THR",
+              "resseq": 124,
+              "score": 0.05832832480256491
+            },
+            {
+              "graph_node": 119,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 125,
+              "score": 0.05832832480256491
+            },
+            {
+              "graph_node": 120,
+              "rank": 5,
+              "resname": "ASN",
+              "resseq": 126,
+              "score": 0.05832832480256491
+            }
+          ],
+          "mean_known_rank": 494.77777777777777,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 24.0,
+            "known_ranks": [
+              {
+                "rank": 384.0,
+                "resseq": 164,
+                "score": 0.01761466462427251
+              },
+              {
+                "rank": 387.0,
+                "resseq": 167,
+                "score": 0.01761466462427251
+              },
+              {
+                "rank": 388.0,
+                "resseq": 168,
+                "score": 0.01761466462427251
+              },
+              {
+                "rank": 24.0,
+                "resseq": 666,
+                "score": 0.05832832480256491
+              },
+              {
+                "rank": 624.0,
+                "resseq": 710,
+                "score": 0.009516130805979873
+              },
+              {
+                "rank": 625.0,
+                "resseq": 711,
+                "score": 0.009516130805979873
+              },
+              {
+                "rank": 626.0,
+                "resseq": 712,
+                "score": 0.009516130805979873
+              },
+              {
+                "rank": 697.0,
+                "resseq": 721,
+                "score": 0.0075363560468698215
+              },
+              {
+                "rank": 698.0,
+                "resseq": 722,
+                "score": 0.0075363560468698215
+              }
+            ],
+            "mean_known_rank": 494.77777777777777,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 24.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 116,
+              "rank": 1,
+              "resname": "CYS",
+              "resseq": 122,
+              "score": 0.14619243351280106
+            },
+            {
+              "graph_node": 117,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 123,
+              "score": 0.14619243351280106
+            },
+            {
+              "graph_node": 118,
+              "rank": 3,
+              "resname": "THR",
+              "resseq": 124,
+              "score": 0.14619243351280106
+            },
+            {
+              "graph_node": 119,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 125,
+              "score": 0.14619243351280106
+            },
+            {
+              "graph_node": 120,
+              "rank": 5,
+              "resname": "ASN",
+              "resseq": 126,
+              "score": 0.14619243351280106
+            }
+          ],
+          "mean_known_rank": 502.6666666666667,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 24.0,
+            "known_ranks": [
+              {
+                "rank": 264.0,
+                "resseq": 164,
+                "score": 0.01665999570542517
+              },
+              {
+                "rank": 267.0,
+                "resseq": 167,
+                "score": 0.01665999570542517
+              },
+              {
+                "rank": 268.0,
+                "resseq": 168,
+                "score": 0.01665999570542517
+              },
+              {
+                "rank": 24.0,
+                "resseq": 666,
+                "score": 0.14619243351280106
+              },
+              {
+                "rank": 711.0,
+                "resseq": 710,
+                "score": 0.005108773456742769
+              },
+              {
+                "rank": 712.0,
+                "resseq": 711,
+                "score": 0.005108773456742769
+              },
+              {
+                "rank": 713.0,
+                "resseq": 712,
+                "score": 0.005108773456742769
+              },
+              {
+                "rank": 782.0,
+                "resseq": 721,
+                "score": 0.003926319112643596
+              },
+              {
+                "rank": 783.0,
+                "resseq": 722,
+                "score": 0.003926319112643596
+              }
+            ],
+            "mean_known_rank": 502.6666666666667,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 24.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 116,
+              "rank": 1,
+              "resname": "CYS",
+              "resseq": 122,
+              "score": 0.056383270249459494
+            },
+            {
+              "graph_node": 117,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 123,
+              "score": 0.056383270249459494
+            },
+            {
+              "graph_node": 118,
+              "rank": 3,
+              "resname": "THR",
+              "resseq": 124,
+              "score": 0.056383270249459494
+            },
+            {
+              "graph_node": 119,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 125,
+              "score": 0.056383270249459494
+            },
+            {
+              "graph_node": 120,
+              "rank": 5,
+              "resname": "ASN",
+              "resseq": 126,
+              "score": 0.056383270249459494
+            }
+          ],
+          "mean_known_rank": 529.7777777777778,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 80,
+          "recovery": {
+            "best_known_rank": 24.0,
+            "known_ranks": [
+              {
+                "rank": 508.0,
+                "resseq": 164,
+                "score": 0.012208577536740128
+              },
+              {
+                "rank": 511.0,
+                "resseq": 167,
+                "score": 0.012208577536740128
+              },
+              {
+                "rank": 512.0,
+                "resseq": 168,
+                "score": 0.012208577536740128
+              },
+              {
+                "rank": 24.0,
+                "resseq": 666,
+                "score": 0.056383270249459494
+              },
+              {
+                "rank": 563.0,
+                "resseq": 710,
+                "score": 0.01123125531037319
+              },
+              {
+                "rank": 564.0,
+                "resseq": 711,
+                "score": 0.01123125531037319
+              },
+              {
+                "rank": 565.0,
+                "resseq": 712,
+                "score": 0.01123125531037319
+              },
+              {
+                "rank": 760.0,
+                "resseq": 721,
+                "score": 0.004608472755120986
+              },
+              {
+                "rank": 761.0,
+                "resseq": 722,
+                "score": 0.004608472755120986
+              }
+            ],
+            "mean_known_rank": 529.7777777777778,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 26.0,
+          "cutoff": 9.0,
+          "distal_upweight": true,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 794,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 800,
+              "score": 0.7560502958814603
+            },
+            {
+              "graph_node": 402,
+              "rank": 2,
+              "resname": "ASN",
+              "resseq": 408,
+              "score": 0.7032630132717109
+            },
+            {
+              "graph_node": 496,
+              "rank": 3,
+              "resname": "LYS",
+              "resseq": 502,
+              "score": 0.6796606558034446
+            },
+            {
+              "graph_node": 497,
+              "rank": 4,
+              "resname": "LYS",
+              "resseq": 503,
+              "score": 0.6796606558034446
+            },
+            {
+              "graph_node": 498,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 504,
+              "score": 0.6796606558034446
+            }
+          ],
+          "mean_known_rank": 204.77777777777777,
+          "meta": {
+            "distal_upweight": true,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 26.0,
+            "known_ranks": [
+              {
+                "rank": 244.0,
+                "resseq": 164,
+                "score": 0.2818346339883602
+              },
+              {
+                "rank": 57.0,
+                "resseq": 167,
+                "score": 0.4403666156068128
+              },
+              {
+                "rank": 247.0,
+                "resseq": 168,
+                "score": 0.2818346339883602
+              },
+              {
+                "rank": 26.0,
+                "resseq": 666,
+                "score": 0.5249549232230842
+              },
+              {
+                "rank": 521.0,
+                "resseq": 710,
+                "score": 0.15225809289567796
+              },
+              {
+                "rank": 298.0,
+                "resseq": 711,
+                "score": 0.2379032701494968
+              },
+              {
+                "rank": 299.0,
+                "resseq": 712,
+                "score": 0.2379032701494968
+              },
+              {
+                "rank": 75.0,
+                "resseq": 721,
+                "score": 0.36928144629662124
+              },
+              {
+                "rank": 76.0,
+                "resseq": 722,
+                "score": 0.36928144629662124
+              }
+            ],
+            "mean_known_rank": 204.77777777777777,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 31.0,
+          "cutoff": 9.0,
+          "distal_upweight": true,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 723,
+              "rank": 1,
+              "resname": "ALA",
+              "resseq": 729,
+              "score": 0.7935492489974072
+            },
+            {
+              "graph_node": 738,
+              "rank": 2,
+              "resname": "LYS",
+              "resseq": 744,
+              "score": 0.7935492489974072
+            },
+            {
+              "graph_node": 739,
+              "rank": 3,
+              "resname": "LEU",
+              "resseq": 745,
+              "score": 0.7935492489974072
+            },
+            {
+              "graph_node": 794,
+              "rank": 4,
+              "resname": "GLU",
+              "resseq": 800,
+              "score": 0.7560110037140467
+            },
+            {
+              "graph_node": 725,
+              "rank": 5,
+              "resname": "PRO",
+              "resseq": 731,
+              "score": 0.6714878039368595
+            }
+          ],
+          "mean_known_rank": 238.44444444444446,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": true,
+            "hamiltonian": "laplacian",
+            "n_nodes": 56,
+            "n_sources": 5,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 31.0,
+            "known_ranks": [
+              {
+                "rank": 131.0,
+                "resseq": 164,
+                "score": 0.1123103966132597
+              },
+              {
+                "rank": 94.0,
+                "resseq": 167,
+                "score": 0.17548499470821827
+              },
+              {
+                "rank": 134.0,
+                "resseq": 168,
+                "score": 0.1123103966132597
+              },
+              {
+                "rank": 31.0,
+                "resseq": 666,
+                "score": 0.45900946793878317
+              },
+              {
+                "rank": 440.0,
+                "resseq": 710,
+                "score": -0.0120729025265017
+              },
+              {
+                "rank": 480.0,
+                "resseq": 711,
+                "score": -0.018863910197658908
+              },
+              {
+                "rank": 481.0,
+                "resseq": 712,
+                "score": -0.018863910197658908
+              },
+              {
+                "rank": 177.0,
+                "resseq": 721,
+                "score": 0.0639534996742375
+              },
+              {
+                "rank": 178.0,
+                "resseq": 722,
+                "score": 0.0639534996742375
+              }
+            ],
+            "mean_known_rank": 238.44444444444446,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 33.0,
+          "cutoff": 9.0,
+          "distal_upweight": true,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 794,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 800,
+              "score": 0.8045029826984412
+            },
+            {
+              "graph_node": 402,
+              "rank": 2,
+              "resname": "ASN",
+              "resseq": 408,
+              "score": 0.7452484573815648
+            },
+            {
+              "graph_node": 496,
+              "rank": 3,
+              "resname": "LYS",
+              "resseq": 502,
+              "score": 0.7226126194819336
+            },
+            {
+              "graph_node": 497,
+              "rank": 4,
+              "resname": "LYS",
+              "resseq": 503,
+              "score": 0.7226126194819336
+            },
+            {
+              "graph_node": 498,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 504,
+              "score": 0.7226126194819336
+            }
+          ],
+          "mean_known_rank": 193.22222222222223,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": true,
+            "hamiltonian": "adjacency",
+            "n_nodes": 56,
+            "n_sources": 5,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 33.0,
+            "known_ranks": [
+              {
+                "rank": 213.0,
+                "resseq": 164,
+                "score": 0.30743486697435596
+              },
+              {
+                "rank": 50.0,
+                "resseq": 167,
+                "score": 0.4803669796474312
+              },
+              {
+                "rank": 216.0,
+                "resseq": 168,
+                "score": 0.30743486697435596
+              },
+              {
+                "rank": 33.0,
+                "resseq": 666,
+                "score": 0.5409770852366085
+              },
+              {
+                "rank": 477.0,
+                "resseq": 710,
+                "score": 0.1621376010188669
+              },
+              {
+                "rank": 303.0,
+                "resseq": 711,
+                "score": 0.25334000159197956
+              },
+              {
+                "rank": 304.0,
+                "resseq": 712,
+                "score": 0.25334000159197956
+              },
+              {
+                "rank": 71.0,
+                "resseq": 721,
+                "score": 0.44907616848304566
+              },
+              {
+                "rank": 72.0,
+                "resseq": 722,
+                "score": 0.44907616848304566
+              }
+            ],
+            "mean_known_rank": 193.22222222222223,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 38.0,
+          "cutoff": 9.0,
+          "distal_upweight": true,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 794,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 800,
+              "score": 0.7274292555104247
+            },
+            {
+              "graph_node": 789,
+              "rank": 2,
+              "resname": "VAL",
+              "resseq": 795,
+              "score": 0.611242638310843
+            },
+            {
+              "graph_node": 790,
+              "rank": 3,
+              "resname": "LEU",
+              "resseq": 796,
+              "score": 0.611242638310843
+            },
+            {
+              "graph_node": 791,
+              "rank": 4,
+              "resname": "ALA",
+              "resseq": 797,
+              "score": 0.611242638310843
+            },
+            {
+              "graph_node": 792,
+              "rank": 5,
+              "resname": "ARG",
+              "resseq": 798,
+              "score": 0.611242638310843
+            }
+          ],
+          "mean_known_rank": 229.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": true,
+            "hamiltonian": "adjacency",
+            "n_nodes": 56,
+            "n_sources": 5,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 38.0,
+            "known_ranks": [
+              {
+                "rank": 145.0,
+                "resseq": 164,
+                "score": 0.13297523409785567
+              },
+              {
+                "rank": 86.0,
+                "resseq": 167,
+                "score": 0.2077738032778995
+              },
+              {
+                "rank": 148.0,
+                "resseq": 168,
+                "score": 0.13297523409785567
+              },
+              {
+                "rank": 793.0,
+                "resseq": 666,
+                "score": -0.3237157518461321
+              },
+              {
+                "rank": 309.0,
+                "resseq": 710,
+                "score": 0.04301783564753174
+              },
+              {
+                "rank": 251.0,
+                "resseq": 711,
+                "score": 0.06721536819926835
+              },
+              {
+                "rank": 252.0,
+                "resseq": 712,
+                "score": 0.06721536819926835
+              },
+              {
+                "rank": 38.0,
+                "resseq": 721,
+                "score": 0.3275952503011838
+              },
+              {
+                "rank": 39.0,
+                "resseq": 722,
+                "score": 0.3275952503011838
+              }
+            ],
+            "mean_known_rank": 229.0,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 47.0,
+          "cutoff": 10.0,
+          "distal_upweight": true,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 197,
+              "rank": 1,
+              "resname": "ASP",
+              "resseq": 203,
+              "score": 0.5698278975120807
+            },
+            {
+              "graph_node": 198,
+              "rank": 2,
+              "resname": "ARG",
+              "resseq": 204,
+              "score": 0.5698278975120807
+            },
+            {
+              "graph_node": 199,
+              "rank": 3,
+              "resname": "SER",
+              "resseq": 205,
+              "score": 0.5698278975120807
+            },
+            {
+              "graph_node": 200,
+              "rank": 4,
+              "resname": "LYS",
+              "resseq": 206,
+              "score": 0.5698278975120807
+            },
+            {
+              "graph_node": 519,
+              "rank": 5,
+              "resname": "GLU",
+              "resseq": 525,
+              "score": 0.5209500087836273
+            }
+          ],
+          "mean_known_rank": 393.8888888888889,
+          "meta": {
+            "distal_upweight": true,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 47.0,
+            "known_ranks": [
+              {
+                "rank": 374.0,
+                "resseq": 164,
+                "score": 0.12252141689530427
+              },
+              {
+                "rank": 377.0,
+                "resseq": 167,
+                "score": 0.12252141689530427
+              },
+              {
+                "rank": 378.0,
+                "resseq": 168,
+                "score": 0.12252141689530427
+              },
+              {
+                "rank": 47.0,
+                "resseq": 666,
+                "score": 0.3184276669353958
+              },
+              {
+                "rank": 580.0,
+                "resseq": 710,
+                "score": 0.06914411814929332
+              },
+              {
+                "rank": 408.0,
+                "resseq": 711,
+                "score": 0.1080376846082708
+              },
+              {
+                "rank": 284.0,
+                "resseq": 712,
+                "score": 0.1425092880271245
+              },
+              {
+                "rank": 548.0,
+                "resseq": 721,
+                "score": 0.07592863816061336
+              },
+              {
+                "rank": 549.0,
+                "resseq": 722,
+                "score": 0.07592863816061336
+              }
+            ],
+            "mean_known_rank": 393.8888888888889,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 47.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 171,
+              "rank": 1,
+              "resname": "THR",
+              "resseq": 177,
+              "score": 0.10589435830637052
+            },
+            {
+              "graph_node": 172,
+              "rank": 2,
+              "resname": "GLY",
+              "resseq": 178,
+              "score": 0.10589435830637052
+            },
+            {
+              "graph_node": 237,
+              "rank": 3,
+              "resname": "ARG",
+              "resseq": 243,
+              "score": 0.10589435830637052
+            },
+            {
+              "graph_node": 238,
+              "rank": 4,
+              "resname": "PHE",
+              "resseq": 244,
+              "score": 0.10589435830637052
+            },
+            {
+              "graph_node": 239,
+              "rank": 5,
+              "resname": "GLY",
+              "resseq": 245,
+              "score": 0.10589435830637052
+            }
+          ],
+          "mean_known_rank": 525.2222222222222,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 47.0,
+            "known_ranks": [
+              {
+                "rank": 378.0,
+                "resseq": 164,
+                "score": 0.013613490766144919
+              },
+              {
+                "rank": 381.0,
+                "resseq": 167,
+                "score": 0.013613490766144919
+              },
+              {
+                "rank": 382.0,
+                "resseq": 168,
+                "score": 0.013613490766144919
+              },
+              {
+                "rank": 47.0,
+                "resseq": 666,
+                "score": 0.07960691673384895
+              },
+              {
+                "rank": 686.0,
+                "resseq": 710,
+                "score": 0.004321507384330832
+              },
+              {
+                "rank": 687.0,
+                "resseq": 711,
+                "score": 0.004321507384330832
+              },
+              {
+                "rank": 657.0,
+                "resseq": 712,
+                "score": 0.00570037152108498
+              },
+              {
+                "rank": 754.0,
+                "resseq": 721,
+                "score": 0.0030371455264245344
+              },
+              {
+                "rank": 755.0,
+                "resseq": 722,
+                "score": 0.0030371455264245344
+              }
+            ],
+            "mean_known_rank": 525.2222222222222,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 47.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 171,
+              "rank": 1,
+              "resname": "THR",
+              "resseq": 177,
+              "score": 0.1068744569950671
+            },
+            {
+              "graph_node": 172,
+              "rank": 2,
+              "resname": "GLY",
+              "resseq": 178,
+              "score": 0.1068744569950671
+            },
+            {
+              "graph_node": 237,
+              "rank": 3,
+              "resname": "ARG",
+              "resseq": 243,
+              "score": 0.1068744569950671
+            },
+            {
+              "graph_node": 238,
+              "rank": 4,
+              "resname": "PHE",
+              "resseq": 244,
+              "score": 0.1068744569950671
+            },
+            {
+              "graph_node": 239,
+              "rank": 5,
+              "resname": "GLY",
+              "resseq": 245,
+              "score": 0.1068744569950671
+            }
+          ],
+          "mean_known_rank": 528.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 56,
+            "n_sources": 6,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 11,
+          "recovery": {
+            "best_known_rank": 47.0,
+            "known_ranks": [
+              {
+                "rank": 405.0,
+                "resseq": 164,
+                "score": 0.012877150673007405
+              },
+              {
+                "rank": 408.0,
+                "resseq": 167,
+                "score": 0.012877150673007405
+              },
+              {
+                "rank": 409.0,
+                "resseq": 168,
+                "score": 0.012877150673007405
+              },
+              {
+                "rank": 47.0,
+                "resseq": 666,
+                "score": 0.07893749400730102
+              },
+              {
+                "rank": 686.0,
+                "resseq": 710,
+                "score": 0.004589180336432263
+              },
+              {
+                "rank": 687.0,
+                "resseq": 711,
+                "score": 0.004589180336432263
+              },
+              {
+                "rank": 667.0,
+                "resseq": 712,
+                "score": 0.0053076400860477225
+              },
+              {
+                "rank": 721.0,
+                "resseq": 721,
+                "score": 0.003789259524514107
+              },
+              {
+                "rank": 722.0,
+                "resseq": 722,
+                "score": 0.003789259524514107
+              }
+            ],
+            "mean_known_rank": 528.0,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 51.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 264,
+              "rank": 1,
+              "resname": "LYS",
+              "resseq": 270,
+              "score": 0.037791895135909415
+            },
+            {
+              "graph_node": 265,
+              "rank": 2,
+              "resname": "SER",
+              "resseq": 271,
+              "score": 0.037791895135909415
+            },
+            {
+              "graph_node": 266,
+              "rank": 3,
+              "resname": "ARG",
+              "resseq": 272,
+              "score": 0.037791895135909415
+            },
+            {
+              "graph_node": 267,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 273,
+              "score": 0.037791895135909415
+            },
+            {
+              "graph_node": 268,
+              "rank": 5,
+              "resname": "ILE",
+              "resseq": 274,
+              "score": 0.037791895135909415
+            }
+          ],
+          "mean_known_rank": 581.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 56,
+            "n_sources": 14,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 80,
+          "recovery": {
+            "best_known_rank": 51.0,
+            "known_ranks": [
+              {
+                "rank": 522.0,
+                "resseq": 164,
+                "score": 0.015555451823581383
+              },
+              {
+                "rank": 525.0,
+                "resseq": 167,
+                "score": 0.015555451823581383
+              },
+              {
+                "rank": 526.0,
+                "resseq": 168,
+                "score": 0.015555451823581383
+              },
+              {
+                "rank": 51.0,
+                "resseq": 666,
+                "score": 0.03390991508593666
+              },
+              {
+                "rank": 685.0,
+                "resseq": 710,
+                "score": 0.009873525895907193
+              },
+              {
+                "rank": 686.0,
+                "resseq": 711,
+                "score": 0.009873525895907193
+              },
+              {
+                "rank": 687.0,
+                "resseq": 712,
+                "score": 0.009873525895907193
+              },
+              {
+                "rank": 773.0,
+                "resseq": 721,
+                "score": 0.007195345543027793
+              },
+              {
+                "rank": 774.0,
+                "resseq": 722,
+                "score": 0.007195345543027793
+              }
+            ],
+            "mean_known_rank": 581.0,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 51.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 264,
+              "rank": 1,
+              "resname": "LYS",
+              "resseq": 270,
+              "score": 0.03429713726847453
+            },
+            {
+              "graph_node": 265,
+              "rank": 2,
+              "resname": "SER",
+              "resseq": 271,
+              "score": 0.03429713726847453
+            },
+            {
+              "graph_node": 266,
+              "rank": 3,
+              "resname": "ARG",
+              "resseq": 272,
+              "score": 0.03429713726847453
+            },
+            {
+              "graph_node": 267,
+              "rank": 4,
+              "resname": "VAL",
+              "resseq": 273,
+              "score": 0.03429713726847453
+            },
+            {
+              "graph_node": 268,
+              "rank": 5,
+              "resname": "ILE",
+              "resseq": 274,
+              "score": 0.03429713726847453
+            }
+          ],
+          "mean_known_rank": 585.3333333333334,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 11,
+          "n_known_in_top_k": 0,
+          "n_sources": 80,
+          "recovery": {
+            "best_known_rank": 51.0,
+            "known_ranks": [
+              {
+                "rank": 529.0,
+                "resseq": 164,
+                "score": 0.015255556136344524
+              },
+              {
+                "rank": 532.0,
+                "resseq": 167,
+                "score": 0.015255556136344524
+              },
+              {
+                "rank": 533.0,
+                "resseq": 168,
+                "score": 0.015255556136344524
+              },
+              {
+                "rank": 51.0,
+                "resseq": 666,
+                "score": 0.033438217639276784
+              },
+              {
+                "rank": 691.0,
+                "resseq": 710,
+                "score": 0.009120057339446165
+              },
+              {
+                "rank": 692.0,
+                "resseq": 711,
+                "score": 0.009120057339446165
+              },
+              {
+                "rank": 693.0,
+                "resseq": 712,
+                "score": 0.009120057339446165
+              },
+              {
+                "rank": 773.0,
+                "resseq": 721,
+                "score": 0.006280268837831979
+              },
+              {
+                "rank": 774.0,
+                "resseq": 722,
+                "score": 0.006280268837831979
+              }
+            ],
+            "mean_known_rank": 585.3333333333334,
+            "n_known": 9,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 9,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active_plus_neighbors"
+        }
+      ],
+      "winner": {
+        "best_known_rank": 3.0,
+        "cutoff": 9.0,
+        "distal_upweight": true,
+        "hamiltonian": "laplacian",
+        "hit_list_top5": [
+          {
+            "graph_node": 165,
+            "rank": 1,
+            "resname": "ASN",
+            "resseq": 171,
+            "score": 1.3237023050215242
+          },
+          {
+            "graph_node": 166,
+            "rank": 2,
+            "resname": "GLN",
+            "resseq": 172,
+            "score": 1.3237023050215242
+          },
+          {
+            "graph_node": 660,
+            "rank": 3,
+            "resname": "HIS",
+            "resseq": 666,
+            "score": 1.3237023050215242
+          },
+          {
+            "graph_node": 723,
+            "rank": 4,
+            "resname": "ALA",
+            "resseq": 729,
+            "score": 0.9684489863337175
+          },
+          {
+            "graph_node": 738,
+            "rank": 5,
+            "resname": "LYS",
+            "resseq": 744,
+            "score": 0.9684489863337175
+          }
+        ],
+        "mean_known_rank": 280.0,
+        "meta": {
+          "backend": "exact_unitary_eigh",
+          "distal_upweight": true,
+          "hamiltonian": "laplacian",
+          "n_nodes": 56,
+          "n_sources": 5,
+          "n_times": 16,
+          "t_max": 10.0
+        },
+        "n_found_active": 11,
+        "n_known_in_top_k": 1,
+        "n_sources": 11,
+        "recovery": {
+          "best_known_rank": 3.0,
+          "known_ranks": [
+            {
+              "rank": 178.0,
+              "resseq": 164,
+              "score": 0.2867700294897597
+            },
+            {
+              "rank": 72.0,
+              "resseq": 167,
+              "score": 0.44807817107774955
+            },
+            {
+              "rank": 181.0,
+              "resseq": 168,
+              "score": 0.2867700294897597
+            },
+            {
+              "rank": 3.0,
+              "resseq": 666,
+              "score": 1.3237023050215242
+            },
+            {
+              "rank": 540.0,
+              "resseq": 710,
+              "score": 0.10704686284483325
+            },
+            {
+              "rank": 428.0,
+              "resseq": 711,
+              "score": 0.16726072319505195
+            },
+            {
+              "rank": 429.0,
+              "resseq": 712,
+              "score": 0.16726072319505195
+            },
+            {
+              "rank": 344.0,
+              "resseq": 721,
+              "score": 0.18543441785609868
+            },
+            {
+              "rank": 345.0,
+              "resseq": 722,
+              "score": 0.18543441785609868
+            }
+          ],
+          "mean_known_rank": 280.0,
+          "n_known": 9,
+          "n_known_in_top_k": 1,
+          "n_known_on_graph": 9,
+          "top_k": 5
+        },
+        "resolution": "coarse",
+        "score_mode": "ctqw_t10",
+        "source_mode": "active"
+      },
+      "zscore_best_known_rank": -1.0005655745839908,
+      "zscore_mean_known_rank": -1.2332992972105123
+    },
+    "kras_g12c": {
+      "empirical_p_best": 0.03333333333333333,
+      "empirical_p_mean": 0.13333333333333333,
+      "known_allosteric_label": "Switch-II pocket (Sotorasib)",
+      "n_nodes": 169,
+      "n_null_used": 30,
+      "n_trials": 144,
+      "null_best_mean": 40.43333333333333,
+      "null_best_std": 25.07462425659047,
+      "null_mean": 88.40833333333333,
+      "null_std": 21.198516064416708,
+      "pdb_id": "4OBE",
+      "phase1_receipt": {
+        "n_coarse": 32,
+        "n_full": 169,
+        "pass": true,
+        "spearman_rho": 0.8573
+      },
+      "significant_better_than_null": false,
+      "target_id": "kras_g12c",
+      "tightest_phase1_margin": false,
+      "top_trials": [
+        {
+          "best_known_rank": 2.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 10,
+              "rank": 1,
+              "resname": "ALA",
+              "resseq": 11,
+              "score": 0.041561929548768514
+            },
+            {
+              "graph_node": 26,
+              "rank": 2,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.04097355009883632
+            },
+            {
+              "graph_node": 27,
+              "rank": 3,
+              "resname": "PHE",
+              "resseq": 28,
+              "score": 0.04097355009883632
+            },
+            {
+              "graph_node": 18,
+              "rank": 4,
+              "resname": "LEU",
+              "resseq": 19,
+              "score": 0.03834796367600701
+            },
+            {
+              "graph_node": 19,
+              "rank": 5,
+              "resname": "THR",
+              "resseq": 20,
+              "score": 0.03834796367600701
+            }
+          ],
+          "mean_known_rank": 66.5,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 32,
+            "n_sources": 15,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 1,
+          "n_sources": 58,
+          "recovery": {
+            "best_known_rank": 2.0,
+            "known_ranks": [
+              {
+                "rank": 2.0,
+                "resseq": 12,
+                "score": 0.041561929548768514
+              },
+              {
+                "rank": 97.0,
+                "resseq": 96,
+                "score": 0.028503749318739578
+              },
+              {
+                "rank": 100.0,
+                "resseq": 99,
+                "score": 0.028503749318739578
+              },
+              {
+                "rank": 67.0,
+                "resseq": 117,
+                "score": 0.03403700030115702
+              }
+            ],
+            "mean_known_rank": 66.5,
+            "n_known": 4,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 4.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.003625036738633739
+            },
+            {
+              "graph_node": 60,
+              "rank": 2,
+              "resname": "GLN",
+              "resseq": 61,
+              "score": 0.0026234753263253306
+            },
+            {
+              "graph_node": 120,
+              "rank": 3,
+              "resname": "PRO",
+              "resseq": 121,
+              "score": 0.0022043320086636373
+            },
+            {
+              "graph_node": 135,
+              "rank": 4,
+              "resname": "SER",
+              "resseq": 136,
+              "score": 0.0018145394007733507
+            },
+            {
+              "graph_node": 93,
+              "rank": 5,
+              "resname": "HIS",
+              "resseq": 94,
+              "score": 0.001787469901488458
+            }
+          ],
+          "mean_known_rank": 78.25,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 1,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 4.0,
+            "known_ranks": [
+              {
+                "rank": 4.0,
+                "resseq": 12,
+                "score": 0.01409696184316718
+              },
+              {
+                "rank": 87.0,
+                "resseq": 96,
+                "score": -0.00025397622333164045
+              },
+              {
+                "rank": 66.0,
+                "resseq": 99,
+                "score": 0.00011364394485585292
+              },
+              {
+                "rank": 156.0,
+                "resseq": 117,
+                "score": -0.004722346877167482
+              }
+            ],
+            "mean_known_rank": 78.25,
+            "n_known": 4,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 4.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 26,
+              "rank": 1,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.00714923319021777
+            },
+            {
+              "graph_node": 32,
+              "rank": 2,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.006257291917864356
+            },
+            {
+              "graph_node": 30,
+              "rank": 3,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.005804322044498388
+            },
+            {
+              "graph_node": 24,
+              "rank": 4,
+              "resname": "GLN",
+              "resseq": 25,
+              "score": 0.004321355255824394
+            },
+            {
+              "graph_node": 121,
+              "rank": 5,
+              "resname": "SER",
+              "resseq": 122,
+              "score": 0.002753707077417505
+            }
+          ],
+          "mean_known_rank": 92.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 1,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 4.0,
+            "known_ranks": [
+              {
+                "rank": 4.0,
+                "resseq": 12,
+                "score": 0.011881918334447805
+              },
+              {
+                "rank": 94.0,
+                "resseq": 96,
+                "score": -0.0001727860638515025
+              },
+              {
+                "rank": 102.0,
+                "resseq": 99,
+                "score": -0.00032189109491984535
+              },
+              {
+                "rank": 168.0,
+                "resseq": 117,
+                "score": -0.009645039664458246
+              }
+            ],
+            "mean_known_rank": 92.0,
+            "n_known": 4,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 5.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.056335868483323864
+            },
+            {
+              "graph_node": 10,
+              "rank": 2,
+              "resname": "ALA",
+              "resseq": 11,
+              "score": 0.056210831657231626
+            },
+            {
+              "graph_node": 26,
+              "rank": 3,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.053910882942741524
+            },
+            {
+              "graph_node": 27,
+              "rank": 4,
+              "resname": "PHE",
+              "resseq": 28,
+              "score": 0.053910882942741524
+            },
+            {
+              "graph_node": 32,
+              "rank": 5,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.05280682353509001
+            }
+          ],
+          "mean_known_rank": 59.75,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 32,
+            "n_sources": 7,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 1,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 5.0,
+            "known_ranks": [
+              {
+                "rank": 5.0,
+                "resseq": 12,
+                "score": 0.056210831657231626
+              },
+              {
+                "rank": 101.0,
+                "resseq": 96,
+                "score": 0.025529046402772593
+              },
+              {
+                "rank": 104.0,
+                "resseq": 99,
+                "score": 0.025529046402772593
+              },
+              {
+                "rank": 29.0,
+                "resseq": 117,
+                "score": 0.03857271056915643
+              }
+            ],
+            "mean_known_rank": 59.75,
+            "n_known": 4,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 5.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.01498315409051347
+            },
+            {
+              "graph_node": 32,
+              "rank": 2,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.013834491139591794
+            },
+            {
+              "graph_node": 27,
+              "rank": 3,
+              "resname": "PHE",
+              "resseq": 28,
+              "score": 0.011245159629852454
+            },
+            {
+              "graph_node": 58,
+              "rank": 4,
+              "resname": "ALA",
+              "resseq": 59,
+              "score": 0.009109872417098208
+            },
+            {
+              "graph_node": 10,
+              "rank": 5,
+              "resname": "ALA",
+              "resseq": 11,
+              "score": 0.008874392610221202
+            }
+          ],
+          "mean_known_rank": 67.5,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 1,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 5.0,
+            "known_ranks": [
+              {
+                "rank": 5.0,
+                "resseq": 12,
+                "score": 0.03292889358364992
+              },
+              {
+                "rank": 85.0,
+                "resseq": 96,
+                "score": 0.0028354035221269556
+              },
+              {
+                "rank": 147.0,
+                "resseq": 99,
+                "score": 0.0013316613377873329
+              },
+              {
+                "rank": 33.0,
+                "resseq": 117,
+                "score": 0.007387875926286295
+              }
+            ],
+            "mean_known_rank": 67.5,
+            "n_known": 4,
+            "n_known_in_top_k": 1,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 32,
+              "rank": 1,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.020104900063126308
+            },
+            {
+              "graph_node": 30,
+              "rank": 2,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.01902574546465574
+            },
+            {
+              "graph_node": 18,
+              "rank": 3,
+              "resname": "LEU",
+              "resseq": 19,
+              "score": 0.012730376138124765
+            },
+            {
+              "graph_node": 26,
+              "rank": 4,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.012322388882108369
+            },
+            {
+              "graph_node": 10,
+              "rank": 5,
+              "resname": "ALA",
+              "resseq": 11,
+              "score": 0.011806918385689294
+            }
+          ],
+          "mean_known_rank": 68.0,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 6.0,
+                "resseq": 12,
+                "score": 0.03511992863623669
+              },
+              {
+                "rank": 79.0,
+                "resseq": 96,
+                "score": 0.0025050873437380723
+              },
+              {
+                "rank": 147.0,
+                "resseq": 99,
+                "score": 0.0008770028279725719
+              },
+              {
+                "rank": 40.0,
+                "resseq": 117,
+                "score": 0.0054534074208757305
+              }
+            ],
+            "mean_known_rank": 68.0,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 32,
+              "rank": 1,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.02411019317820354
+            },
+            {
+              "graph_node": 30,
+              "rank": 2,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.021775755926484362
+            },
+            {
+              "graph_node": 26,
+              "rank": 3,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.016316158072003175
+            },
+            {
+              "graph_node": 18,
+              "rank": 4,
+              "resname": "LEU",
+              "resseq": 19,
+              "score": 0.016094510840984712
+            },
+            {
+              "graph_node": 10,
+              "rank": 5,
+              "resname": "ALA",
+              "resseq": 11,
+              "score": 0.013831197541479672
+            }
+          ],
+          "mean_known_rank": 69.5,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 6.0,
+                "resseq": 12,
+                "score": 0.03392088265706897
+              },
+              {
+                "rank": 76.0,
+                "resseq": 96,
+                "score": 0.0026834828473721473
+              },
+              {
+                "rank": 152.0,
+                "resseq": 99,
+                "score": 0.0004756386599723399
+              },
+              {
+                "rank": 44.0,
+                "resseq": 117,
+                "score": 0.005764624803967589
+              }
+            ],
+            "mean_known_rank": 69.5,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.01383630292039887
+            },
+            {
+              "graph_node": 32,
+              "rank": 2,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.012800535484262111
+            },
+            {
+              "graph_node": 27,
+              "rank": 3,
+              "resname": "PHE",
+              "resseq": 28,
+              "score": 0.008792836564313839
+            },
+            {
+              "graph_node": 35,
+              "rank": 4,
+              "resname": "ILE",
+              "resseq": 36,
+              "score": 0.008083627472832389
+            },
+            {
+              "graph_node": 120,
+              "rank": 5,
+              "resname": "PRO",
+              "resseq": 121,
+              "score": 0.007727672558411833
+            }
+          ],
+          "mean_known_rank": 69.5,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 6.0,
+                "resseq": 12,
+                "score": 0.03374618172203092
+              },
+              {
+                "rank": 94.0,
+                "resseq": 96,
+                "score": 0.002573635905037558
+              },
+              {
+                "rank": 153.0,
+                "resseq": 99,
+                "score": 0.0013828740832131532
+              },
+              {
+                "rank": 25.0,
+                "resseq": 117,
+                "score": 0.006785883407002983
+              }
+            ],
+            "mean_known_rank": 69.5,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.016587025196417308
+            },
+            {
+              "graph_node": 32,
+              "rank": 2,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.015069831592639827
+            },
+            {
+              "graph_node": 35,
+              "rank": 3,
+              "resname": "ILE",
+              "resseq": 36,
+              "score": 0.010746452107270613
+            },
+            {
+              "graph_node": 59,
+              "rank": 4,
+              "resname": "GLY",
+              "resseq": 60,
+              "score": 0.00954356391510149
+            },
+            {
+              "graph_node": 147,
+              "rank": 5,
+              "resname": "THR",
+              "resseq": 148,
+              "score": 0.00859722440945533
+            }
+          ],
+          "mean_known_rank": 80.5,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 6.0,
+                "resseq": 12,
+                "score": 0.03553874241942556
+              },
+              {
+                "rank": 131.0,
+                "resseq": 96,
+                "score": 0.0014310918252518573
+              },
+              {
+                "rank": 155.0,
+                "resseq": 99,
+                "score": 0.0008450264411621261
+              },
+              {
+                "rank": 30.0,
+                "resseq": 117,
+                "score": 0.006496224381745665
+              }
+            ],
+            "mean_known_rank": 80.5,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 6.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.005875501266106763
+            },
+            {
+              "graph_node": 32,
+              "rank": 2,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.004878837531455406
+            },
+            {
+              "graph_node": 147,
+              "rank": 3,
+              "resname": "THR",
+              "resseq": 148,
+              "score": 0.0048096690814278505
+            },
+            {
+              "graph_node": 59,
+              "rank": 4,
+              "resname": "GLY",
+              "resseq": 60,
+              "score": 0.004368936595470401
+            },
+            {
+              "graph_node": 23,
+              "rank": 5,
+              "resname": "ILE",
+              "resseq": 24,
+              "score": 0.0033655021333107785
+            }
+          ],
+          "mean_known_rank": 89.25,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 6.0,
+            "known_ranks": [
+              {
+                "rank": 6.0,
+                "resseq": 12,
+                "score": 0.01385722307495161
+              },
+              {
+                "rank": 119.0,
+                "resseq": 96,
+                "score": -0.0016050964130382378
+              },
+              {
+                "rank": 76.0,
+                "resseq": 99,
+                "score": -0.00034203382499341
+              },
+              {
+                "rank": 156.0,
+                "resseq": 117,
+                "score": -0.005302439800516302
+              }
+            ],
+            "mean_known_rank": 89.25,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 7.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 120,
+              "rank": 1,
+              "resname": "PRO",
+              "resseq": 121,
+              "score": 0.006102011650964632
+            },
+            {
+              "graph_node": 26,
+              "rank": 2,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.004781103643651629
+            },
+            {
+              "graph_node": 30,
+              "rank": 3,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.00463041285655408
+            },
+            {
+              "graph_node": 60,
+              "rank": 4,
+              "resname": "GLN",
+              "resseq": 61,
+              "score": 0.004197485346658215
+            },
+            {
+              "graph_node": 32,
+              "rank": 5,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.004194861389437969
+            }
+          ],
+          "mean_known_rank": 81.75,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 7.0,
+            "known_ranks": [
+              {
+                "rank": 7.0,
+                "resseq": 12,
+                "score": 0.01200821735693532
+              },
+              {
+                "rank": 94.0,
+                "resseq": 96,
+                "score": -0.00048659177310235186
+              },
+              {
+                "rank": 69.0,
+                "resseq": 99,
+                "score": 6.230945285218845e-05
+              },
+              {
+                "rank": 157.0,
+                "resseq": 117,
+                "score": -0.006120641538433085
+              }
+            ],
+            "mean_known_rank": 81.75,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 7.0,
+          "cutoff": 8.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.00347069927730256
+            },
+            {
+              "graph_node": 25,
+              "rank": 2,
+              "resname": "ASN",
+              "resseq": 26,
+              "score": 0.0033603764892675587
+            },
+            {
+              "graph_node": 24,
+              "rank": 3,
+              "resname": "GLN",
+              "resseq": 25,
+              "score": 0.002590373194881668
+            },
+            {
+              "graph_node": 120,
+              "rank": 4,
+              "resname": "PRO",
+              "resseq": 121,
+              "score": 0.002240632521323788
+            },
+            {
+              "graph_node": 26,
+              "rank": 5,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.0022244046377115374
+            }
+          ],
+          "mean_known_rank": 93.25,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "adjacency",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "score_mode": "ctqw_minus_ctrw",
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 7.0,
+            "known_ranks": [
+              {
+                "rank": 7.0,
+                "resseq": 12,
+                "score": 0.0087022025359151
+              },
+              {
+                "rank": 115.0,
+                "resseq": 96,
+                "score": -0.0006278099558150755
+              },
+              {
+                "rank": 83.0,
+                "resseq": 99,
+                "score": 0.00014804508042371638
+              },
+              {
+                "rank": 168.0,
+                "resseq": 117,
+                "score": -0.008014270158785586
+              }
+            ],
+            "mean_known_rank": 93.25,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_minus_ctrw",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 80,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 81,
+              "score": 0.13365625413142893
+            },
+            {
+              "graph_node": 81,
+              "rank": 2,
+              "resname": "PHE",
+              "resseq": 82,
+              "score": 0.13365625413142893
+            },
+            {
+              "graph_node": 82,
+              "rank": 3,
+              "resname": "ALA",
+              "resseq": 83,
+              "score": 0.13365625413142893
+            },
+            {
+              "graph_node": 83,
+              "rank": 4,
+              "resname": "ILE",
+              "resseq": 84,
+              "score": 0.13365625413142893
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "VAL",
+              "resseq": 114,
+              "score": 0.13365625413142893
+            }
+          ],
+          "mean_known_rank": 52.5,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 45.0,
+                "resseq": 12,
+                "score": 0.04198604443953199
+              },
+              {
+                "rank": 70.0,
+                "resseq": 96,
+                "score": 0.021102962538535813
+              },
+              {
+                "rank": 87.0,
+                "resseq": 99,
+                "score": 0.019651379089276704
+              },
+              {
+                "rank": 8.0,
+                "resseq": 117,
+                "score": 0.13365625413142893
+              }
+            ],
+            "mean_known_rank": 52.5,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 80,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 81,
+              "score": 0.1339479410185237
+            },
+            {
+              "graph_node": 81,
+              "rank": 2,
+              "resname": "PHE",
+              "resseq": 82,
+              "score": 0.1339479410185237
+            },
+            {
+              "graph_node": 82,
+              "rank": 3,
+              "resname": "ALA",
+              "resseq": 83,
+              "score": 0.1339479410185237
+            },
+            {
+              "graph_node": 83,
+              "rank": 4,
+              "resname": "ILE",
+              "resseq": 84,
+              "score": 0.1339479410185237
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "VAL",
+              "resseq": 114,
+              "score": 0.1339479410185237
+            }
+          ],
+          "mean_known_rank": 56.75,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 32,
+            "n_sources": 6,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 47.0,
+                "resseq": 12,
+                "score": 0.03667276599331505
+              },
+              {
+                "rank": 77.0,
+                "resseq": 96,
+                "score": 0.020728922548919677
+              },
+              {
+                "rank": 95.0,
+                "resseq": 99,
+                "score": 0.01920913222095839
+              },
+              {
+                "rank": 8.0,
+                "resseq": 117,
+                "score": 0.1339479410185237
+              }
+            ],
+            "mean_known_rank": 56.75,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.019400654617121635
+            },
+            {
+              "graph_node": 32,
+              "rank": 2,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.018530821249557763
+            },
+            {
+              "graph_node": 26,
+              "rank": 3,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.014606469168836005
+            },
+            {
+              "graph_node": 120,
+              "rank": 4,
+              "resname": "PRO",
+              "resseq": 121,
+              "score": 0.012459870774225683
+            },
+            {
+              "graph_node": 59,
+              "rank": 5,
+              "resname": "GLY",
+              "resseq": 60,
+              "score": 0.01228731772019883
+            }
+          ],
+          "mean_known_rank": 65.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 8.0,
+                "resseq": 12,
+                "score": 0.03223464408957112
+              },
+              {
+                "rank": 88.0,
+                "resseq": 96,
+                "score": 0.0019940102864038855
+              },
+              {
+                "rank": 131.0,
+                "resseq": 99,
+                "score": 0.000983834386362058
+              },
+              {
+                "rank": 33.0,
+                "resseq": 117,
+                "score": 0.00734638235281867
+              }
+            ],
+            "mean_known_rank": 65.0,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 9.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.017862845451444554
+            },
+            {
+              "graph_node": 32,
+              "rank": 2,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.016739502443137266
+            },
+            {
+              "graph_node": 35,
+              "rank": 3,
+              "resname": "ILE",
+              "resseq": 36,
+              "score": 0.011117684969403636
+            },
+            {
+              "graph_node": 26,
+              "rank": 4,
+              "resname": "HIS",
+              "resseq": 27,
+              "score": 0.010671688542462957
+            },
+            {
+              "graph_node": 18,
+              "rank": 5,
+              "resname": "LEU",
+              "resseq": 19,
+              "score": 0.010535467031864929
+            }
+          ],
+          "mean_known_rank": 70.5,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 8.0,
+                "resseq": 12,
+                "score": 0.03493802018647231
+              },
+              {
+                "rank": 105.0,
+                "resseq": 96,
+                "score": 0.0016031394493738209
+              },
+              {
+                "rank": 142.0,
+                "resseq": 99,
+                "score": 0.0010421912521885828
+              },
+              {
+                "rank": 27.0,
+                "resseq": 117,
+                "score": 0.0075754847526374
+              }
+            ],
+            "mean_known_rank": 70.5,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 30,
+              "rank": 1,
+              "resname": "GLU",
+              "resseq": 31,
+              "score": 0.017233618617986505
+            },
+            {
+              "graph_node": 32,
+              "rank": 2,
+              "resname": "ASP",
+              "resseq": 33,
+              "score": 0.01695332759897921
+            },
+            {
+              "graph_node": 59,
+              "rank": 3,
+              "resname": "GLY",
+              "resseq": 60,
+              "score": 0.012909838375362056
+            },
+            {
+              "graph_node": 147,
+              "rank": 4,
+              "resname": "THR",
+              "resseq": 148,
+              "score": 0.011717693348007235
+            },
+            {
+              "graph_node": 35,
+              "rank": 5,
+              "resname": "ILE",
+              "resseq": 36,
+              "score": 0.011303151485170592
+            }
+          ],
+          "mean_known_rank": 77.0,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 169,
+            "n_sources": 15,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 15,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 8.0,
+                "resseq": 12,
+                "score": 0.032689154815434364
+              },
+              {
+                "rank": 117.0,
+                "resseq": 96,
+                "score": 0.0014842833324203576
+              },
+              {
+                "rank": 149.0,
+                "resseq": 99,
+                "score": 0.00087598356793807
+              },
+              {
+                "rank": 34.0,
+                "resseq": 117,
+                "score": 0.006807783002937478
+              }
+            ],
+            "mean_known_rank": 77.0,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "full",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 80,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 81,
+              "score": 0.05553005940141549
+            },
+            {
+              "graph_node": 81,
+              "rank": 2,
+              "resname": "PHE",
+              "resseq": 82,
+              "score": 0.05553005940141549
+            },
+            {
+              "graph_node": 82,
+              "rank": 3,
+              "resname": "ALA",
+              "resseq": 83,
+              "score": 0.05553005940141549
+            },
+            {
+              "graph_node": 83,
+              "rank": 4,
+              "resname": "ILE",
+              "resseq": 84,
+              "score": 0.05553005940141549
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "VAL",
+              "resseq": 114,
+              "score": 0.05553005940141549
+            }
+          ],
+          "mean_known_rank": 85.25,
+          "meta": {
+            "backend": "exact_unitary_eigh",
+            "distal_upweight": false,
+            "hamiltonian": "laplacian",
+            "n_nodes": 32,
+            "n_sources": 17,
+            "n_times": 16,
+            "t_max": 10.0
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 70,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 63.0,
+                "resseq": 12,
+                "score": 0.033911854608501935
+              },
+              {
+                "rank": 131.0,
+                "resseq": 96,
+                "score": 0.024927166717679618
+              },
+              {
+                "rank": 139.0,
+                "resseq": 99,
+                "score": 0.024080276760590026
+              },
+              {
+                "rank": 8.0,
+                "resseq": 117,
+                "score": 0.05553005940141549
+              }
+            ],
+            "mean_known_rank": 85.25,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_t10",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "laplacian",
+          "hit_list_top5": [
+            {
+              "graph_node": 80,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 81,
+              "score": 0.055428293580768145
+            },
+            {
+              "graph_node": 81,
+              "rank": 2,
+              "resname": "PHE",
+              "resseq": 82,
+              "score": 0.055428293580768145
+            },
+            {
+              "graph_node": 82,
+              "rank": 3,
+              "resname": "ALA",
+              "resseq": 83,
+              "score": 0.055428293580768145
+            },
+            {
+              "graph_node": 83,
+              "rank": 4,
+              "resname": "ILE",
+              "resseq": 84,
+              "score": 0.055428293580768145
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "VAL",
+              "resseq": 114,
+              "score": 0.055428293580768145
+            }
+          ],
+          "mean_known_rank": 85.25,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 70,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 68.0,
+                "resseq": 12,
+                "score": 0.034687816733057875
+              },
+              {
+                "rank": 131.0,
+                "resseq": 96,
+                "score": 0.02436894103858132
+              },
+              {
+                "rank": 134.0,
+                "resseq": 99,
+                "score": 0.023822844759353406
+              },
+              {
+                "rank": 8.0,
+                "resseq": 117,
+                "score": 0.055428293580768145
+              }
+            ],
+            "mean_known_rank": 85.25,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active_plus_neighbors"
+        },
+        {
+          "best_known_rank": 8.0,
+          "cutoff": 10.0,
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "hit_list_top5": [
+            {
+              "graph_node": 80,
+              "rank": 1,
+              "resname": "VAL",
+              "resseq": 81,
+              "score": 0.045990261376262144
+            },
+            {
+              "graph_node": 81,
+              "rank": 2,
+              "resname": "PHE",
+              "resseq": 82,
+              "score": 0.045990261376262144
+            },
+            {
+              "graph_node": 82,
+              "rank": 3,
+              "resname": "ALA",
+              "resseq": 83,
+              "score": 0.045990261376262144
+            },
+            {
+              "graph_node": 83,
+              "rank": 4,
+              "resname": "ILE",
+              "resseq": 84,
+              "score": 0.045990261376262144
+            },
+            {
+              "graph_node": 113,
+              "rank": 5,
+              "resname": "VAL",
+              "resseq": 114,
+              "score": 0.045990261376262144
+            }
+          ],
+          "mean_known_rank": 88.75,
+          "meta": {
+            "distal_upweight": false,
+            "horizons": [
+              3.0,
+              10.0,
+              30.0
+            ]
+          },
+          "n_found_active": 15,
+          "n_known_in_top_k": 0,
+          "n_sources": 70,
+          "recovery": {
+            "best_known_rank": 8.0,
+            "known_ranks": [
+              {
+                "rank": 57.0,
+                "resseq": 12,
+                "score": 0.03623710372069148
+              },
+              {
+                "rank": 138.0,
+                "resseq": 96,
+                "score": 0.021728851832865537
+              },
+              {
+                "rank": 152.0,
+                "resseq": 99,
+                "score": 0.019852090504944978
+              },
+              {
+                "rank": 8.0,
+                "resseq": 117,
+                "score": 0.045990261376262144
+              }
+            ],
+            "mean_known_rank": 88.75,
+            "n_known": 4,
+            "n_known_in_top_k": 0,
+            "n_known_on_graph": 4,
+            "top_k": 5
+          },
+          "resolution": "coarse",
+          "score_mode": "ctqw_multiscale",
+          "source_mode": "active_plus_neighbors"
+        }
+      ],
+      "winner": {
+        "best_known_rank": 2.0,
+        "cutoff": 9.0,
+        "distal_upweight": false,
+        "hamiltonian": "adjacency",
+        "hit_list_top5": [
+          {
+            "graph_node": 10,
+            "rank": 1,
+            "resname": "ALA",
+            "resseq": 11,
+            "score": 0.041561929548768514
+          },
+          {
+            "graph_node": 26,
+            "rank": 2,
+            "resname": "HIS",
+            "resseq": 27,
+            "score": 0.04097355009883632
+          },
+          {
+            "graph_node": 27,
+            "rank": 3,
+            "resname": "PHE",
+            "resseq": 28,
+            "score": 0.04097355009883632
+          },
+          {
+            "graph_node": 18,
+            "rank": 4,
+            "resname": "LEU",
+            "resseq": 19,
+            "score": 0.03834796367600701
+          },
+          {
+            "graph_node": 19,
+            "rank": 5,
+            "resname": "THR",
+            "resseq": 20,
+            "score": 0.03834796367600701
+          }
+        ],
+        "mean_known_rank": 66.5,
+        "meta": {
+          "backend": "exact_unitary_eigh",
+          "distal_upweight": false,
+          "hamiltonian": "adjacency",
+          "n_nodes": 32,
+          "n_sources": 15,
+          "n_times": 16,
+          "t_max": 10.0
+        },
+        "n_found_active": 15,
+        "n_known_in_top_k": 1,
+        "n_sources": 58,
+        "recovery": {
+          "best_known_rank": 2.0,
+          "known_ranks": [
+            {
+              "rank": 2.0,
+              "resseq": 12,
+              "score": 0.041561929548768514
+            },
+            {
+              "rank": 97.0,
+              "resseq": 96,
+              "score": 0.028503749318739578
+            },
+            {
+              "rank": 100.0,
+              "resseq": 99,
+              "score": 0.028503749318739578
+            },
+            {
+              "rank": 67.0,
+              "resseq": 117,
+              "score": 0.03403700030115702
+            }
+          ],
+          "mean_known_rank": 66.5,
+          "n_known": 4,
+          "n_known_in_top_k": 1,
+          "n_known_on_graph": 4,
+          "top_k": 5
+        },
+        "resolution": "coarse",
+        "score_mode": "ctqw_t10",
+        "source_mode": "active_plus_neighbors"
+      },
+      "zscore_best_known_rank": -1.5327580959954656,
+      "zscore_mean_known_rank": -1.033484290445599
+    }
+  }
+}

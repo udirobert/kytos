@@ -1,10 +1,9 @@
 # Cleveland Clinic Enterprise Challenge (GQAI 2026)
 
-**Status:** Phases 1–3 + packaging landed (`c001`–`c006`). Method report:
+**Status:** Phases 1–4 + topology levers (`c001`–`c007`). Method report:
 [`method-report.md`](method-report.md). **Cardiac myosin Phase 1 ρ=0.823**
-remains the tightest compression margin (surfaced every run). `c003`: myosin
-compression preserves known-site signal. `c005`: best configs still n.s. vs
-null. `c006`: Qiskit fidelity **1.0** vs exact; Braket/Classiq exports ready.
+surfaced every run. `c007` distal-upweight lifts myosin best-known rank to
+**3** (z≈−1.2); no target yet clears z&lt;−2. Qiskit packaging fid=1.0 (`c006`).
 **Separate workstream** from the Virtual Cell Challenge.
 
 | | |
@@ -90,7 +89,7 @@ comparison.
 | **1** ✓ | Classical CTRW + Spearman ≥ 0.8 | Passed; myosin tightest ρ=0.823 |
 | **2** ✓ | CTQW coarse (`c002`) + Qiskit packaging (`c006`, fid=1.0) | P1 gate visible; hardware exports ready |
 | **2b** ✓ | Full vs coarse audit (`c003`) | Myosin compression preserves known-site signal |
-| **3** ✓ | Randomization (`c004`) + signal sweep (`c005`) | No z&lt;-2 yet (documented negative) |
+| **3** ✓ | Randomization + sweeps (`c004`–`c007`) | Best anecdotal ranks; no z&lt;-2 yet |
 | **4** ✓ | Methodological report | [`method-report.md`](method-report.md) |
 
 ### Phase 1 checklist (classical only) — done
@@ -116,5 +115,5 @@ ADR: [`architecture.md`](architecture.md).
 .venv-cleveland/bin/python tools/run_cleveland_c003.py
 .venv-cleveland/bin/python tools/run_cleveland_c004.py --n-null 40
 .venv-cleveland/bin/python tools/run_cleveland_c005.py --n-null 20
-.venv-cleveland/bin/python tools/run_cleveland_c006.py
+.venv-cleveland/bin/python tools/run_cleveland_c007.py --n-null 30
 ```

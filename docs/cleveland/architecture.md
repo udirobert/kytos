@@ -64,7 +64,6 @@ metric.
 - **c004 / c005:** Edge-rewire nulls — no target with z&lt;-2 yet; c005 winners
   improve anecdotal ranks (KRAS best=5, Abl best=3, myosin best=24 with
   adjacency / T=10 coarse).
-- **c006:** Qiskit `HamiltonianGate` packaging fidelity **1.0** vs exact eigh
-  (incoherent sources). Braket/Classiq export stubs ready.
-- Mavacamten labels: literature pocket contacts in `targets.py`.
+- **c007:** Distal upweight + community sources → KRAS/Abl best-rank **2**,
+  myosin **3** (P1 ρ=0.823 still surfaced); z≈−1 to −1.5, not yet &lt;−2.
 

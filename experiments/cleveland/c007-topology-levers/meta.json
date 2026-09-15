@@ -1,0 +1,11 @@
+{
+  "challenge": "cleveland-gqai-2026",
+  "code": {
+    "commit": "065bb60247b02acc4ca205091a891c087a75aedd"
+  },
+  "created": "2026-09-15",
+  "notes": "Cutoff/multiscale/community/residual CTQW; myosin P1 \u03c1=0.823 visible.",
+  "run_id": "c007-topology-levers",
+  "seed": 0,
+  "task": "topology_lever_sweep"
+}
