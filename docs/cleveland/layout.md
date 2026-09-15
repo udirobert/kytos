@@ -69,7 +69,8 @@ uv pip install --python .venv-cleveland/bin/python -e . --no-deps
 ```
 
 Do **not** install torch/scanpy into `.venv-cleveland`. Do **not** install
-Qiskit into `.venv` / `.venv-science`.
+Qiskit into `.venv` / `.venv-science`. Qiskit lives only in `.venv-cleveland`
+for `c006` packaging.
 
 No hard ABI conflict with the VCC stack — the split is operational hygiene
 against Phase 2 SDK bloat on an 8 GB Mac.

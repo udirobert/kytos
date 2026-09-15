@@ -24,6 +24,8 @@ into `experiments/<run-id>/`. None of them touch the inference path.
 | `run_cleveland_c002.py` | `.venv-cleveland` | `c002` CTQW coarse + classical compare |
 | `run_cleveland_c003.py` | `.venv-cleveland` | `c003` full vs coarse compression audit |
 | `run_cleveland_c004.py` | `.venv-cleveland` | `c004` edge-rewire randomization z-scores |
+| `run_cleveland_c005.py` | `.venv-cleveland` | `c005` H×T×resolution signal sweep |
+| `run_cleveland_c006.py` | `.venv-cleveland` + Qiskit | `c006` circuit packaging + Braket/Classiq exports |
 
 See [`docs/cleveland/`](../docs/cleveland/).
 

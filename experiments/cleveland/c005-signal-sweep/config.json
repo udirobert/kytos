@@ -1,0 +1,13 @@
+{
+  "atom_mode": "CA",
+  "cutoff_angstrom": 9.0,
+  "gaussian_sigma": 4.0,
+  "n_clusters_max": 56,
+  "n_clusters_min": 32,
+  "n_null": 20,
+  "n_times": 24,
+  "seed": 0,
+  "spearman_threshold": 0.8,
+  "walk_time": 10.0,
+  "weight": "inverse"
+}

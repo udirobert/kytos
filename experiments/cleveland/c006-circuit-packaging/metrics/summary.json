@@ -1,0 +1,48 @@
+{
+  "per_target": {
+    "bcr_abl1": {
+      "backend": "qiskit_statevector_hamiltonian_gate",
+      "depth_note": "Incoherent average over source basis states (matches exact metric). HamiltonianGate is the ideal unitary; NISQ must Trotterize under Braket/Classiq depth budgets without changing the metric.",
+      "fidelity_vs_exact": 1.0,
+      "hamiltonian_form": "from_input_H",
+      "n_nodes": 48,
+      "n_qubits": 6,
+      "n_times": 12,
+      "pad_dim": 64,
+      "t_max": 10.0
+    },
+    "cardiac_myosin": {
+      "backend": "qiskit_statevector_hamiltonian_gate",
+      "depth_note": "Incoherent average over source basis states (matches exact metric). HamiltonianGate is the ideal unitary; NISQ must Trotterize under Braket/Classiq depth budgets without changing the metric.",
+      "fidelity_vs_exact": 1.0,
+      "hamiltonian_form": "from_input_H",
+      "n_nodes": 56,
+      "n_qubits": 6,
+      "n_times": 12,
+      "pad_dim": 64,
+      "t_max": 10.0
+    },
+    "cmyc_max": {
+      "backend": "qiskit_statevector_hamiltonian_gate",
+      "depth_note": "Incoherent average over source basis states (matches exact metric). HamiltonianGate is the ideal unitary; NISQ must Trotterize under Braket/Classiq depth budgets without changing the metric.",
+      "fidelity_vs_exact": 0.9999999999999998,
+      "hamiltonian_form": "from_input_H",
+      "n_nodes": 32,
+      "n_qubits": 5,
+      "n_times": 12,
+      "pad_dim": 32,
+      "t_max": 10.0
+    },
+    "kras_g12c": {
+      "backend": "qiskit_statevector_hamiltonian_gate",
+      "depth_note": "Incoherent average over source basis states (matches exact metric). HamiltonianGate is the ideal unitary; NISQ must Trotterize under Braket/Classiq depth budgets without changing the metric.",
+      "fidelity_vs_exact": 1.0,
+      "hamiltonian_form": "from_input_H",
+      "n_nodes": 32,
+      "n_qubits": 5,
+      "n_times": 12,
+      "pad_dim": 32,
+      "t_max": 10.0
+    }
+  }
+}

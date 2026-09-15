@@ -57,10 +57,14 @@ connectivity matrix, top-5 hit list, classical CTRW comparator, post-hoc
 known-site recovery. Hardware (Braket/Classiq) is packaging, not a different
 metric.
 
-## Phase 2b / 3 findings (keep myosin visible)
+## Phase 2b / 3 / packaging findings (keep myosin visible)
 
 - **c003:** Myosin full vs coarse CTQW → compression **preserves** known-site
   signal (best known rank 99 → 24). KRAS is where compression hurts (8 → 27).
-- **c004:** Edge-rewire nulls — no target with z&lt;-2 yet.
-- Mavacamten labels updated to literature pocket contacts in `targets.py`.
+- **c004 / c005:** Edge-rewire nulls — no target with z&lt;-2 yet; c005 winners
+  improve anecdotal ranks (KRAS best=5, Abl best=3, myosin best=24 with
+  adjacency / T=10 coarse).
+- **c006:** Qiskit `HamiltonianGate` packaging fidelity **1.0** vs exact eigh
+  (incoherent sources). Braket/Classiq export stubs ready.
+- Mavacamten labels: literature pocket contacts in `targets.py`.
 

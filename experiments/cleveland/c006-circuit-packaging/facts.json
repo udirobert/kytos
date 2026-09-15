@@ -1,0 +1,154 @@
+{
+  "challenge": "cleveland-gqai-2026",
+  "method": "qiskit_hamiltonian_gate_statevector",
+  "phase": "2_hardware_packaging",
+  "phase1_compression": {
+    "receipts": {
+      "bcr_abl1": {
+        "n_coarse": 48,
+        "n_full": 287,
+        "pass": true,
+        "spearman_rho": 0.8544
+      },
+      "cardiac_myosin": {
+        "margin_to_threshold": 0.023,
+        "n_coarse": 56,
+        "n_full": 795,
+        "note": "Tightest Phase 1 compression margin (threshold 0.8). If Phase 2 connectivity looks weaker here, ask whether coarse-graining held up \u2014 receipts are this \u03c1 and n_full\u2192n_coarse.",
+        "pass": true,
+        "spearman_rho": 0.823
+      },
+      "cmyc_max": {
+        "n_coarse": 32,
+        "n_full": 88,
+        "pass": true,
+        "spearman_rho": 0.9425
+      },
+      "kras_g12c": {
+        "n_coarse": 32,
+        "n_full": 169,
+        "pass": true,
+        "spearman_rho": 0.8573
+      }
+    },
+    "tightest_spearman_rho": 0.823,
+    "tightest_target": "cardiac_myosin"
+  },
+  "run_id": "c006-circuit-packaging",
+  "targets": {
+    "bcr_abl1": {
+      "exports": {
+        "H_npy": "metrics/exports/bcr_abl1_H.npy",
+        "braket": "metrics/exports/bcr_abl1_braket.json",
+        "classiq": "metrics/exports/bcr_abl1_classiq.json"
+      },
+      "n_coarse": 48,
+      "n_full": 287,
+      "package": {
+        "backend": "qiskit_statevector_hamiltonian_gate",
+        "depth_note": "Incoherent average over source basis states (matches exact metric). HamiltonianGate is the ideal unitary; NISQ must Trotterize under Braket/Classiq depth budgets without changing the metric.",
+        "fidelity_vs_exact": 1.0,
+        "hamiltonian_form": "from_input_H",
+        "n_nodes": 48,
+        "n_qubits": 6,
+        "n_times": 12,
+        "pad_dim": 64,
+        "t_max": 10.0
+      },
+      "pdb_id": "1OPL",
+      "phase1_receipt": {
+        "n_coarse": 48,
+        "n_full": 287,
+        "pass": true,
+        "spearman_rho": 0.8544
+      },
+      "tightest_phase1_margin": false
+    },
+    "cardiac_myosin": {
+      "exports": {
+        "H_npy": "metrics/exports/cardiac_myosin_H.npy",
+        "braket": "metrics/exports/cardiac_myosin_braket.json",
+        "classiq": "metrics/exports/cardiac_myosin_classiq.json"
+      },
+      "n_coarse": 56,
+      "n_full": 795,
+      "package": {
+        "backend": "qiskit_statevector_hamiltonian_gate",
+        "depth_note": "Incoherent average over source basis states (matches exact metric). HamiltonianGate is the ideal unitary; NISQ must Trotterize under Braket/Classiq depth budgets without changing the metric.",
+        "fidelity_vs_exact": 1.0,
+        "hamiltonian_form": "from_input_H",
+        "n_nodes": 56,
+        "n_qubits": 6,
+        "n_times": 12,
+        "pad_dim": 64,
+        "t_max": 10.0
+      },
+      "pdb_id": "5TBY",
+      "phase1_receipt": {
+        "margin_to_threshold": 0.023,
+        "n_coarse": 56,
+        "n_full": 795,
+        "note": "Tightest Phase 1 compression margin (threshold 0.8). If Phase 2 connectivity looks weaker here, ask whether coarse-graining held up \u2014 receipts are this \u03c1 and n_full\u2192n_coarse.",
+        "pass": true,
+        "spearman_rho": 0.823
+      },
+      "tightest_phase1_margin": true
+    },
+    "cmyc_max": {
+      "exports": {
+        "H_npy": "metrics/exports/cmyc_max_H.npy",
+        "braket": "metrics/exports/cmyc_max_braket.json",
+        "classiq": "metrics/exports/cmyc_max_classiq.json"
+      },
+      "n_coarse": 32,
+      "n_full": 88,
+      "package": {
+        "backend": "qiskit_statevector_hamiltonian_gate",
+        "depth_note": "Incoherent average over source basis states (matches exact metric). HamiltonianGate is the ideal unitary; NISQ must Trotterize under Braket/Classiq depth budgets without changing the metric.",
+        "fidelity_vs_exact": 0.9999999999999998,
+        "hamiltonian_form": "from_input_H",
+        "n_nodes": 32,
+        "n_qubits": 5,
+        "n_times": 12,
+        "pad_dim": 32,
+        "t_max": 10.0
+      },
+      "pdb_id": "1NKP",
+      "phase1_receipt": {
+        "n_coarse": 32,
+        "n_full": 88,
+        "pass": true,
+        "spearman_rho": 0.9425
+      },
+      "tightest_phase1_margin": false
+    },
+    "kras_g12c": {
+      "exports": {
+        "H_npy": "metrics/exports/kras_g12c_H.npy",
+        "braket": "metrics/exports/kras_g12c_braket.json",
+        "classiq": "metrics/exports/kras_g12c_classiq.json"
+      },
+      "n_coarse": 32,
+      "n_full": 169,
+      "package": {
+        "backend": "qiskit_statevector_hamiltonian_gate",
+        "depth_note": "Incoherent average over source basis states (matches exact metric). HamiltonianGate is the ideal unitary; NISQ must Trotterize under Braket/Classiq depth budgets without changing the metric.",
+        "fidelity_vs_exact": 1.0,
+        "hamiltonian_form": "from_input_H",
+        "n_nodes": 32,
+        "n_qubits": 5,
+        "n_times": 12,
+        "pad_dim": 32,
+        "t_max": 10.0
+      },
+      "pdb_id": "4OBE",
+      "phase1_receipt": {
+        "n_coarse": 32,
+        "n_full": 169,
+        "pass": true,
+        "spearman_rho": 0.8573
+      },
+      "tightest_phase1_margin": false
+    }
+  }
+}

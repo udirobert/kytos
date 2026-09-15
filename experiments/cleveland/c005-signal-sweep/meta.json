@@ -1,0 +1,11 @@
+{
+  "challenge": "cleveland-gqai-2026",
+  "code": {
+    "commit": "056941f89d2296d5a22a9628f6aa0f6f0fe065c2"
+  },
+  "created": "2026-09-15",
+  "notes": "Grid H\u00d7T\u00d7resolution; myosin P1 \u03c1=0.823 visible.",
+  "run_id": "c005-signal-sweep",
+  "seed": 0,
+  "task": "signal_sweep"
+}

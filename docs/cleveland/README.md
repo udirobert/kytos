@@ -1,10 +1,10 @@
 # Cleveland Clinic Enterprise Challenge (GQAI 2026)
 
-**Status:** Phases 1–3 landed (`c001`–`c004`); Phase 4 draft at
+**Status:** Phases 1–3 + packaging landed (`c001`–`c006`). Method report:
 [`method-report.md`](method-report.md). **Cardiac myosin Phase 1 ρ=0.823**
-remains the tightest compression margin and is surfaced in every run.
-`c003` shows myosin compression **preserves** known-site signal once
-mavacamten labels are corrected. `c004` nulls are not yet significant.
+remains the tightest compression margin (surfaced every run). `c003`: myosin
+compression preserves known-site signal. `c005`: best configs still n.s. vs
+null. `c006`: Qiskit fidelity **1.0** vs exact; Braket/Classiq exports ready.
 **Separate workstream** from the Virtual Cell Challenge.
 
 | | |
@@ -87,11 +87,11 @@ comparison.
 
 | Phase | Scope | Gate |
 |---|---|---|
-| **1** ✓ | PDB → contact graph → classical CTRW → coarse-grain → **Spearman ≥ 0.8** | **Passed**; myosin tightest at ρ=0.823 |
-| **2** ✓ | CTQW on compressed graph (`c002`; exact unitary; hardware packaging later) | P1 gate still passes; myosin margin kept visible |
-| **2b** ✓ | Full vs coarse CTQW audit (`c003`) | Myosin: compression **preserves** known-site signal (with corrected labels) |
-| **3** ✓ | Edge-rewire randomization z-score (`c004`) | No target yet clears z&lt;-2 — honest null |
-| **4** | Methodological report | Draft in `docs/cleveland/method-report.md` |
+| **1** ✓ | Classical CTRW + Spearman ≥ 0.8 | Passed; myosin tightest ρ=0.823 |
+| **2** ✓ | CTQW coarse (`c002`) + Qiskit packaging (`c006`, fid=1.0) | P1 gate visible; hardware exports ready |
+| **2b** ✓ | Full vs coarse audit (`c003`) | Myosin compression preserves known-site signal |
+| **3** ✓ | Randomization (`c004`) + signal sweep (`c005`) | No z&lt;-2 yet (documented negative) |
+| **4** ✓ | Methodological report | [`method-report.md`](method-report.md) |
 
 ### Phase 1 checklist (classical only) — done
 
@@ -115,4 +115,6 @@ ADR: [`architecture.md`](architecture.md).
 .venv-cleveland/bin/python tools/run_cleveland_c002.py
 .venv-cleveland/bin/python tools/run_cleveland_c003.py
 .venv-cleveland/bin/python tools/run_cleveland_c004.py --n-null 40
+.venv-cleveland/bin/python tools/run_cleveland_c005.py --n-null 20
+.venv-cleveland/bin/python tools/run_cleveland_c006.py
 ```

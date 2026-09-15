@@ -1,0 +1,1 @@
+{"backend": "classiq", "status": "export_only", "n_qubits": 5, "t_max": 10.0, "note": "Classiq synthesis should target Hamiltonian evolution of the padded ENM Laplacian under challenge depth limits; install classiq in .venv-cleveland when ready."}

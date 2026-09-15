@@ -1,0 +1,11 @@
+{
+  "challenge": "cleveland-gqai-2026",
+  "code": {
+    "commit": "056941f89d2296d5a22a9628f6aa0f6f0fe065c2"
+  },
+  "created": "2026-09-15",
+  "notes": "Qiskit packaging fidelity vs eigh; Braket/Classiq exports only.",
+  "run_id": "c006-circuit-packaging",
+  "seed": 0,
+  "task": "circuit_packaging"
+}
