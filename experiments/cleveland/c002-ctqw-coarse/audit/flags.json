@@ -1,0 +1,29 @@
+{
+  "flags": [
+    {
+      "detail": "spearman_rho=0.8573",
+      "id": "coarsegrain_spearman_pass",
+      "severity": "info"
+    },
+    {
+      "detail": "spearman_rho=0.8544",
+      "id": "coarsegrain_spearman_pass",
+      "severity": "info"
+    },
+    {
+      "detail": "spearman_rho=0.8230",
+      "id": "coarsegrain_spearman_pass",
+      "severity": "info"
+    },
+    {
+      "detail": "cardiac_myosin Phase 1 Spearman \u03c1=0.8230 (margin 0.0230 above 0.8); watch Phase 2 weakness here for compression risk",
+      "id": "phase1_tightest_compression_margin",
+      "severity": "info"
+    },
+    {
+      "detail": "spearman_rho=0.9425",
+      "id": "coarsegrain_spearman_pass",
+      "severity": "info"
+    }
+  ]
+}

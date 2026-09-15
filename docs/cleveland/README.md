@@ -1,8 +1,9 @@
 # Cleveland Clinic Enterprise Challenge (GQAI 2026)
 
-**Status:** Phase 1 **complete** — classical CTRW + coarse-grain Spearman gate
-passed on all four apo targets (`c001-ctrw-full-vs-coarse`). Phase 2 (CTQW
-circuits) is unblocked. **Separate workstream** from the Virtual Cell Challenge;
+**Status:** Phase 2 **started** — `c002-ctqw-coarse` ships exact CTQW on the
+Phase 1 coarse graphs (simulator `expm(-iHt)`; Braket/Classiq packaging next).
+Phase 1 gate still passes; **cardiac myosin remains the tightest compression
+margin (ρ=0.823)**. **Separate workstream** from the Virtual Cell Challenge;
 same repo, different namespace. Arc / VCC reviewers only see VCC results;
 Cleveland reviewers only see Cleveland results. Do not pivot the top-level
 `README.md` framing.
@@ -87,8 +88,8 @@ comparison.
 
 | Phase | Scope | Gate |
 |---|---|---|
-| **1** ✓ | PDB → contact graph → classical CTRW → coarse-grain → **Spearman ≥ 0.8** | **Passed** all apo targets (2026-09-15); see `experiments/cleveland/c001-ctrw-full-vs-coarse/` |
-| **2** | Quantum circuit (CTQW on compressed graph) | Phase 1 gate must pass |
+| **1** ✓ | PDB → contact graph → classical CTRW → coarse-grain → **Spearman ≥ 0.8** | **Passed** all apo targets (2026-09-15); myosin tightest at ρ=0.823 |
+| **2** ◐ | CTQW on compressed graph (`c002`; exact unitary now, hardware later) | Phase 1 gate must still pass; myosin margin kept visible |
 | **3** | z-score / randomization significance | After Phase 2 |
 | **4** | Methodological report | After Phase 3 |
 
@@ -111,4 +112,5 @@ ADR: [`architecture.md`](architecture.md).
 
 ```bash
 .venv-cleveland/bin/python tools/run_cleveland_c001.py
+.venv-cleveland/bin/python tools/run_cleveland_c002.py
 ```

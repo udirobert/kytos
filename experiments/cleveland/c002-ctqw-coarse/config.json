@@ -1,0 +1,18 @@
+{
+  "atom_mode": "CA",
+  "cutoff_angstrom": 9.0,
+  "gaussian_sigma": 4.0,
+  "hamiltonian": "laplacian",
+  "n_clusters_max": 56,
+  "n_clusters_min": 32,
+  "seed": 0,
+  "spearman_threshold": 0.8,
+  "targets": [
+    "kras_g12c",
+    "bcr_abl1",
+    "cardiac_myosin",
+    "cmyc_max"
+  ],
+  "walk_time": 10.0,
+  "weight": "inverse"
+}

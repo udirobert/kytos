@@ -21,6 +21,7 @@ into `experiments/<run-id>/`. None of them touch the inference path.
 | Tool | Env | Output |
 |---|---|---|
 | `run_cleveland_c001.py` | `.venv-cleveland` | `experiments/cleveland/c001-ctrw-full-vs-coarse/` (CTRW + Spearman gate) |
+| `run_cleveland_c002.py` | `.venv-cleveland` | `experiments/cleveland/c002-ctqw-coarse/` (CTQW + classical compare; myosin P1 margin surfaced) |
 
 See [`docs/cleveland/`](../docs/cleveland/).
 

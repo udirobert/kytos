@@ -1,0 +1,11 @@
+{
+  "challenge": "cleveland-gqai-2026",
+  "code": {
+    "commit": "5114fd6c5c7b1f17f0c89111cd12920ea8babe4a"
+  },
+  "created": "2026-09-15",
+  "notes": "CTQW on Phase 1 coarse graphs; classical CTRW comparator; myosin Phase 1 \u03c1=0.823 kept visible as tightest compression margin.",
+  "run_id": "c002-ctqw-coarse",
+  "seed": 0,
+  "task": "phase2_ctqw_coarse"
+}

@@ -116,3 +116,61 @@ def audit_flags(
             }
         )
     return flags
+
+
+def known_site_recovery(
+    scores: np.ndarray,
+    node_order: list[int],
+    graph: Any,
+    known_resseqs: tuple[int, ...],
+    *,
+    top_k: int = 5,
+) -> dict[str, Any]:
+    """Post-hoc blind label check — never used as model input."""
+    if not known_resseqs:
+        return {
+            "n_known": 0,
+            "n_known_on_graph": 0,
+            "top_k": top_k,
+            "n_known_in_top_k": None,
+            "best_known_rank": None,
+            "mean_known_rank": None,
+            "known_ranks": [],
+        }
+    ranks = rank_descending(scores)
+    resseq_to_dense: dict[int, int] = {}
+    for i, gnode in enumerate(node_order):
+        resseq_to_dense[int(graph.nodes[gnode]["resseq"])] = i
+
+    known_ranks: list[dict[str, Any]] = []
+    for r in known_resseqs:
+        if r not in resseq_to_dense:
+            continue
+        di = resseq_to_dense[r]
+        known_ranks.append(
+            {
+                "resseq": int(r),
+                "rank": float(ranks[di]),
+                "score": float(scores[di]),
+            }
+        )
+    if not known_ranks:
+        return {
+            "n_known": len(known_resseqs),
+            "n_known_on_graph": 0,
+            "top_k": top_k,
+            "n_known_in_top_k": 0,
+            "best_known_rank": None,
+            "mean_known_rank": None,
+            "known_ranks": [],
+        }
+    rank_vals = [kr["rank"] for kr in known_ranks]
+    return {
+        "n_known": len(known_resseqs),
+        "n_known_on_graph": len(known_ranks),
+        "top_k": top_k,
+        "n_known_in_top_k": sum(1 for v in rank_vals if v <= top_k),
+        "best_known_rank": float(min(rank_vals)),
+        "mean_known_rank": float(np.mean(rank_vals)),
+        "known_ranks": known_ranks,
+    }

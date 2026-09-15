@@ -45,3 +45,14 @@ orthosteric / active site. Compress the graph with **spectral clustering** to
 
 All ≥ 0.8 — Phase 2 CTQW unblocked.
 
+**Compression watch:** `cardiac_myosin` is the tightest pass (ρ=0.823, margin
+0.023). Phase 2 (`c002`) must keep this receipt visible; if CTQW recovery is
+weak specifically on myosin, treat compression as a first-line hypothesis.
+
+## Phase 2
+
+Exact unitary CTQW on the coarse graph (`expm(-i H t)`, H = Laplacian by
+default). Same source = active site. Outputs: coarse connectivity matrix,
+top-5 hit list, classical CTRW comparator, post-hoc known-site recovery.
+Hardware (Braket/Classiq) is packaging, not a different metric.
+
