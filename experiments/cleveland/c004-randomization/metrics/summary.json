@@ -1,0 +1,96 @@
+{
+  "per_target": {
+    "bcr_abl1": {
+      "empirical_p_lower_rank": 0.225,
+      "known_allosteric_label": "Myristoyl pocket (Asciminib)",
+      "meta": {
+        "backend": "exact_unitary_eigh",
+        "hamiltonian": "laplacian",
+        "n_nodes": 287,
+        "n_sources": 12,
+        "n_times": 24,
+        "t_max": 10.0
+      },
+      "n_nodes": 287,
+      "n_null_used": 40,
+      "n_sources_found": 12,
+      "null_mean": 142.655,
+      "null_method": "degree_preserving_edge_rewire",
+      "null_std": 23.622934857507676,
+      "observed_mean_known_rank": 124.8,
+      "pdb_id": "1OPL",
+      "phase1_receipt": {
+        "n_coarse": 48,
+        "n_full": 287,
+        "pass": true,
+        "spearman_rho": 0.8544
+      },
+      "significant_better_than_null": false,
+      "target_id": "bcr_abl1",
+      "tightest_phase1_margin": false,
+      "zscore_mean_known_rank": -0.7558332657521363
+    },
+    "cardiac_myosin": {
+      "empirical_p_lower_rank": 0.6,
+      "known_allosteric_label": "Mavacamten / SRX pocket (literature contacts)",
+      "meta": {
+        "backend": "exact_unitary_eigh",
+        "hamiltonian": "laplacian",
+        "n_nodes": 795,
+        "n_sources": 11,
+        "n_times": 24,
+        "t_max": 10.0
+      },
+      "n_nodes": 795,
+      "n_null_used": 40,
+      "n_sources_found": 11,
+      "null_mean": 415.0416666666667,
+      "null_method": "degree_preserving_edge_rewire",
+      "null_std": 59.001336963943146,
+      "observed_mean_known_rank": 422.44444444444446,
+      "pdb_id": "5TBY",
+      "phase1_receipt": {
+        "margin_to_threshold": 0.023,
+        "n_coarse": 56,
+        "n_full": 795,
+        "note": "Tightest Phase 1 compression margin (threshold 0.8). If Phase 2 connectivity looks weaker here, ask whether coarse-graining held up \u2014 receipts are this \u03c1 and n_full\u2192n_coarse.",
+        "pass": true,
+        "spearman_rho": 0.823
+      },
+      "significant_better_than_null": false,
+      "target_id": "cardiac_myosin",
+      "tightest_phase1_margin": true,
+      "zscore_mean_known_rank": 0.12546796663780266
+    },
+    "kras_g12c": {
+      "empirical_p_lower_rank": 0.4,
+      "known_allosteric_label": "Switch-II pocket (Sotorasib)",
+      "meta": {
+        "backend": "exact_unitary_eigh",
+        "hamiltonian": "laplacian",
+        "n_nodes": 169,
+        "n_sources": 15,
+        "n_times": 24,
+        "t_max": 10.0
+      },
+      "n_nodes": 169,
+      "n_null_used": 40,
+      "n_sources_found": 15,
+      "null_mean": 69.025,
+      "null_method": "degree_preserving_edge_rewire",
+      "null_std": 19.134292614208494,
+      "observed_mean_known_rank": 64.75,
+      "pdb_id": "4OBE",
+      "phase1_receipt": {
+        "n_coarse": 32,
+        "n_full": 169,
+        "pass": true,
+        "spearman_rho": 0.8573
+      },
+      "significant_better_than_null": false,
+      "target_id": "kras_g12c",
+      "tightest_phase1_margin": false,
+      "zscore_mean_known_rank": -0.22342085418018182
+    }
+  }
+}

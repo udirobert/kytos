@@ -1,0 +1,9 @@
+{
+  "flags": [
+    {
+      "detail": "cardiac_myosin P1 \u03c1=0.8230; c003 verdict=compression_preserves_known_signal",
+      "id": "phase1_tightest_compression_margin",
+      "severity": "info"
+    }
+  ]
+}

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import numpy as np
 import networkx as nx
-from scipy.linalg import expm
 
 from cleveland.graph import adjacency_matrix
 
@@ -36,20 +35,24 @@ def time_averaged_transition_probs(
 ) -> tuple[np.ndarray, np.ndarray]:
     """Time-averaged |⟨j|U(t)|s⟩|² from a uniform source mixture.
 
+    Uses a single Hermitian eigendecomposition of H so large graphs
+    (e.g. myosin ~800 nodes) stay local-safe: O(n³) once, then O(n² n_t).
+
     Returns
     -------
     scores : (n,) occupation from sources
     connectivity : (n, n) time-averaged |U_ij|² (full matrix)
     """
     n = h.shape[0]
+    # H = V diag(w) V^T  (real symmetric)
+    w, v = np.linalg.eigh(h)
     times = np.linspace(0.0, t_max, n_times)
-    # Accumulators
     conn = np.zeros((n, n), dtype=np.float64)
     for t in times:
-        u = expm(-1j * t * h)
-        # |U_ij|^2
-        probs = np.abs(u) ** 2
-        conn += probs.real
+        # U = V diag(e^{-i w t}) V^T
+        phase = np.exp(-1j * w * t)
+        u = (v * phase) @ v.T
+        conn += (np.abs(u) ** 2).real
     conn /= n_times
 
     source_state = np.zeros(n, dtype=np.float64)
@@ -59,7 +62,6 @@ def time_averaged_transition_probs(
     if source_state.sum() <= 0:
         raise ValueError("no valid source indices for CTQW")
     source_state /= source_state.sum()
-    # Occupation at j = sum_s p(s) * C_sj  (rows of U: <j|U|s> → index [j,s])
     scores = conn @ source_state
     return scores, conn
 
@@ -89,6 +91,6 @@ def ctqw_scores(
         "t_max": t_max,
         "hamiltonian": hamiltonian,
         "n_times": n_times,
-        "backend": "exact_unitary_expm",
+        "backend": "exact_unitary_eigh",
     }
     return scores, conn, node_order, meta

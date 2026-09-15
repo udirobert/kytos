@@ -1,12 +1,11 @@
 # Cleveland Clinic Enterprise Challenge (GQAI 2026)
 
-**Status:** Phase 2 **started** — `c002-ctqw-coarse` ships exact CTQW on the
-Phase 1 coarse graphs (simulator `expm(-iHt)`; Braket/Classiq packaging next).
-Phase 1 gate still passes; **cardiac myosin remains the tightest compression
-margin (ρ=0.823)**. **Separate workstream** from the Virtual Cell Challenge;
-same repo, different namespace. Arc / VCC reviewers only see VCC results;
-Cleveland reviewers only see Cleveland results. Do not pivot the top-level
-`README.md` framing.
+**Status:** Phases 1–3 landed (`c001`–`c004`); Phase 4 draft at
+[`method-report.md`](method-report.md). **Cardiac myosin Phase 1 ρ=0.823**
+remains the tightest compression margin and is surfaced in every run.
+`c003` shows myosin compression **preserves** known-site signal once
+mavacamten labels are corrected. `c004` nulls are not yet significant.
+**Separate workstream** from the Virtual Cell Challenge.
 
 | | |
 |---|---|
@@ -88,10 +87,11 @@ comparison.
 
 | Phase | Scope | Gate |
 |---|---|---|
-| **1** ✓ | PDB → contact graph → classical CTRW → coarse-grain → **Spearman ≥ 0.8** | **Passed** all apo targets (2026-09-15); myosin tightest at ρ=0.823 |
-| **2** ◐ | CTQW on compressed graph (`c002`; exact unitary now, hardware later) | Phase 1 gate must still pass; myosin margin kept visible |
-| **3** | z-score / randomization significance | After Phase 2 |
-| **4** | Methodological report | After Phase 3 |
+| **1** ✓ | PDB → contact graph → classical CTRW → coarse-grain → **Spearman ≥ 0.8** | **Passed**; myosin tightest at ρ=0.823 |
+| **2** ✓ | CTQW on compressed graph (`c002`; exact unitary; hardware packaging later) | P1 gate still passes; myosin margin kept visible |
+| **2b** ✓ | Full vs coarse CTQW audit (`c003`) | Myosin: compression **preserves** known-site signal (with corrected labels) |
+| **3** ✓ | Edge-rewire randomization z-score (`c004`) | No target yet clears z&lt;-2 — honest null |
+| **4** | Methodological report | Draft in `docs/cleveland/method-report.md` |
 
 ### Phase 1 checklist (classical only) — done
 
@@ -113,4 +113,6 @@ ADR: [`architecture.md`](architecture.md).
 ```bash
 .venv-cleveland/bin/python tools/run_cleveland_c001.py
 .venv-cleveland/bin/python tools/run_cleveland_c002.py
+.venv-cleveland/bin/python tools/run_cleveland_c003.py
+.venv-cleveland/bin/python tools/run_cleveland_c004.py --n-null 40
 ```

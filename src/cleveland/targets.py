@@ -94,8 +94,10 @@ TARGETS: dict[str, BenchmarkTarget] = {
         ),
         # ATP-binding / active site neighborhood in myosin motor.
         active_site_residues=(179, 180, 181, 182, 233, 240, 242, 461, 462, 468, 655),
-        known_allosteric_residues=(403, 406, 407, 412, 639),  # SRX / mavacamten site approx
-        known_allosteric_label="Super-relaxed-state site (Mavacamten)",
+        known_allosteric_residues=(164, 167, 168, 666, 710, 711, 712, 721, 722),
+        # Mavacamten pocket (human β-cardiac; e.g. 9YR7/8QYQ contacts).
+        # Prior placeholder (403/406/…) was HCM-variant-ish, not the drug site.
+        known_allosteric_label="Mavacamten / SRX pocket (literature contacts)",
     ),
     "cmyc_max": BenchmarkTarget(
         target_id="cmyc_max",

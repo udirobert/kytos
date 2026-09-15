@@ -51,8 +51,16 @@ weak specifically on myosin, treat compression as a first-line hypothesis.
 
 ## Phase 2
 
-Exact unitary CTQW on the coarse graph (`expm(-i H t)`, H = Laplacian by
-default). Same source = active site. Outputs: coarse connectivity matrix,
-top-5 hit list, classical CTRW comparator, post-hoc known-site recovery.
-Hardware (Braket/Classiq) is packaging, not a different metric.
+Exact unitary CTQW via Hermitian eigendecomposition of \(H\)
+(`backend: exact_unitary_eigh`). Same source = active site. Outputs: coarse
+connectivity matrix, top-5 hit list, classical CTRW comparator, post-hoc
+known-site recovery. Hardware (Braket/Classiq) is packaging, not a different
+metric.
+
+## Phase 2b / 3 findings (keep myosin visible)
+
+- **c003:** Myosin full vs coarse CTQW → compression **preserves** known-site
+  signal (best known rank 99 → 24). KRAS is where compression hurts (8 → 27).
+- **c004:** Edge-rewire nulls — no target with z&lt;-2 yet.
+- Mavacamten labels updated to literature pocket contacts in `targets.py`.
 

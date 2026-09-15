@@ -1,0 +1,673 @@
+{
+  "per_target": {
+    "bcr_abl1": {
+      "compression_verdict": "compression_preserves_known_signal",
+      "ctqw_full_vs_coarse_spearman": {
+        "pass": false,
+        "spearman_pvalue": 3.9236872580623e-64,
+        "spearman_rho": 0.7961469424884059,
+        "threshold": 0.8
+      },
+      "hit_list_coarse_top5": [
+        {
+          "graph_node": 58,
+          "rank": 1,
+          "resname": "VAL",
+          "resseq": 287,
+          "score": 0.09306431553600454
+        },
+        {
+          "graph_node": 87,
+          "rank": 2,
+          "resname": "ASN",
+          "resseq": 316,
+          "score": 0.09306431553600454
+        },
+        {
+          "graph_node": 89,
+          "rank": 3,
+          "resname": "VAL",
+          "resseq": 318,
+          "score": 0.09306431553600454
+        },
+        {
+          "graph_node": 90,
+          "rank": 4,
+          "resname": "GLN",
+          "resseq": 319,
+          "score": 0.09306431553600454
+        },
+        {
+          "graph_node": 106,
+          "rank": 5,
+          "resname": "GLU",
+          "resseq": 335,
+          "score": 0.09306431553600454
+        }
+      ],
+      "hit_list_full_top5": [
+        {
+          "graph_node": 43,
+          "rank": 1,
+          "resname": "TYR",
+          "resseq": 272,
+          "score": 0.024416703123064064
+        },
+        {
+          "graph_node": 18,
+          "rank": 2,
+          "resname": "VAL",
+          "resseq": 247,
+          "score": 0.014515278849046465
+        },
+        {
+          "graph_node": 39,
+          "rank": 3,
+          "resname": "GLY",
+          "resseq": 268,
+          "score": 0.012519370616531437
+        },
+        {
+          "graph_node": 56,
+          "rank": 4,
+          "resname": "LEU",
+          "resseq": 285,
+          "score": 0.010994773797390217
+        },
+        {
+          "graph_node": 62,
+          "rank": 5,
+          "resname": "THR",
+          "resseq": 291,
+          "score": 0.010405399509410003
+        }
+      ],
+      "known_allosteric_label": "Myristoyl pocket (Asciminib)",
+      "n_coarse": 48,
+      "n_full": 287,
+      "pdb_id": "1OPL",
+      "phase1_receipt": {
+        "n_coarse": 48,
+        "n_full": 287,
+        "pass": true,
+        "spearman_rho": 0.8544
+      },
+      "recovery_coarse": {
+        "best_known_rank": 3.0,
+        "known_ranks": [
+          {
+            "rank": 137.0,
+            "resseq": 298,
+            "score": 0.017640105678404943
+          },
+          {
+            "rank": 3.0,
+            "resseq": 317,
+            "score": 0.09306431553600454
+          },
+          {
+            "rank": 31.0,
+            "resseq": 334,
+            "score": 0.05258582096965208
+          },
+          {
+            "rank": 144.0,
+            "resseq": 370,
+            "score": 0.017616601239275123
+          },
+          {
+            "rank": 83.0,
+            "resseq": 379,
+            "score": 0.02226143725828434
+          }
+        ],
+        "mean_known_rank": 79.6,
+        "n_known": 5,
+        "n_known_in_top_k": 1,
+        "n_known_on_graph": 5,
+        "top_k": 5
+      },
+      "recovery_full": {
+        "best_known_rank": 11.0,
+        "known_ranks": [
+          {
+            "rank": 184.0,
+            "resseq": 298,
+            "score": 0.0007872322902338723
+          },
+          {
+            "rank": 11.0,
+            "resseq": 317,
+            "score": 0.0241883950730527
+          },
+          {
+            "rank": 59.0,
+            "resseq": 334,
+            "score": 0.0037567088455950173
+          },
+          {
+            "rank": 162.0,
+            "resseq": 370,
+            "score": 0.001035520749587952
+          },
+          {
+            "rank": 208.0,
+            "resseq": 379,
+            "score": 0.0005029464209709432
+          }
+        ],
+        "mean_known_rank": 124.8,
+        "n_known": 5,
+        "n_known_in_top_k": 0,
+        "n_known_on_graph": 5,
+        "top_k": 5
+      },
+      "tightest_phase1_margin": false
+    },
+    "cardiac_myosin": {
+      "compression_verdict": "compression_preserves_known_signal",
+      "ctqw_full_vs_coarse_spearman": {
+        "pass": false,
+        "spearman_pvalue": 1.184456589560134e-91,
+        "spearman_rho": 0.6368566371613783,
+        "threshold": 0.8
+      },
+      "hit_list_coarse_top5": [
+        {
+          "graph_node": 116,
+          "rank": 1,
+          "resname": "CYS",
+          "resseq": 122,
+          "score": 0.1435651578728734
+        },
+        {
+          "graph_node": 117,
+          "rank": 2,
+          "resname": "VAL",
+          "resseq": 123,
+          "score": 0.1435651578728734
+        },
+        {
+          "graph_node": 118,
+          "rank": 3,
+          "resname": "THR",
+          "resseq": 124,
+          "score": 0.1435651578728734
+        },
+        {
+          "graph_node": 119,
+          "rank": 4,
+          "resname": "VAL",
+          "resseq": 125,
+          "score": 0.1435651578728734
+        },
+        {
+          "graph_node": 120,
+          "rank": 5,
+          "resname": "ASN",
+          "resseq": 126,
+          "score": 0.1435651578728734
+        }
+      ],
+      "hit_list_full_top5": [
+        {
+          "graph_node": 235,
+          "rank": 1,
+          "resname": "SER",
+          "resseq": 241,
+          "score": 0.014798785804256025
+        },
+        {
+          "graph_node": 461,
+          "rank": 2,
+          "resname": "ILE",
+          "resseq": 467,
+          "score": 0.014113400683499581
+        },
+        {
+          "graph_node": 457,
+          "rank": 3,
+          "resname": "ALA",
+          "resseq": 463,
+          "score": 0.012271781897749735
+        },
+        {
+          "graph_node": 237,
+          "rank": 4,
+          "resname": "ARG",
+          "resseq": 243,
+          "score": 0.011410087940037079
+        },
+        {
+          "graph_node": 458,
+          "rank": 5,
+          "resname": "GLY",
+          "resseq": 464,
+          "score": 0.011023447518472403
+        }
+      ],
+      "known_allosteric_label": "Mavacamten / SRX pocket (literature contacts)",
+      "n_coarse": 56,
+      "n_full": 795,
+      "pdb_id": "5TBY",
+      "phase1_receipt": {
+        "margin_to_threshold": 0.023,
+        "n_coarse": 56,
+        "n_full": 795,
+        "note": "Tightest Phase 1 compression margin (threshold 0.8). If Phase 2 connectivity looks weaker here, ask whether coarse-graining held up \u2014 receipts are this \u03c1 and n_full\u2192n_coarse.",
+        "pass": true,
+        "spearman_rho": 0.823
+      },
+      "recovery_coarse": {
+        "best_known_rank": 24.0,
+        "known_ranks": [
+          {
+            "rank": 264.0,
+            "resseq": 164,
+            "score": 0.019332318800019885
+          },
+          {
+            "rank": 267.0,
+            "resseq": 167,
+            "score": 0.019332318800019885
+          },
+          {
+            "rank": 268.0,
+            "resseq": 168,
+            "score": 0.019332318800019885
+          },
+          {
+            "rank": 24.0,
+            "resseq": 666,
+            "score": 0.1435651578728734
+          },
+          {
+            "rank": 695.0,
+            "resseq": 710,
+            "score": 0.006117546081002474
+          },
+          {
+            "rank": 696.0,
+            "resseq": 711,
+            "score": 0.006117546081002474
+          },
+          {
+            "rank": 697.0,
+            "resseq": 712,
+            "score": 0.006117546081002474
+          },
+          {
+            "rank": 782.0,
+            "resseq": 721,
+            "score": 0.00386557287785036
+          },
+          {
+            "rank": 783.0,
+            "resseq": 722,
+            "score": 0.00386557287785036
+          }
+        ],
+        "mean_known_rank": 497.3333333333333,
+        "n_known": 9,
+        "n_known_in_top_k": 0,
+        "n_known_on_graph": 9,
+        "top_k": 5
+      },
+      "recovery_full": {
+        "best_known_rank": 99.0,
+        "known_ranks": [
+          {
+            "rank": 407.0,
+            "resseq": 164,
+            "score": 0.00015088627214966997
+          },
+          {
+            "rank": 234.0,
+            "resseq": 167,
+            "score": 0.0004665695652883032
+          },
+          {
+            "rank": 309.0,
+            "resseq": 168,
+            "score": 0.00028123649164174015
+          },
+          {
+            "rank": 99.0,
+            "resseq": 666,
+            "score": 0.0017347859614708987
+          },
+          {
+            "rank": 314.0,
+            "resseq": 710,
+            "score": 0.0002756078714118737
+          },
+          {
+            "rank": 386.0,
+            "resseq": 711,
+            "score": 0.000174209227058557
+          },
+          {
+            "rank": 542.0,
+            "resseq": 712,
+            "score": 6.830556558071478e-05
+          },
+          {
+            "rank": 764.0,
+            "resseq": 721,
+            "score": 5.975644360225632e-07
+          },
+          {
+            "rank": 751.0,
+            "resseq": 722,
+            "score": 1.3039636532424722e-06
+          }
+        ],
+        "mean_known_rank": 422.8888888888889,
+        "n_known": 9,
+        "n_known_in_top_k": 0,
+        "n_known_on_graph": 9,
+        "top_k": 5
+      },
+      "tightest_phase1_margin": true
+    },
+    "cmyc_max": {
+      "compression_verdict": "no_known_labels",
+      "ctqw_full_vs_coarse_spearman": {
+        "pass": true,
+        "spearman_pvalue": 6.220881222213435e-31,
+        "spearman_rho": 0.8891021802683952,
+        "threshold": 0.8
+      },
+      "hit_list_coarse_top5": [
+        {
+          "graph_node": 28,
+          "rank": 1,
+          "resname": "ARG",
+          "resseq": 925,
+          "score": 0.13540511352682613
+        },
+        {
+          "graph_node": 34,
+          "rank": 2,
+          "resname": "LEU",
+          "resseq": 931,
+          "score": 0.13540511352682613
+        },
+        {
+          "graph_node": 45,
+          "rank": 3,
+          "resname": "ILE",
+          "resseq": 942,
+          "score": 0.13540511352682613
+        },
+        {
+          "graph_node": 13,
+          "rank": 4,
+          "resname": "GLU",
+          "resseq": 910,
+          "score": 0.10166334086087384
+        },
+        {
+          "graph_node": 14,
+          "rank": 5,
+          "resname": "ARG",
+          "resseq": 911,
+          "score": 0.10166334086087384
+        }
+      ],
+      "hit_list_full_top5": [
+        {
+          "graph_node": 16,
+          "rank": 1,
+          "resname": "ARG",
+          "resseq": 913,
+          "score": 0.022762932966917056
+        },
+        {
+          "graph_node": 26,
+          "rank": 2,
+          "resname": "ALA",
+          "resseq": 923,
+          "score": 0.02090003389675333
+        },
+        {
+          "graph_node": 15,
+          "rank": 3,
+          "resname": "GLN",
+          "resseq": 912,
+          "score": 0.019997465530409802
+        },
+        {
+          "graph_node": 42,
+          "rank": 4,
+          "resname": "LYS",
+          "resseq": 939,
+          "score": 0.01900727657903383
+        },
+        {
+          "graph_node": 0,
+          "rank": 5,
+          "resname": "GLY",
+          "resseq": 897,
+          "score": 0.01691719269152369
+        }
+      ],
+      "known_allosteric_label": "exploratory \u2014 no validated site",
+      "n_coarse": 32,
+      "n_full": 88,
+      "pdb_id": "1NKP",
+      "phase1_receipt": {
+        "n_coarse": 32,
+        "n_full": 88,
+        "pass": true,
+        "spearman_rho": 0.9425
+      },
+      "recovery_coarse": {
+        "best_known_rank": null,
+        "known_ranks": [],
+        "mean_known_rank": null,
+        "n_known": 0,
+        "n_known_in_top_k": null,
+        "n_known_on_graph": 0,
+        "top_k": 5
+      },
+      "recovery_full": {
+        "best_known_rank": null,
+        "known_ranks": [],
+        "mean_known_rank": null,
+        "n_known": 0,
+        "n_known_in_top_k": null,
+        "n_known_on_graph": 0,
+        "top_k": 5
+      },
+      "tightest_phase1_margin": false
+    },
+    "kras_g12c": {
+      "compression_verdict": "compression_degrades_known_signal",
+      "ctqw_full_vs_coarse_spearman": {
+        "pass": false,
+        "spearman_pvalue": 3.0058219175795697e-21,
+        "spearman_rho": 0.6449107453632341,
+        "threshold": 0.8
+      },
+      "hit_list_coarse_top5": [
+        {
+          "graph_node": 18,
+          "rank": 1,
+          "resname": "LEU",
+          "resseq": 19,
+          "score": 0.0826486253668059
+        },
+        {
+          "graph_node": 19,
+          "rank": 2,
+          "resname": "THR",
+          "resseq": 20,
+          "score": 0.0826486253668059
+        },
+        {
+          "graph_node": 20,
+          "rank": 3,
+          "resname": "ILE",
+          "resseq": 21,
+          "score": 0.0826486253668059
+        },
+        {
+          "graph_node": 30,
+          "rank": 4,
+          "resname": "GLU",
+          "resseq": 31,
+          "score": 0.0690314675851311
+        },
+        {
+          "graph_node": 32,
+          "rank": 5,
+          "resname": "ASP",
+          "resseq": 33,
+          "score": 0.0615203609832095
+        }
+      ],
+      "hit_list_full_top5": [
+        {
+          "graph_node": 30,
+          "rank": 1,
+          "resname": "GLU",
+          "resseq": 31,
+          "score": 0.02002801164810171
+        },
+        {
+          "graph_node": 32,
+          "rank": 2,
+          "resname": "ASP",
+          "resseq": 33,
+          "score": 0.01916530626963437
+        },
+        {
+          "graph_node": 26,
+          "rank": 3,
+          "resname": "HIS",
+          "resseq": 27,
+          "score": 0.014820174946938524
+        },
+        {
+          "graph_node": 120,
+          "rank": 4,
+          "resname": "PRO",
+          "resseq": 121,
+          "score": 0.012768221286754552
+        },
+        {
+          "graph_node": 59,
+          "rank": 5,
+          "resname": "GLY",
+          "resseq": 60,
+          "score": 0.012424697890801754
+        }
+      ],
+      "known_allosteric_label": "Switch-II pocket (Sotorasib)",
+      "n_coarse": 32,
+      "n_full": 169,
+      "pdb_id": "4OBE",
+      "phase1_receipt": {
+        "n_coarse": 32,
+        "n_full": 169,
+        "pass": true,
+        "spearman_rho": 0.8573
+      },
+      "recovery_coarse": {
+        "best_known_rank": 27.0,
+        "known_ranks": [
+          {
+            "rank": 27.0,
+            "resseq": 12,
+            "score": 0.04364977657429857
+          },
+          {
+            "rank": 80.0,
+            "resseq": 96,
+            "score": 0.02642120883645926
+          },
+          {
+            "rank": 83.0,
+            "resseq": 99,
+            "score": 0.02642120883645926
+          },
+          {
+            "rank": 41.0,
+            "resseq": 117,
+            "score": 0.03705118861283771
+          }
+        ],
+        "mean_known_rank": 57.75,
+        "n_known": 4,
+        "n_known_in_top_k": 0,
+        "n_known_on_graph": 4,
+        "top_k": 5
+      },
+      "recovery_full": {
+        "best_known_rank": 8.0,
+        "known_ranks": [
+          {
+            "rank": 8.0,
+            "resseq": 12,
+            "score": 0.031819026608241714
+          },
+          {
+            "rank": 88.0,
+            "resseq": 96,
+            "score": 0.0019931633855445486
+          },
+          {
+            "rank": 130.0,
+            "resseq": 99,
+            "score": 0.0009894560635116008
+          },
+          {
+            "rank": 33.0,
+            "resseq": 117,
+            "score": 0.007383521399736389
+          }
+        ],
+        "mean_known_rank": 64.75,
+        "n_known": 4,
+        "n_known_in_top_k": 0,
+        "n_known_on_graph": 4,
+        "top_k": 5
+      },
+      "tightest_phase1_margin": false
+    }
+  },
+  "phase1_compression": {
+    "receipts": {
+      "bcr_abl1": {
+        "n_coarse": 48,
+        "n_full": 287,
+        "pass": true,
+        "spearman_rho": 0.8544
+      },
+      "cardiac_myosin": {
+        "margin_to_threshold": 0.023,
+        "n_coarse": 56,
+        "n_full": 795,
+        "note": "Tightest Phase 1 compression margin (threshold 0.8). If Phase 2 connectivity looks weaker here, ask whether coarse-graining held up \u2014 receipts are this \u03c1 and n_full\u2192n_coarse.",
+        "pass": true,
+        "spearman_rho": 0.823
+      },
+      "cmyc_max": {
+        "n_coarse": 32,
+        "n_full": 88,
+        "pass": true,
+        "spearman_rho": 0.9425
+      },
+      "kras_g12c": {
+        "n_coarse": 32,
+        "n_full": 169,
+        "pass": true,
+        "spearman_rho": 0.8573
+      }
+    },
+    "tightest_margin_to_threshold": 0.023,
+    "tightest_spearman_rho": 0.823,
+    "tightest_target": "cardiac_myosin"
+  }
+}

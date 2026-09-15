@@ -20,9 +20,10 @@ run-ID prefixes (`kNNN-*` vs `cNNN-*`). It overrides generic assumptions about
   (small graphs). Phase 2+ quantum circuits use challenge Braket/Classiq.
 - Secret: `MOTH_API_KEY` in `.env` (see `.env.example`).
 - Runner: `.venv-cleveland/bin/python tools/run_cleveland_c001.py`
-  (Phase 1) / `tools/run_cleveland_c002.py` (Phase 2 CTQW).
+  … `c004.py` (see `docs/cleveland/`).
 - **Compression watch:** cardiac myosin Phase 1 Spearman ρ=0.823 is the
-  tightest gate margin — keep it visible in Phase 2+ reports.
+  tightest gate margin — keep it visible in Phase 2+ reports. `c003` finds
+  myosin compression **preserves** known-site signal (labels corrected).
 ---
 ## 1. The local machine (do not assume headroom)
 

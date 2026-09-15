@@ -1,0 +1,11 @@
+{
+  "challenge": "cleveland-gqai-2026",
+  "code": {
+    "commit": "98a27cccd08cc07f629b6bf1d975e30163783f97"
+  },
+  "created": "2026-09-15",
+  "notes": "Full vs coarse CTQW; myosin P1 \u03c1=0.823 kept visible. Mavacamten pocket labels updated to literature contacts.",
+  "run_id": "c003-ctqw-compression-audit",
+  "seed": 0,
+  "task": "phase2b_compression_audit"
+}

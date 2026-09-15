@@ -32,6 +32,6 @@ def test_ctqw_on_path_graph():
     scores, conn, order, meta = ctqw_scores(g, [0], t_max=3.0)
     assert len(scores) == 10
     assert conn.shape == (10, 10)
-    assert meta["backend"] == "exact_unitary_expm"
+    assert meta["backend"] == "exact_unitary_eigh"
     # Source end should retain relatively high occupation early
     assert scores[order.index(0)] >= scores[order.index(9)]

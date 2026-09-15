@@ -19,3 +19,9 @@ If Phase 2 connectivity / known-site recovery looks weaker specifically on cardi
 
 Hamiltonian: `laplacian`. Backend: exact `expm(-iHt)` (simulator; Braket/Classiq packaging is a follow-on).
 
+## Label erratum (post-c002)
+
+Cardiac myosin known-site list in c002 used a placeholder pocket. Corrected to
+literature mavacamten contacts in `targets.py`; see `c003` / `method-report.md`.
+Myosin Phase 1 ρ=0.823 margin unchanged and still the tightest compression receipt.
+
