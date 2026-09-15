@@ -1,0 +1,24 @@
+{
+  "flags": [
+    {
+      "detail": "spearman_rho=0.8573",
+      "id": "coarsegrain_spearman_pass",
+      "severity": "info"
+    },
+    {
+      "detail": "spearman_rho=0.8544",
+      "id": "coarsegrain_spearman_pass",
+      "severity": "info"
+    },
+    {
+      "detail": "spearman_rho=0.8230",
+      "id": "coarsegrain_spearman_pass",
+      "severity": "info"
+    },
+    {
+      "detail": "spearman_rho=0.9425",
+      "id": "coarsegrain_spearman_pass",
+      "severity": "info"
+    }
+  ]
+}

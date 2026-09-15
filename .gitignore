@@ -4,6 +4,7 @@ __pycache__/
 *.egg-info/
 .venv/
 .venv-science/
+.venv-cleveland/
 venv/
 
 # Cell-eval / anndata intermediates
@@ -16,6 +17,7 @@ experiments/**/*.h5ad
 
 # Large data / models (not committed; fetch scripts in data/)
 data/raw/
+data/cleveland/raw/
 /models/
 *.onnx
 *.safetensors

@@ -1,0 +1,11 @@
+{
+  "challenge": "cleveland-gqai-2026",
+  "code": {
+    "commit": "a79691cab10f50aab865473229219c9f8dc00791"
+  },
+  "created": "2026-09-15",
+  "notes": "Classical CTRW baseline + spectral coarse-grain Spearman gate (\u22650.8).",
+  "run_id": "c001-ctrw-full-vs-coarse",
+  "seed": 0,
+  "task": "phase1_ctrw_coarsegrain_gate"
+}

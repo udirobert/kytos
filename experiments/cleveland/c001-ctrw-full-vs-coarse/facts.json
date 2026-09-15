@@ -1,0 +1,214 @@
+{
+  "all_pass": true,
+  "challenge": "cleveland-gqai-2026",
+  "gate": "spearman_rank_correlation",
+  "method": "classical_ctrw_full_vs_coarse",
+  "phase": 1,
+  "run_id": "c001-ctrw-full-vs-coarse",
+  "targets": {
+    "bcr_abl1": {
+      "flags": [
+        {
+          "detail": "spearman_rho=0.8544",
+          "id": "coarsegrain_spearman_pass",
+          "severity": "info"
+        }
+      ],
+      "hit_list_top5": [
+        {
+          "graph_node": 38,
+          "rank": 1,
+          "resname": "LEU",
+          "resseq": 267,
+          "score": 0.017059753159191983
+        },
+        {
+          "graph_node": 44,
+          "rank": 2,
+          "resname": "GLY",
+          "resseq": 273,
+          "score": 0.016652067705117065
+        },
+        {
+          "graph_node": 39,
+          "rank": 3,
+          "resname": "GLY",
+          "resseq": 268,
+          "score": 0.01619854570614547
+        },
+        {
+          "graph_node": 46,
+          "rank": 4,
+          "resname": "VAL",
+          "resseq": 275,
+          "score": 0.015409315484289926
+        },
+        {
+          "graph_node": 43,
+          "rank": 5,
+          "resname": "TYR",
+          "resseq": 272,
+          "score": 0.014902872891292036
+        }
+      ],
+      "n_coarse": 48,
+      "n_full": 287,
+      "pass": true,
+      "pdb_id": "1OPL",
+      "spearman_rho": 0.8544321532126411
+    },
+    "cardiac_myosin": {
+      "flags": [
+        {
+          "detail": "spearman_rho=0.8230",
+          "id": "coarsegrain_spearman_pass",
+          "severity": "info"
+        }
+      ],
+      "hit_list_top5": [
+        {
+          "graph_node": 235,
+          "rank": 1,
+          "resname": "SER",
+          "resseq": 241,
+          "score": 0.015192111884465133
+        },
+        {
+          "graph_node": 457,
+          "rank": 2,
+          "resname": "ALA",
+          "resseq": 463,
+          "score": 0.014910754626499923
+        },
+        {
+          "graph_node": 458,
+          "rank": 3,
+          "resname": "GLY",
+          "resseq": 464,
+          "score": 0.012848476521107821
+        },
+        {
+          "graph_node": 232,
+          "rank": 4,
+          "resname": "ASN",
+          "resseq": 238,
+          "score": 0.012505298277806063
+        },
+        {
+          "graph_node": 172,
+          "rank": 5,
+          "resname": "GLY",
+          "resseq": 178,
+          "score": 0.01183445992969872
+        }
+      ],
+      "n_coarse": 56,
+      "n_full": 795,
+      "pass": true,
+      "pdb_id": "5TBY",
+      "spearman_rho": 0.823009754346563
+    },
+    "cmyc_max": {
+      "flags": [
+        {
+          "detail": "spearman_rho=0.9425",
+          "id": "coarsegrain_spearman_pass",
+          "severity": "info"
+        }
+      ],
+      "hit_list_top5": [
+        {
+          "graph_node": 16,
+          "rank": 1,
+          "resname": "ARG",
+          "resseq": 913,
+          "score": 0.0363438796612362
+        },
+        {
+          "graph_node": 15,
+          "rank": 2,
+          "resname": "GLN",
+          "resseq": 912,
+          "score": 0.03203650317741427
+        },
+        {
+          "graph_node": 26,
+          "rank": 3,
+          "resname": "ALA",
+          "resseq": 923,
+          "score": 0.029706345552792512
+        },
+        {
+          "graph_node": 14,
+          "rank": 4,
+          "resname": "ARG",
+          "resseq": 911,
+          "score": 0.027555406925493253
+        },
+        {
+          "graph_node": 27,
+          "rank": 5,
+          "resname": "LEU",
+          "resseq": 924,
+          "score": 0.027046372522107846
+        }
+      ],
+      "n_coarse": 32,
+      "n_full": 88,
+      "pass": true,
+      "pdb_id": "1NKP",
+      "spearman_rho": 0.9425169948223029
+    },
+    "kras_g12c": {
+      "flags": [
+        {
+          "detail": "spearman_rho=0.8573",
+          "id": "coarsegrain_spearman_pass",
+          "severity": "info"
+        }
+      ],
+      "hit_list_top5": [
+        {
+          "graph_node": 145,
+          "rank": 1,
+          "resname": "ALA",
+          "resseq": 146,
+          "score": 0.016998179288070847
+        },
+        {
+          "graph_node": 58,
+          "rank": 2,
+          "resname": "ALA",
+          "resseq": 59,
+          "score": 0.014973212767784799
+        },
+        {
+          "graph_node": 18,
+          "rank": 3,
+          "resname": "LEU",
+          "resseq": 19,
+          "score": 0.014924824841688314
+        },
+        {
+          "graph_node": 30,
+          "rank": 4,
+          "resname": "GLU",
+          "resseq": 31,
+          "score": 0.014770241760567543
+        },
+        {
+          "graph_node": 35,
+          "rank": 5,
+          "resname": "ILE",
+          "resseq": 36,
+          "score": 0.014442795944399645
+        }
+      ],
+      "n_coarse": 32,
+      "n_full": 169,
+      "pass": true,
+      "pdb_id": "4OBE",
+      "spearman_rho": 0.8572572224155937
+    }
+  }
+}

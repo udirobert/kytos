@@ -64,18 +64,20 @@ python frontend/build.py --experiments experiments/ --out frontend/dist/
 | [`docs/security.md`](docs/security.md) | Secrets policy + caveats |
 | [`docs/demo-script.md`](docs/demo-script.md) | 7-beat pitch script for a 2-min Loom |
 | [`NOTES.md`](NOTES.md) | Task, motivation, catalog learnings |
+| [`docs/cleveland/`](docs/cleveland/) | **Separate** Cleveland Clinic / GQAI 2026 workstream (allostery CTQW; not VCC) |
 
 ## Layout
 
 ```
-docs/            all prose (knowledge base)
+docs/            all prose (knowledge base); docs/cleveland/ is GQAI-only
 src/kytos/       backend: data, features, models, eval, audit, serve
+src/cleveland/   GQAI allostery pipeline (namespaced; uses .venv-cleveland)
 submission/      competition harness (official inputs → cell-eval AnnData)
 tools/           dev tooling + Observatory enrichment scripts
-experiments/     run outputs, one folder per run-id
+experiments/     run outputs, one folder per run-id (cNNN-* under cleveland/)
 frontend/        Observatory — static site from facts JSON + visual/
-tests/           pytest suite
-data/            corpora manifest/staging (raw/ gitignored)
+tests/           pytest suite (tests/cleveland/ for GQAI)
+data/            corpora manifest/staging (raw/ gitignored; data/cleveland/raw/ too)
 ```
 
 ## Status

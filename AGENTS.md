@@ -1,13 +1,27 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-09-11** after the k004 Layer A/B Modal submission.
+> Last updated **2026-09-15** — Cleveland Clinic / GQAI workstream added
+> alongside VCC (namespaced under `cleveland/`; see `docs/cleveland/`).
 
-This file is the ground truth for any agent working on the Kytos 2026 Virtual
-Cell Challenge repo. It overrides generic assumptions about "local dev" because
-the primary dev machine is **memory- and disk-constrained**.
+This file is the ground truth for any agent working on this repo. It covers
+the **2026 Virtual Cell Challenge** and a **separate** Cleveland Clinic
+Enterprise Challenge (GQAI 2026) workstream. Do not mix their stacks or
+run-ID prefixes (`kNNN-*` vs `cNNN-*`). It overrides generic assumptions about
+"local dev" because the primary dev machine is **memory- and disk-constrained**.
 
 ---
 
+## 0. Cleveland Clinic / GQAI (quantum allostery)
+
+- Docs: `docs/cleveland/`. Code: `src/cleveland/`. Experiments: `experiments/cleveland/`.
+- **Venv:** `.venv-cleveland` only (`networkx`, BioPython, scikit-learn). Never
+  install Qiskit/Braket/Classiq into `.venv` / `.venv-science`.
+- Phase 1 (classical CTRW + coarse-grain Spearman gate) is **local-safe**
+  (small graphs). Phase 2+ quantum circuits use challenge Braket/Classiq.
+- Secret: `MOTH_API_KEY` in `.env` (see `.env.example`).
+- Runner: `.venv-cleveland/bin/python tools/run_cleveland_c001.py`
+
+---
 ## 1. The local machine (do not assume headroom)
 
 - **RAM: 8 GB** (`sysctl hw.memsize` confirms 8 GiB).

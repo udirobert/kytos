@@ -12,6 +12,11 @@ To add a new run after reading the protocol, create `experiments/<run-id>/`,
 assemble `facts.json`, run enrichment tools, and commit all artifacts alongside
 prediction outputs.
 
+**Cleveland Clinic / GQAI** runs live under
+[`experiments/cleveland/`](cleveland/) with `cNNN-*` IDs (see
+[`docs/cleveland/`](../docs/cleveland/)). They do not use the Observatory
+enrichment path.
+
 **Run registry:**
 
 - `k001-mean-shift-baseline` — Observatory Milestone 0 demo (2026-08-22); probe data.

@@ -40,6 +40,7 @@ PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("Slack token", re.compile(r"\bxox[baprs]-[A-Za-z0-9-]{10,}\b")),
     ("JWT", re.compile(r"\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b")),
     ("OpenAI/generic API key", re.compile(r"\b(sk-[A-Za-z0-9]{20,}|sk-ant-[A-Za-z0-9_-]{20,})\b")),
+    ("Moth Quantum API key", re.compile(r"\bmoth_[A-Za-z0-9]{16,}\b")),
     ("Stripe secret key", re.compile(r"\bsk_live_[A-Za-z0-9]{20,}\b")),
     ("private key block", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")),
     (

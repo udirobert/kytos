@@ -61,6 +61,9 @@ false-positive-aware; test with a planted pattern before committing.
   so experiment payloads in `facts.json` are not sent to OpenAI while iterating.
   See [`docs/venice-dev.md`](venice-dev.md). Production uses OpenAI via Netlify
   env vars.
+- **Moth Quantum** (`MOTH_API_KEY`, keys start with `moth_`): Cleveland / GQAI
+  workstream only — `.env` / Netlify-style inject; scanner pattern in
+  `tools/scan_secrets.py`. See [`docs/cleveland/`](cleveland/).
 - If you ever commit `.env.example`, add it to the allowlist **by filename**
   only if the scanner's content patterns would otherwise hit its placeholder
   values — and never commit a real `.env`.

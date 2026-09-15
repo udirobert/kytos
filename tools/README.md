@@ -16,6 +16,14 @@ into `experiments/<run-id>/`. None of them touch the inference path.
 | `prep_vcc2025_validation.py` | — (.venv-science) | `data/raw/vcc2025/` norm-log h5ads + targets/gene axis + `prep_manifest.json`; `--purge-source` frees the 6.9GB source after a hash check | 0 |
 | `build_audit_context.py` | — (.venv-science) | `audit/context.json` from prediction h5ad | 0 |
 
+### Cleveland / GQAI (separate workstream)
+
+| Tool | Env | Output |
+|---|---|---|
+| `run_cleveland_c001.py` | `.venv-cleveland` | `experiments/cleveland/c001-ctrw-full-vs-coarse/` (CTRW + Spearman gate) |
+
+See [`docs/cleveland/`](../docs/cleveland/).
+
 ## Rules (hard)
 
 1. **Read `facts.json` only** — never invent metrics or claims. Grounding is
