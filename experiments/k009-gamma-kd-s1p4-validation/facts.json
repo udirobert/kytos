@@ -1,0 +1,36 @@
+{
+  "run_id": "k009-gamma-kd-s1p4-validation",
+  "created": "2026-09-15",
+  "headline": "gamma kd_std=1.4 \u2014 overall -0.0011 (rank 565); nmae best-ever +0.020 confirms mean-bias fix, but pds 0.20 and fid -0.27 regress: near-zero-eta mass makes cells look unperturbed",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": -0.0010546774484352839,
+    "pds": 0.20366493953307177,
+    "mse": 0.0,
+    "nmae": 0.019906610536306046,
+    "fid": -0.2716947900363211,
+    "reach": 0.06532622815433776,
+    "jac": -0.023531052878006234
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Removing the trunc-normal's +17% mean inflation should recover nmae",
+    "If fid/pds hold at matched spread, mean-inflation was the nmae cost; if they regress, the leaderboard rewards broad dispersion around eta=1 rather than a skewed eta density"
+  ],
+  "next_steps": [
+    "k009 s2.0 result will show whether more gamma spread recovers fid/pds or the shape itself is the problem",
+    "Residual covariance / full Layer B \u2014 off-direction structure remains the fid deficit",
+    "Learned Layer A \u2014 context-conditioned signature transfer"
+  ],
+  "provenance": {
+    "commit": "a79691c",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+gamma-kd(kd_std=1.4, eta_max=5.0, library_cap=median)",
+    "code": "tools/run_k009_gamma_kd.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "gamma s1.4 scored overall -0.0011 (rank 565): nmae +0.004 -> +0.020 (best yet \u2014 the mean-preserving fix worked as designed), but pds 0.336 -> 0.204 and fid -0.111 -> -0.272 regressed hard, reach 0.091 -> 0.065, jac -0.014 -> -0.024. Interpretation: at kd_std=1.4 the capped gamma has shape 0.51, concentrating ~40%+ of eta mass near zero \u2014 those cells are effectively unperturbed, which directly erodes discrimination (pds) and direction fidelity (fid). The trunc-normal keeps mass centered on eta~1, which is what the metric rewards. Net: mean-preservation helps nmae but the skewed shape costs more than the bias did."
+}

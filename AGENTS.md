@@ -132,11 +132,18 @@ to git.
   ~0.06/step, not bending. Next probes: `kd_std` 1.7 and ~2.0 (Atlas
   global eta std is 2.32).
 - `kytos-k008-kd-s1p7` (`kd_std=1.7`) scored **overall +0.0429** (rank
-  477), `fid` -0.148; `nmae` began eroding (+0.008).
-- `kytos-k008-kd-s2p0` (`kd_std=2.0`) scored **overall +0.0511** (rank
-  462), `fid` -0.111, `nmae` +0.004 — the curve is bending near the
-  Atlas global std (2.32). Scalar sweep is saturating; next lever is
-  per-target spread or off-direction covariance (Layer B).
+  477) and `kytos-k008-kd-s2p0` (`kd_std=2.0`) scored **overall +0.0511**
+  (rank 462), `fid` -0.111 — the scalar optimum is near ~2.0–2.3 (Atlas
+  global eta std 2.32); `nmae` eroding (+0.011 → +0.004) as overspread
+  blurs DE signal.
+- `kytos-k009-gamma-s1p4` / `kytos-k009-gamma-s2p0` — `GammaKnockdownSampler`
+  (positive-support, capped eta_max=5.0, renormalized to E[eta]=1,
+  `library_cap="median"` backstop) scored **-0.0011** (rank 565) and
+  **+0.0075** (rank 544) respectively. `nmae` hit best-ever +0.020/+0.022
+  — mean-preservation works — but `pds` ~0.21 and `fid` ~-0.25 regressed:
+  the skewed density piles mass near eta≈0 (unperturbed-looking cells).
+  Conclusion: keep the symmetric trunc-normal shape; next variant is a
+  mean-corrected trunc-normal (divide eta by E[N(1,σ)|η>0]).
 
 ---
 

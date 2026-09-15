@@ -118,6 +118,21 @@ enrichment path.
   The scalar optimum sits around 2.0–2.3, matching the Atlas global eta
   std (2.32). Next lever is per-target spread, not a bigger scalar. Meta:
   [`experiments/k008-kd-s2p0-validation/meta.json`](k008-kd-s2p0-validation/meta.json).
+- `k009-gamma-kd-s1p4-validation` — **gamma kd_std=1.4** (2026-09-15):
+  **overall -0.0011** (rank 565), `nmae` **+0.020** (best yet — the
+  mean-preserving fix worked) but `pds` 0.204 and `fid` -0.272 regress hard:
+  the capped gamma (shape 0.51) piles ~half its mass near eta≈0, producing
+  unperturbed-looking cells that cost discrimination. Meta:
+  [`experiments/k009-gamma-kd-s1p4-validation/meta.json`](k009-gamma-kd-s1p4-validation/meta.json).
+- `k009-gamma-kd-s2p0-validation` — **gamma kd_std=2.0** (2026-09-15):
+  **overall +0.0075** (rank 544), `nmae` **+0.022** (best yet), `fid` -0.233,
+  `pds` 0.208. More spread helps directionally but the A/B vs trunc-normal
+  s2.0 (+0.0511) is conclusive: the leaderboard rewards symmetric dispersion
+  centered on eta~1, not a right-skewed density. Next variant:
+  mean-corrected trunc-normal — keep the winning shape, divide eta by
+  E[N(1,σ)|η>0] to remove the +17% inflation and recover the nmae the gamma
+  proved is available. Meta:
+  [`experiments/k009-gamma-kd-s2p0-validation/meta.json`](k009-gamma-kd-s2p0-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

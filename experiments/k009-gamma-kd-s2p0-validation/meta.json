@@ -1,0 +1,108 @@
+{
+  "run_id": "k009-gamma-kd-s2p0-validation",
+  "status": "submitted",
+  "model_name": "kytos-k009-gamma-s2p0",
+  "entry_id": "vTkp90Hf5e5mwsNd0EVK",
+  "created_at": "2026-09-15T10:30:58Z",
+  "published_at": "2026-09-15T10:30:58Z",
+  "modal_app_id": "ap-A1sM5hHlVJ69jBvcZOw1BX",
+  "modal_build_app_id": "ap-8VRVYp3p13di2Kbga286Lk",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": [
+      "A",
+      "B",
+      "C"
+    ],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2054900000
+  },
+  "prediction": {
+    "h5ad": "experiments/k009-gamma-kd-validation/prediction.h5ad",
+    "vcc": "experiments/k009-gamma-kd-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "volume_path": "/kytos-vol/k009-gamma-kd-s2p0",
+    "note": "produced on Modal and persisted to the kytos-vcc Modal Volume; not committed to git"
+  },
+  "model": {
+    "mode": "replogle_prior+neighbor_imputation+gamma_kd",
+    "dispatch": {
+      "real": 816,
+      "neighbor": 54,
+      "fallback": 30
+    },
+    "neighbor_gate": {
+      "min_partners": 2,
+      "min_score": 0.7,
+      "topk": 5
+    },
+    "sampler": {
+      "type": "GammaKnockdownSampler",
+      "eta": "Gamma(shape=1/kd_std^2, scale=kd_std^2), capped at eta_max=5.0, renormalized to E[eta]=1 via closed-form capped mean",
+      "kd_std": 2.0,
+      "eta_max": 5.0,
+      "library_cap": "median",
+      "noise_scale": 0.05
+    },
+    "kd_spread_evidence": "/kytos-vol/k008-kd-spread-v2.json (Atlas eta measurement w/ basal-noise decomposition)",
+    "imputed_targets": [
+      "ABCD1",
+      "EPHB2",
+      "HEATR6",
+      "KIF21B",
+      "MAPK7",
+      "MLKL",
+      "NICN1",
+      "PARP3",
+      "PBLD",
+      "PDK3",
+      "PSMB9",
+      "RAB11FIP5",
+      "SEMA4F",
+      "SOCS5",
+      "SPATA20",
+      "TAF4",
+      "TDRD7",
+      "TTBK2"
+    ],
+    "orphan_targets": [
+      "CAPRIN2",
+      "PHF11",
+      "SLC44A1",
+      "SNN",
+      "TBC1D19",
+      "TESK2",
+      "TMEM104",
+      "TMEM79",
+      "TXNDC16",
+      "ZC2HC1A"
+    ],
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "scores": {
+    "overall": 0.0074647452660726275,
+    "rank": 544,
+    "pds": 0.20829621910578874,
+    "mse": 0.0,
+    "nmae": 0.022490963954565735,
+    "fid": -0.23292972455294325,
+    "reach": 0.07210963662998447,
+    "jac": -0.025178623540959955
+  },
+  "cost_estimate_usd": 0.9,
+  "cost_note": "64 GiB / 4-core Modal Function ~15 min build + prep + persist; submission run uploads the persisted 3.0 GiB .vcc",
+  "script": "tools/run_k009_gamma_kd.py",
+  "runner": "tools/modal_k009_gamma_kd.py",
+  "commit": "a79691c"
+}

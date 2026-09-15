@@ -1,0 +1,36 @@
+{
+  "run_id": "k009-gamma-kd-s2p0-validation",
+  "created": "2026-09-15",
+  "headline": "gamma kd_std=2.0 \u2014 overall +0.0075 (rank 544); nmae best-ever +0.022 but pds 0.21 / fid -0.23 still far below trunc-normal s2.0 (+0.0511). The skewed eta shape itself is the problem, not the mean.",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.0074647452660726275,
+    "pds": 0.20829621910578874,
+    "mse": 0.0,
+    "nmae": 0.022490963954565735,
+    "fid": -0.23292972455294325,
+    "reach": 0.07210963662998447,
+    "jac": -0.025178623540959955
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Doubling gamma spread should recover some fid/pds vs s1.4 if dispersion is what the metric rewards",
+    "nmae should stay strong since mean-preservation is shape-independent"
+  ],
+  "next_steps": [
+    "Mean-corrected truncated normal \u2014 divide eta by E[N(1,sigma)|eta>0] to keep the winning symmetric spread while removing the +17% mean inflation; should preserve pds/fid and recover the nmae the gamma proved is available",
+    "Residual covariance / full Layer B \u2014 off-direction structure remains the fid deficit",
+    "Learned Layer A \u2014 context-conditioned signature transfer"
+  ],
+  "provenance": {
+    "commit": "a79691c",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+gamma-kd(kd_std=2.0, eta_max=5.0, library_cap=median)",
+    "code": "tools/run_k009_gamma_kd.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "gamma s2.0 scored overall +0.0075 (rank 544): nmae +0.020 -> +0.022 (best yet), fid -0.272 -> -0.233, pds 0.204 -> 0.208, reach 0.065 -> 0.072. More spread helps directionally but the gamma A/B is conclusive: at matched kd_std=2.0 the mean-preserving gamma scores +0.0075 vs the biased trunc-normal's +0.0511. The leaderboard rewards symmetric dispersion centered on eta~1 \u2014 gamma's shape-0.25 density piles mass near eta~0 (unperturbed-looking cells) which directly costs discrimination. The nmae lesson is real though: remove the trunc-normal's mean inflation while KEEPING its symmetric shape \u2014 mean-corrected trunc-normal is the next variant."
+}
