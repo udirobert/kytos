@@ -105,6 +105,7 @@ def build_context_predictions(
     fallback: ContextConditionedTransfer,
     sampler: AdditiveTransportSampler,
     library_cap: float | str | None = None,
+    delta_scale: float = 1.0,
 ) -> tuple[sparse.csr_matrix, pd.DataFrame, dict]:
     """Sparse prediction for one context: real > neighbor-imputed > fallback.
 
@@ -112,6 +113,10 @@ def build_context_predictions(
     cap: a number, or "median" for the context's median control library
     size. Backstop for heavy-tailed samplers whose extreme draws would
     otherwise trip the VCC 1e6 per-cell count limit.
+
+    delta_scale multiplies the fully-assembled delta (borrowed signature,
+    imputed signature + self-knockdown, or fallback) before transport —
+    explicit control of applied signature magnitude.
     """
     print(f"[{context}] loading {control_path.name} ...", flush=True)
     ctrl = ad.read_h5ad(str(control_path))
@@ -151,6 +156,9 @@ def build_context_predictions(
         else:
             delta = fallback.predict_delta(tgt, basal)
             used["fallback"] += 1
+
+        if delta_scale != 1.0:
+            delta = delta.astype(np.float32) * delta_scale
 
         idx = rng.choice(n_cells, size=cells_per_pert, replace=True)
         basal_slice = X_ctrl[idx].todense().astype(np.float32)
