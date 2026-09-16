@@ -1,0 +1,35 @@
+{
+  "run_id": "k010-mean-corrected-kd-s4p0-validation",
+  "created": "2026-09-16",
+  "headline": "mean-corrected kd_std=4.0 \u2014 overall +0.0122 (rank 564); more mean-1 spread helps marginally (s2.0 +0.0090) but stays far under the biased champion (+0.0511). Applied delta magnitude, not dispersion-at-mean-1, is what the score rewards.",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.012175480139597794,
+    "pds": 0.28989074837990103,
+    "mse": 0.0,
+    "nmae": 0.01852523917330473,
+    "fid": -0.291975965707139,
+    "reach": 0.07741719004948013,
+    "jac": -0.02080433105796015
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "If mean-1 spread was the issue, s4.0 (std 1.24) should approach the champion; if applied mean magnitude is the driver it stays well below +0.05"
+  ],
+  "next_steps": [
+    "Delta-magnitude calibration: the champion effectively applies deltas at ~1.4-2x; test explicit delta scale factors as a cleaner parametrization of the same lever",
+    "Residual covariance / full Layer B \u2014 the remaining fid -0.11 on the champion is off-direction structure",
+    "Learned Layer A \u2014 context-conditioned signature transfer"
+  ],
+  "provenance": {
+    "commit": "62a19a9",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+mean-corrected-kd(kd_std=4.0)",
+    "code": "tools/run_k010_mean_corrected_kd.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "k010 s4.0 scored overall +0.0122 (rank 564): nmae +0.019, pds 0.290, fid -0.292, reach 0.077 \u2014 marginal gain over s2.0 (+0.0090) but far below the uncorrected champion (+0.0511). The k009/k010 pair is now conclusive: at mean-1, no eta shape or spread tested recovers what the clipped trunc-normal's ~40% mean inflation delivered. The effective driver is applied delta magnitude \u2014 borrowed K562/Atlas signatures appear systematically weak in the 2026 contexts, and the 'bias' was compensating. Next honest lever: explicit delta-scale calibration (or context-conditioned Layer A scaling), not more eta-distribution search."
+}

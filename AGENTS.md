@@ -144,6 +144,15 @@ to git.
   the skewed density piles mass near eta≈0 (unperturbed-looking cells).
   Conclusion: keep the symmetric trunc-normal shape; next variant is a
   mean-corrected trunc-normal (divide eta by E[N(1,σ)|η>0]).
+- `kytos-k010-mc-s2p0` / `kytos-k010-mc-s4p0` — mean-corrected
+  `HeterogeneousTransportSampler` (`mean_correct=True`: eta divided by
+  E[max(0, N(1,σ))] = cdf(1/σ) + σ·pdf(1/σ)) scored **+0.0090** (rank 565)
+  and **+0.0122** (rank 564). nmae improved to +0.017/+0.019 but fid
+  ~-0.30 and pds ~0.29 — conclusive that the champion's ~40% applied-mean
+  inflation is load-bearing: the score rewards applied delta magnitude,
+  not dispersion-at-mean-1. Next lever: explicit delta-scale calibration
+  (borrowed signatures appear systematically weak in 2026 contexts) or
+  off-direction covariance (Layer B).
 
 ---
 

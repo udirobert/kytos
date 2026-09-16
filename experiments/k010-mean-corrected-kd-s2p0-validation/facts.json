@@ -1,0 +1,37 @@
+{
+  "run_id": "k010-mean-corrected-kd-s2p0-validation",
+  "created": "2026-09-16",
+  "headline": "mean-corrected trunc-normal kd_std=2.0 \u2014 overall +0.0090 (rank 565); nmae +0.017 as predicted, but fid -0.305 / pds 0.288: the applied mean inflation was load-bearing, not a bug",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.008972776444609015,
+    "pds": 0.28821376241906504,
+    "mse": 0.0,
+    "nmae": 0.0167704618840339,
+    "fid": -0.3047038288076136,
+    "reach": 0.0741726788696007,
+    "jac": -0.020616415697431938
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Mean-1 eta at the winning symmetric shape should hold pds/fid near k008-s2.0 while recovering nmae",
+    "If it underperforms, the +40% applied mean inflation is compensating for systematically weak borrowed deltas"
+  ],
+  "next_steps": [
+    "k010 s4.0 (mean 1.0, std 1.24) \u2014 if it also lands well under +0.05, mean inflation is confirmed load-bearing",
+    "Delta-magnitude calibration: borrowed K562/Atlas signatures may be systematically too weak in the 2026 contexts \u2014 fit a global delta scale",
+    "Residual covariance / full Layer B",
+    "Learned Layer A \u2014 context-conditioned signature transfer"
+  ],
+  "provenance": {
+    "commit": "62a19a9",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+mean-corrected-kd(kd_std=2.0)",
+    "code": "tools/run_k010_mean_corrected_kd.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  },
+  "visual": {},
+  "log": "k010 s2.0 scored overall +0.0090 (rank 565): nmae +0.004 -> +0.017 (mean correction worked), but pds 0.336 -> 0.288 and fid -0.111 -> -0.305. Removing the trunc-normal's clipped-mean inflation (eta mean 1.40 -> 1.00) cost more in fid/pds than it gained in nmae \u2014 the champion's apparent bias was load-bearing. Two readings: (a) the metric rewards dispersion magnitude per se, or (b) our borrowed deltas are systematically ~40% too weak and the inflation was compensating. s4.0 (mean 1.0, std 1.24) disambiguates: if it still loses, spread-at-mean-1 can't buy back what inflated mean provided, pointing at delta-scale calibration as the real lever."
+}

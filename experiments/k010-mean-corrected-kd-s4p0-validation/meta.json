@@ -1,0 +1,108 @@
+{
+  "run_id": "k010-mean-corrected-kd-s4p0-validation",
+  "status": "submitted",
+  "model_name": "kytos-k010-mc-s4p0",
+  "entry_id": "fNJ95BlfKeFYT4d5cU9e",
+  "created_at": "2026-09-16T07:22:34Z",
+  "published_at": "2026-09-16T07:22:34Z",
+  "modal_app_id": "ap-wcyzPSHgx7BlotYJm1CKXi",
+  "modal_build_app_id": "ap-eMC7K5MNFtsTkM2GyNrPW2",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": [
+      "A",
+      "B",
+      "C"
+    ],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2075100000
+  },
+  "prediction": {
+    "h5ad": "experiments/k010-mean-corrected-kd-validation/prediction.h5ad",
+    "vcc": "experiments/k010-mean-corrected-kd-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "volume_path": "/kytos-vol/k010-mean-corrected-kd-s4p0",
+    "note": "produced on Modal and persisted to the kytos-vcc Modal Volume; not committed to git"
+  },
+  "model": {
+    "mode": "replogle_prior+neighbor_imputation+mean_corrected_kd",
+    "dispatch": {
+      "real": 816,
+      "neighbor": 54,
+      "fallback": 30
+    },
+    "neighbor_gate": {
+      "min_partners": 2,
+      "min_score": 0.7,
+      "topk": 5
+    },
+    "sampler": {
+      "type": "HeterogeneousTransportSampler",
+      "eta": "clip(N(1, kd_std), 0) / E[max(0, N(1, kd_std))] \u2014 clipped-mean corrected",
+      "kd_std": 4.0,
+      "mean_correct": true,
+      "noise_scale": 0.05
+    },
+    "kd_spread_evidence": "/kytos-vol/k008-kd-spread-v2.json (Atlas eta measurement w/ basal-noise decomposition)",
+    "imputed_targets": [
+      "ABCD1",
+      "EPHB2",
+      "HEATR6",
+      "KIF21B",
+      "MAPK7",
+      "MLKL",
+      "NICN1",
+      "PARP3",
+      "PBLD",
+      "PDK3",
+      "PSMB9",
+      "RAB11FIP5",
+      "SEMA4F",
+      "SOCS5",
+      "SPATA20",
+      "TAF4",
+      "TDRD7",
+      "TTBK2"
+    ],
+    "orphan_targets": [
+      "CAPRIN2",
+      "PHF11",
+      "SLC44A1",
+      "SNN",
+      "TBC1D19",
+      "TESK2",
+      "TMEM104",
+      "TMEM79",
+      "TXNDC16",
+      "ZC2HC1A"
+    ],
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "scores": {
+    "overall": 0.012175480139597794,
+    "rank": 564,
+    "pds": 0.28989074837990103,
+    "mse": 0.0,
+    "nmae": 0.01852523917330473,
+    "fid": -0.291975965707139,
+    "reach": 0.07741719004948013,
+    "jac": -0.02080433105796015
+  },
+  "cost_estimate_usd": 0.9,
+  "cost_note": "64 GiB / 4-core Modal Function ~15 min build + prep + persist; submission run uploads the persisted 3.1 GiB .vcc",
+  "script": "tools/run_k010_mean_corrected_kd.py",
+  "runner": "tools/modal_k010_mean_corrected_kd.py",
+  "commit": "62a19a9",
+  "note": "first submission attempt (entry zjeSql3OwSeXz75AmlUv) was cancelled mid-upload when the foreground modal client died; resubmitted detached"
+}

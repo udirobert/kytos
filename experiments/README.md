@@ -133,6 +133,19 @@ enrichment path.
   E[N(1,σ)|η>0] to remove the +17% inflation and recover the nmae the gamma
   proved is available. Meta:
   [`experiments/k009-gamma-kd-s2p0-validation/meta.json`](k009-gamma-kd-s2p0-validation/meta.json).
+- `k010-mean-corrected-kd-s2p0-validation` — **mean-corrected trunc-normal
+  kd_std=2.0** (2026-09-16): **overall +0.0090** (rank 565), `nmae` +0.017
+  as predicted but `fid` -0.305, `pds` 0.288 — removing the clipped-mean
+  inflation (eta mean 1.40 → 1.00) cost more in fid/pds than it gained in
+  nmae. The champion's "bias" was load-bearing. Meta:
+  [`experiments/k010-mean-corrected-kd-s2p0-validation/meta.json`](k010-mean-corrected-kd-s2p0-validation/meta.json).
+- `k010-mean-corrected-kd-s4p0-validation` — **kd_std=4.0** (2026-09-16):
+  **overall +0.0122** (rank 564), `nmae` +0.019, `fid` -0.292. More mean-1
+  spread helps marginally but stays far under +0.0511 — conclusive that
+  **applied delta magnitude**, not dispersion-at-mean-1, drives the score.
+  Borrowed signatures look systematically ~40% weak in the 2026 contexts.
+  Next lever: explicit delta-scale calibration. Meta:
+  [`experiments/k010-mean-corrected-kd-s4p0-validation/meta.json`](k010-mean-corrected-kd-s4p0-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**
