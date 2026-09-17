@@ -66,6 +66,7 @@ H100 if we go the scGPT fine-tune route. Persistent disk for checkpoints
 + SSH for interactive iteration across hours-days — the two things Modal
 Functions don't give us (and preemption risk we just hit on builds).
 Modal remains the build/submit path regardless of where the model trains.
+Provisioning + data-layout spec: `docs/track2-nebius-setup.md`.
 
 Guardrails (same as always): tune on held-out targets/contexts in-corpus,
 never on leaderboard feedback; ≤2 submissions/day; record negative
