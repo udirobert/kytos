@@ -1,0 +1,41 @@
+{
+  "run_id": "k012-transfer-loo",
+  "created": "2026-09-17",
+  "headline": "LOO eval on 47 K562/hESC paired deltas: raw transfer cosine is only ~0.13 — context transfer is fundamentally weak; low-rank map lifts sign accuracy to 0.60 but destroys magnitude (deP 0.10); fitted scalar s=0.44 says hESC deltas are WEAKER than K562, opposite the 2026-context direction",
+  "data_status": "final",
+  "headline_metrics": {
+    "n_pairs": 47,
+    "identity_mean_cosine": 0.126,
+    "global_scalar_mean_cosine": 0.126,
+    "per_gene_shrunk_mean_cosine": 0.128,
+    "basal_ratio_mean_cosine": 0.136,
+    "low_rank_mean_cosine": 0.117,
+    "low_rank_median_cosine": 0.179,
+    "low_rank_sign_accuracy": 0.596,
+    "identity_sign_accuracy": 0.315,
+    "fitted_global_scalar": 0.442
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 0,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "LOO cosine on the paired set bounds what context transfer can deliver; classes must beat GlobalScalar by >0.05 mean cosine to ship (docs/k012-layer-a-pipeline.md)"
+  ],
+  "interpretation": [
+    "No class cleared the +0.05-cosine acceptance bar vs the scalar/identity baseline — per the spec this is a publishable negative for naive paired transfer",
+    "The fitted scalar s=0.44 means hESC responses are weaker than K562 in this pair set, yet k011 showed the 2026 contexts reward LARGER applied deltas — the 2026 contexts are not hESC-like in magnitude response either",
+    "Low-rank's sign-accuracy jump (0.32 -> 0.60) suggests coarse pathway-level direction transfers while fine structure does not — a possible hybrid: keep raw delta but reweight by low-rank agreement",
+    "Consistent with the strategy doc: Track 1 pivot to lineage-matched corpora (RPE1 arm for context B) is now the higher-EV Track-1 move"
+  ],
+  "next_steps": [
+    "Lineage-matched corpus check: score context A/B/C basal profiles against Replogle K562 vs RPE1 control arms; if B matches RPE1, swap the prior source for context B",
+    "k011 x2.0 submission brackets the delta-scale optimum",
+    "Track 2 (Nebius): conditional MLP baseline on delta_matrix_src.npz"
+  ],
+  "provenance": {
+    "commit": "4afc2cf",
+    "code": "src/kytos/models/transfer.py",
+    "data": "experiments/k012-paired-transfer/paired_transfer_train.npz (from /kytos-vol/paired-transfer/)",
+    "report": "experiments/k012-transfer-loo/loo_report.json"
+  }
+}
