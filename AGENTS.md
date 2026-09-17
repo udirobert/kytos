@@ -163,6 +163,12 @@ to git.
   Scale axis still net-positive (1.3→1.7 gained +0.004); next real lever is
   learned context-conditioned Layer A (`docs/k012-learned-layer-a.md` —
   marker analysis suggests contexts are Jurkat-like/RPE1-like, not hESC).
+- **Two-track plan** (`docs/vcc-two-track-strategy.md`, 2026-09-17):
+  Track 1 targets top-200 on Modal (delta-scale bracket, paired-transfer
+  Layer A per `docs/k012-layer-a-pipeline.md`, lineage-matched corpora,
+  residual covariance). Track 2 targets top-100 in parallel on a rented
+  GPU (Vast/RunPod, ≥24 GB VRAM) with a trained perturbation model —
+  Modal remains the build/submit path either way.
 
 ---
 
