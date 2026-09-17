@@ -13,6 +13,7 @@ venv/
 # Submission packages and large prediction matrices (source is the script; the
 # binary artifacts live on HF / the VCC leaderboard, not in git).
 *.vcc
+*.npz
 experiments/**/*.h5ad
 
 # Large data / models (not committed; fetch scripts in data/)
