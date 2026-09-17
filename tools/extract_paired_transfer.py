@@ -146,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.emit_src_matrix:
         src_targets = sorted(set(replogle_deltas) | set(atlas_deltas))
         src_matrix = np.stack(
-            [atlas_deltas.get(t, replogle_deltas[t]) for t in src_targets]
+            [atlas_deltas[t] if t in atlas_deltas else replogle_deltas[t] for t in src_targets]
         ).astype(np.float32)
         src_out = args.out.parent / "delta_matrix_src.npz"
         np.savez(src_out, targets=np.asarray(src_targets), deltas=src_matrix)
