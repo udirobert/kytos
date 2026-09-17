@@ -18,11 +18,11 @@ def log1p_sparse(X: sparse.spmatrix | np.ndarray) -> sparse.spmatrix | np.ndarra
     return np.log1p(np.asarray(X))
 
 
-def build_atlas_deltas(
+def build_atlas_deltas_with_control(
     atlas_path: str,
     context_genes: list[str],
-) -> dict[str, np.ndarray]:
-    """Compute per-target log1p mean-shift deltas from the VCC 2025 validation set."""
+) -> tuple[dict[str, np.ndarray], np.ndarray]:
+    """Atlas deltas plus the control log1p mean, both mapped to context gene order."""
     print(f"[atlas] loading {atlas_path} ...", flush=True)
     atlas = ad.read_h5ad(str(atlas_path))
     print(
@@ -56,15 +56,30 @@ def build_atlas_deltas(
                 mapped[i] = delta[idx]
         deltas[tgt] = mapped
 
+    control_mapped = np.zeros(len(context_genes), dtype=np.float32)
+    for i, g in enumerate(context_genes):
+        idx = gene_index.get(g)
+        if idx is not None:
+            control_mapped[i] = control_mean[idx]
+
     print(f"[atlas] built deltas for {len(deltas)} targets", flush=True)
+    return deltas, control_mapped
+
+
+def build_atlas_deltas(
+    atlas_path: str,
+    context_genes: list[str],
+) -> dict[str, np.ndarray]:
+    """Compute per-target log1p mean-shift deltas from the VCC 2025 validation set."""
+    deltas, _ = build_atlas_deltas_with_control(atlas_path, context_genes)
     return deltas
 
 
-def build_replogle_deltas(
+def build_replogle_deltas_with_control(
     replogle_path: str,
     context_genes: list[str],
-) -> dict[str, np.ndarray]:
-    """Compute per-gene log1p mean-shift deltas from Replogle K562 GWPS bulk."""
+) -> tuple[dict[str, np.ndarray], np.ndarray]:
+    """Replogle deltas plus the control log1p mean, both mapped to context gene order."""
     print(f"[replogle] loading {replogle_path} ...", flush=True)
     adata = ad.read_h5ad(str(replogle_path))
     print(
@@ -100,5 +115,20 @@ def build_replogle_deltas(
                 mapped[i] = delta[idx]
         deltas[tgt] = mapped
 
+    control_mapped = np.zeros(len(context_genes), dtype=np.float32)
+    for i, g in enumerate(context_genes):
+        idx = var_index.get(g)
+        if idx is not None:
+            control_mapped[i] = control_mean[idx]
+
     print(f"[replogle] built deltas for {len(deltas)} targets", flush=True)
+    return deltas, control_mapped
+
+
+def build_replogle_deltas(
+    replogle_path: str,
+    context_genes: list[str],
+) -> dict[str, np.ndarray]:
+    """Compute per-gene log1p mean-shift deltas from Replogle K562 GWPS bulk."""
+    deltas, _ = build_replogle_deltas_with_control(replogle_path, context_genes)
     return deltas
