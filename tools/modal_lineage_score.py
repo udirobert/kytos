@@ -80,15 +80,25 @@ def score() -> dict:
         f"ls -lh {ATLAS_DIR}/adata_Validation.h5ad",
     )
 
-    run_step(
-        "download reference bulks (Replogle K562 + RPE1, Nadig Jurkat + HepG2)",
-        f"mkdir -p {REF_DIR}\n"
-        f"curl -L --fail --retry 3 -o {REF_DIR}/k562_bulk.h5ad {REPLOGLE_K562_URL}\n"
-        f"curl -L --fail --retry 3 -o {REF_DIR}/rpe1_bulk.h5ad {REPLOGLE_RPE1_URL}\n"
-        f"curl -L --fail --retry 3 -o {REF_DIR}/jurkat.h5ad {HF_BASE}/nadig_2024_jurkat.h5ad\n"
-        f"curl -L --fail --retry 3 -o {REF_DIR}/hepg2.h5ad {HF_BASE}/nadig_2024_hepg2.h5ad\n"
-        f"ls -lh {REF_DIR}",
-    )
+    # per-file downloads, cached on the volume — figshare rate-limits repeat hits
+    for fname, url in [
+        ("k562_bulk.h5ad", REPLOGLE_K562_URL),
+        ("rpe1_bulk.h5ad", REPLOGLE_RPE1_URL),
+        ("jurkat.h5ad", f"{HF_BASE}/nadig_2024_jurkat.h5ad"),
+        ("hepg2.h5ad", f"{HF_BASE}/nadig_2024_hepg2.h5ad"),
+    ]:
+        run_step(
+            f"fetch {fname}",
+            f"mkdir -p /kytos-vol/refs {REF_DIR}\n"
+            f"if [ -f /kytos-vol/refs/{fname} ]; then\n"
+            f"  cp /kytos-vol/refs/{fname} {REF_DIR}/{fname}\n"
+            "else\n"
+            f"  curl -L --fail --retry 5 --retry-all-errors --retry-delay 30 "
+            f"-o /kytos-vol/refs/{fname} {url}\n"
+            f"  cp /kytos-vol/refs/{fname} {REF_DIR}/{fname}\n"
+            "fi\n"
+            f"ls -lh {REF_DIR}/{fname}",
+        )
 
     run_step(
         "score context lineage",
