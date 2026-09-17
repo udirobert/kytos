@@ -167,7 +167,8 @@ to git.
   Track 1 targets top-200 on Modal (delta-scale bracket, paired-transfer
   Layer A per `docs/k012-layer-a-pipeline.md`, lineage-matched corpora,
   residual covariance). Track 2 targets top-100 in parallel on a rented
-  GPU (Vast/RunPod, ≥24 GB VRAM) with a trained perturbation model —
+  GPU — **Nebius** (user has access): L40S/A100-class single VM with
+  persistent disk for checkpoints — with a trained perturbation model.
   Modal remains the build/submit path either way.
 
 ---
