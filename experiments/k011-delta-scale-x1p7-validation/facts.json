@@ -1,0 +1,34 @@
+{
+  "run_id": "k011-delta-scale-x1p7-validation",
+  "created": "2026-09-17",
+  "headline": "delta_scale=1.7 — overall +0.0596 (rank 486), new best; fid nearly closed (-0.006) and pds back to 0.339, but nmae cratered to -0.076: overscaled DE magnitudes are now the cost",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.05957510320885075,
+    "pds": 0.33856457247364724,
+    "mse": 0.0,
+    "nmae": -0.076453025467819,
+    "fid": -0.006319887879304609,
+    "reach": 0.10448176270582203,
+    "jac": -0.002822802579241153
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Extending delta_scale beyond 1.3 should keep improving fid/pds/reach if applied magnitude remains the binding axis",
+    "nmae will degrade as scaled DE magnitudes overshoot the true log-FCs \u2014 the overall tradeoff determines the optimum"
+  ],
+  "next_steps": [
+    "delta_scale ~2.0\u20132.3 may still be net-positive (overall rose 1.3\u21921.7); one more probe could bracket the optimum",
+    "But nmae -0.076 vs champion +0.004 shows magnitude inflation is buying fid at DE-accuracy cost \u2014 a context-appropriate signature (learned Layer A) is the real fix",
+    "Residual covariance / full Layer B"
+  ],
+  "provenance": {
+    "commit": "8c47f23",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd(kd_std=2.0)+delta_scale(1.7)",
+    "code": "tools/run_k011_delta_scale.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "run_id": "k011-delta-scale-x1p7-validation",
+  "status": "submitted",
+  "model_name": "kytos-k011-ds-x1p7",
+  "entry_id": "dZk0Sca5UtJluzzfUdMf",
+  "created_at": "2026-09-17T13:55:00Z",
+  "published_at": "2026-09-17T13:55:00Z",
+  "modal_app_id": "ap-vKwJrLG8PhrViJnHqxEJwc",
+  "modal_build_app_id": "ap-BVpBLOo8mADhmVkD4wSuN0",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": [
+      "A",
+      "B",
+      "C"
+    ],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2036000000
+  },
+  "prediction": {
+    "h5ad": "experiments/k011-delta-scale-validation/prediction.h5ad",
+    "vcc": "experiments/k011-delta-scale-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "volume_path": "/kytos-vol/k011-delta-scale-x1p7",
+    "note": "produced on Modal and persisted to the kytos-vcc Modal Volume; not committed to git"
+  },
+  "model": {
+    "mode": "replogle_prior+neighbor_imputation+heterogeneous_kd+delta_scale",
+    "dispatch": {
+      "real": 816,
+      "neighbor": 54,
+      "fallback": 30
+    },
+    "neighbor_gate": {
+      "min_partners": 2,
+      "min_score": 0.7,
+      "topk": 5
+    },
+    "sampler": {
+      "type": "HeterogeneousTransportSampler",
+      "eta": "clip(N(1, kd_std), 0)",
+      "kd_std": 2.0,
+      "mean_correct": false,
+      "noise_scale": 0.05
+    },
+    "delta_scale": 1.7,
+    "delta_scale_note": "applied to the fully assembled delta (real + neighbor + fallback, incl. self-knockdown) before transport",
+    "library_cap": "median",
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "scores": {
+    "overall": 0.05957510320885075,
+    "rank": 486,
+    "pds": 0.33856457247364724,
+    "mse": 0.0,
+    "nmae": -0.076453025467819,
+    "fid": -0.006319887879304609,
+    "reach": 0.10448176270582203,
+    "jac": -0.002822802579241153
+  },
+  "cost_estimate_usd": 0.9,
+  "cost_note": "64 GiB / 4-core Modal Function ~15 min build + prep + persist; submission run uploads the persisted 3.0 GiB .vcc",
+  "script": "tools/run_k011_delta_scale.py",
+  "runner": "tools/modal_k011_delta_scale.py",
+  "commit": "8c47f23"
+}

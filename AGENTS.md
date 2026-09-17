@@ -153,6 +153,16 @@ to git.
   not dispersion-at-mean-1. Next lever: explicit delta-scale calibration
   (borrowed signatures appear systematically weak in 2026 contexts) or
   off-direction covariance (Layer B).
+- `kytos-k011-ds-x1p3` / `kytos-k011-ds-x1p7` — explicit `delta_scale`
+  applied to the fully assembled delta (all dispatch tiers) on the champion
+  config (`HeterogeneousTransportSampler` kd_std=2.0, uncorrected eta,
+  `library_cap="median"`) scored **+0.0559** (rank 502) and **+0.0596**
+  (rank 486) — two new best overall scores. `fid` nearly closed (-0.006 at
+  x1.7) and `pds` recovered to 0.339, but `nmae` cratered to -0.076:
+  magnitude inflation buys direction/discrimination at DE-accuracy cost.
+  Scale axis still net-positive (1.3→1.7 gained +0.004); next real lever is
+  learned context-conditioned Layer A (`docs/k012-learned-layer-a.md` —
+  marker analysis suggests contexts are Jurkat-like/RPE1-like, not hESC).
 
 ---
 

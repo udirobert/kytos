@@ -146,6 +146,20 @@ enrichment path.
   Borrowed signatures look systematically ~40% weak in the 2026 contexts.
   Next lever: explicit delta-scale calibration. Meta:
   [`experiments/k010-mean-corrected-kd-s4p0-validation/meta.json`](k010-mean-corrected-kd-s4p0-validation/meta.json).
+- `k011-delta-scale-x1p3-validation` — **delta_scale=1.3** (2026-09-17):
+  **overall +0.0559** (rank 502), new best score. `fid` improved sharply
+  (-0.111 → -0.031) but `nmae` flipped negative (+0.004 → -0.023) and
+  `pds` slipped (0.336 → 0.304). Explicit magnitude scaling makes the
+  champion's hidden inflation interpretable. Meta:
+  [`experiments/k011-delta-scale-x1p3-validation/meta.json`](k011-delta-scale-x1p3-validation/meta.json).
+- `k011-delta-scale-x1p7-validation` — **delta_scale=1.7** (2026-09-17):
+  **overall +0.0596** (rank 486), new best. `fid` nearly closed (-0.006),
+  `pds` recovered to 0.339, `reach` 0.104 — but `nmae` cratered to -0.076:
+  overscaled DE magnitudes are now the explicit cost. The scale axis is
+  still net-positive overall (1.3 → 1.7 gained +0.004); ~2.0–2.3 could
+  bracket the optimum, but the real fix is context-appropriate signatures
+  (docs/k012-learned-layer-a.md). Meta:
+  [`experiments/k011-delta-scale-x1p7-validation/meta.json`](k011-delta-scale-x1p7-validation/meta.json).
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

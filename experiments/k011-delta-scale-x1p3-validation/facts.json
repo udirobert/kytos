@@ -1,0 +1,34 @@
+{
+  "run_id": "k011-delta-scale-x1p3-validation",
+  "created": "2026-09-17",
+  "headline": "explicit delta_scale=1.3 on the champion config — overall +0.0559 (rank 502), new best score; fid improved to -0.031 but nmae flipped negative (-0.023) and pds slipped to 0.304",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.055886519014376246,
+    "pds": 0.30377719070517556,
+    "mse": 0.0,
+    "nmae": -0.02271003292669153,
+    "fid": -0.03124892965336803,
+    "reach": 0.09260564383906901,
+    "jac": -0.007104757877927526
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "k009/k010 showed applied delta magnitude is the load-bearing score axis; explicit delta_scale should recover the champion's effective inflation interpretably",
+    "delta_scale=1.3 at kd_std=2.0 (uncorrected eta, applied mean ~1.4) should land near or above the k008-s2.0 champion (+0.0511)"
+  ],
+  "next_steps": [
+    "k011 x1.7 \u2014 probe further along the delta-scale axis",
+    "Learned Layer A (docs/k012-learned-layer-a.md) \u2014 pds/nmae are the binding metrics for top-200, not magnitude",
+    "Residual covariance / full Layer B"
+  ],
+  "provenance": {
+    "commit": "8c47f23",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd(kd_std=2.0)+delta_scale(1.3)",
+    "code": "tools/run_k011_delta_scale.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  }
+}
