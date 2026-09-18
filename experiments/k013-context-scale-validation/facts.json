@@ -1,0 +1,39 @@
+{
+  "run_id": "k013-context-scale-validation",
+  "created": "2026-09-18",
+  "headline": "per-context delta_scale {A:1.7, B:2.65, C:0.75} scored +0.0312 (rank 560) \u2014 clean negative: redistributing the magnitude budget by lineage ratios lost vs uniform x1.7 (+0.0596) on every component",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.031195368997984054,
+    "pds": 0.30572219444829557,
+    "mse": 0.0,
+    "nmae": -0.10136715056399943,
+    "fid": -0.10447705383143023,
+    "reach": 0.10146866672833997,
+    "jac": -0.014174442793301635
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "uniform x1.7 is a mixture of per-context optima; essential-screen lineage ||delta|| ratios (RPE1 1.57, Jurkat 1.01, hESC ~0.44) predict the redistribution direction",
+    "mean-preserving redistribution {A:1.7, B:2.65, C:0.75} should beat uniform 1.7 if the lineage-ratios hypothesis holds"
+  ],
+  "interpretation": [
+    "The hypothesis failed cleanly: every component degraded vs uniform x1.7 (pds 0.339->0.306, nmae -0.076->-0.101, fid -0.006->-0.104)",
+    "Either (a) essential-gene magnitude ratios do not transfer to the non-essential panel, (b) the weak B/C lineage assignments are wrong, or (c) the score-side preference for applied magnitude dominates context-appropriate magnitude",
+    "Champion remains k011 x1.7 (+0.0596, rank 486). Uniform magnitude ~1.7-2.0 appears genuinely right for all three contexts"
+  ],
+  "next_steps": [
+    "Per-context amplitude is a dead end; the remaining levers are signature content (transfer learning on the 4-lineage essential set) and residual covariance",
+    "Track 2 trained model remains the top-100 path"
+  ],
+  "provenance": {
+    "commit": "ed08b49",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd(kd_std=2.0)+per_context_delta_scale(A=1.7,B=2.65,C=0.75)",
+    "code": "tools/run_k013_context_scale.py",
+    "evidence": "experiments/k013-lineage-ratios/report.json",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  }
+}

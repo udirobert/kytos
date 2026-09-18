@@ -1,0 +1,82 @@
+{
+  "run_id": "k013-context-scale-validation",
+  "status": "submitted",
+  "model_name": "kytos-k013-ctx-scale",
+  "entry_id": "pkV7WngHrDusssX5MSuG",
+  "created_at": "2026-09-18T11:40:00Z",
+  "published_at": "2026-09-18T12:05:00Z",
+  "modal_app_id": "ap-kBlisP3bI91apUqSZyTYmQ",
+  "modal_build_app_id": "ap-BlpKUAmUsGFPwrlRNVJVP1",
+  "platform": "modal",
+  "modal_resources": {
+    "cpu_cores": 4,
+    "memory_gib": 64,
+    "gpu": null
+  },
+  "input": {
+    "contexts": [
+      "A",
+      "B",
+      "C"
+    ],
+    "n_targets": 300,
+    "cells_per_pert": 400,
+    "total_cells": 360000,
+    "n_genes": 18533,
+    "nnz": 2036600000
+  },
+  "prediction": {
+    "h5ad": "experiments/k013-context-scale-validation/prediction.h5ad",
+    "vcc": "experiments/k013-context-scale-validation/prediction.prep.vcc",
+    "h5ad_size_bytes": null,
+    "vcc_size_bytes": null,
+    "volume_path": "/kytos-vol/k013-context-scale",
+    "note": "produced on Modal and persisted to the kytos-vcc Modal Volume; not committed to git"
+  },
+  "model": {
+    "mode": "replogle_prior+neighbor_imputation+heterogeneous_kd+per_context_delta_scale",
+    "dispatch": {
+      "real": 816,
+      "neighbor": 54,
+      "fallback": 30
+    },
+    "neighbor_gate": {
+      "min_partners": 2,
+      "min_score": 0.7,
+      "topk": 5
+    },
+    "sampler": {
+      "type": "HeterogeneousTransportSampler",
+      "eta": "clip(N(1, kd_std), 0)",
+      "kd_std": 2.0,
+      "mean_correct": false,
+      "noise_scale": 0.05
+    },
+    "delta_scale_map": {
+      "A": 1.7,
+      "B": 2.65,
+      "C": 0.75
+    },
+    "delta_scale_evidence": "lineage ||delta|| ratios vs K562 on 2,055 shared essential targets: RPE1 1.57, Jurkat 1.01, hESC ~0.44 (k012 LOO scalar); mean-preserving redistribution of champion uniform 1.7",
+    "library_cap": "median",
+    "knockdown_efficiency": 2.5,
+    "attenuation_factor": 0.5,
+    "noise_scale": 0.05
+  },
+  "scores": {
+    "overall": 0.031195368997984054,
+    "rank": 560,
+    "pds": 0.30572219444829557,
+    "mse": 0.0,
+    "nmae": -0.10136715056399943,
+    "fid": -0.10447705383143023,
+    "reach": 0.10146866672833997,
+    "jac": -0.014174442793301635
+  },
+  "cost_estimate_usd": 0.9,
+  "cost_note": "64 GiB / 4-core Modal Function ~15 min build + prep + persist; submission run uploads the persisted 3.0 GiB .vcc",
+  "script": "tools/run_k013_context_scale.py",
+  "runner": "tools/modal_k013_context_scale.py",
+  "commit": "ed08b49",
+  "incident_note": "first submit attempt read the volume file before its commit propagated (vcc: 'unexpected end of data'); file verified intact (tar+zstd fully decompress), retry succeeded \u2014 no slot consumed by the failed attempt"
+}

@@ -174,6 +174,14 @@ to git.
   the scale curve has bent — `pds` best-yet 0.356, `fid` ~0, but `nmae`
   -0.125 now outweighs. Optimum ~1.7 (+0.0596, rank 486 = champion);
   scalar magnitude axis exhausted. Next lever: signature content.
+- `kytos-k013-ctx-scale` (per-context delta_scale {A:1.7, B:2.65,
+  C:0.75} from lineage ||delta|| ratios RPE1 1.57/Jurkat 1.01/hESC
+  ~0.44) scored **+0.0312** (rank 560) — clean negative vs uniform x1.7;
+  per-context amplitude is a dead end. **Corpus coverage reality:
+  essential screens overlap 0/300 panel; figshare GWPS is K562-only —
+  no public corpus covers the panel in a matched lineage.** Remaining
+  levers: transfer learning (2,393 shared essential targets x 4
+  lineages as supervision) or Track-2 trained model.
 - **Lineage score** (`experiments/k012-lineage-score/`): on top-2000
   discriminative genes, context **A is Jurkat-like (0.649)**, B weakly
   RPE1-leaning (0.369), C unresolved (hESC 0.379). Reference controls

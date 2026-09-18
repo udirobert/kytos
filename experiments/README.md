@@ -165,6 +165,16 @@ enrichment path.
   0.356 and `fid` ~0, but `nmae` -0.125 outweighs the gains. Optimum
   ~1.7; the scalar magnitude axis is bracketed and done. Meta:
   [`experiments/k011-delta-scale-x2p0-validation/meta.json`](k011-delta-scale-x2p0-validation/meta.json).
+- `k013-lineage-ratios` — **magnitude-ratio measurement** (2026-09-18):
+  ||delta_lineage||/||delta_K562|| on 2,055 shared essential targets:
+  RPE1 1.57, Jurkat 1.01, hESC ~0.44 (LOO scalar). Also: essential
+  screens overlap 0/300 panel targets; figshare GWPS is K562-only.
+  [`experiments/k013-lineage-ratios/report.json`](k013-lineage-ratios/report.json).
+- `k013-context-scale-validation` — **per-context delta_scale**
+  {A:1.7, B:2.65, C:0.75} (2026-09-18): **+0.0312** (rank 560) — clean
+  negative; the lineage-ratio redistribution lost to uniform x1.7 on
+  every component. Per-context amplitude is a dead end. Meta:
+  [`experiments/k013-context-scale-validation/meta.json`](k013-context-scale-validation/meta.json).
 - `k012-lineage-score` — **context identity verification** (2026-09-17):
   basal log1p profiles of A/B/C vs five reference controls (K562, RPE1,
   hESC, Jurkat, HepG2). On the top-2000 context-discriminative genes:
