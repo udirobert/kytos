@@ -170,6 +170,18 @@ to git.
   GPU — **Nebius** (user has access): L40S/A100-class single VM with
   persistent disk for checkpoints — with a trained perturbation model.
   Modal remains the build/submit path either way.
+- `kytos-k011-ds-x2p0` (delta_scale=2.0) scored **+0.0566** (rank 515):
+  the scale curve has bent — `pds` best-yet 0.356, `fid` ~0, but `nmae`
+  -0.125 now outweighs. Optimum ~1.7 (+0.0596, rank 486 = champion);
+  scalar magnitude axis exhausted. Next lever: signature content.
+- **Lineage score** (`experiments/k012-lineage-score/`): on top-2000
+  discriminative genes, context **A is Jurkat-like (0.649)**, B weakly
+  RPE1-leaning (0.369), C unresolved (hESC 0.379). Reference controls
+  cached on `/kytos-vol/refs/` (K562/RPE1 bulks, Nadig Jurkat+HepG2
+  single-cell, 2393-target essential design). LOO transfer eval
+  (`experiments/k012-transfer-loo/`): raw K562→hESC cosine ~0.13 — naive
+  paired transfer doesn't ship; lineage-matched corpora is the Track-1
+  priority (k013 = per-context prior dispatch).
 
 ---
 

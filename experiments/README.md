@@ -160,6 +160,25 @@ enrichment path.
   bracket the optimum, but the real fix is context-appropriate signatures
   (docs/k012-learned-layer-a.md). Meta:
   [`experiments/k011-delta-scale-x1p7-validation/meta.json`](k011-delta-scale-x1p7-validation/meta.json).
+- `k011-delta-scale-x2p0-validation` — **delta_scale=2.0** (2026-09-18):
+  **overall +0.0566** (rank 515). The curve has bent: `pds` best-yet
+  0.356 and `fid` ~0, but `nmae` -0.125 outweighs the gains. Optimum
+  ~1.7; the scalar magnitude axis is bracketed and done. Meta:
+  [`experiments/k011-delta-scale-x2p0-validation/meta.json`](k011-delta-scale-x2p0-validation/meta.json).
+- `k012-lineage-score` — **context identity verification** (2026-09-17):
+  basal log1p profiles of A/B/C vs five reference controls (K562, RPE1,
+  hESC, Jurkat, HepG2). On the top-2000 context-discriminative genes:
+  **A is Jurkat-like (0.649)**, B weakly RPE1-leaning (0.369), C
+  unresolved/hESC-leaning (0.379). Global Pearson misleads (hESC first
+  everywhere — housekeeping + shared-assay inflation). Gate for k013
+  per-context prior dispatch. Meta:
+  [`experiments/k012-lineage-score/lineage_report.json`](k012-lineage-score/lineage_report.json).
+- `k012-transfer-loo` — **learned Layer A LOO eval** (2026-09-17): five
+  transfer classes on the 47-pair K562/hESC set. Raw transfer cosine
+  ~0.13; no class clears the +0.05 acceptance bar — a publishable
+  negative. Fitted scalar s=0.44 (hESC weaker than K562, opposite the
+  2026 direction). Low-rank sign accuracy 0.60 vs 0.32 shows coarse
+  pathway structure transfers, fine detail doesn't.
 - `k004-kaggle-smoke` — **Kaggle free-tier smoke** (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Live **Kaggle Dataset** `udingethe/vcc2026-controls` + **Notebook**

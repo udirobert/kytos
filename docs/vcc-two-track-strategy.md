@@ -22,19 +22,28 @@ Goal: ~+0.13 overall. Stays on the existing Modal pipeline (64 GiB CPU
 Functions, `kytos-vcc` Volume, `submit_from_volume` flow). Ordered by
 expected value per engineering hour:
 
-1. **Bracket delta_scale** — x2.0 staged on the volume
-   (`/kytos-vol/k011-delta-scale-x2p0/`); x1.3→x1.7 gained +0.004, so the
-   optimum is near. Also consider **per-source scaling** (Replogle bulk
-   vs Atlas sc signatures may need different scales) and **per-target
-   scaling** conditioned on |delta| — same code path, one more param.
-2. **Learned Layer A — paired-signature transfer** (spec:
-   `docs/k012-learned-layer-a.md`, implementation spec below). Train on
-   the ~50 targets screened in both K562 GWPS and Atlas H1 hESC; LOO
-   validation in-corpus; submit only if it beats the global scalar.
-3. **Lineage-matched corpora** — marker analysis suggests context B is
-   RPE1-like; the Replogle RPE1 GWPS arm is a cheap swap-in for those
-   targets. Context A looks Jurkat-like (Schmidt et al. 2022 primary
-   T-cell Perturb-seq is the candidate source).
+1. ~~Bracket delta_scale~~ — **done 2026-09-18**: x1.3 +0.0559 →
+   x1.7 **+0.0596** (champion) → x2.0 +0.0566. Optimum ~1.7; `pds`/`fid`
+   keep improving with scale but `nmae` cost now dominates
+   (+0.004 → -0.023 → -0.076 → -0.125). The scalar magnitude axis is
+   exhausted — remaining levers are signature content, not amplitude.
+2. ~~Learned Layer A — paired-signature transfer~~ — **LOO done
+   2026-09-17** (`experiments/k012-transfer-loo/`): raw K562→hESC
+   transfer cosine ~0.13; no transfer class cleared the +0.05 acceptance
+   bar (fitted scalar s≈0.44; low-rank map sign acc 0.60 vs 0.32 raw —
+   coarse pathway structure transfers, fine detail doesn't). Naive
+   paired transfer does not ship.
+3. **Lineage-matched corpora** — lineage score done 2026-09-18
+   (`experiments/k012-lineage-score/`): on discriminative genes, **A is
+   Jurkat-like (0.649)**, B weakly RPE1-leaning (0.369), C unresolved.
+   **But** the Nadig Jurkat essential screen covers **0/300 panel
+   targets** — essential screens can't supply panel deltas directly.
+   Two live options: (a) the 4-lineage × 2,393-target essential set
+   (K562/RPE1/Jurkat/HepG2) as a *transfer-learning training set* — learn
+   inter-lineage delta maps, apply to K562 GWPS panel deltas;
+   (b) non-essential corpora with panel overlap (check GWPS RPE1 arm's
+   panel coverage — it shares K562's 9.8k-target design, so likely
+   covers ~270 targets for context B).
 4. **Residual covariance (Layer B)** — pooled/target residual covariance
    from Atlas perturbed cells. Stacks with any of the above.
 
@@ -74,10 +83,15 @@ results.
 
 ## Sequencing
 
-- **Now**: x2.0 build staged for tomorrow's slot.
-- **This week**: Track 1 item 2 (paired-transfer Layer A) — design doc +
-  training data extraction on Modal.
-- **Parallel**: provision the GPU box; port the paired-transfer dataset
-  builder to produce training tensors for whichever model class is chosen.
+- **Done**: x2.0 submitted + scored (2026-09-18); scale bracketed at ~1.7.
+- **Now**: Track 1 item 3(b) — check the RPE1 GWPS arm's panel coverage;
+  if ~270/300 as expected, build a context-B-dispatched variant
+  (RPE1 deltas for B, K562 elsewhere) — the first testable lineage swap.
+- **Next**: 4-lineage essential-screen transfer learning (item 3a) —
+  richer paired data (2,393 targets × 4 contexts) than the 47-pair
+  K562/hESC set that failed LOO.
+- **Parallel**: provision the Nebius box; port the paired-transfer
+  dataset builder to produce training tensors for whichever model class
+  is chosen.
 - Track 1 keeps spending daily slots on its best variant; Track 2 submits
   only when in-corpus eval clearly beats the running champion.

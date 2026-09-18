@@ -1,0 +1,38 @@
+{
+  "run_id": "k011-delta-scale-x2p0-validation",
+  "created": "2026-09-18",
+  "headline": "delta_scale=2.0 \u2014 overall +0.0566 (rank 515); the scale curve has bent: pds best-yet 0.356 and fid ~0, but nmae -0.125 outweighs the gains. x1.7 (+0.0596) stands as champion; the scalar magnitude axis is now bracketed",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.05660471561026328,
+    "pds": 0.35606257858254414,
+    "mse": 0.0,
+    "nmae": -0.12454622552303178,
+    "fid": -0.0018311506371400884,
+    "reach": 0.11075331443890474,
+    "jac": -0.0008102231996973049
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 99,
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "x1.3->x1.7 gained +0.004; x2.0 tests whether the scale optimum is bracketed or still climbing"
+  ],
+  "interpretation": [
+    "The curve bent: +0.0559 (x1.3) -> +0.0596 (x1.7) -> +0.0566 (x2.0). Optimum ~1.7",
+    "nmae degradation is now the binding cost: +0.004 (champion-era) -> -0.023 -> -0.076 -> -0.125 as scale increases. Magnitude inflation buys fid/pds/reach at accelerating DE-accuracy cost",
+    "Scalar magnitude is exhausted as an axis \u2014 the remaining lever is signature content (lineage/context conditioning), not amplitude"
+  ],
+  "next_steps": [
+    "k013: lineage-conditioned priors \u2014 the Nadig/Replogle essential screens give 4 lineages x 2,393 shared targets (a far richer transfer-learning set than the 47 K562/hESC pairs); learn inter-lineage delta transfer and apply to K562 GWPS panel deltas",
+    "Caveat discovered: essential screens overlap 0/300 panel targets \u2014 they cannot supply panel deltas directly, only transfer supervision",
+    "Track 2 Nebius provisioning remains open"
+  ],
+  "provenance": {
+    "commit": "f67dd70",
+    "seed": 0,
+    "strategy": "replogle-prior+neighbor-imputation+heterogeneous-kd(kd_std=2.0)+delta_scale(2.0)",
+    "code": "tools/run_k011_delta_scale.py",
+    "data": "VCC 2026 controls + Replogle K562 GWPS bulk + 2025 VCC validation Atlas + STRING v12 neighbor map (k007)"
+  }
+}

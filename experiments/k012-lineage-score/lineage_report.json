@@ -1,0 +1,120 @@
+{
+  "created": "2026-09-17",
+  "references": [
+    "HEPG2",
+    "HESC",
+    "JURKAT",
+    "K562",
+    "RPE1"
+  ],
+  "contexts": [
+    "A",
+    "B",
+    "C"
+  ],
+  "top_discriminative_genes": 2000,
+  "table": {
+    "A": {
+      "K562": {
+        "pearson_all": 0.6238659024238586,
+        "pearson_nonzero": 0.4290767014026642,
+        "spearman_nonzero": 0.4526484388043104,
+        "pearson_discriminative": 0.3994629681110382
+      },
+      "HESC": {
+        "pearson_all": 0.6934263706207275,
+        "pearson_nonzero": 0.678317666053772,
+        "spearman_nonzero": 0.7343120404696519,
+        "pearson_discriminative": 0.21027705073356628
+      },
+      "RPE1": {
+        "pearson_all": 0.5564990639686584,
+        "pearson_nonzero": 0.3481255769729614,
+        "spearman_nonzero": 0.36117915597069844,
+        "pearson_discriminative": 0.1700144112110138
+      },
+      "JURKAT": {
+        "pearson_all": 0.7381229996681213,
+        "pearson_nonzero": 0.5729992985725403,
+        "spearman_nonzero": 0.6168194806660765,
+        "pearson_discriminative": 0.6488448977470398
+      },
+      "HEPG2": {
+        "pearson_all": 0.5320287942886353,
+        "pearson_nonzero": 0.3631717562675476,
+        "spearman_nonzero": 0.394458798786653,
+        "pearson_discriminative": 0.21538765728473663
+      }
+    },
+    "B": {
+      "K562": {
+        "pearson_all": 0.5253795981407166,
+        "pearson_nonzero": 0.33492520451545715,
+        "spearman_nonzero": 0.3339376723778666,
+        "pearson_discriminative": 0.13854891061782837
+      },
+      "HESC": {
+        "pearson_all": 0.7224822640419006,
+        "pearson_nonzero": 0.7036691904067993,
+        "spearman_nonzero": 0.7670540573694068,
+        "pearson_discriminative": 0.356664776802063
+      },
+      "RPE1": {
+        "pearson_all": 0.6079393625259399,
+        "pearson_nonzero": 0.40803712606430054,
+        "spearman_nonzero": 0.3912509025279078,
+        "pearson_discriminative": 0.3691774606704712
+      },
+      "JURKAT": {
+        "pearson_all": 0.513340413570404,
+        "pearson_nonzero": 0.35830286145210266,
+        "spearman_nonzero": 0.3655486375067285,
+        "pearson_discriminative": 0.014327794313430786
+      },
+      "HEPG2": {
+        "pearson_all": 0.523023247718811,
+        "pearson_nonzero": 0.3525886535644531,
+        "spearman_nonzero": 0.3715634890728951,
+        "pearson_discriminative": 0.22227396070957184
+      }
+    },
+    "C": {
+      "K562": {
+        "pearson_all": 0.5333462953567505,
+        "pearson_nonzero": 0.36149340867996216,
+        "spearman_nonzero": 0.3755295858763645,
+        "pearson_discriminative": 0.1784084290266037
+      },
+      "HESC": {
+        "pearson_all": 0.726356029510498,
+        "pearson_nonzero": 0.7130925059318542,
+        "spearman_nonzero": 0.774360738604508,
+        "pearson_discriminative": 0.379068523645401
+      },
+      "RPE1": {
+        "pearson_all": 0.5861420631408691,
+        "pearson_nonzero": 0.39706337451934814,
+        "spearman_nonzero": 0.40271085094793935,
+        "pearson_discriminative": 0.2755298912525177
+      },
+      "JURKAT": {
+        "pearson_all": 0.519143283367157,
+        "pearson_nonzero": 0.37284401059150696,
+        "spearman_nonzero": 0.38967983572667275,
+        "pearson_discriminative": 0.021718967705965042
+      },
+      "HEPG2": {
+        "pearson_all": 0.5483812689781189,
+        "pearson_nonzero": 0.37760117650032043,
+        "spearman_nonzero": 0.4129260843010464,
+        "pearson_discriminative": 0.28169333934783936
+      }
+    }
+  },
+  "best_per_context": {
+    "A": "HESC",
+    "B": "HESC",
+    "C": "HESC"
+  },
+  "elapsed_s": 175.1
+}

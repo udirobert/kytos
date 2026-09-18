@@ -1,0 +1,43 @@
+{
+  "run_id": "k012-lineage-score",
+  "created": "2026-09-17",
+  "headline": "context identity resolved on discriminative genes: A is clearly Jurkat-like (r=0.65 vs next best 0.40), B weakly RPE1-leaning (0.37), C unresolved/hESC-leaning \u2014 global Pearson is inflated by housekeeping+assay similarity and misleads",
+  "data_status": "final",
+  "headline_metrics": {
+    "A_jurkat_discriminative_pearson": 0.649,
+    "A_next_best_discriminative": 0.399,
+    "B_rpe1_discriminative_pearson": 0.369,
+    "B_hesc_discriminative_pearson": 0.357,
+    "C_hesc_discriminative_pearson": 0.379,
+    "A_hesc_global_pearson": 0.678,
+    "B_hesc_global_pearson": 0.704,
+    "C_hesc_global_pearson": 0.713
+  },
+  "ceiling_headroom": {},
+  "vessel_fill": 0,
+  "audit_flags": [
+    {
+      "id": "global-pearson-assay-confound",
+      "severity": "warn",
+      "rule": "metric_confound",
+      "message": "Global Pearson (all genes) ranks hESC first for every context, but hESC shares the Perturb-seq assay with the 2026 controls \u2014 housekeeping+protocol similarity inflates it; the discriminative-gene metric is the decision signal"
+    }
+  ],
+  "interpretation": [
+    "Context A: Jurkat/T-cell confirmed on top-2000 context-discriminative genes (0.649), consistent with the marker analysis (CD3D/CD8A/TRAC rank ~0.84). The Nadig 2024 Jurkat screen (2,393 essential targets) is the right prior source for A",
+    "Context B: weak RPE1 lean (0.369 vs hESC 0.357) \u2014 consistent with fibro/epi markers but not decisive; the RPE1 essential arm may still help its covered targets",
+    "Context C: unresolved; hESC-leaning on discriminative genes (0.379)",
+    "The Nadig dataset covers Jurkat AND HepG2 over the same 2,393-target essential design \u2014 a per-context prior-source dispatch is now the concrete next experiment"
+  ],
+  "next_steps": [
+    "k013: per-context prior dispatch \u2014 Jurkat-arm deltas for context A, RPE1-arm for B, existing K562/Atlas for C (needs build_context_predictions to accept per-context delta dicts)",
+    "Check 2026 panel coverage of the Nadig/RPE1 essential-scale target sets before building (essential-scale ~2,393 targets; panel overlap unknown)",
+    "Track 2 Nebius provisioning remains open"
+  ],
+  "provenance": {
+    "commit": "f67dd70",
+    "code": "tools/score_context_lineage.py",
+    "report": "experiments/k012-lineage-score/lineage_report.json",
+    "references": "Replogle K562 GWPS bulk (35774443), Replogle RPE1 essential bulk (35775581), Nadig 2024 Jurkat/HepG2 (HF bendidiihab/tx_evaluation), 2025 Atlas H1 hESC \u2014 all cached on /kytos-vol/refs/"
+  }
+}
