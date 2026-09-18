@@ -94,3 +94,20 @@ single-fact spine. Reject edits that break the "no ungrounded claim" rule.
   workflow; ALL of it lives in r3.
 - Every r2 starts with the SHARED skeleton: "In 2025, [number] teams …"
   so pack-together viewers get continuity across cards.
+## 7. Specimen video format — series conventions (2026-09-18)
+
+User-directed conventions for all specimen clips going forward
+(first applied in specimen-004):
+
+- **Mini intro at the front.** Every specimen opens with a short
+  "what is Kytos / what are we trying to do" beat (~3–5s) — the anchor
+  is the hero of it. Cold-feed viewers should learn the mission before
+  the episode's data. Specimen-004 template: kicker THIS IS KYTOS ·
+  serif title BUILDING A VIRTUAL CELL · one-line mission sub + VO.
+- **Optimistic tagline at the end.** The end card carries a mission
+  line about *why* we do this, not just the URL. Specimen-004's:
+  "someday, a drug's first trial should happen in a virtual cell."
+- **Anchor prominence.** One or two moments per clip where the host is
+  large and central — default to the intro and the closing pivot.
+- **No new lip-sync spend** (recorded earlier): reuse existing anchor
+  footage as a muted loop unless synchronized speech is essential.

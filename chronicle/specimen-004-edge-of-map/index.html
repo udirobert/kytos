@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+      }
+      body { font-family: "Inter", sans-serif; }
+      .mono { font-family: "IBM Plex Mono", monospace; }
+      .serif { font-family: "Instrument Serif", serif; }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        background: #0a0a0f;
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+
+      .kicker {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 30px;
+        letter-spacing: 0.32em;
+        color: #2dd4bf;
+        text-transform: uppercase;
+      }
+      .bigtext {
+        font-family: "Instrument Serif", serif;
+        color: #ebebf2;
+        text-align: center;
+        line-height: 1.08;
+      }
+      .subline {
+        font-family: "Inter", sans-serif;
+        color: #8c8c9e;
+        text-align: center;
+      }
+
+      /* ── anchor — persistent host layer, moved by the timeline ── */
+      #anchor {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 520px;
+        border-radius: 22px;
+        overflow: hidden;
+        border: 2px solid rgba(45, 212, 191, 0.5);
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+        transform-origin: top left;
+      }
+      #anchor video { display: block; width: 100%; height: auto; }
+      #anchor-tag {
+        position: absolute;
+        left: 14px;
+        bottom: 12px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 20px;
+        letter-spacing: 0.18em;
+        color: #2dd4bf;
+        background: rgba(10, 10, 15, 0.72);
+        padding: 5px 12px;
+        border-radius: 7px;
+      }
+
+      /* ── dot field (edge-of-map motif) ── */
+      .dotfield {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        pointer-events: none;
+      }
+      .md {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      /* scene 0 — intro: hero anchor above, who/what/why below */
+      #s0-kicker {
+        position: absolute;
+        top: 880px;
+        width: 100%;
+        text-align: center;
+      }
+      #s0-title {
+        position: absolute;
+        top: 960px;
+        width: 100%;
+        font-size: 118px;
+      }
+      #s0-sub {
+        position: absolute;
+        top: 1330px;
+        width: 100%;
+        font-size: 40px;
+        padding: 0 90px;
+      }
+
+      /* scene 1 — recap: hero anchor, ticker, trajectory, headline */
+      #s1-kicker {
+        position: absolute;
+        top: 880px;
+        width: 100%;
+        text-align: center;
+      }
+      #s1-score {
+        position: absolute;
+        top: 950px;
+        width: 100%;
+        font-size: 190px;
+        font-weight: 600;
+        color: #2dd4bf;
+        text-align: center;
+      }
+      #s1-traj {
+        position: absolute;
+        left: 140px;
+        top: 1210px;
+      }
+      #s1-rank {
+        position: absolute;
+        top: 1460px;
+        width: 100%;
+        text-align: center;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 54px;
+        color: #ebebf2;
+      }
+      #s1-text {
+        position: absolute;
+        top: 1560px;
+        width: 100%;
+        font-size: 84px;
+      }
+
+      /* scene 2 — the twist: context cards over a lit/dim map field */
+      #s2-kicker {
+        position: absolute;
+        top: 300px;
+        width: 100%;
+        text-align: center;
+      }
+      #s2-title {
+        position: absolute;
+        top: 390px;
+        width: 100%;
+        font-size: 76px;
+      }
+      #s2-cards {
+        position: absolute;
+        top: 700px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 34px;
+      }
+      .ctxcard {
+        width: 290px;
+        border: 1px solid #262634;
+        border-radius: 18px;
+        background: rgba(18, 18, 26, 0.92);
+        padding: 34px 0 30px;
+        text-align: center;
+      }
+      .ctxcard .cname {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 64px;
+        font-weight: 600;
+        color: #ebebf2;
+      }
+      .ctxcard .cwho {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 26px;
+        color: #2dd4bf;
+        margin-top: 14px;
+        min-height: 66px;
+      }
+      .ctxcard .cscore {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 34px;
+        color: #8c8c9e;
+        margin-top: 8px;
+      }
+      .ctxcard.unknown .cwho { color: #f59e0b; }
+      #s2-sub {
+        position: absolute;
+        top: 1130px;
+        width: 100%;
+        font-size: 40px;
+        padding: 0 80px;
+      }
+      #s2-maplabel {
+        position: absolute;
+        left: 60px;
+        top: 660px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 24px;
+        letter-spacing: 0.22em;
+        color: #5c5c70;
+      }
+
+      /* scene 3 — the wall: three hard-cut result cards + progress strip */
+      .wall-kicker {
+        position: absolute;
+        top: 380px;
+        width: 100%;
+        text-align: center;
+      }
+      .wall-kicker .kicker { color: #f59e0b; }
+      .wall-label {
+        position: absolute;
+        top: 500px;
+        width: 100%;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 44px;
+        color: #ebebf2;
+        text-align: center;
+        letter-spacing: 0.08em;
+      }
+      .wall-num {
+        position: absolute;
+        top: 660px;
+        width: 100%;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 230px;
+        font-weight: 600;
+        color: #f59e0b;
+        text-align: center;
+      }
+      .wall-sub {
+        position: absolute;
+        top: 1020px;
+        width: 100%;
+        font-size: 36px;
+        padding: 0 90px;
+      }
+      .wall-idx {
+        position: absolute;
+        top: 240px;
+        width: 100%;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 30px;
+        color: #5c5c70;
+        text-align: center;
+        letter-spacing: 0.3em;
+      }
+      /* progress strip — threads all three cuts */
+      #s3-progress {
+        position: absolute;
+        left: 0;
+        top: 1660px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 120px;
+      }
+      .pstep {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 26px;
+        color: #5c5c70;
+      }
+      .pstep .pdot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid #5c5c70;
+        background: transparent;
+      }
+      .pstep.lit { color: #f59e0b; }
+      .pstep.lit .pdot { background: #f59e0b; border-color: #f59e0b; }
+
+      /* ── wall-card visual primitives (fill the empty zone under the copy) ── */
+      /* s3a: mk-usage-arc registry component, recolored to the palette */
+      .mk-arc {
+        --mk-font: "IBM Plex Mono", monospace;
+        --mk-ink: #ebebf2;
+        --mk-arc-color: #f59e0b;
+        --mk-hairline: 4px;
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        pointer-events: none;
+      }
+      .mk-arc svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .mk-arc-track { fill: none; stroke: rgba(235, 235, 242, 0.12); stroke-width: var(--mk-hairline); }
+      .mk-arc-fill { fill: none; stroke: var(--mk-arc-color); stroke-width: var(--mk-hairline); stroke-linecap: round; }
+      .mk-arc-center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-family: var(--mk-font);
+      }
+      .mk-arc-num {
+        font-weight: 600;
+        font-size: 54px;
+        color: var(--mk-ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .mk-arc-label { font-size: 20px; color: #8c8c9e; letter-spacing: 0.16em; }
+
+      /* s3b: champion vs attempt — two comparison bars */
+      .wall-bars {
+        position: absolute;
+        left: 190px;
+        top: 1300px;
+        width: 700px;
+      }
+      .brow {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 36px;
+      }
+      .blabel {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 24px;
+        color: #8c8c9e;
+        width: 200px;
+        text-align: right;
+        letter-spacing: 0.08em;
+      }
+      .btrack {
+        flex: 1;
+        height: 34px;
+        background: rgba(235, 235, 242, 0.07);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .bfill {
+        height: 100%;
+        width: var(--w);
+        border-radius: 8px;
+        transform-origin: left center;
+      }
+      .bfill.teal { background: #2dd4bf; }
+      .bfill.warn { background: #f59e0b; }
+      .bval {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 30px;
+        color: #ebebf2;
+        width: 160px;
+      }
+
+      /* s3c: the coverage hole — 300 dots, a scan, nothing lights */
+      .wall-grid {
+        position: absolute;
+        left: 210px;
+        top: 1290px;
+        width: 660px;
+        height: 220px;
+      }
+      .gd {
+        position: absolute;
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        background: #26263f;
+      }
+      .gscan {
+        position: absolute;
+        left: 0;
+        top: -8px;
+        width: 3px;
+        height: 236px;
+        background: rgba(45, 212, 191, 0.4);
+      }
+
+      /* scene 5 — lesson + pivot merged: lesson serif, aph, chips, net, hero, card */
+      #s5-rule {
+        position: absolute;
+        left: 50%;
+        top: 430px;
+        width: 120px;
+        height: 3px;
+        margin-left: -60px;
+        background: #2dd4bf;
+      }
+      #s5-lesson {
+        position: absolute;
+        top: 480px;
+        width: 100%;
+        font-family: "Instrument Serif", serif;
+        font-size: 84px;
+        padding: 0 90px;
+        text-align: center;
+        color: #ebebf2;
+        line-height: 1.08;
+      }
+      #s5-lesson em { color: #2dd4bf; font-style: italic; }
+      #s5-aph {
+        position: absolute;
+        top: 320px;
+        width: 100%;
+        font-size: 80px;
+        padding: 0 70px;
+      }
+      #s5-aph em { color: #2dd4bf; font-style: normal; }
+      #s5-gpu {
+        position: absolute;
+        top: 660px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+      }
+      .gpuchip {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 32px;
+        padding: 22px 30px;
+        border: 1px solid #2dd4bf;
+        border-radius: 14px;
+        background: #12121a;
+        color: #2dd4bf;
+      }
+      .gpuchip.dim {
+        border-color: #262634;
+        color: #8c8c9e;
+      }
+      #s5-net {
+        position: absolute;
+        left: 290px;
+        top: 800px;
+      }
+      #s5-card {
+        position: absolute;
+        top: 1620px;
+        width: 100%;
+        text-align: center;
+      }
+      #s5-src {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 28px;
+        color: #8c8c9e;
+        margin-bottom: 26px;
+      }
+      #s5-url {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 44px;
+        color: #2dd4bf;
+      }
+      #s5-tag {
+        font-family: "Instrument Serif", serif;
+        font-size: 40px;
+        color: #ebebf2;
+        margin-top: 30px;
+      }
+      #s5-tag em { color: #2dd4bf; font-style: italic; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-e4m1" id="root" data-composition-id="main" data-start="0" data-duration="30.5" data-width="1080" data-height="1920">
+      <!-- scene 0: intro — what Kytos is, what we're trying to do -->
+      <div data-hf-id="hf-s00" id="s0" class="clip" data-start="0" data-duration="5" data-track-index="1">
+        <div data-hf-id="hf-s01" id="s0-kicker" class="kicker">this is kytos</div>
+        <div data-hf-id="hf-s02" id="s0-title" class="bigtext">BUILDING A<br data-hf-id="hf-s03">VIRTUAL CELL</div>
+        <div data-hf-id="hf-s04" id="s0-sub" class="subline">predicting how cells respond to genetic<br data-hf-id="hf-s05">perturbation — every run in the open</div>
+      </div>
+
+      <!-- scene 1: recap — hero anchor above, ticker + trajectory below -->
+      <div data-hf-id="hf-e4m2" id="s1" class="clip" data-start="5" data-duration="3.2" data-track-index="1">
+        <div data-hf-id="hf-e4m3" id="s1-kicker" class="kicker">leaderboard · run k011</div>
+        <div data-hf-id="hf-e4m4" id="s1-score" class="mono">-0.0210</div>
+        <svg data-hf-id="hf-e4m5" id="s1-traj" width="800" height="220" viewBox="0 0 800 220">
+          <polyline data-hf-id="hf-e4m6" id="s1-line" points="60,180 300,120 540,80 740,30" fill="none" stroke="#2dd4bf" stroke-width="4" />
+          <circle data-hf-id="hf-e4m7" cx="60" cy="180" r="7" fill="#5c5c70" />
+          <circle data-hf-id="hf-e4m8" cx="300" cy="120" r="7" fill="#5c5c70" />
+          <circle data-hf-id="hf-e4m9" cx="540" cy="80" r="7" fill="#5c5c70" />
+          <circle data-hf-id="hf-e4ma" cx="740" cy="30" r="9" fill="#2dd4bf" />
+        </svg>
+        <div data-hf-id="hf-e4mb" id="s1-rank">RANK <b data-hf-id="hf-e4mc" style="color:#2dd4bf">#486</b> / 984</div>
+        <div data-hf-id="hf-e4md" id="s1-text" class="bigtext">BORROWED BIOLOGY<br data-hf-id="hf-x5px">KEPT WINNING</div>
+      </div>
+
+      <!-- scene 2: the twist — context cards over the edge of the map -->
+      <div data-hf-id="hf-e4me" id="s2" class="clip" data-start="8.2" data-duration="5" data-track-index="1">
+        <div data-hf-id="hf-e4mf" id="s2-field" class="dotfield"></div>
+        <div data-hf-id="hf-e4mg" id="s2-kicker" class="kicker">then we asked which cells</div>
+        <div data-hf-id="hf-e4mh" id="s2-title" class="bigtext">THESE ARE NOT<br data-hf-id="hf-rsrt">THE CELLS WE BORROWED FOR</div>
+        <div data-hf-id="hf-e4mi" id="s2-maplabel">K562 TERRITORY ──── UNKNOWN ────</div>
+        <div data-hf-id="hf-e4mj" id="s2-cards">
+          <div data-hf-id="hf-e4mk" class="ctxcard">
+            <div data-hf-id="hf-e4ml" class="cname">A</div>
+            <div data-hf-id="hf-e4mm" class="cwho">JURKAT-LIKE</div>
+            <div data-hf-id="hf-e4mn" class="cscore">r = 0.65</div>
+          </div>
+          <div data-hf-id="hf-e4mo" class="ctxcard">
+            <div data-hf-id="hf-e4mp" class="cname">B</div>
+            <div data-hf-id="hf-e4mq" class="cwho">RPE1-LIKE?</div>
+            <div data-hf-id="hf-e4mr" class="cscore">r = 0.37</div>
+          </div>
+          <div data-hf-id="hf-e4ms" class="ctxcard unknown">
+            <div data-hf-id="hf-e4mt" class="cname">C</div>
+            <div data-hf-id="hf-e4mu" class="cwho">UNRESOLVED</div>
+            <div data-hf-id="hf-e4mv" class="cscore">r = 0.38</div>
+          </div>
+        </div>
+        <div data-hf-id="hf-e4mw" id="s2-sub" class="subline">our signatures come from K562 leukemia —<br data-hf-id="hf-szow">the challenge cells are T-cells and fibroblasts</div>
+      </div>
+
+      <!-- scene 3: the wall — three honest failures, hard cuts + progress strip -->
+      <div data-hf-id="hf-e4mx" id="s3a" class="clip" data-start="13.2" data-duration="2" data-track-index="1">
+        <div data-hf-id="hf-e4my" class="wall-idx">ATTEMPT 1 / 3</div>
+        <div data-hf-id="hf-e4mz" class="wall-kicker"><span data-hf-id="hf-ugvl" class="kicker">paired transfer · k012</span></div>
+        <div data-hf-id="hf-e4n0" class="wall-num">0.13</div>
+        <div data-hf-id="hf-e4n1" class="wall-label">COSINE SIMILARITY</div>
+        <div data-hf-id="hf-e4n2" class="wall-sub subline">a K562 signature moved to stem cells<br data-hf-id="hf-sldv">keeps only 13% of its direction</div>
+        <div data-hf-id="hf-w3a" class="mk-arc" id="w3a-arc" style="left: 430px; top: 1290px">
+          <svg data-hf-id="hf-o3ax" viewBox="0 0 220 220">
+            <circle data-hf-id="hf-v9o1" class="mk-arc-track" cx="110" cy="110" r="92" />
+            <circle data-hf-id="hf-in2a" class="mk-arc-fill" cx="110" cy="110" r="92" transform="rotate(-90 110 110)" />
+          </svg>
+          <div data-hf-id="hf-4zqb" class="mk-arc-center">
+            <span data-hf-id="hf-cg8q" class="mk-arc-num">0%</span>
+            <span data-hf-id="hf-akrc" class="mk-arc-label">DIRECTION KEPT</span>
+          </div>
+        </div>
+      </div>
+      <div data-hf-id="hf-e4n3" id="s3b" class="clip" data-start="15.2" data-duration="2" data-track-index="1">
+        <div data-hf-id="hf-e4n4" class="wall-idx">ATTEMPT 2 / 3</div>
+        <div data-hf-id="hf-e4n5" class="wall-kicker"><span data-hf-id="hf-c3li" class="kicker">per-context scaling · k013</span></div>
+        <div data-hf-id="hf-e4n6" class="wall-num">+0.031</div>
+        <div data-hf-id="hf-e4n7" class="wall-label">OVERALL SCORE</div>
+        <div data-hf-id="hf-e4n8" class="wall-sub subline">lineage-matched magnitudes —<br data-hf-id="hf-qluq">worse than the uniform guess</div>
+        <div data-hf-id="hf-w3b" class="wall-bars" id="w3b-bars">
+          <div data-hf-id="hf-nwgu" class="brow"><span data-hf-id="hf-mkrq" class="blabel">UNIFORM ×1.7</span><div data-hf-id="hf-z0hr" class="btrack"><div data-hf-id="hf-squg" class="bfill teal" style="--w: 100%"></div></div><span data-hf-id="hf-xi5t" class="bval">+0.0596</span></div>
+          <div data-hf-id="hf-0a9u" class="brow"><span data-hf-id="hf-giga" class="blabel">PER-CONTEXT</span><div data-hf-id="hf-wuv3" class="btrack"><div data-hf-id="hf-09yu" class="bfill warn" style="--w: 52%"></div></div><span data-hf-id="hf-d8rb" class="bval">+0.031</span></div>
+        </div>
+      </div>
+      <div data-hf-id="hf-e4n9" id="s3c" class="clip" data-start="17.2" data-duration="2" data-track-index="1">
+        <div data-hf-id="hf-e4na" class="wall-idx">ATTEMPT 3 / 3</div>
+        <div data-hf-id="hf-e4nb" class="wall-kicker"><span data-hf-id="hf-xhvm" class="kicker">matched corpora</span></div>
+        <div data-hf-id="hf-e4nc" class="wall-num">0/300</div>
+        <div data-hf-id="hf-e4nd" class="wall-label">PANEL TARGETS COVERED</div>
+        <div data-hf-id="hf-e4ne" class="wall-sub subline">no public screen of the right cells<br data-hf-id="hf-q7jp">contains the genes we must predict</div>
+        <div data-hf-id="hf-w3c" class="wall-grid" id="w3c-grid"><div data-hf-id="hf-x5pc" class="gscan"></div></div>
+      </div>
+      <div data-hf-id="hf-e4nf" id="s3-progress" class="clip" data-start="13.2" data-duration="6" data-track-index="2">
+        <div data-hf-id="hf-e4ng" class="pstep" id="p1"><span data-hf-id="hf-cms0" class="pdot"></span><span data-hf-id="hf-ge5u">transfer</span></div>
+        <div data-hf-id="hf-e4nh" class="pstep" id="p2"><span data-hf-id="hf-r1go" class="pdot"></span><span data-hf-id="hf-ei32">scaling</span></div>
+        <div data-hf-id="hf-e4ni" class="pstep" id="p3"><span data-hf-id="hf-pujl" class="pdot"></span><span data-hf-id="hf-13jv">corpora</span></div>
+      </div>
+
+      <!-- scene 5: lesson folded into the pivot — serif line, aph, chips, net, hero, card -->
+      <div data-hf-id="hf-e4nn" id="s5" class="clip" data-start="19.2" data-duration="11.3" data-track-index="1">
+        <div data-hf-id="hf-e4nl" id="s5-rule"></div>
+        <div data-hf-id="hf-e4nm" id="s5-lesson">The ceiling isn't the noise.<br data-hf-id="hf-regs">It's the <em data-hf-id="hf-zvxb">signature.</em></div>
+        <div data-hf-id="hf-e4no" id="s5-aph" class="bigtext">We stopped borrowing.<br data-hf-id="hf-r05r"><em data-hf-id="hf-8jxa">We started learning.</em></div>
+        <div data-hf-id="hf-e4np" id="s5-gpu">
+          <div data-hf-id="hf-e4nq" class="gpuchip dim">LOOKUP → MODEL</div>
+          <div data-hf-id="hf-e4nr" class="gpuchip">NEBIUS · L40S</div>
+          <div data-hf-id="hf-e4ns" class="gpuchip">TRAINED PRIOR</div>
+        </div>
+        <svg data-hf-id="hf-e4nt" id="s5-net" width="500" height="150" viewBox="0 0 500 150">
+          <g data-hf-id="hf-e4nu" id="s5-net-edges" stroke="#2dd4bf" stroke-width="2" fill="none" opacity="0.55">
+            <path data-hf-id="hf-7ebe" d="M40,40 L250,20 L460,75" />
+            <path data-hf-id="hf-ph38" d="M40,40 L250,75 L460,75" />
+            <path data-hf-id="hf-rr6o" d="M40,40 L250,130 L460,75" />
+            <path data-hf-id="hf-rngq" d="M40,110 L250,20 L460,75" />
+            <path data-hf-id="hf-f6ok" d="M40,110 L250,75 L460,75" />
+            <path data-hf-id="hf-link" d="M40,110 L250,130 L460,75" />
+          </g>
+          <g data-hf-id="hf-e4nv" id="s5-net-nodes">
+            <circle data-hf-id="hf-99tg" cx="40" cy="40" r="11" fill="#12121a" stroke="#2dd4bf" stroke-width="2.5" />
+            <circle data-hf-id="hf-3ls8" cx="40" cy="110" r="11" fill="#12121a" stroke="#2dd4bf" stroke-width="2.5" />
+            <circle data-hf-id="hf-g4in" cx="250" cy="20" r="11" fill="#12121a" stroke="#2dd4bf" stroke-width="2.5" />
+            <circle data-hf-id="hf-57gh" cx="250" cy="75" r="11" fill="#12121a" stroke="#2dd4bf" stroke-width="2.5" />
+            <circle data-hf-id="hf-43it" cx="250" cy="130" r="11" fill="#12121a" stroke="#2dd4bf" stroke-width="2.5" />
+            <circle data-hf-id="hf-190n" cx="460" cy="75" r="13" fill="#2dd4bf" />
+          </g>
+        </svg>
+        <div data-hf-id="hf-e4nw" id="s5-card">
+          <div data-hf-id="hf-e4nx" id="s5-src">(Source: Kytos Observatory — every run, failures included)</div>
+          <div data-hf-id="hf-e4ny" id="s5-url">kytosapp.netlify.app</div>
+          <div data-hf-id="hf-e4nz" id="s5-tag">someday, a drug's first trial<br data-hf-id="hf-s5t">should happen in a <em data-hf-id="hf-s5u">virtual cell</em></div>
+        </div>
+      </div>
+
+      <!-- anchor — persistent host; reused footage, muted loop, no lip-sync -->
+      <div data-hf-id="hf-e4o0" id="anchor">
+        <video data-hf-id="hf-e4o1" id="anchor-video" src="assets/anchor.mp4" muted playsinline data-start="0" data-duration="30.5"></video>
+        <div data-hf-id="hf-e4o2" id="anchor-tag" data-layout-allow-overflow="">DR. KYTOS</div>
+      </div>
+
+      <!-- VO: intro + three story beats -->
+      <audio data-hf-id="hf-e4o3" id="vo0" src="assets/vo-0.mp3" data-start="0.3"></audio>
+      <audio data-hf-id="hf-e4o4" id="vo1" src="assets/vo-1.mp3" data-start="5.4"></audio>
+      <audio data-hf-id="hf-e4o5" id="vo2" src="assets/vo-2.mp3" data-start="13.4"></audio>
+      <audio data-hf-id="hf-e4o6" id="vo3" src="assets/vo-3.mp3" data-start="19.4"></audio>
+      <!-- SFX: one click per wall cut -->
+      <audio data-hf-id="hf-e4o7" id="fx1" src="assets/click.mp3" data-start="13.2"></audio>
+      <audio data-hf-id="hf-e4o8" id="fx2" src="assets/click.mp3" data-start="15.2"></audio>
+      <audio data-hf-id="hf-e4o9" id="fx3" src="assets/click.mp3" data-start="17.2"></audio>
+    </div>
+
+    <script>
+      const root = document.querySelector("[data-composition-id]");
+      const tl = gsap.timeline({ paused: true });
+
+      /* ── seeded dot field: lit on the left, fading right — the map's edge ── */
+      function buildField(el, yTop, yBot, edge) {
+        const COLS = 30, GX = 36, GY = 34;
+        const rows = Math.floor((yBot - yTop) / GY);
+        const dots = [];
+        for (let i = 0; i < COLS * rows; i++) {
+          const d = document.createElement("div");
+          d.className = "md";
+          const col = i % COLS, row = Math.floor(i / COLS);
+          const x = col * GX + Math.sin(i * 7.233) * 5 + 18;
+          const y = yTop + row * GY + Math.cos(i * 5.137) * 5;
+          /* brightness decays past the edge column, with deterministic jitter */
+          const falloff = col < edge ? 1 : Math.max(0.06, 1 - (col - edge) * 0.28);
+          const jitter = (Math.sin(i * 12.9898) * 43758.5453 % 1 + 1) % 1;
+          const lit = jitter > 0.82;
+          d.style.left = x + "px";
+          d.style.top = y + "px";
+          d.style.background = lit ? "#2dd4bf" : "#26263f";
+          d.style.opacity = (lit ? 0.85 : 0.5) * falloff;
+          el.appendChild(d);
+          dots.push(d);
+        }
+        return dots;
+      }
+
+      /* ── anchor choreography: hero open (intro+recap), PiP twist, off for wall, hero close ── */
+      const anchor = document.getElementById("anchor");
+      gsap.set(anchor, { x: 280, y: 140, scale: 1.3 }); /* s0+s1: hero, top-center */
+
+      /* s1 -> s2: shrink to PiP bottom-right while the twist lands */
+      tl.to(anchor, { x: 690, y: 1620, scale: 0.62, duration: 0.45, ease: "power2.inOut" }, 8.0);
+      /* s2 -> s3: slide off left — the wall cards are hard cuts, host clears */
+      tl.to(anchor, { x: -700, y: 1620, scale: 0.62, duration: 0.4, ease: "power2.in" }, 13.0);
+      /* s3 -> s5: punch back to hero — he delivers the lesson + pivot */
+      tl.to(anchor, { x: 240, y: 1010, scale: 1.05, duration: 0.55, ease: "back.out(1.4)" }, 19.0);
+      /* s5 tail: settle slightly for the end card */
+      tl.to(anchor, { x: 270, y: 1040, scale: 0.95, duration: 0.5, ease: "power2.inOut" }, 27.4);
+
+      /* micro punch-ins on his spoken lines */
+      tl.to(anchor, { scale: 1.36, duration: 0.3, ease: "power1.out" }, 1.6);
+      tl.to(anchor, { scale: 1.3, duration: 0.3, ease: "power1.inOut" }, 2.1);
+      tl.to(anchor, { scale: 1.12, duration: 0.35, ease: "power2.out" }, 22.6);
+      tl.to(anchor, { scale: 1.05, duration: 0.4, ease: "power2.inOut" }, 23.2);
+
+      /* ── scene 0: intro — who we are, what we're building ── */
+      tl.fromTo("#s0-kicker", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.4);
+      tl.fromTo("#s0-title", { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.7);
+      tl.fromTo("#s0-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 1.8);
+
+      /* ── scene 1: ticker + trajectory + rank + headline ── */
+      tl.fromTo("#s1-kicker", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 5.15);
+      const scoreEl = document.getElementById("s1-score");
+      const tick = { v: -0.021 };
+      tl.fromTo(scoreEl, { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.3 }, 5.3);
+      tl.to(tick, { v: 0.0596, duration: 2.2, ease: "power1.inOut",
+        onUpdate: () => { scoreEl.textContent = (tick.v >= 0 ? "+" : "") + tick.v.toFixed(4); } }, 5.5);
+      const traj = document.getElementById("s1-line");
+      const trajLen = traj.getTotalLength();
+      gsap.set(traj, { strokeDasharray: trajLen, strokeDashoffset: trajLen });
+      tl.fromTo("#s1-traj", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 5.9);
+      tl.to(traj, { strokeDashoffset: 0, duration: 2.0, ease: "power1.inOut" }, 6.0);
+      tl.fromTo("#s1-rank", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "back.out(1.8)" }, 7.0);
+      tl.fromTo("#s1-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.5 }, 7.4);
+
+      /* ── scene 2: the twist — map field, cards land, labels stamp ── */
+      const s2dots = buildField(document.getElementById("s2-field"), 640, 1560, 11);
+      tl.fromTo(s2dots, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, stagger: { each: 0.0006, from: "start" } }, 8.35);
+      tl.fromTo("#s2-kicker", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 8.4);
+      tl.fromTo("#s2-title", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.45 }, 8.6);
+      tl.fromTo("#s2-maplabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 9.2);
+      tl.fromTo("#s2-cards .ctxcard:nth-child(1)", { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: "back.out(1.6)" }, 9.4);
+      tl.fromTo("#s2-cards .ctxcard:nth-child(2)", { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: "back.out(1.6)" }, 10.0);
+      tl.fromTo("#s2-cards .ctxcard:nth-child(3)", { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: "back.out(1.6)" }, 10.6);
+      tl.fromTo("#s2-cards .ctxcard:nth-child(1) .cwho", { autoAlpha: 0, scale: 1.4 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 10.2);
+      tl.fromTo("#s2-cards .ctxcard:nth-child(2) .cwho", { autoAlpha: 0, scale: 1.4 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 10.8);
+      tl.fromTo("#s2-cards .ctxcard:nth-child(3) .cwho", { autoAlpha: 0, scale: 1.4 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "power3.out" }, 11.4);
+      tl.fromTo("#s2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 12.0);
+
+      /* ── scene 3: the wall — cards slam, progress strip fills ── */
+      [["#s3a", 13.2, "#p1"], ["#s3b", 15.2, "#p2"], ["#s3c", 17.2, "#p3"]].forEach(([id, t, p]) => {
+        tl.fromTo(id + " .wall-idx", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, t);
+        tl.fromTo(id + " .wall-kicker", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, t + 0.05);
+        tl.fromTo(id + " .wall-num", { autoAlpha: 0, scale: 1.25 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: "power3.out" }, t + 0.1);
+        tl.fromTo(id + " .wall-label", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, t + 0.3);
+        tl.fromTo(id + " .wall-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, t + 0.55);
+        tl.set(p, { className: "pstep lit" }, t + 0.15);
+      });
+
+      /* ── wall-card primitives — one per cut, all inside the 2s window ── */
+      /* s3a: mk-usage-arc registry helper — hairline arc draws to 13% */
+      function mkArcIn(tl2, target, at, value) {
+        const el = document.querySelector(target);
+        const fill = el.querySelector(".mk-arc-fill");
+        const num = el.querySelector(".mk-arc-num");
+        const C = 2 * Math.PI * parseFloat(fill.getAttribute("r"));
+        gsap.set(el, { opacity: 0, y: 16 });
+        gsap.set(fill, { strokeDasharray: C, strokeDashoffset: C });
+        tl2.to(el, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, at);
+        tl2.to(fill, { strokeDashoffset: C * (1 - value), duration: 0.9, ease: "power2.inOut" }, at + 0.15);
+        const st = { v: 0 };
+        tl2.to(st, { v: value, duration: 0.9, ease: "power2.inOut",
+          onUpdate: () => { num.textContent = Math.round(st.v * 100) + "%"; } }, at + 0.15);
+      }
+      mkArcIn(tl, "#w3a-arc", 13.55, 0.13);
+
+      /* s3b: champion vs attempt — bars grow, the shortfall is the story */
+      tl.fromTo("#w3b-bars .brow", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25, stagger: 0.1 }, 15.5);
+      tl.fromTo("#w3b-bars .bfill", { scaleX: 0 }, { scaleX: 1, duration: 0.6, stagger: 0.15, ease: "power2.out" }, 15.55);
+
+      /* s3c: 300 empty dots + a scan that finds nothing — the coverage hole */
+      const grid = document.getElementById("w3c-grid");
+      const gdots = [];
+      for (let i = 0; i < 300; i++) {
+        const d = document.createElement("div");
+        d.className = "gd";
+        const col = i % 30, row = Math.floor(i / 30);
+        d.style.left = col * 21 + "px";
+        d.style.top = row * 20 + "px";
+        grid.appendChild(d);
+        gdots.push(d);
+      }
+      tl.fromTo(gdots, { autoAlpha: 0 }, { autoAlpha: 0.85, duration: 0.4, stagger: { each: 0.0012, from: "start" } }, 17.35);
+      tl.fromTo("#w3c-grid .gscan", { x: 0, autoAlpha: 0 }, { x: 650, autoAlpha: 1, duration: 0.85, ease: "power1.inOut" }, 17.7);
+
+      /* ── scene 5: lesson folds into the pivot ── */
+      tl.fromTo("#s5-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power2.inOut" }, 19.5);
+      tl.fromTo("#s5-lesson", { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: "power2.out" }, 19.7);
+      /* lesson yields the frame to the pivot line */
+      tl.to("#s5-lesson", { autoAlpha: 0.12, duration: 0.5, ease: "power1.in" }, 22.1);
+      tl.to("#s5-rule", { autoAlpha: 0.12, duration: 0.5 }, 22.1);
+      tl.fromTo("#s5-aph", { autoAlpha: 0, y: 46 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }, 22.5);
+      tl.fromTo("#s5-gpu .gpuchip:nth-child(1)", { autoAlpha: 0, x: -40 }, { autoAlpha: 1, x: 0, duration: 0.4 }, 23.8);
+      tl.fromTo("#s5-gpu .gpuchip:nth-child(2)", { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "back.out(2)" }, 24.2);
+      tl.fromTo("#s5-gpu .gpuchip:nth-child(3)", { autoAlpha: 0, x: 40 }, { autoAlpha: 1, x: 0, duration: 0.4 }, 24.6);
+      /* node graph: edges draw, nodes pop */
+      const edges = document.querySelectorAll("#s5-net-edges path");
+      edges.forEach((p) => {
+        const L = p.getTotalLength();
+        gsap.set(p, { strokeDasharray: L, strokeDashoffset: L });
+      });
+      tl.to(edges, { strokeDashoffset: 0, duration: 0.9, stagger: 0.06, ease: "power1.inOut" }, 24.5);
+      tl.fromTo("#s5-net-nodes circle", { autoAlpha: 0, scale: 0, transformOrigin: "center" }, { autoAlpha: 1, scale: 1, duration: 0.3, stagger: 0.08, ease: "back.out(2.5)" }, 24.6);
+      tl.fromTo("#s5-card", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 26.4);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[root.dataset.compositionId] = tl;
+    </script>
+  </body>
+</html>

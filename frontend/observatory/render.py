@@ -478,13 +478,15 @@ def _chronicle_short_summary(chronicle) -> list[dict]:
     if chronicle is None:
         return []
     out = []
-    for short in chronicle.shorts[-2:]:
+    for short in chronicle.shorts[:2]:
         med = short.media
+        poster = med.get("poster", "")
+        video = med.get("video", "")
         out.append(
             {
                 "href": f"{short.slug}/index.html",
-                "poster": f"{short.slug}/{med.get('poster', '')}" if med.get("poster") else "",
-                "video": f"{short.slug}/{med.get('video', '')}" if med.get("video") else "",
+                "poster": f"{short.slug}/{poster}" if poster else "",
+                "video": video if "://" in video else f"{short.slug}/{video}" if video else "",
                 "title": short.title,
                 "hook": short.hook,
                 "plain": short.plain_words,
@@ -510,9 +512,10 @@ def _chronicle_rail_html(chronicle, *, root_prefix: str) -> str:
         # driven by pointer/focus (see initChroniclePreview in site.js).
         # Touch devices never trigger it, so they keep paying only for the
         # poster image.
+        preview_src = it["video"] if "://" in it["video"] else f"{root_prefix}shorts/{it['video']}"
         preview = (
             f'<video class="chronicle-card-preview" muted loop playsinline'
-            f' preload="none" data-preview-src="{_h(root_prefix)}shorts/{_h(it["video"])}"'
+            f' preload="none" data-preview-src="{_h(preview_src)}"'
             f' aria-hidden="true" tabindex="-1"></video>'
             if it.get("video")
             else ""

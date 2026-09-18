@@ -1,13 +1,53 @@
 {
-  "series": "VCC 2025 Post-Mortem",
+  "series": "VCC 2026 Chronicle",
   "shorts": [
+    {
+      "slug": "specimen-004-edge-of-map",
+      "title": "The edge of the map",
+      "hook": "Borrowed biology kept winning — until we asked which cells we were actually predicting.",
+      "published": "2026-09-18",
+      "plain_words": "Our best score (+0.0596, rank 486 of 984) came from borrowing real perturbation signatures — but a lineage check showed the challenge cells are not the cells those signatures came from: context A looks Jurkat-like, B weakly RPE1, C unresolved. Three honest attempts to fix the mismatch all failed: moving K562 signatures keeps only 13% of their direction in a new cell type, lineage-matched scaling scored worse than the uniform guess, and no public screen of the right cells covers any of the 300 targets. The lookup has a ceiling — so we stopped borrowing and started training our own model on a rented GPU.",
+      "terms": [
+        "CRISPRi",
+        "Perturb-seq"
+      ],
+      "sources": [
+        {
+          "label": "k011 delta-scale champion — +0.0596, rank 486",
+          "who": "Kytos Observatory",
+          "id": "k011-delta-scale-x1p7-validation",
+          "url": "https://kytosapp.netlify.app/runs/k011-delta-scale-x1p7-validation/"
+        },
+        {
+          "label": "k012 lineage score — context identity",
+          "who": "Kytos Observatory",
+          "id": "k012-lineage-score",
+          "url": "https://kytosapp.netlify.app/runs/k012-lineage-score/"
+        },
+        {
+          "label": "k013 context-scale — the failed fix, published",
+          "who": "Kytos Observatory",
+          "id": "k013-context-scale-validation",
+          "url": "https://kytosapp.netlify.app/runs/k013-context-scale-validation/"
+        }
+      ],
+      "deep": "Track 1 hit its ceiling across three axes. (1) Paired transfer (k012): leave-one-out on 47 K562↔hESC target pairs gives mean cosine 0.126 — borrowed deltas keep ~13% direction cross-lineage. (2) Per-context amplitude (k013): lineage-measured scale factors {A:1.7, B:2.65, C:0.75} scored +0.0312 vs the uniform ×1.7 champion at +0.0596. (3) Coverage: figshare GWPS is K562-only — the Jurkat/RPE1/HepG2 public files are a 2,393-gene essential screen with 0/300 panel overlap. Lineage scoring on top-2000 discriminative genes: A→Jurkat r=0.649, B→RPE1 0.369, C unresolved 0.379. Track 2 (Nebius GPU, trained conditional model) is now the primary path.",
+      "media": {
+        "video": "video.mp4",
+        "poster": "poster.png",
+        "captions": "captions.vtt"
+      }
+    },
     {
       "slug": "specimen-003-borrowed-biology",
       "title": "Borrowed biology beat invented biology",
       "hook": "We moved a genome-wide CRISPRi screen into a cell type it never saw — 272 of 300 targets got real signatures.",
       "published": "2026-09-11",
       "plain_words": "The Virtual Cell Challenge asks: switch off one gene, predict what the other 18,000 do — in a cell type your model has never seen. Instead of inventing how genes respond, we borrowed a real catalog: Replogle's genome-wide CRISPRi screen, run in K562 cells, moved into H1 hESC. It gave 272 of the 300 targets genuine signatures, and our leaderboard score went from -0.149 to -0.021 — rank 534.",
-      "terms": ["CRISPRi", "Perturb-seq"],
+      "terms": [
+        "CRISPRi",
+        "Perturb-seq"
+      ],
       "sources": [
         {
           "label": "Mapping information-rich genotype-phenotype landscapes with genome-scale Perturb-seq",
@@ -36,7 +76,9 @@
       "hook": "In the 2025 challenge, a score with a volume knob partly measured confidence — not truth. This is why it matters.",
       "published": "2026-08-23",
       "plain_words": "In 2025, more than 1,200 teams competed to predict what happens when you switch off a single gene in one human cell type. They were graded on a score called PDS — can you tell switching gene A apart from switching gene B? And here's the catch: the 3rd-place team's own analysis showed the score had a volume knob — a louder guess scored higher even when it was wrong. The scoreboard was partly measuring confidence, not truth. That's exactly why the 2026 challenge switched to a broader, six-metric panel.",
-      "terms": ["PDS"],
+      "terms": [
+        "PDS"
+      ],
       "sources": [
         {
           "label": "Effects of Distance Metrics and Scaling on the Perturbation Discrimination Score",
