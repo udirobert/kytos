@@ -203,6 +203,9 @@ to git.
   prediction `.h5ad` live in `experiments/<run>/` or `data/raw/`, both
   gitignored.
 - **Long jobs** use `nohup` + log files from the start, never a live terminal.
+- **Chronicle videos never go in git** — the build caps media at 4 MB.
+  Upload renders to Grove/Lens (`docs/chronicle/context-layer.md` §8) and
+  reference the `gateway_url` in `shorts.json`; posters/captions stay local.
 
 ---
 

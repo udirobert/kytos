@@ -33,9 +33,10 @@
       ],
       "deep": "Track 1 hit its ceiling across three axes. (1) Paired transfer (k012): leave-one-out on 47 K562↔hESC target pairs gives mean cosine 0.126 — borrowed deltas keep ~13% direction cross-lineage. (2) Per-context amplitude (k013): lineage-measured scale factors {A:1.7, B:2.65, C:0.75} scored +0.0312 vs the uniform ×1.7 champion at +0.0596. (3) Coverage: figshare GWPS is K562-only — the Jurkat/RPE1/HepG2 public files are a 2,393-gene essential screen with 0/300 panel overlap. Lineage scoring on top-2000 discriminative genes: A→Jurkat r=0.649, B→RPE1 0.369, C unresolved 0.379. Track 2 (Nebius GPU, trained conditional model) is now the primary path.",
       "media": {
-        "video": "video.mp4",
+        "video": "https://api.grove.storage/079c81cf04360d44e0de39eb9f74dc387746a6d3e78e1b20584fc3af65911074",
         "poster": "poster.png",
-        "captions": "captions.vtt"
+        "captions": "captions.vtt",
+        "video_uri": "lens://079c81cf04360d44e0de39eb9f74dc387746a6d3e78e1b20584fc3af65911074"
       }
     },
     {

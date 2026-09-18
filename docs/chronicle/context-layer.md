@@ -111,3 +111,48 @@ User-directed conventions for all specimen clips going forward
   large and central — default to the intro and the closing pivot.
 - **No new lip-sync spend** (recorded earlier): reuse existing anchor
   footage as a muted loop unless synchronized speech is essential.
+
+## 8. Media hosting — Grove/Lens (video), repo (poster + captions)
+
+**Rule: chronicle videos live on Grove storage, never in git.** The repo
+enforces a 4 MB media cap (`frontend/build.py` skips anything over it,
+mirroring `tools/_enrich_common.py media_committable`) — committing a
+video either fails the cap or bloats repo history. Specimen-004 was
+briefly committed self-hosted before this was written down; that was
+the mistake this section exists to prevent.
+
+**Small assets stay in-repo**: `docs/chronicle/media/<slug>/poster.png`
+and `captions.vtt` — the build copies them into `/shorts/<slug>/` and
+the manifest references them by bare filename.
+
+**Upload (immutable, no auth — verified 2026-09-18):**
+
+```bash
+curl -s -X POST "https://api.grove.storage/?chain_id=232" \
+  --data-binary @video.mp4 \
+  -H "Content-Type: video/mp4"
+```
+
+- `chain_id=232` is **Lens Chain mainnet** — use it for anything meant to
+  be permanent. Testnet (`37111`) follows different retention policies
+  and content may be deleted after a period.
+- Immutable uploads need no wallet or API key; the tradeoff is the file
+  can never be edited or deleted (for specimen media that is a feature —
+  a render is a fact, like a score).
+- Max upload 125 MB; all content is publicly readable.
+- Response fields → `shorts.json` `media` block:
+  - `video` ← `gateway_url` (https://api.grove.storage/<storage_key>)
+  - `video_uri` ← `uri` (lens://<storage_key>)
+  - keep `video_uri` alongside `video` — specimen-003 sets both.
+- Verify before swapping the manifest:
+  `curl -sI <gateway_url>` should return 200 + `content-type: video/mp4`.
+- The site CSP already permits `api.grove.storage` in `media-src`
+  (see `netlify.toml`); `render.py` passes absolute video URLs through
+  unprefixed for the home-rail hover preview.
+
+**Quality note**: encode for Grove at full render quality — the 4 MB
+cap is a repo constraint, not a Grove one. Upload the original render
+from `chronicle/<slug>/renders/`, not a shrunken re-encode.
+
+Refs: https://lens.xyz/docs/storage ·
+https://lens.xyz/docs/storage/usage/upload
