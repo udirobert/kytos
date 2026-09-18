@@ -84,14 +84,102 @@ results.
 ## Sequencing
 
 - **Done**: x2.0 submitted + scored (2026-09-18); scale bracketed at ~1.7.
-- **Now**: Track 1 item 3(b) — check the RPE1 GWPS arm's panel coverage;
-  if ~270/300 as expected, build a context-B-dispatched variant
-  (RPE1 deltas for B, K562 elsewhere) — the first testable lineage swap.
-- **Next**: 4-lineage essential-screen transfer learning (item 3a) —
+- **Done (negative)**: Track 1 item 3(b) — the RPE1 GWPS panel-coverage check
+  is answered by `experiments/k013-lineage-ratios/report.json`: **no RPE1 GWPS
+  arm exists** (only K562 has a genome-wide arm; rpe1/jurkat/hepg2 public files
+  are the 2,393-target essential screen, overlapping **0/300** panel targets).
+  The context-B lineage-swap variant is dead; do not re-check.
+- **Done (negative)**: k014 conditional MLP baseline (2026-09-18). Model cosine
+  0.0425 vs identity 0.1406 — worse than raw transplant. Root cause: only 47
+  paired examples; no cross-context signal to learn. See
+  `docs/track2-nebius-setup.md` §8 for full details.
+- **Now**: 4-lineage essential-screen transfer learning (item 3a) —
   richer paired data (2,393 targets × 4 contexts) than the 47-pair
-  K562/hESC set that failed LOO.
-- **Parallel**: provision the Nebius box; port the paired-transfer
-  dataset builder to produce training tensors for whichever model class
-  is chosen.
+  K562/hESC set that failed LOO. Run ID: k015 (k014 is reserved for
+  Track-2 trained-model submissions).
+- **Next (Track 2)**: GEARS-style GNN on Nebius. The conditional MLP failure
+  confirms we need graph structure (gene-gene interactions) to generalize to
+  unseen targets, not just context conditioning. See §9 below.
 - Track 1 keeps spending daily slots on its best variant; Track 2 submits
   only when in-corpus eval clearly beats the running champion.
+
+## 9. Track 2 revised plan (post-k014)
+
+The conditional MLP baseline (k014-run-1) failed because it tried to learn
+a context-transfer function from only 47 paired examples. The model needs
+structural priors about gene-gene relationships to generalize.
+
+### Priority order for Track 2 experiments:
+
+1. **GEARS-style GNN** (highest expected value)
+   - Architecture: gene-node embeddings + GNN message passing on STRING
+     interaction graph → predict delta vector for target gene.
+   - Training data: 9,869 Replogle K562 targets (pseudobulk deltas) as
+     supervised signal. The graph structure enables generalization to the
+     28 uncovered panel targets.
+   - Context conditioning: concatenate context basal vector (or learned
+     context embedding) as a global conditioning signal.
+   - Why this should work: GEARS (Roohani et al. 2022) showed that GNNs
+     trained on perturbation data + gene interaction graphs can predict
+     effects of unseen gene knockouts. Our setting is analogous.
+   - Key difference from k014: the graph provides inductive bias for
+     unseen targets; k014 had no mechanism to generalize beyond memorization.
+
+2. **scGPT / scFoundation fine-tune** (if GEARS plateaus)
+   - Pretrained on millions of single-cell transcriptomes; already encodes
+     gene-gene relationships.
+   - Fine-tune on Atlas perturbation data (per-cell, not pseudobulk).
+   - Heavier setup (model download, GPU memory), but potentially much
+     stronger representations.
+
+3. **Ensemble / stacking** (combine best Track 1 + Track 2)
+   - Use k011 priors as base, add model-predicted deltas as correction.
+   - Learn per-target or per-gene weights on held-out data.
+   - Can be done on Modal (no GPU needed).
+
+### VM provisioning quick-reference
+
+```bash
+# Re-create instance (after deletion to save cost)
+nebius compute instance create \
+  --parent-id project-e00sz92bpr005x5c3r80zr \
+  --name kytos-track2-gpu \
+  --resources-platform gpu-l40s-a \
+  --resources-preset 1gpu-16vcpu-64gb \
+  --boot-disk-attach-mode read_write \
+  --boot-disk-managed-disk-name kytos-track2-disk \
+  --boot-disk-managed-disk-source-image-id computeimage-e00q003g5k851wjgpn \
+  --boot-disk-managed-disk-size-gibibytes 500 \
+  --boot-disk-managed-disk-type network_ssd \
+  --network-interfaces '[{"name":"eth0","subnet_id":"vpcsubnet-e00pbj53wtjbf7c6e9","ip_address":{},"public_ip_address":{},"security_groups":[{"id":"vpcsecuritygroup-e00jth18f0j9zbct6g"},{"id":"vpcsecuritygroup-e00ac0vv3g60xcp6h7"}]}]' \
+  --cloud-init-user-data "$(cat <<'EOF'
+#cloud-config
+users:
+  - name: ubuntu
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEsq2UpnLyOLm2rr0gf1pH2Qf8ykKZTK7Vq9bnZSLz2q
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+EOF
+)" \
+  --async
+
+# SSH (use ubuntu user, not root)
+ssh -i ~/.ssh/id_ed25519 ubuntu@<IP>
+
+# Data staging (from local, after modal volume get)
+modal volume get kytos-vcc /paired-transfer/paired_transfer_train.npz /tmp/modal_transfer/
+modal volume get kytos-vcc /paired-transfer/delta_matrix_src.npz /tmp/modal_transfer/
+scp /tmp/modal_transfer/*.npz ubuntu@<IP>:/data/derived/
+
+# Delete when done (saves ~$1/hr)
+nebius compute instance delete --id <instance-id> --async
+```
+
+### Cost tracking
+
+| Session | Duration | Approx cost |
+|---------|----------|-------------|
+| 2026-09-18 (k014-run-1) | ~15 min | ~$0.25 |
+
+**Total Nebius spend so far: ~$0.25**

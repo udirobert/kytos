@@ -1,7 +1,13 @@
 # Ruff configuration for Kytos (ruff 0.15+).
 line-length = 100
 target-version = "py310"
+extend-exclude = ["notebooks"]  # legacy Kaggle scratch artifacts; E402 intentional there
 
 [lint]
 select = ["E", "F", "W"]   # pycodestyle errors, pyflakes, warning-grade issues
 fixable = ["ALL"]          # pre-commit `ruff check --fix` auto-applies safe fixes
+
+[lint.per-file-ignores]
+# Kaggle smoke script bootstraps sys.path before repo imports (E402 expected).
+"notebooks/kaggle_k004_smoke.py" = ["E402", "E501"]
+"notebooks/kaggle_k004_smoke.ipynb" = ["E402", "E501"]

@@ -170,6 +170,24 @@ to git.
   GPU — **Nebius** (user has access): L40S/A100-class single VM with
   persistent disk for checkpoints — with a trained perturbation model.
   Modal remains the build/submit path either way.
+- `kytos-k014-conditional-mlp` (Track 2 first attempt, 2026-09-18) —
+  **negative result**. Conditional MLP (emb 128d + ctx random-proj 256d →
+  1024 → 1024 → rank-64 → 18,533 genes) trained on 9,906 samples
+  (9,869 targets from `delta_matrix_src.npz`, 47 paired K562/hESC).
+  Best held-out cosine = 0.0425 vs identity baseline 0.1406 — model is
+  worse than raw K562 transplant. Magnitude ratio collapsed to 0.35.
+  Root cause: insufficient paired cross-context signal (only 47 pairs).
+  Next steps: GEARS-style GNN leveraging gene-gene graph, or foundation
+  model fine-tune with per-cell Atlas data. VM deleted after run to save
+  cost; provisioning details in `docs/track2-nebius-setup.md` §8.
+- **Track 2 scaffolding ready** (2026-09-18): `tools/track2/` (conditional
+  MLP trainer — smoke-tested locally in paired-only mode — bootstrap/stage/
+  upload scripts), `tools/run_k014_trained_model.py` +
+  `tools/modal_k014_trained_model.py` (consumes exported
+  `prediction_deltas.npz` as the 'real' tier, neighbor/fallback backfill,
+  champion sampler kd_std=2.0, library_cap=median). Awaiting Nebius VM
+  provisioning; `delta_matrix_src.npz` (9,869 targets) already staged on
+  `/kytos-vol/paired-transfer/`. Run-ID prefix: `k014-*`.
 - `kytos-k011-ds-x2p0` (delta_scale=2.0) scored **+0.0566** (rank 515):
   the scale curve has bent — `pds` best-yet 0.356, `fid` ~0, but `nmae`
   -0.125 now outweighs. Optimum ~1.7 (+0.0596, rank 486 = champion);
@@ -190,6 +208,11 @@ to git.
   (`experiments/k012-transfer-loo/`): raw K562→hESC cosine ~0.13 — naive
   paired transfer doesn't ship; lineage-matched corpora is the Track-1
   priority (k013 = per-context prior dispatch).
+- **No RPE1/Jurkat/HepG2 GWPS arm exists** (`experiments/k013-lineage-ratios/`):
+  only K562 has a genome-wide arm; the other public Replogle/Nadig files are
+  2,393-target essential screens overlapping **0/300** panel targets. The
+  context-B lineage-swap variant is dead; remaining Track-1 lever is
+  4-lineage essential-set transfer learning (k015).
 
 ---
 

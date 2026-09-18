@@ -42,8 +42,9 @@ pip install vcc-cli   # if publishing controls download is needed on-box
 ```
 
 Repo: `git clone https://github.com/udirobert/kytos.git ~/kytos` — the
-training scripts live in `tools/track2/` (to be written); keep them in
-git so provenance matches the Observatory record.
+training scripts live in `tools/track2/` (written, smoke-tested locally in
+paired-only mode; see the README there); keep them in git so provenance
+matches the Observatory record.
 
 Logging: plain CSV + JSON metrics files committed back to
 `experiments/k013-*/` — no wandb dependency unless wanted.
@@ -103,10 +104,13 @@ Track-2 eval is directly comparable to Track-1 LOO numbers.
 ```
 Nebius: trained model → predicted delta matrix [300 × 18,533] per context
       → export prediction_deltas.npz (+ model card JSON)
-Modal:  tools/run_k013_transfer_model.py loads the .npz, drops it into
+Modal:  tools/run_k014_trained_model.py loads the .npz, drops it into
         build_context_predictions as the 'real' tier → .h5ad → vcc prep
       → submit_from_volume (unchanged flow)
 ```
+
+(k014 is the run-ID prefix for Track-2 trained-model work; k013 was taken by
+the per-context delta-scale experiment.)
 
 The .npz is small (~22 MB per context at float32) — scp or Modal volume
 `put`. The Nebius box never touches `vcc submit`.
@@ -123,3 +127,80 @@ The .npz is small (~22 MB per context at float32) — scp or Modal volume
   including per-cell residuals, not just mean deltas.
 - **Cost**: L40S-class is ~$1–2/hr; a week of iteration is a few hundred
   dollars worst case. Checkpoint + snapshot early so stop/start is cheap.
+
+## 8. Experiment log
+
+### k014-run-1: Conditional MLP baseline (2026-09-18) — NEGATIVE
+
+- **Setup**: L40S VM (Nebius, eu-north1, project-e00sz92bpr005x5c3r80zr),
+  CUDA 12.4, torch 2.6.0. Data: `paired_transfer_train.npz` (47 paired
+  targets) + `delta_matrix_src.npz` (9,869 targets, mostly K562-only).
+- **Config**: 200 epochs (early-stopped at ~90), lr=1e-3, batch=256,
+  emb_dim=128, ctx_dim=256, hidden=1024, bottleneck=64.
+- **Results**: best eval cosine = 0.0425 (10 held-out hESC targets).
+  Identity baseline (raw K562 transplant) cosine = 0.1406.
+  **Improvement over identity: −0.098** (model is worse than doing nothing).
+  Magnitude ratio collapsed to 0.35 (model predicts near-zero deltas).
+- **Diagnosis**: With only 47 paired examples and 9,822 K562-only targets,
+  the model has no cross-context signal to learn. It converges to predicting
+  small-magnitude noise. The architecture is sound but the data is
+  fundamentally insufficient for this task.
+- **Conclusion**: Do NOT submit. The conditional MLP baseline confirms that
+  naive paired transfer (even with a learned model) cannot beat identity
+  transplant on this data. Need either (a) much more paired data across
+  contexts, or (b) a fundamentally different approach (e.g., GEARS-style
+  GNN that leverages gene-gene interaction structure, or foundation-model
+  fine-tuning on per-cell Atlas data).
+
+### VM provisioning notes (for future sessions)
+
+- **Profile**: `nebius profile create kytos --auth-method federation`
+  → opens browser OAuth → select account → picks tenant/project.
+- **Current tenant**: tenant-e00znds1hwpckd5vna (NOT the old suspended one)
+- **Current project**: project-e00sz92bpr005x5c3r80zr
+- **Subnet**: vpcsubnet-e00pbj53wtjbf7c6e9 (default-subnet-od2iiilq)
+- **SSH security group**: vpcsecuritygroup-e00ac0vv3g60xcp6h7
+  (name: kytos-ssh-sg, allows TCP/22 from 0.0.0.0/0)
+- **Instance spec**: gpu-l40s-a / 1gpu-16vcpu-64gb / 500GB network_ssd /
+  image computeimage-e00q003g5k851wjgpn (Ubuntu 24.04 + CUDA 12)
+- **SSH user**: `ubuntu` (NOT root — cloud-init root key injection is
+  unreliable on this image; use top-level `ssh_authorized_keys` or
+  `users: [{name: ubuntu, ...}]`)
+- **Cloud-init that works**:
+  ```yaml
+  #cloud-config
+  users:
+    - name: ubuntu
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEsq2UpnLyOLm2rr0gf1pH2Qf8ykKZTK7Vq9bnZSLz2q
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      shell: /bin/bash
+  ```
+- **To recreate** (instance was deleted after k014-run-1 to save cost):
+  ```bash
+  nebius compute instance create \
+    --parent-id project-e00sz92bpr005x5c3r80zr \
+    --name kytos-track2-gpu \
+    --resources-platform gpu-l40s-a \
+    --resources-preset 1gpu-16vcpu-64gb \
+    --boot-disk-attach-mode read_write \
+    --boot-disk-managed-disk-name kytos-track2-disk \
+    --boot-disk-managed-disk-source-image-id computeimage-e00q003g5k851wjgpn \
+    --boot-disk-managed-disk-size-gibibytes 500 \
+    --boot-disk-managed-disk-type network_ssd \
+    --network-interfaces '[{"name":"eth0","subnet_id":"vpcsubnet-e00pbj53wtjbf7c6e9","ip_address":{},"public_ip_address":{},"security_groups":[{"id":"vpcsecuritygroup-e00jth18f0j9zbct6g"},{"id":"vpcsecuritygroup-e00ac0vv3g60xcp6h7"}]}]' \
+    --cloud-init-user-data "$(cat <<'EOF'
+  #cloud-config
+  users:
+    - name: ubuntu
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEsq2UpnLyOLm2rr0gf1pH2Qf8ykKZTK7Vq9bnZSLz2q
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      shell: /bin/bash
+  EOF
+  )" \
+    --async
+  ```
+- **Data staging**: `modal volume get kytos-vcc /paired-transfer/{file} /tmp/`
+  then `scp /tmp/{file} ubuntu@<ip>:/data/derived/`
+- **Cost**: ~$0.50–1.00/hr for L40S 16vCPU/64GB. Delete when not training.
