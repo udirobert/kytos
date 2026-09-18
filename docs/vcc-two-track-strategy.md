@@ -183,3 +183,98 @@ nebius compute instance delete --id <instance-id> --async
 | 2026-09-18 (k014-run-1) | ~15 min | ~$0.25 |
 
 **Total Nebius spend so far: ~$0.25**
+
+## 10. Resource audit (2026-09-18, post-leaderboard-API discovery)
+
+Prompted by user question "are we using all the resources available to us?"
+— audit of official + public resources, several previously unused.
+
+### Newly exploited today
+
+1. **Public leaderboard API** — `https://virtualcellchallenge.org/api/leaderboard`
+   returns all 1,036 published entries with raw metrics AND normalized
+   component scores (no auth required). Saved snapshot: `/tmp/vcc_leaderboard.json`.
+   Findings:
+   - `score_avg` is the plain arithmetic mean of six component scores:
+     `score_pds, score_mse, score_nmae, score_fid, score_reach, score_jac`
+     (verified exact on top 5 entries).
+   - **Top-100 threshold today: 0.1685** (team "xxx yan", model
+     "atlas-transfer v1.1"). Rank 100 component profile: pds 0.690,
+     nmae 0.165, reach 0.119, mse 0.052, fid -0.015, jac 0.001.
+     ⇒ PDS is the dominant lever; MSE near zero is common even at rank 100.
+   - The live leaderboard shows only each team's **latest** submission.
+     Our public position is therefore k013-ctx-scale (0.0312, rank ~554),
+     NOT our best k011-ds-x1p7 (0.0596, ~rank 489). Next submission must
+     beat k011 just to restore standing.
+
+2. **Official `vcc skill install`** — ships with vcc-cli; installed to
+   `~/.claude/skills/vcc`. Confirms 2026 scorer requirements: raw integer
+   counts (`--require-counts` is prep default), exactly 400 cells per
+   perturbation, no control cells, 1e6 per-cell count cap, one in-flight
+   submission per team.
+
+3. **Arc 2025 wrap-up blog** (arcinstitute.org): winning approaches were
+   hybrids. 3rd place (TransPert) is a *statistical cross-cell-line transfer*
+   using pseudobulk summaries + Wilcoxon DE stats + similarity-aware
+   aggregation + PDS-optimized global scaling — validates the k015 direction.
+   2nd place used ESM-2 protein embeddings, residual delta prediction, and
+   PerturbAtlas H1 data. PDS carried ~2x DES weight in 2025.
+
+4. **Public top-100 competitor code** — `github.com/kaipengm2/Virtual-Cell-Challenge-2026`
+   (rank 82 at snapshot time, score 0.1546, MIT license). Method:
+   - Weighted ensemble of 4 sources: K562 GWPS, HCT116, HEK293T, H1-2025 (2:1:1:2)
+   - CD4 T-cell Perturb-seq DE statistics as additive family-level signal
+   - Common-response centering (subtract shared transcriptional reaction)
+   - **Promoter-neighbor prior** for CRISPRi local effects (gencode distances)
+   - Dual-moment integer count generation matching both per-cell mean CPM
+     and pseudobulk profile, exact library-depth preservation
+   - Amplitudes: 0.6 (log2fc space) / 0.3 (bulk-delta space) — much more
+     conservative than our delta_scale=1.7
+
+5. **2025 H1 training set** — `adata_Training.h5ad` (15.5 GB, 150 targets)
+   is public and explicitly allowed ("use the H1 data released last year").
+   We had only used the 2025 *validation* set (47 pairs). Training-set
+   overlap with the 2026 panel is only 13/300 targets, so its value is for
+   learning transfer maps (esp. context C / hESC-like), not direct deltas.
+   URL in that repo's `sources.json`; also 2025 test set (11.9 GB) available.
+
+6. **X-Atlas** (HF: `slaf-project/X-Atlas-Orion`, CC-BY-NC-SA-4.0) — large
+   cross-tissue perturbation compendium referenced by the top-100 repo's
+   prepare script. Candidate corpus for Track 2.
+
+### Previously unused data sources now identified (from competitor repo)
+
+| Source | Size | Use |
+|---|---:|---|
+| K562 GWPS single-cell raw (figshare 35775507) | 65.8 GB | per-cell variability, DE stats |
+| CD4 T-cell Perturb-seq DE stats (Marson 2025, S3) | 16.8 GB | immune-lineage transfer signal |
+| HCT116 + HEK293T perturbation statistics | via prepare.py | additional ensemble sources |
+| 2025 H1 train/test h5ad | 15.5 + 11.9 GB | context-C transfer training/eval |
+
+### k015 low-rank eval results (Modal job ap-uEt7lCW8KFzAvNAoA53JrK, 495 s)
+
+| Pair | n pairs | identity | rank 128 | rank 256 (best) |
+|---|---:|---:|---:|---:|
+| K562→Jurkat (ctx A) | 2,334 | 0.439 | 0.537 | 0.549 |
+| K562→RPE1 (ctx B) | 2,390 | 0.330 | 0.607 | 0.614 |
+| K562→HepG2 (ctx C proxy) | 2,327 | 0.355 | 0.541 | 0.548 |
+
+Full-rank-256 refits persisted to `/kytos-vol/k015-essential-transfer/lowrank_models.npz`
+(60 MB). Per-gene shrinkage remains worse than identity — drop it.
+
+### Revised priorities
+
+1. **Do not submit k015 rank-256 blindly.** Held-out cosine improved, but
+   (a) 256 may overfit with ~1,900 train pairs, (b) the top-100 reference
+   uses far smaller amplitudes and moment-matched counts, (c) our delta_scale
+   1.7 was tuned for raw K562 deltas, not low-rank-transformed ones.
+2. **Study/replicate the kaipengm2 pipeline** (MIT, CPU-only, ~10 min
+   inference). It already scores 0.1546 ≈ top-100 threshold. Highest
+   expected value per hour currently visible.
+3. **Pull 2025 H1 training set on Modal** for context-C transfer training
+   (150 pairs vs 47) and use the 2025 test set for honest offline eval.
+4. **Adopt count-generation discipline**: promoter prior + dual-moment
+   matching likely explains why top entries avoid the MSE collapse that
+   killed k013.
+5. Continue using leaderboard API snapshots for calibration; no submission
+   until an offline gate shows improvement over k011 config.
