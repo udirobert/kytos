@@ -67,3 +67,4 @@ chronicle/*/assets/anchor*.mp4
 chronicle/*/assets/vo-full.mp3
 chronicle/*/.thumbnails/
 chronicle/*/.waveform-cache/
+data/raw/refs/

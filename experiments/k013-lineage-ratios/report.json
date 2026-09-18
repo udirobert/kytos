@@ -1,0 +1,68 @@
+{
+  "run_id": "k013-lineage-ratios",
+  "created": "2026-09-18",
+  "question": "do per-lineage delta-magnitude ratios (vs K562, on shared essential-screen targets) motivate per-context delta_scale?",
+  "method": {
+    "shared_targets": 2055,
+    "shared_var_genes": {
+      "K562_vs_RPE1": 7226,
+      "K562_vs_Jurkat": 7566
+    },
+    "delta_definition": "pseudobulk_mean(perturbed) - pseudobulk_mean(non-targeting controls), L2 norm per target",
+    "sources": {
+      "K562": "figshare 35773070 (K562_essential_raw_bulk_01.h5ad, 2285 perts)",
+      "RPE1": "figshare 35775581 (rpe1_raw_bulk_01.h5ad, 2679 perts)",
+      "Jurkat": "HF bendidiihab/tx_evaluation nadig_2024_jurkat.h5ad (262,956 cells; per-target means via chunked one-hot groupby; 2 corrupt HDF5 blocks skipped ~1.5% cells)",
+      "hESC": "no essential screen; ratio from k012 paired-transfer LOO scalar fit (47 pairs)"
+    }
+  },
+  "results": {
+    "RPE1": {
+      "norm_ratio_median": 1.567,
+      "norm_ratio_mean": 2.137,
+      "norm_ratio_iqr": [
+        0.979,
+        2.638
+      ],
+      "delta_cosine_median": 0.301,
+      "delta_cosine_mean": 0.238
+    },
+    "Jurkat": {
+      "norm_ratio_median": 1.008,
+      "norm_ratio_mean": 1.298,
+      "norm_ratio_iqr": [
+        0.692,
+        1.539
+      ],
+      "delta_cosine_median": 0.466,
+      "delta_cosine_mean": 0.352
+    },
+    "hESC": {
+      "norm_ratio_scalar": 0.44,
+      "note": "LOO-fitted global scalar, K562->hESC, 47 paired targets"
+    }
+  },
+  "panel_overlap_essential_screens": {
+    "RPE1": 0,
+    "Jurkat": 0,
+    "of_panel_targets": 300
+  },
+  "figshare_gwps_inventory": "only K562 has a genome-wide arm; rpe1_*/jurkat/hepg2 public files are the 2393-gene essential screen",
+  "derived_scale_map": {
+    "A": 1.7,
+    "B": 2.65,
+    "C": 0.75
+  },
+  "scale_map_logic": "scale_ctx = 1.7 (champion) x ratio_ctx / mean(ratios); mean(ratios)~1.0 -> A=1.7x1.01, B=1.7x1.57, C=1.7x0.44",
+  "interpretation": [
+    "Uniform x1.7 was likely a mixture optimum: B genuinely wants ~1.6x (RPE1 deltas are 1.57x K562's), A wants ~1.0x, C likely less",
+    "Directional similarity also varies: cos(K562,Jurkat)=0.47 > cos(K562,RPE1)=0.30 >> cos(K562,hESC)~0.13 \u2014 Jurkat is the most transferable lineage despite context A's strong Jurkat identity being most 'foreign' to K562",
+    "Essential screens cover 0/300 panel targets \u2014 they can only supply transfer supervision / magnitude ratios, never direct deltas"
+  ],
+  "caveats": [
+    "ratios measured on essential genes; panel is non-essential \u2014 magnitude relationship may differ",
+    "norm ratios conflate biology with per-dataset normalization",
+    "B (0.369) and C (0.379) lineage assignments are weak",
+    "Atlas-sourced deltas (4 targets) are already context-appropriate but get scaled in the assembled delta"
+  ]
+}
