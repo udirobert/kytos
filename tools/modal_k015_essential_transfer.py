@@ -20,6 +20,7 @@ Run:
 
 from __future__ import annotations
 
+import datetime
 import subprocess
 import time
 
@@ -205,6 +206,101 @@ def submit_from_volume(tag: str = "kytos-k015-essential-transfer") -> dict:
         raise RuntimeError(f"vcc submit failed: {result.stderr}")
 
     return {"status": "submitted", "tag": tag}
+
+
+@app.function(
+    image=modal.Image.debian_slim().apt_install("git", "curl").pip_install("vcc-cli"),
+    timeout=60 * 60 * 8,
+    volumes={"/kytos-vol": vol},
+    secrets=[modal.Secret.from_name("kytos-vcc")],
+)
+def submit_after_reset(
+    tag: str = "kytos-k015-lowrank-r256",
+    wait_seconds_after_reset: int = 120,
+    max_retries: int = 12,
+    retry_wait_s: int = 300,
+) -> dict:
+    """Wait until the VCC daily allowance reset (00:00 UTC), then submit.
+
+    Uses a marker file on the volume so it will not submit the same tag twice.
+    """
+    import json
+    import os
+    import re
+
+    vcc_path = f"/kytos-vol/{TAG}/prediction.prep.vcc"
+    if not os.path.exists(vcc_path):
+        raise FileNotFoundError(f"{vcc_path} not found on volume")
+
+    safe_tag = re.sub(r"[^A-Za-z0-9_.-]", "_", tag)
+    marker_path = f"/kytos-vol/{TAG}/submitted_{safe_tag}.json"
+    if os.path.exists(marker_path):
+        with open(marker_path) as f:
+            return {"status": "already_submitted", "marker": marker_path, "data": json.load(f)}
+
+    now = datetime.datetime.now(datetime.timezone.utc)
+    today_reset = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    # If we are shortly after the reset, submit now; otherwise wait for next reset.
+    if now >= today_reset + datetime.timedelta(minutes=10):
+        target = today_reset + datetime.timedelta(days=1)
+    else:
+        target = today_reset
+    target = target + datetime.timedelta(seconds=wait_seconds_after_reset)
+
+    delay = (target - now).total_seconds()
+    if delay > 0:
+        print(f"[schedule] waiting {delay:.0f}s until {target.isoformat()} to submit", flush=True)
+        time.sleep(delay)
+
+    last_error = None
+    for attempt in range(1, max_retries + 1):
+        print(f"[submit] attempt {attempt}/{max_retries}", flush=True)
+        result = subprocess.run(
+            [
+                "vcc",
+                "submit",
+                "-m",
+                tag,
+                "-d",
+                "k015 low-rank essential-screen transfer; rank-256; kd_std=2.0; delta_scale=1.7",
+                vcc_path,
+                "--json",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        stdout = result.stdout or ""
+        stderr = result.stderr or ""
+        print(stdout, flush=True)
+        if stderr:
+            print(stderr, flush=True)
+
+        if result.returncode == 0:
+            payload = {
+                "status": "submitted",
+                "tag": tag,
+                "submitted_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "stdout": stdout,
+                "stderr": stderr,
+            }
+            try:
+                payload["json"] = json.loads(stdout)
+            except Exception:
+                pass
+            with open(marker_path, "w") as f:
+                json.dump(payload, f, indent=2)
+            vol.commit()
+            return payload
+
+        combined = f"{stdout}\n{stderr}"
+        last_error = combined
+        if "allowance" in combined.lower():
+            print(f"[submit] allowance not ready yet; retrying in {retry_wait_s}s", flush=True)
+            time.sleep(retry_wait_s)
+            continue
+        raise RuntimeError(f"vcc submit failed: {combined}")
+
+    raise RuntimeError(f"vcc submit did not succeed after {max_retries} attempts: {last_error}")
 
 
 @app.local_entrypoint()
