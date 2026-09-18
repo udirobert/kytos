@@ -272,10 +272,13 @@ def fit_and_evaluate(
         results["basal_ratio"] = best_br
 
     # 5. Low-rank linear map (fit on train, predict on test)
-    for rank in [16, 32, 64, 128]:
+    # Compute SVD once at max rank; uncentered to match the validated config.
+    _, _, vt_s = np.linalg.svd(src_train, full_matrices=False)
+    _, _, vt_d = np.linalg.svd(dst_train, full_matrices=False)
+
+    best_lr = {"cosine": -1, "rank": 16}
+    for rank in [16, 32, 64, 128, 256]:
         try:
-            _, _, vt_s = np.linalg.svd(src_train, full_matrices=False)
-            _, _, vt_d = np.linalg.svd(dst_train, full_matrices=False)
             basis_s = vt_s[:rank]
             basis_d = vt_d[:rank]
             src_proj = src_train @ basis_s.T
@@ -287,6 +290,8 @@ def fit_and_evaluate(
             pred = (src_test @ basis_s.T) @ W @ basis_d
             cos = _mean_cosine(pred, dst_test, top_k)
             results[f"low_rank_{rank}"] = {"cosine": cos, "rank": rank}
+            if cos > best_lr["cosine"]:
+                best_lr = {"cosine": cos, "rank": rank}
         except Exception as e:
             results[f"low_rank_{rank}"] = {"cosine": float("nan"), "error": str(e)}
 
@@ -294,7 +299,23 @@ def fit_and_evaluate(
         "n_train": len(train_idx),
         "n_test": len(test_idx),
         "results": results,
+        "best_low_rank": best_lr,
     }
+
+
+def fit_lowrank_full(src_mat: np.ndarray, dst_mat: np.ndarray, rank: int) -> dict[str, np.ndarray]:
+    """Refit the low-rank map on ALL pairs (no held-out split) for panel application."""
+    _, _, vt_s = np.linalg.svd(src_mat, full_matrices=False)
+    _, _, vt_d = np.linalg.svd(dst_mat, full_matrices=False)
+    basis_s = vt_s[:rank].astype(np.float32)
+    basis_d = vt_d[:rank].astype(np.float32)
+    src_proj = src_mat @ basis_s.T
+    dst_proj = dst_mat @ basis_d.T
+    W = np.linalg.solve(
+        src_proj.T @ src_proj + 1.0 * np.eye(rank),
+        src_proj.T @ dst_proj,
+    ).astype(np.float32)
+    return {"basis_s": basis_s, "basis_d": basis_d, "W": W}
 
 
 def _mean_cosine(pred: np.ndarray, true: np.ndarray, top_k: int = 200) -> float:
@@ -389,6 +410,7 @@ def main(argv: list[str] | None = None) -> int:
 
     transfer_results = {}
     transfer_params = {}
+    lowrank_fits: list[tuple[str, np.ndarray, np.ndarray, int]] = []
 
     # K562 -> Jurkat
     shared_kj = sorted(set(k562_deltas.keys()) & set(jurkat_deltas.keys()))
@@ -421,6 +443,12 @@ def main(argv: list[str] | None = None) -> int:
         for name, res in eval_result["results"].items():
             cos = res if isinstance(res, float) else res.get("cosine", float("nan"))
             print(f"  {name:<20} cosine={cos:.4f}", flush=True)
+        best = eval_result["best_low_rank"]
+        print(
+            f"  best low-rank: rank={best['rank']} cosine={best['cosine']:.4f}",
+            flush=True,
+        )
+        lowrank_fits.append(("k562_to_jurkat", src_mat, dst_mat, best["rank"]))
 
     # K562 -> RPE1
     shared_kr = sorted(set(k562_deltas.keys()) & set(rpe1_deltas.keys()))
@@ -452,6 +480,12 @@ def main(argv: list[str] | None = None) -> int:
         for name, res in eval_result["results"].items():
             cos = res if isinstance(res, float) else res.get("cosine", float("nan"))
             print(f"  {name:<20} cosine={cos:.4f}", flush=True)
+        best = eval_result["best_low_rank"]
+        print(
+            f"  best low-rank: rank={best['rank']} cosine={best['cosine']:.4f}",
+            flush=True,
+        )
+        lowrank_fits.append(("k562_to_rpe1", src_mat, dst_mat, best["rank"]))
 
     # K562 -> HepG2
     if hepg2_deltas:
@@ -484,6 +518,12 @@ def main(argv: list[str] | None = None) -> int:
             for name, res in eval_result["results"].items():
                 cos = res if isinstance(res, float) else res.get("cosine", float("nan"))
                 print(f"  {name:<20} cosine={cos:.4f}", flush=True)
+            best = eval_result["best_low_rank"]
+            print(
+                f"  best low-rank: rank={best['rank']} cosine={best['cosine']:.4f}",
+                flush=True,
+            )
+            lowrank_fits.append(("k562_to_hepg2", src_mat, dst_mat, best["rank"]))
 
     # --- Save results ---
     report = {
@@ -499,6 +539,7 @@ def main(argv: list[str] | None = None) -> int:
         "paired_counts": {
             "K562_to_Jurkat": len(shared_kj) if shared_kj else 0,
             "K562_to_RPE1": len(shared_kr) if shared_kr else 0,
+            "K562_to_HepG2": len(shared_kh) if hepg2_deltas and shared_kh else 0,
         },
         "transfer_results": transfer_results,
         "elapsed_s": round(time.time() - t0, 1),
@@ -511,6 +552,23 @@ def main(argv: list[str] | None = None) -> int:
     params_path = out_dir / "transfer_params.json"
     params_path.write_text(json.dumps(transfer_params) + "\n")
     print(f"[out] wrote {params_path} ({params_path.stat().st_size / 1e6:.1f} MB)", flush=True)
+
+    # Save low-rank model params, refit on ALL pairs at the rank that won the
+    # held-out evaluation, so panel application uses the full evidence base.
+    lowrank_save = {}
+    for prefix, src_mat, dst_mat, rank in lowrank_fits:
+        model = fit_lowrank_full(src_mat, dst_mat, rank)
+        lowrank_save[f"{prefix}_rank"] = np.array(rank)
+        lowrank_save[f"{prefix}_basis_s"] = model["basis_s"]
+        lowrank_save[f"{prefix}_basis_d"] = model["basis_d"]
+        lowrank_save[f"{prefix}_W"] = model["W"]
+    if lowrank_save:
+        lowrank_path = out_dir / "lowrank_models.npz"
+        np.savez_compressed(lowrank_path, **lowrank_save)
+        print(
+            f"[out] wrote {lowrank_path} ({lowrank_path.stat().st_size / 1e6:.1f} MB)",
+            flush=True,
+        )
 
     # Save the paired delta matrices for potential neural network training
     npz_path = out_dir / "essential_transfer_data.npz"

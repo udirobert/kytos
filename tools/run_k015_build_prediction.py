@@ -1,19 +1,20 @@
-"""Kytos k015 — apply learned per-gene context transfer to build panel predictions.
+"""Kytos k015 — apply learned low-rank context transfer to build panel predictions.
 
-Takes the transfer_params.json produced by run_k015_essential_transfer.py and
-applies per-gene scaling factors to the K562 GWPS deltas for each panel target,
-per context. Then builds the prediction h5ad using the champion pipeline.
+Takes the lowrank_models.npz produced by run_k015_essential_transfer.py and
+applies the best low-rank linear transfer map to the K562 GWPS deltas for
+each panel target, per context. Then builds the prediction h5ad using the
+champion pipeline (heterogeneous KD sampling, delta_scale, library_cap).
 
 Context mapping (from k012 lineage score):
-  A -> Jurkat transfer weights
-  B -> RPE1 transfer weights
-  C -> hESC transfer weights (from Atlas 47 pairs, or HepG2 proxy)
+  A -> Jurkat transfer map
+  B -> RPE1 transfer map
+  C -> HepG2 transfer map (hESC proxy; Atlas pairs too few for stable fit)
 
 Usage:
   python tools/run_k015_build_prediction.py \
     --raw-dir data/raw/vcc2026 \
     --replogle-src /root/replogle/K562_gwps_raw_bulk_01.h5ad \
-    --transfer-params experiments/k015-essential-transfer/transfer_params.json \
+    --lowrank-models experiments/k015-essential-transfer/lowrank_models.npz \
     --neighbor-map experiments/k007-neighbor-prior-validation/neighbor_map.json \
     --out-dir experiments/k015-essential-transfer \
     --delta-scale 1.7 --kd-std 2.0
@@ -30,23 +31,28 @@ if str(REPO / "src") not in sys.path:
 if str(REPO / "tools") not in sys.path:
     sys.path.insert(0, str(REPO / "tools"))
 
+import numpy as np  # noqa: E402
 import run_k007_neighbor_prior as k007  # noqa: E402
 from kytos.models.layer_b import HeterogeneousTransportSampler  # noqa: E402
 
 RUN_ID = "k015-essential-transfer"
 
+# Context -> low-rank model prefix in the npz
+CTX_MODEL_PREFIX = {
+    "A": "k562_to_jurkat",
+    "B": "k562_to_rpe1",
+    "C": "k562_to_hepg2",
+}
 
-def apply_transfer_weights(delta, s_gene, min_weight=0.0):
-    """Apply per-gene transfer weights to a delta vector.
 
-    s_gene[g] is the learned scaling factor for gene g.
-    Genes with weight below min_weight are zeroed (noise suppression).
-    """
-    import numpy as np
-
-    weights = np.asarray(s_gene, dtype=np.float32)
-    mask = np.abs(weights) >= min_weight
-    return (delta * weights * mask).astype(np.float32)
+def apply_lowrank_transfer(
+    delta: np.ndarray,
+    basis_s: np.ndarray,
+    W: np.ndarray,
+    basis_d: np.ndarray,
+) -> np.ndarray:
+    """Apply low-rank linear transfer: y = (x @ Vs^T) @ W @ Vd (uncentered fit)."""
+    return ((delta.astype(np.float32) @ basis_s.T) @ W) @ basis_d
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -56,10 +62,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--raw-dir", type=Path, default=REPO / "data" / "raw" / "vcc2026")
     ap.add_argument("--replogle-src", type=Path, required=True)
     ap.add_argument(
-        "--transfer-params",
+        "--lowrank-models",
         type=Path,
         required=True,
-        help="transfer_params.json from run_k015_essential_transfer.py",
+        help="lowrank_models.npz from run_k015_essential_transfer.py",
     )
     ap.add_argument(
         "--neighbor-map",
@@ -76,12 +82,6 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--noise-scale", type=float, default=0.05)
     ap.add_argument("--kd-std", type=float, default=2.0)
     ap.add_argument("--delta-scale", type=float, default=1.7)
-    ap.add_argument(
-        "--min-transfer-weight",
-        type=float,
-        default=0.0,
-        help="Zero out per-gene weights below this (noise suppression)",
-    )
     ap.add_argument("--neighbor-min-partners", type=int, default=2)
     ap.add_argument("--neighbor-min-score", type=float, default=0.7)
     ap.add_argument("--neighbor-topk", type=int, default=5)
@@ -91,7 +91,6 @@ def main(argv: list[str] | None = None) -> int:
     import time
 
     import anndata as ad
-    import numpy as np
     import pandas as pd
     from scipy import sparse
 
@@ -111,23 +110,17 @@ def main(argv: list[str] | None = None) -> int:
     if not args.replogle_src.exists():
         print(f"missing replogle source {args.replogle_src}", file=sys.stderr)
         return 2
-    if not args.transfer_params.exists():
-        print(f"missing transfer params {args.transfer_params}", file=sys.stderr)
+    if not args.lowrank_models.exists():
+        print(f"missing low-rank models {args.lowrank_models}", file=sys.stderr)
         return 3
     if not args.neighbor_map.exists():
         print(f"missing neighbor map {args.neighbor_map}", file=sys.stderr)
         return 4
 
-    # Load transfer parameters
-    transfer_params = json.loads(args.transfer_params.read_text())
-    print(f"[transfer] loaded params for contexts: {list(transfer_params.keys())}", flush=True)
-
-    # Context -> transfer key mapping
-    ctx_transfer_key = {
-        "A": "K562_to_Jurkat",
-        "B": "K562_to_RPE1",
-        "C": "K562_to_HepG2",  # fallback; hESC if available
-    }
+    # Load low-rank transfer models
+    lr_models = np.load(args.lowrank_models, allow_pickle=False)
+    available_models = [k for k in lr_models.keys() if k.endswith("_rank")]
+    print(f"[models] loaded low-rank params: {available_models}", flush=True)
 
     # Build base deltas from K562 GWPS (the primary source for panel targets)
     real_deltas = build_combined_deltas(None, args.replogle_src, gene_order)
@@ -147,34 +140,34 @@ def main(argv: list[str] | None = None) -> int:
         flush=True,
     )
 
-    # Apply transfer weights per context
-    # We build context-specific delta dicts by scaling the base K562 deltas
+    # Apply low-rank transfer per context
     ctx_real_deltas = {}
     ctx_neighbor_deltas = {}
     for ctx in contexts:
-        key = ctx_transfer_key.get(ctx)
-        if key and key in transfer_params:
-            s_gene = transfer_params[key].get("s_gene", [])
-            if len(s_gene) == len(gene_order):
-                print(f"[{ctx}] applying {key} transfer weights ({len(s_gene)} genes)", flush=True)
-                ctx_real_deltas[ctx] = {
-                    t: apply_transfer_weights(d, s_gene, args.min_transfer_weight)
-                    for t, d in real_deltas.items()
-                }
-                ctx_neighbor_deltas[ctx] = {
-                    t: apply_transfer_weights(d, s_gene, args.min_transfer_weight)
-                    for t, d in neighbor_deltas.items()
-                }
-            else:
-                print(
-                    f"[{ctx}] WARNING: s_gene length {len(s_gene)} != {len(gene_order)}, "
-                    "skipping transfer",
-                    flush=True,
-                )
-                ctx_real_deltas[ctx] = real_deltas
-                ctx_neighbor_deltas[ctx] = neighbor_deltas
+        prefix = CTX_MODEL_PREFIX.get(ctx)
+        model_available = prefix and f"{prefix}_W" in lr_models
+
+        if model_available:
+            basis_s = lr_models[f"{prefix}_basis_s"]
+            basis_d = lr_models[f"{prefix}_basis_d"]
+            W = lr_models[f"{prefix}_W"]
+            rank = int(lr_models[f"{prefix}_rank"])
+            print(
+                f"[{ctx}] applying low-rank transfer (rank={rank}, prefix={prefix})",
+                flush=True,
+            )
+            ctx_real_deltas[ctx] = {
+                t: apply_lowrank_transfer(d, basis_s, W, basis_d) for t, d in real_deltas.items()
+            }
+            ctx_neighbor_deltas[ctx] = {
+                t: apply_lowrank_transfer(d, basis_s, W, basis_d)
+                for t, d in neighbor_deltas.items()
+            }
         else:
-            print(f"[{ctx}] no transfer params for key '{key}', using raw deltas", flush=True)
+            print(
+                f"[{ctx}] no low-rank model for prefix '{prefix}', using raw deltas",
+                flush=True,
+            )
             ctx_real_deltas[ctx] = real_deltas
             ctx_neighbor_deltas[ctx] = neighbor_deltas
 
@@ -232,7 +225,7 @@ def main(argv: list[str] | None = None) -> int:
     meta = {
         "run_id": RUN_ID,
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "mode": "essential_transfer+neighbor_imputation+heterogeneous_kd+delta_scale",
+        "mode": "essential_lowrank_transfer+neighbor_imputation+heterogeneous_kd+delta_scale",
         "contexts": contexts,
         "n_targets": len(targets),
         "cells_per_pert": args.cells_per_pert,
@@ -241,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
         "nnz": int(adata.X.nnz),
         "seed": args.seed,
         "replogle_src": str(args.replogle_src),
-        "transfer_params": str(args.transfer_params),
+        "lowrank_models": str(args.lowrank_models),
         "neighbor_map": str(args.neighbor_map),
         "neighbor_gate": {
             "min_partners": args.neighbor_min_partners,
@@ -254,7 +247,6 @@ def main(argv: list[str] | None = None) -> int:
             "kd_std": args.kd_std,
         },
         "delta_scale": args.delta_scale,
-        "min_transfer_weight": args.min_transfer_weight,
         "library_cap": "median",
         "dispatch": totals,
         "imputed_targets": neighbor_targets,

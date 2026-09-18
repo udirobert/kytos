@@ -58,7 +58,6 @@ TAG = "k015-essential-transfer"
 def build_and_prep(
     delta_scale: float = 1.7,
     kd_std: float = 2.0,
-    min_transfer_weight: float = 0.0,
     submit: bool = False,
 ) -> dict:
     t_start = time.time()
@@ -124,19 +123,18 @@ def build_and_prep(
         f"  --top-k 200",
     )
 
-    # Build prediction using transfer weights
+    # Build prediction using low-rank transfer
     run_step(
-        "build prediction with transfer weights",
+        "build prediction with low-rank transfer",
         f"cd {REPO_DIR}\n"
         "python tools/run_k015_build_prediction.py \\\n"
         f"  --raw-dir {RAW_DIR} \\\n"
         f"  --replogle-src {REPLOGLE_DIR}/K562_gwps_raw_bulk_01.h5ad \\\n"
-        f"  --transfer-params {OUT_DIR}/transfer_params.json \\\n"
+        f"  --lowrank-models {OUT_DIR}/lowrank_models.npz \\\n"
         f"  --neighbor-map experiments/k007-neighbor-prior-validation/neighbor_map.json \\\n"
         f"  --out-dir {OUT_DIR} \\\n"
         f"  --delta-scale {delta_scale} \\\n"
-        f"  --kd-std {kd_std} \\\n"
-        f"  --min-transfer-weight {min_transfer_weight}",
+        f"  --kd-std {kd_std}",
     )
 
     # vcc prep
@@ -158,6 +156,7 @@ def build_and_prep(
         f"cp {vcc_path} /kytos-vol/{TAG}/prediction.prep.vcc\n"
         f"cp {OUT_DIR}/meta.json /kytos-vol/{TAG}/meta.json\n"
         f"cp {OUT_DIR}/transfer_report.json /kytos-vol/{TAG}/transfer_report.json\n"
+        f"cp {OUT_DIR}/lowrank_models.npz /kytos-vol/{TAG}/lowrank_models.npz\n"
         f"ls -lh /kytos-vol/{TAG}/",
     )
 
@@ -170,7 +169,6 @@ def build_and_prep(
         "volume_path": f"/kytos-vol/{TAG}",
         "delta_scale": delta_scale,
         "kd_std": kd_std,
-        "min_transfer_weight": min_transfer_weight,
     }
 
 
@@ -202,10 +200,9 @@ def submit_from_volume(tag: str = "kytos-k015-essential-transfer") -> dict:
 
 
 @app.local_entrypoint()
-def main(delta_scale: float = 1.7, kd_std: float = 2.0, min_transfer_weight: float = 0.0):
+def main(delta_scale: float = 1.7, kd_std: float = 2.0):
     result = build_and_prep.remote(
         delta_scale=delta_scale,
         kd_std=kd_std,
-        min_transfer_weight=min_transfer_weight,
     )
     print(result)

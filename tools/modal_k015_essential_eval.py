@@ -97,6 +97,7 @@ def evaluate(min_cells: int = 10, top_k: int = 200, test_frac: float = 0.2) -> d
         f"mkdir -p /kytos-vol/k015-essential-transfer\n"
         f"cp {OUT_DIR}/transfer_report.json /kytos-vol/k015-essential-transfer/\n"
         f"cp {OUT_DIR}/transfer_params.json /kytos-vol/k015-essential-transfer/\n"
+        f"cp {OUT_DIR}/lowrank_models.npz /kytos-vol/k015-essential-transfer/\n"
         f"cp {OUT_DIR}/essential_transfer_data.npz /kytos-vol/k015-essential-transfer/\n"
         f"ls -lh /kytos-vol/k015-essential-transfer/",
     )
