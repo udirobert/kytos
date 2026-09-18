@@ -66,21 +66,38 @@ def extract_singlecell_deltas(
     n_cells_total, n_genes_src = adata.shape
     print(f"[sc] {path.name}: {n_cells_total} cells x {n_genes_src} genes", flush=True)
 
-    # Find perturbation column: prefer named columns, then any column with
-    # a "non-targeting"-like label present in a minority of rows.
+    # Find perturbation column: prefer plain gene-symbol columns. Nadig h5ad
+    # files also contain composite sgID_AB / gene_transcript labels, which do
+    # not match bare K562/RPE1 target symbols.
+    ctrl_regex = "non.targeting|nontargeting|^neg|^nt$|^control|safe.target"
+    preferred_cols = ["gene_name", "target_gene", "gene", "target", "perturbation", "pert"]
     pert_col = None
-    ctrl_regex = "non.targeting|nontargeting|^neg|^nt$|^control"
-    for col in adata.obs.columns:
+    for col in preferred_cols:
+        if col not in adata.obs.columns:
+            continue
         vals = adata.obs[col].astype(str)
         hits = vals.str.contains(ctrl_regex, case=False, regex=True)
-        frac = hits.mean()
-        if hits.sum() > 0 and 0.001 < frac < 0.5:
+        if hits.sum() > 0 and hits.mean() < 0.5:
             pert_col = col
             print(
-                f"[sc] candidate pert column '{col}': {hits.sum()} ctrl-like / "
+                f"[sc] using preferred pert column '{col}': {hits.sum()} ctrl-like / "
                 f"{vals.nunique()} unique",
                 flush=True,
             )
+            break
+    if pert_col is None:
+        for col in adata.obs.columns:
+            vals = adata.obs[col].astype(str)
+            hits = vals.str.contains(ctrl_regex, case=False, regex=True)
+            frac = hits.mean()
+            if hits.sum() > 0 and 0.001 < frac < 0.5:
+                pert_col = col
+                print(
+                    f"[sc] fallback pert column '{col}': {hits.sum()} ctrl-like / "
+                    f"{vals.nunique()} unique",
+                    flush=True,
+                )
+                break
     if pert_col is None:
         idx = adata.obs.index.astype(str)
         hits = idx.str.contains(ctrl_regex, case=False, regex=True)
@@ -157,12 +174,16 @@ def extract_singlecell_deltas(
 
     deltas_mapped = group_means_src - ctrl_mean_mapped[np.newaxis, :]
 
-    # Assemble full-width delta matrix in context gene order
+    # Assemble full-width delta matrix in context gene order. Normalize target
+    # labels to bare uppercase symbols so they intersect the bulk K562/RPE1 keys.
     deltas: dict[str, np.ndarray] = {}
     for idx_t, tgt in enumerate(kept_targets):
+        norm_tgt = str(tgt).strip().upper()
+        if norm_tgt in deltas:
+            continue
         full = np.zeros(len(context_genes), dtype=np.float32)
         full[valid_ctx] = deltas_mapped[idx_t]
-        deltas[str(tgt)] = full
+        deltas[norm_tgt] = full
 
     # Control mapped to context order
     ctrl_mapped = np.zeros(len(context_genes), dtype=np.float32)
