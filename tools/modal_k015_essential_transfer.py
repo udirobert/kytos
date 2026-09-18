@@ -187,7 +187,15 @@ def submit_from_volume(tag: str = "kytos-k015-essential-transfer") -> dict:
         raise FileNotFoundError(f"{vcc_path} not found on volume")
 
     result = subprocess.run(
-        ["vcc", "submit", "--file", vcc_path, "--name", tag],
+        [
+            "vcc",
+            "submit",
+            "-m",
+            tag,
+            "-d",
+            "k015 low-rank essential-screen transfer; rank-256; kd_std=2.0; delta_scale=1.7",
+            vcc_path,
+        ],
         capture_output=True,
         text=True,
     )
