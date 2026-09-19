@@ -418,21 +418,30 @@ def sweep_h1_transfer() -> dict:
         return out
 
     for base_name, base in base_mats.items():
+        # No-scale reference with training self-median reset.
+        metrics[f"{base_name}_selfTrain_noScale"] = _metrics(
+            set_self(base, self_median, scale=1.0), Y_val
+        )
+        metrics[f"{base_name}_selfTrain_noScale"]["delta_scale"] = 1.0
+        metrics[f"{base_name}_selfTrain_noScale"]["self_value"] = self_median
+
         for scale in [1.0, 1.3, 1.7, 2.0]:
             scaled = base * scale
             key = f"{base_name}_ds{str(scale).replace('.', 'p')}"
             metrics[key] = _metrics(scaled, Y_val)
             metrics[key]["delta_scale"] = scale
 
-            self_scaled = set_self(base, self_median, scale=scale)
-            metrics[key + "_selfTrainScaled"] = _metrics(self_scaled, Y_val)
-            metrics[key + "_selfTrainScaled"]["delta_scale"] = scale
-            metrics[key + "_selfTrainScaled"]["self_value"] = self_median * scale
-
-            self_raw = set_self(base, self_median, scale=1.0)
-            metrics[key + "_selfTrain"] = _metrics(self_raw, Y_val)
+            # Scale all non-self coordinates, then overwrite self with the unscaled train median.
+            self_train = set_self(scaled, self_median, scale=1.0)
+            metrics[key + "_selfTrain"] = _metrics(self_train, Y_val)
             metrics[key + "_selfTrain"]["delta_scale"] = scale
             metrics[key + "_selfTrain"]["self_value"] = self_median
+
+            # Scale all coordinates, including the self-gene reset.
+            self_train_scaled = set_self(scaled, self_median, scale=scale)
+            metrics[key + "_selfTrainScaled"] = _metrics(self_train_scaled, Y_val)
+            metrics[key + "_selfTrainScaled"]["delta_scale"] = scale
+            metrics[key + "_selfTrainScaled"]["self_value"] = self_median * scale
 
     ranking = []
     for name, m in metrics.items():

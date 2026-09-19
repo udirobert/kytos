@@ -217,10 +217,13 @@ to git.
   (15.5 GB). Overlap with 2026 panel: 13/300. H1 validation set: 50 targets,
   0 overlap with H1 training targets (clean train/val split). Offline delta-level
   harness (`tools/modal_k017_h1_eval.py`) on 136 H1-train pairs → 47 H1-val
-  targets: raw K562 identity top-200 cosine 0.403; rank-64 low-rank + fixed
-  self-gene reset reaches top-200 cosine ~0.59–0.61 and Pearson ~0.44–0.46,
-  with pred/true norm ratio ~0.44–0.61 depending on scale. Next: count-level
-  offline validation with cell-eval on 2025 validation before any submission.
+  targets: raw K562 identity top-200 cosine 0.403. After fixing the sweep
+  self-gene/scaling bug, rank-64 low-rank + training self-median reset reaches
+  top-200 cosine ~0.61 and Pearson ~0.39–0.46. Best composite is
+  `h1lr64_ds2p0_selfTrainScaled` (top200 0.610, Pearson 0.435, norm ratio
+  0.874); `h1lr64_ds1p3_selfTrain` has the highest top200 (0.614) but low norm
+  ratio (0.532). Next: count-level offline validation with cell-eval on 2025
+  validation before any submission.
 - **Lineage score** (`experiments/k012-lineage-score/`): on top-2000
   discriminative genes, context **A is Jurkat-like (0.649)**, B weakly
   RPE1-leaning (0.369), C unresolved (hESC 0.379). Reference controls
