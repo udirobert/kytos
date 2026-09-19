@@ -33,21 +33,25 @@ from run_k005_atlas_prior import CONTEXT_COL, PERT_COL  # noqa: E402
 from run_k007_neighbor_prior import build_neighbor_deltas  # noqa: E402
 
 
-def up(x: object) -> str:
+def clean(x: object) -> str:
+    return str(x).strip()
+
+
+def norm(x: object) -> str:
     return str(x).strip().upper()
 
 
 def read_gene_order(raw_dir: Path) -> list[str]:
-    return [up(g) for g in pd.read_csv(raw_dir / "gene_names.csv", header=None, skiprows=1)[0]]
+    return [clean(g) for g in pd.read_csv(raw_dir / "gene_names.csv", header=None, skiprows=1)[0]]
 
 
 def read_targets(raw_dir: Path) -> list[str]:
-    return [up(t) for t in pd.read_csv(raw_dir / "pert_counts.csv", header=None, skiprows=1)[0]]
+    return [clean(t) for t in pd.read_csv(raw_dir / "pert_counts.csv", header=None, skiprows=1)[0]]
 
 
 def row_mapper(src_genes: list[str], dst_genes: list[str]):
-    src_index = {g: i for i, g in enumerate(src_genes)}
-    cols = np.array([src_index.get(g, -1) for g in dst_genes], dtype=np.int64)
+    src_index = {norm(g): i for i, g in enumerate(src_genes)}
+    cols = np.array([src_index.get(norm(g), -1) for g in dst_genes], dtype=np.int64)
     valid = cols >= 0
 
     def map_row(row: np.ndarray) -> np.ndarray:
@@ -129,32 +133,40 @@ def main(argv=None) -> int:
         return 2
 
     paired = np.load(str(args.paired_npz), allow_pickle=True)
-    src_genes = [up(g) for g in paired["genes"]]
-    if len(src_genes) != len(gene_order) or src_genes != gene_order:
+    src_genes = [clean(g) for g in paired["genes"]]
+    if len(src_genes) != len(gene_order) or [norm(g) for g in src_genes] != [
+        norm(g) for g in gene_order
+    ]:
         print("[warn] source matrix gene order differs; remapping", flush=True)
     src = np.load(str(args.src_matrix), allow_pickle=True)
-    src_targets = [up(t) for t in src["targets"]]
-    src_target_idx = {t: i for i, t in enumerate(src_targets)}
+    src_target_idx = {norm(t): i for i, t in enumerate(src["targets"])}
     src_map = row_mapper(src_genes, gene_order)
+
+    target_norm_to_official = {norm(t): t for t in targets}
+    gene_norm_to_official = {norm(g): g for g in gene_order}
 
     panel_source: dict[str, np.ndarray] = {}
     for t in targets:
-        idx = src_target_idx.get(t)
+        idx = src_target_idx.get(norm(t))
         if idx is not None:
             panel_source[t] = src_map(src["deltas"][idx])
     print(f"[source] {len(panel_source)}/{len(targets)} targets have source deltas", flush=True)
 
     raw_neighbor_map = json.loads(args.neighbor_map.read_text())
-    neighbor_map = {
-        up(k): [{"gene": up(p["gene"]), "score": float(p["score"])} for p in v]
-        for k, v in raw_neighbor_map.items()
-    }
+    neighbor_map: dict[str, list[dict]] = {}
+    for k, v in raw_neighbor_map.items():
+        tgt = target_norm_to_official.get(norm(k), clean(k))
+        partners = []
+        for p in v:
+            gene = gene_norm_to_official.get(norm(p["gene"]), clean(p["gene"]))
+            partners.append({"gene": gene, "score": float(p["score"])})
+        neighbor_map[tgt] = partners
     covered_for_neighbors = dict(panel_source)
     for partners in neighbor_map.values():
         for p in partners:
             g = p["gene"]
-            if g not in covered_for_neighbors and g in src_target_idx:
-                covered_for_neighbors[g] = src_map(src["deltas"][src_target_idx[g]])
+            if g not in covered_for_neighbors and norm(g) in src_target_idx:
+                covered_for_neighbors[g] = src_map(src["deltas"][src_target_idx[norm(g)]])
     neighbor_deltas = build_neighbor_deltas(
         neighbor_map,
         covered_for_neighbors,
@@ -165,17 +177,17 @@ def main(argv=None) -> int:
     )
 
     h1 = np.load(str(args.h1_npz), allow_pickle=True)
-    h1_genes = [up(g) for g in h1["genes"]]
-    h1_targets = [up(t) for t in h1["targets"]]
+    h1_genes = [clean(g) for g in h1["genes"]]
+    h1_targets = [clean(t) for t in h1["targets"]]
     h1_deltas = h1["deltas"]
-    common_genes = [g for g in gene_order if g in set(h1_genes)]
+    h1_index = {norm(g): i for i, g in enumerate(h1_genes)}
+    common_genes = [g for g in gene_order if norm(g) in h1_index]
     common_idx_2026 = np.array([gene_index[g] for g in common_genes], dtype=np.int64)
-    h1_index = {g: i for i, g in enumerate(h1_genes)}
-    common_idx_h1 = np.array([h1_index[g] for g in common_genes], dtype=np.int64)
+    common_idx_h1 = np.array([h1_index[norm(g)] for g in common_genes], dtype=np.int64)
 
     x_rows, y_rows, train_targets = [], [], []
     for hi, t in enumerate(h1_targets):
-        si = src_target_idx.get(t)
+        si = src_target_idx.get(norm(t))
         if si is None:
             continue
         x_rows.append(src_map(src["deltas"][si])[common_idx_2026])
@@ -188,9 +200,9 @@ def main(argv=None) -> int:
     Y = np.vstack(y_rows)
     bx, by, w = fit_lowrank(X, Y, rank=64)
     self_vals = []
-    common_pos = {g: i for i, g in enumerate(common_genes)}
+    common_pos = {norm(g): i for i, g in enumerate(common_genes)}
     for row, t in zip(range(len(train_targets)), train_targets):
-        j = common_pos.get(t)
+        j = common_pos.get(norm(t))
         if j is not None:
             self_vals.append(float(Y[row, j]))
     self_median = float(np.median(self_vals)) if self_vals else -1.6
@@ -213,14 +225,16 @@ def main(argv=None) -> int:
 
     direct_h1: dict[str, np.ndarray] = {}
     if "delta_hesc" in paired:
-        paired_map = row_mapper([up(g) for g in paired["genes"]], gene_order)
-        for i, t in enumerate([up(t) for t in paired["paired_targets"]]):
-            if t in set(targets):
-                direct_h1[t] = paired_map(paired["delta_hesc"][i])
+        paired_map = row_mapper([clean(g) for g in paired["genes"]], gene_order)
+        for i, t in enumerate([clean(t) for t in paired["paired_targets"]]):
+            official = target_norm_to_official.get(norm(t))
+            if official is not None:
+                direct_h1[official] = paired_map(paired["delta_hesc"][i])
     h1_map = row_mapper(h1_genes, gene_order)
     for hi, t in enumerate(h1_targets):
-        if t in set(targets) and t not in direct_h1:
-            direct_h1[t] = h1_map(h1_deltas[hi])
+        official = target_norm_to_official.get(norm(t))
+        if official is not None and official not in direct_h1:
+            direct_h1[official] = h1_map(h1_deltas[hi])
     print(f"[direct] {len(direct_h1)} panel targets have direct H1 deltas", flush=True)
 
     fallback = ContextConditionedTransfer(
