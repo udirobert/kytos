@@ -1,0 +1,398 @@
+✓ Initialized. View run at 
+https://modal.com/apps/thepapajams/main/ap-3I8qCoZEdO4EJIlqvBV6Dr
+✓ Created objects.
+├── 🔨 Created mount 
+│   /Users/udingethe/Dev/kytos/tools/modal_k017_offline_cell_eval.py
+└── 🔨 Created function run_cell_eval.
+
+=== clone Kytos ===
++ rm -rf /root/kytos
++ git clone --depth 1 https://github.com/udirobert/kytos.git /root/kytos
+Cloning into '/root/kytos'...
+
+=== stage inputs ===
++ mkdir -p /root/atlas /root/paired /root/h1train
++ cp /kytos-vol/atlas/adata_Validation.h5ad /root/atlas/
++ cp /kytos-vol/paired-transfer/paired_transfer_train.npz /root/paired/
++ cp /kytos-vol/paired-transfer/delta_matrix_src.npz /root/paired/
++ cp /kytos-vol/h1-2025-train/h1_train_deltas.npz /root/h1train/
++ ls -lh /root/atlas /root/paired /root/h1train
+/root/atlas:
+total 6.5G
+-rw-r--r-- 1 root root 6.5G Sep 19 10:07 adata_Validation.h5ad
+
+/root/h1train:
+total 9.3M
+-rw-r--r-- 1 root root 9.3M Sep 19 10:07 h1_train_deltas.npz
+
+/root/paired:
+total 704M
+-rw-r--r-- 1 root root 699M Sep 19 10:07 delta_matrix_src.npz
+-rw-r--r-- 1 root root 5.2M Sep 19 10:07 paired_transfer_train.npz
+
+=== run offline cell-eval ===
++ cd /root/kytos
++ mkdir -p /root/kytos/experiments/k017-offline-cell-eval
++ python tools/run_k017_offline_cell_eval.py --val-h5ad /root/atlas/adata_Validation.h5ad --paired-npz /root/paired/paired_transfer_train.npz --h1-npz /root/h1train/h1_train_deltas.npz --src-matrix /root/paired/delta_matrix_src.npz --outdir /root/kytos/experiments/k017-offline-cell-eval --candidates identity_ds1p7,h1lr64_ds1p7_selfTrain,h1lr64_ds2p0_selfTrainScaled --cells-per-target 400 --control-cells 4000 --max-targets 0 --profile minimal
+[real] loading /root/atlas/adata_Validation.h5ad ...
+[real] (98927, 18080), 50 targets, 38176 controls
+[paired] 47 K562 source deltas mapped
+[targets] evaluating 47; dropped 3: ['CXCL12', 'SH3BP4', 'THY1']
+[real] subset to (93697, 18080)
+[train] 136 H1 train pairs with source deltas
+[train] self-effect median (train only): -1.599
+[control] using 4000 control cells as template
+[de] norm-log converting real subset ...
+[de] running pdex on real ((93697, 18080), 8 threads) ...
+
+[1ARunning parallel differential expression (against reference):   0%|          | 0/48 [00:00<?, ?it/s]
+[1ARunning parallel differential expression (against reference):   2%|▏         | 1/48 [00:10<08:29, 10.84s/it]
+[1ARunning parallel differential expression (against reference):   4%|▍         | 2/48 [00:16<06:05,  7.94s/it]
+[1ARunning parallel differential expression (against reference):   6%|▋         | 3/48 [00:22<05:07,  6.84s/it]
+[1ARunning parallel differential expression (against reference):   8%|▊         | 4/48 [00:27<04:39,  6.35s/it]
+[1ARunning parallel differential expression (against reference):  10%|█         | 5/48 [00:33<04:20,  6.06s/it]
+[1ARunning parallel differential expression (against reference):  12%|█▎        | 6/48 [00:38<04:07,  5.89s/it]
+[1ARunning parallel differential expression (against reference):  15%|█▍        | 7/48 [00:44<03:57,  5.78s/it]
+[1ARunning parallel differential expression (against reference):  17%|█▋        | 8/48 [00:50<03:50,  5.77s/it]
+[1ARunning parallel differential expression (against reference):  19%|█▉        | 9/48 [00:55<03:43,  5.73s/it]
+[1ARunning parallel differential expression (against reference):  21%|██        | 10/48 [01:01<03:30,  5.55s/it]
+[1ARunning parallel differential expression (against reference):  23%|██▎       | 11/48 [01:06<03:27,  5.60s/it]
+[1ARunning parallel differential expression (against reference):  25%|██▌       | 12/48 [01:12<03:19,  5.54s/it]
+[1ARunning parallel differential expression (against reference):  27%|██▋       | 13/48 [01:17<03:11,  5.47s/it]
+[1ARunning parallel differential expression (against reference):  29%|██▉       | 14/48 [01:22<03:04,  5.44s/it]
+[1ARunning parallel differential expression (against reference):  31%|███▏      | 15/48 [01:28<03:00,  5.48s/it]
+[1ARunning parallel differential expression (against reference):  33%|███▎      | 16/48 [01:33<02:54,  5.45s/it]
+[1ARunning parallel differential expression (against reference):  35%|███▌      | 17/48 [01:39<02:50,  5.49s/it]
+[1ARunning parallel differential expression (against reference):  38%|███▊      | 18/48 [01:44<02:44,  5.49s/it]
+[1ARunning parallel differential expression (against reference):  40%|███▉      | 19/48 [01:50<02:41,  5.57s/it]
+[1ARunning parallel differential expression (against reference):  42%|████▏     | 20/48 [01:56<02:35,  5.55s/it]
+[1ARunning parallel differential expression (against reference):  44%|████▍     | 21/48 [02:01<02:32,  5.63s/it]
+[1ARunning parallel differential expression (against reference):  46%|████▌     | 22/48 [02:07<02:27,  5.68s/it]
+[1ARunning parallel differential expression (against reference):  48%|████▊     | 23/48 [02:13<02:20,  5.62s/it]
+[1ARunning parallel differential expression (against reference):  50%|█████     | 24/48 [02:18<02:13,  5.56s/it]
+[1ARunning parallel differential expression (against reference):  52%|█████▏    | 25/48 [02:24<02:09,  5.62s/it]
+[1ARunning parallel differential expression (against reference):  54%|█████▍    | 26/48 [02:30<02:03,  5.63s/it]
+[1ARunning parallel differential expression (against reference):  56%|█████▋    | 27/48 [02:35<01:58,  5.64s/it]
+[1ARunning parallel differential expression (against reference):  58%|█████▊    | 28/48 [02:41<01:50,  5.52s/it]
+[1ARunning parallel differential expression (against reference):  60%|██████    | 29/48 [02:46<01:46,  5.62s/it]
+[1ARunning parallel differential expression (against reference):  62%|██████▎   | 30/48 [02:52<01:41,  5.64s/it]
+[1ARunning parallel differential expression (against reference):  65%|██████▍   | 31/48 [02:58<01:35,  5.60s/it]
+[1ARunning parallel differential expression (against reference):  67%|██████▋   | 32/48 [03:03<01:30,  5.67s/it]
+[1ARunning parallel differential expression (against reference):  69%|██████▉   | 33/48 [03:09<01:25,  5.70s/it]
+[1ARunning parallel differential expression (against reference):  71%|███████   | 34/48 [03:15<01:18,  5.62s/it]
+[1ARunning parallel differential expression (against reference):  73%|███████▎  | 35/48 [03:20<01:13,  5.67s/it]
+[1ARunning parallel differential expression (against reference):  75%|███████▌  | 36/48 [03:26<01:08,  5.68s/it]
+[1ARunning parallel differential expression (against reference):  77%|███████▋  | 37/48 [03:31<01:01,  5.56s/it]
+[1ARunning parallel differential expression (against reference):  79%|███████▉  | 38/48 [03:37<00:55,  5.52s/it]
+[1ARunning parallel differential expression (against reference):  81%|████████▏ | 39/48 [03:42<00:49,  5.47s/it]
+[1ARunning parallel differential expression (against reference):  83%|████████▎ | 40/48 [03:48<00:43,  5.45s/it]
+[1ARunning parallel differential expression (against reference):  85%|████████▌ | 41/48 [03:53<00:38,  5.50s/it]
+[1ARunning parallel differential expression (against reference):  88%|████████▊ | 42/48 [03:59<00:33,  5.51s/it]
+[1ARunning parallel differential expression (against reference):  90%|████████▉ | 43/48 [04:04<00:27,  5.51s/it]
+[1ARunning parallel differential expression (against reference):  92%|█████████▏| 44/48 [04:10<00:22,  5.51s/it]
+[1ARunning parallel differential expression (against reference):  94%|█████████▍| 45/48 [04:15<00:16,  5.44s/it]
+[1ARunning parallel differential expression (against reference):  96%|█████████▌| 46/48 [04:21<00:11,  5.60s/it]
+[1ARunning parallel differential expression (against reference):  98%|█████████▊| 47/48 [04:26<00:05,  5.52s/it]
+[1ARunning parallel differential expression (against reference): 100%|██████████| 48/48 [04:26<00:00,  5.56s/it]
+[de] real DE done in 272.1s (849760 rows)
+
+=== candidate identity_ds1p7 ===
+[gen] (18800, 18080) pert cells in 84.8s (nnz 181.6M)
+Output directory /root/kytos/experiments/k017-offline-cell-eval/identity_ds1p7 already exists, potential overwrite occurring
+
+[1ARunning parallel differential expression (against reference):   0%|          | 0/48 [00:00<?, ?it/s]
+[1ARunning parallel differential expression (against reference):   2%|▏         | 1/48 [00:01<00:57,  1.22s/it]
+[1ARunning parallel differential expression (against reference):   4%|▍         | 2/48 [00:01<00:38,  1.19it/s]
+[1ARunning parallel differential expression (against reference):   6%|▋         | 3/48 [00:02<00:32,  1.40it/s]
+[1ARunning parallel differential expression (against reference):   8%|▊         | 4/48 [00:02<00:28,  1.52it/s]
+[1ARunning parallel differential expression (against reference):  10%|█         | 5/48 [00:03<00:26,  1.60it/s]
+[1ARunning parallel differential expression (against reference):  12%|█▎        | 6/48 [00:04<00:25,  1.64it/s]
+[1ARunning parallel differential expression (against reference):  15%|█▍        | 7/48 [00:04<00:24,  1.66it/s]
+[1ARunning parallel differential expression (against reference):  17%|█▋        | 8/48 [00:05<00:23,  1.70it/s]
+[1ARunning parallel differential expression (against reference):  19%|█▉        | 9/48 [00:05<00:22,  1.70it/s]
+[1ARunning parallel differential expression (against reference):  21%|██        | 10/48 [00:06<00:22,  1.72it/s]
+[1ARunning parallel differential expression (against reference):  23%|██▎       | 11/48 [00:06<00:21,  1.73it/s]
+[1ARunning parallel differential expression (against reference):  25%|██▌       | 12/48 [00:07<00:20,  1.73it/s]
+[1ARunning parallel differential expression (against reference):  27%|██▋       | 13/48 [00:08<00:20,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  29%|██▉       | 14/48 [00:08<00:19,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  31%|███▏      | 15/48 [00:09<00:18,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  33%|███▎      | 16/48 [00:09<00:18,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  35%|███▌      | 17/48 [00:10<00:17,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  38%|███▊      | 18/48 [00:10<00:17,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  40%|███▉      | 19/48 [00:11<00:16,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  42%|████▏     | 20/48 [00:12<00:15,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  44%|████▍     | 21/48 [00:12<00:15,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  46%|████▌     | 22/48 [00:13<00:14,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  48%|████▊     | 23/48 [00:13<00:14,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  50%|█████     | 24/48 [00:14<00:13,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  52%|█████▏    | 25/48 [00:14<00:13,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  54%|█████▍    | 26/48 [00:15<00:12,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  56%|█████▋    | 27/48 [00:16<00:12,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  58%|█████▊    | 28/48 [00:16<00:11,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  60%|██████    | 29/48 [00:17<00:10,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  62%|██████▎   | 30/48 [00:17<00:10,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  65%|██████▍   | 31/48 [00:18<00:09,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  67%|██████▋   | 32/48 [00:18<00:09,  1.73it/s]
+[1ARunning parallel differential expression (against reference):  69%|██████▉   | 33/48 [00:19<00:08,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  71%|███████   | 34/48 [00:20<00:07,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  73%|███████▎  | 35/48 [00:20<00:07,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  75%|███████▌  | 36/48 [00:21<00:06,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  77%|███████▋  | 37/48 [00:21<00:06,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  79%|███████▉  | 38/48 [00:22<00:05,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  81%|████████▏ | 39/48 [00:22<00:05,  1.77it/s]
+[1ARunning parallel differential expression (against reference):  83%|████████▎ | 40/48 [00:23<00:04,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  85%|████████▌ | 41/48 [00:24<00:03,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  88%|████████▊ | 42/48 [00:24<00:03,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  90%|████████▉ | 43/48 [00:25<00:02,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  92%|█████████▏| 44/48 [00:25<00:02,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  94%|█████████▍| 45/48 [00:26<00:01,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  96%|█████████▌| 46/48 [00:26<00:01,  1.73it/s]
+[1ARunning parallel differential expression (against reference):  98%|█████████▊| 47/48 [00:27<00:00,  1.74it/s]
+[1ARunning parallel differential expression (against reference): 100%|██████████| 48/48 [00:27<00:00,  1.74it/s]
+Identified 83273 infinite log2 fold change values (real)
+Identified 57778 infinite log2 fold change values (pred)
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 1362.04it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 2005.56it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 1980.99it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 15804.72it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 14772.00it/s]
+[eval] identity_ds1p7: {"overlap_at_N": 0.20532080804120262, "precision_at_N": 0.21245362498059267, "de_nsig_counts_real": 3436.0425531914893, "de_nsig_counts_pred": 6704.617021276596, "pearson_delta": 0.0759503815445489, "mse": 0.010001452527084365, "mae": 0.0611984451946285, "discrimination_score_l1": 0.5301041195110912}
+
+=== candidate h1lr64_ds1p7_selfTrain ===
+[gen] (18800, 18080) pert cells in 82.4s (nnz 181.8M)
+Output directory /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds1p7_selfTrain already exists, potential overwrite occurring
+
+[1ARunning parallel differential expression (against reference):   0%|          | 0/48 [00:00<?, ?it/s]
+[1ARunning parallel differential expression (against reference):   2%|▏         | 1/48 [00:00<00:25,  1.83it/s]
+[1ARunning parallel differential expression (against reference):   4%|▍         | 2/48 [00:01<00:25,  1.78it/s]
+[1ARunning parallel differential expression (against reference):   6%|▋         | 3/48 [00:01<00:25,  1.77it/s]
+[1ARunning parallel differential expression (against reference):   8%|▊         | 4/48 [00:02<00:25,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  10%|█         | 5/48 [00:02<00:24,  1.77it/s]
+[1ARunning parallel differential expression (against reference):  12%|█▎        | 6/48 [00:03<00:23,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  15%|█▍        | 7/48 [00:03<00:23,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  17%|█▋        | 8/48 [00:04<00:22,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  19%|█▉        | 9/48 [00:05<00:22,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  21%|██        | 10/48 [00:05<00:21,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  23%|██▎       | 11/48 [00:06<00:21,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  25%|██▌       | 12/48 [00:06<00:20,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  27%|██▋       | 13/48 [00:07<00:20,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  29%|██▉       | 14/48 [00:07<00:19,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  31%|███▏      | 15/48 [00:08<00:19,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  33%|███▎      | 16/48 [00:09<00:18,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  35%|███▌      | 17/48 [00:09<00:17,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  38%|███▊      | 18/48 [00:10<00:17,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  40%|███▉      | 19/48 [00:10<00:16,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  42%|████▏     | 20/48 [00:11<00:16,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  44%|████▍     | 21/48 [00:12<00:15,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  46%|████▌     | 22/48 [00:12<00:14,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  48%|████▊     | 23/48 [00:13<00:14,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  50%|█████     | 24/48 [00:13<00:13,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  52%|█████▏    | 25/48 [00:14<00:13,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  54%|█████▍    | 26/48 [00:14<00:12,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  56%|█████▋    | 27/48 [00:15<00:12,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  58%|█████▊    | 28/48 [00:16<00:11,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  60%|██████    | 29/48 [00:16<00:10,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  62%|██████▎   | 30/48 [00:17<00:10,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  65%|██████▍   | 31/48 [00:17<00:09,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  67%|██████▋   | 32/48 [00:18<00:09,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  69%|██████▉   | 33/48 [00:18<00:08,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  71%|███████   | 34/48 [00:19<00:08,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  73%|███████▎  | 35/48 [00:20<00:07,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  75%|███████▌  | 36/48 [00:20<00:06,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  77%|███████▋  | 37/48 [00:21<00:06,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  79%|███████▉  | 38/48 [00:21<00:05,  1.77it/s]
+[1ARunning parallel differential expression (against reference):  81%|████████▏ | 39/48 [00:22<00:05,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  83%|████████▎ | 40/48 [00:22<00:04,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  85%|████████▌ | 41/48 [00:23<00:04,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  88%|████████▊ | 42/48 [00:24<00:03,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  90%|████████▉ | 43/48 [00:24<00:02,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  92%|█████████▏| 44/48 [00:25<00:02,  1.78it/s]
+[1ARunning parallel differential expression (against reference):  94%|█████████▍| 45/48 [00:25<00:01,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  96%|█████████▌| 46/48 [00:26<00:01,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  98%|█████████▊| 47/48 [00:26<00:00,  1.74it/s]
+[1ARunning parallel differential expression (against reference): 100%|██████████| 48/48 [00:26<00:00,  1.79it/s]
+Identified 83273 infinite log2 fold change values (real)
+Identified 56855 infinite log2 fold change values (pred)
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 1450.72it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 1994.62it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 2039.48it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 16921.23it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 14359.87it/s]
+[eval] h1lr64_ds1p7_selfTrain: {"overlap_at_N": 0.2279079099859546, "precision_at_N": 0.22298136111129482, "de_nsig_counts_real": 3436.0425531914893, "de_nsig_counts_pred": 4925.510638297872, "pearson_delta": 0.21126729731357335, "mse": 0.007794397827991085, "mae": 0.05539114577116336, "discrimination_score_l1": 0.6011770031688548}
+
+=== candidate h1lr64_ds2p0_selfTrainScaled ===
+[gen] (18800, 18080) pert cells in 77.2s (nnz 181.8M)
+Output directory /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds2p0_selfTrainScaled already exists, potential overwrite occurring
+
+[1ARunning parallel differential expression (against reference):   0%|          | 0/48 [00:00<?, ?it/s]
+[1ARunning parallel differential expression (against reference):   2%|▏         | 1/48 [00:00<00:26,  1.80it/s]
+[1ARunning parallel differential expression (against reference):   4%|▍         | 2/48 [00:01<00:26,  1.75it/s]
+[1ARunning parallel differential expression (against reference):   6%|▋         | 3/48 [00:01<00:25,  1.75it/s]
+[1ARunning parallel differential expression (against reference):   8%|▊         | 4/48 [00:02<00:25,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  10%|█         | 5/48 [00:02<00:24,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  12%|█▎        | 6/48 [00:03<00:24,  1.72it/s]
+[1ARunning parallel differential expression (against reference):  15%|█▍        | 7/48 [00:04<00:23,  1.73it/s]
+[1ARunning parallel differential expression (against reference):  17%|█▋        | 8/48 [00:04<00:23,  1.73it/s]
+[1ARunning parallel differential expression (against reference):  19%|█▉        | 9/48 [00:05<00:22,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  21%|██        | 10/48 [00:05<00:21,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  23%|██▎       | 11/48 [00:06<00:21,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  25%|██▌       | 12/48 [00:06<00:20,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  27%|██▋       | 13/48 [00:07<00:20,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  29%|██▉       | 14/48 [00:08<00:19,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  31%|███▏      | 15/48 [00:08<00:18,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  33%|███▎      | 16/48 [00:09<00:18,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  35%|███▌      | 17/48 [00:09<00:17,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  38%|███▊      | 18/48 [00:10<00:17,  1.73it/s]
+[1ARunning parallel differential expression (against reference):  40%|███▉      | 19/48 [00:10<00:16,  1.73it/s]
+[1ARunning parallel differential expression (against reference):  42%|████▏     | 20/48 [00:11<00:16,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  44%|████▍     | 21/48 [00:12<00:15,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  46%|████▌     | 22/48 [00:12<00:14,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  48%|████▊     | 23/48 [00:13<00:14,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  50%|█████     | 24/48 [00:13<00:13,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  52%|█████▏    | 25/48 [00:14<00:13,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  54%|█████▍    | 26/48 [00:14<00:12,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  56%|█████▋    | 27/48 [00:15<00:11,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  58%|█████▊    | 28/48 [00:16<00:11,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  60%|██████    | 29/48 [00:16<00:10,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  62%|██████▎   | 30/48 [00:17<00:10,  1.77it/s]
+[1ARunning parallel differential expression (against reference):  65%|██████▍   | 31/48 [00:17<00:09,  1.76it/s]
+[1ARunning parallel differential expression (against reference):  67%|██████▋   | 32/48 [00:18<00:09,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  69%|██████▉   | 33/48 [00:18<00:08,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  71%|███████   | 34/48 [00:19<00:07,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  73%|███████▎  | 35/48 [00:20<00:07,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  75%|███████▌  | 36/48 [00:20<00:06,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  77%|███████▋  | 37/48 [00:21<00:06,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  79%|███████▉  | 38/48 [00:21<00:05,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  81%|████████▏ | 39/48 [00:22<00:05,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  83%|████████▎ | 40/48 [00:22<00:04,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  85%|████████▌ | 41/48 [00:23<00:04,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  88%|████████▊ | 42/48 [00:24<00:03,  1.74it/s]
+[1ARunning parallel differential expression (against reference):  90%|████████▉ | 43/48 [00:24<00:02,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  92%|█████████▏| 44/48 [00:25<00:02,  1.75it/s]
+[1ARunning parallel differential expression (against reference):  94%|█████████▍| 45/48 [00:25<00:01,  1.77it/s]
+[1ARunning parallel differential expression (against reference):  96%|█████████▌| 46/48 [00:26<00:01,  1.77it/s]
+[1ARunning parallel differential expression (against reference):  98%|█████████▊| 47/48 [00:26<00:00,  1.75it/s]
+[1ARunning parallel differential expression (against reference): 100%|██████████| 48/48 [00:26<00:00,  1.78it/s]
+Identified 83273 infinite log2 fold change values (real)
+Identified 57900 infinite log2 fold change values (pred)
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 1428.32it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 1866.75it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 2110.90it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 15173.36it/s]
+
+[1AIterating over perturbations...:   0%|          | 0/47 [00:00<?, ?it/s]
+[1AIterating over perturbations...: 100%|██████████| 47/47 [00:00<00:00, 12589.88it/s]
+[eval] h1lr64_ds2p0_selfTrainScaled: {"overlap_at_N": 0.23341435690037185, "precision_at_N": 0.22854775673357408, "de_nsig_counts_real": 3436.0425531914893, "de_nsig_counts_pred": 5332.851063829788, "pearson_delta": 0.24646981473747548, "mse": 0.00797636123301859, "mae": 0.0558844424709132, "discrimination_score_l1": 0.6129470348574017}
+
+[done] wrote /root/kytos/experiments/k017-offline-cell-eval/summary.json; total 877.8s
+{
+  "identity_ds1p7": {
+    "overlap_at_N": 0.20532080804120262,
+    "precision_at_N": 0.21245362498059267,
+    "de_nsig_counts_real": 3436.0425531914893,
+    "de_nsig_counts_pred": 6704.617021276596,
+    "pearson_delta": 0.0759503815445489,
+    "mse": 0.010001452527084365,
+    "mae": 0.0611984451946285,
+    "discrimination_score_l1": 0.5301041195110912
+  },
+  "h1lr64_ds1p7_selfTrain": {
+    "overlap_at_N": 0.2279079099859546,
+    "precision_at_N": 0.22298136111129482,
+    "de_nsig_counts_real": 3436.0425531914893,
+    "de_nsig_counts_pred": 4925.510638297872,
+    "pearson_delta": 0.21126729731357335,
+    "mse": 0.007794397827991085,
+    "mae": 0.05539114577116336,
+    "discrimination_score_l1": 0.6011770031688548
+  },
+  "h1lr64_ds2p0_selfTrainScaled": {
+    "overlap_at_N": 0.23341435690037185,
+    "precision_at_N": 0.22854775673357408,
+    "de_nsig_counts_real": 3436.0425531914893,
+    "de_nsig_counts_pred": 5332.851063829788,
+    "pearson_delta": 0.24646981473747548,
+    "mse": 0.00797636123301859,
+    "mae": 0.0558844424709132,
+    "discrimination_score_l1": 0.6129470348574017
+  }
+}
+
+=== persist to volume ===
++ mkdir -p /kytos-vol/k017-offline-cell-eval
++ cp /root/kytos/experiments/k017-offline-cell-eval/summary.json /kytos-vol/k017-offline-cell-eval/
++ cp /root/kytos/experiments/k017-offline-cell-eval/real_de.csv /kytos-vol/k017-offline-cell-eval/
++ for d in /root/kytos/experiments/k017-offline-cell-eval/*/
+++ basename /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds1p7_selfTrain/
++ name=h1lr64_ds1p7_selfTrain
++ mkdir -p /kytos-vol/k017-offline-cell-eval/h1lr64_ds1p7_selfTrain
++ cp /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds1p7_selfTrain/agg_results.csv /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds1p7_selfTrain/pred_de.csv /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds1p7_selfTrain/results.csv /kytos-vol/k017-offline-cell-eval/h1lr64_ds1p7_selfTrain/
++ for d in /root/kytos/experiments/k017-offline-cell-eval/*/
+++ basename /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds2p0_selfTrainScaled/
++ name=h1lr64_ds2p0_selfTrainScaled
++ mkdir -p /kytos-vol/k017-offline-cell-eval/h1lr64_ds2p0_selfTrainScaled
++ cp /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds2p0_selfTrainScaled/agg_results.csv /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds2p0_selfTrainScaled/pred_de.csv /root/kytos/experiments/k017-offline-cell-eval/h1lr64_ds2p0_selfTrainScaled/results.csv /kytos-vol/k017-offline-cell-eval/h1lr64_ds2p0_selfTrainScaled/
++ for d in /root/kytos/experiments/k017-offline-cell-eval/*/
+++ basename /root/kytos/experiments/k017-offline-cell-eval/identity_ds1p7/
++ name=identity_ds1p7
++ mkdir -p /kytos-vol/k017-offline-cell-eval/identity_ds1p7
++ cp /root/kytos/experiments/k017-offline-cell-eval/identity_ds1p7/agg_results.csv /root/kytos/experiments/k017-offline-cell-eval/identity_ds1p7/pred_de.csv /root/kytos/experiments/k017-offline-cell-eval/identity_ds1p7/results.csv /kytos-vol/k017-offline-cell-eval/identity_ds1p7/
++ ls -lhR /kytos-vol/k017-offline-cell-eval
++ head -50
+/kytos-vol/k017-offline-cell-eval:
+total 107M
+drwxr-xr-x 1 root root   37 Sep 19 10:05 h1lr64_ds1p7_selfTrain
+drwxr-xr-x 1 root root   37 Sep 19 10:05 h1lr64_ds2p0_selfTrainScaled
+drwxr-xr-x 1 root root   37 Sep 19 10:05 identity_ds1p7
+-rw-r--r-- 1 root root 107M Sep 19 10:21 real_de.csv
+-rw-r--r-- 1 root root 2.4K Sep 19 10:21 summary.json
+
+/kytos-vol/k017-offline-cell-eval/h1lr64_ds1p7_selfTrain:
+total 113M
+-rw-r--r-- 1 root root 1.2K Sep 19 10:21 agg_results.csv
+-rw-r--r-- 1 root root 113M Sep 19 10:21 pred_de.csv
+-rw-r--r-- 1 root root 6.5K Sep 19 10:21 results.csv
+
+/kytos-vol/k017-offline-cell-eval/h1lr64_ds2p0_selfTrainScaled:
+total 113M
+-rw-r--r-- 1 root root 1.2K Sep 19 10:21 agg_results.csv
+-rw-r--r-- 1 root root 113M Sep 19 10:21 pred_de.csv
+-rw-r--r-- 1 root root 6.5K Sep 19 10:21 results.csv
+
+/kytos-vol/k017-offline-cell-eval/identity_ds1p7:
+total 113M
+-rw-r--r-- 1 root root 1.2K Sep 19 10:21 agg_results.csv
+-rw-r--r-- 1 root root 113M Sep 19 10:21 pred_de.csv
+-rw-r--r-- 1 root root 6.4K Sep 19 10:21 results.csv
+{'status': 'ok', 'elapsed_s': 910.2554805278778, 'volume_out': '/kytos-vol/k017-offline-cell-eval'}
+Stopping app - local entrypoint completed.
+✓ App completed. View run at 
+https://modal.com/apps/thepapajams/main/ap-3I8qCoZEdO4EJIlqvBV6Dr

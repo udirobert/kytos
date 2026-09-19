@@ -1,0 +1,84 @@
+{
+  "created_utc": "2026-09-19T10:13:59Z",
+  "n_eval_targets": 47,
+  "dropped_targets": [
+    "CXCL12",
+    "SH3BP4",
+    "THY1"
+  ],
+  "cells_per_target": 400,
+  "control_cells": 4000,
+  "self_median_train": -1.5989654064178467,
+  "profile": "minimal",
+  "candidates": {
+    "identity_ds1p7": {
+      "agg": {
+        "overlap_at_N": 0.20532080804120262,
+        "precision_at_N": 0.21245362498059267,
+        "de_nsig_counts_real": 3436.0425531914893,
+        "de_nsig_counts_pred": 6704.617021276596,
+        "pearson_delta": 0.0759503815445489,
+        "mse": 0.010001452527084365,
+        "mae": 0.0611984451946285,
+        "discrimination_score_l1": 0.5301041195110912
+      },
+      "gen_plus_eval_s": 163.8,
+      "eval_s": 78.5,
+      "config": {
+        "name": "identity_ds1p7",
+        "amplitude": 1.0,
+        "bulk_amplitude": 1.0,
+        "transfer": "identity",
+        "delta_scale": 1.7,
+        "self_mode": "none"
+      }
+    },
+    "h1lr64_ds1p7_selfTrain": {
+      "agg": {
+        "overlap_at_N": 0.2279079099859546,
+        "precision_at_N": 0.22298136111129482,
+        "de_nsig_counts_real": 3436.0425531914893,
+        "de_nsig_counts_pred": 4925.510638297872,
+        "pearson_delta": 0.21126729731357335,
+        "mse": 0.007794397827991085,
+        "mae": 0.05539114577116336,
+        "discrimination_score_l1": 0.6011770031688548
+      },
+      "gen_plus_eval_s": 155.0,
+      "eval_s": 72.1,
+      "config": {
+        "name": "h1lr64_ds1p7_selfTrain",
+        "amplitude": 1.0,
+        "bulk_amplitude": 1.0,
+        "transfer": "lowrank",
+        "rank": 64,
+        "delta_scale": 1.7,
+        "self_mode": "selfTrain"
+      }
+    },
+    "h1lr64_ds2p0_selfTrainScaled": {
+      "agg": {
+        "overlap_at_N": 0.23341435690037185,
+        "precision_at_N": 0.22854775673357408,
+        "de_nsig_counts_real": 3436.0425531914893,
+        "de_nsig_counts_pred": 5332.851063829788,
+        "pearson_delta": 0.24646981473747548,
+        "mse": 0.00797636123301859,
+        "mae": 0.0558844424709132,
+        "discrimination_score_l1": 0.6129470348574017
+      },
+      "gen_plus_eval_s": 148.4,
+      "eval_s": 70.7,
+      "config": {
+        "name": "h1lr64_ds2p0_selfTrainScaled",
+        "amplitude": 1.0,
+        "bulk_amplitude": 1.0,
+        "transfer": "lowrank",
+        "rank": 64,
+        "delta_scale": 2.0,
+        "self_mode": "selfTrainScaled"
+      }
+    }
+  },
+  "elapsed_s": 877.8
+}

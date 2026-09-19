@@ -224,6 +224,14 @@ to git.
   0.874); `h1lr64_ds1p3_selfTrain` has the highest top200 (0.614) but low norm
   ratio (0.532). Next: count-level offline validation with cell-eval on 2025
   validation before any submission.
+- **k017 offline cell-eval (count-level, 47 H1-val targets, 400 cells/target,
+  4000 controls, minimal profile):** dual-moment count generation confirms the
+  delta-level gains survive to count space. `h1lr64_ds2p0_selfTrainScaled` is
+  the best overall (discrimination 0.613, overlap 0.233, Pearson-delta 0.246);
+  `h1lr64_ds1p7_selfTrain` has the lowest MSE (0.00779) and MAE (0.0554).
+  Identity baseline at ds1.7: discrimination 0.530, overlap 0.205,
+  Pearson-delta 0.076. H1 transfer is a clear improvement on every metric.
+  Saved: `experiments/k017-offline-cell-eval/full_minimal/`.
 - **Lineage score** (`experiments/k012-lineage-score/`): on top-2000
   discriminative genes, context **A is Jurkat-like (0.649)**, B weakly
   RPE1-leaning (0.369), C unresolved (hESC 0.379). Reference controls

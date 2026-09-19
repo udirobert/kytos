@@ -1,0 +1,346 @@
+✓ Initialized. View run at 
+https://modal.com/apps/thepapajams/main/ap-RXtHLmcm1Ns4CA57zOHcjO
+Building image im-REciOFmgAYqkxTkKZOvhYJ
+
+=> Step 0: FROM base
+
+=> Step 1: RUN python -m pip install anndata cell-eval h5py numpy pandas polars scanpy scipy
+Looking in indexes: http://pypi-mirror.modal.local:5555/simple
+Collecting anndata
+  Downloading http://pypi-mirror.modal.local:5555/simple/anndata/anndata-0.13.4-py3-none-any.whl.metadata (7.2 kB)
+Collecting cell-eval
+  Downloading http://pypi-mirror.modal.local:5555/simple/cell-eval/cell_eval-0.8.2-py3-none-any.whl.metadata (6.4 kB)
+Collecting h5py
+  Downloading http://pypi-mirror.modal.local:5555/simple/h5py/h5py-3.16.0-cp314-cp314-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+Collecting numpy
+  Downloading http://pypi-mirror.modal.local:5555/simple/numpy/numpy-2.5.3-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting pandas
+  Downloading http://pypi-mirror.modal.local:5555/simple/pandas/pandas-3.0.6-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+Collecting polars
+  Downloading http://pypi-mirror.modal.local:5555/simple/polars/polars-1.44.2-py3-none-any.whl.metadata (11 kB)
+Collecting scanpy
+  Downloading http://pypi-mirror.modal.local:5555/simple/scanpy/scanpy-1.12.4-py3-none-any.whl.metadata (8.5 kB)
+Collecting scipy
+  Downloading http://pypi-mirror.modal.local:5555/simple/scipy/scipy-1.18.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+Collecting array-api-compat>=1.7.1 (from anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/array-api-compat/array_api_compat-1.15.0-py3-none-any.whl.metadata (1.4 kB)
+Collecting legacy-api-wrap (from anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/legacy-api-wrap/legacy_api_wrap-1.5-py3-none-any.whl.metadata (2.2 kB)
+Collecting natsort (from anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/natsort/natsort-8.4.0-py3-none-any.whl.metadata (21 kB)
+Collecting packaging>=24.2 (from anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/packaging/packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting scverse-misc>=0.1.0 (from scverse-misc[settings]>=0.1.0->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/scverse-misc/scverse_misc-0.1.6-py3-none-any.whl.metadata (4.9 kB)
+Collecting typing-extensions>=4.16 (from anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/typing-extensions/typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting zarr>=3.1 (from anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/zarr/zarr-3.4.0-py3-none-any.whl.metadata (5.8 kB)
+Collecting igraph>=0.11.8 (from cell-eval)
+  Downloading http://pypi-mirror.modal.local:5555/simple/igraph/igraph-1.0.0-cp39-abi3-manylinux_2_28_x86_64.whl.metadata (4.4 kB)
+Collecting pdex>=0.2.5 (from cell-eval)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pdex/pdex-0.3.0-py3-none-any.whl.metadata (6.0 kB)
+Collecting pyarrow>=18.0.0 (from cell-eval)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pyarrow/pyarrow-25.0.1-cp314-cp314-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+Collecting pyyaml>=6.0.2 (from cell-eval)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pyyaml/pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting tqdm>=4.67.1 (from cell-eval)
+  Downloading http://pypi-mirror.modal.local:5555/simple/tqdm/tqdm-4.70.1-py3-none-any.whl.metadata (57 kB)
+Collecting python-dateutil>=2.8.2 (from pandas)
+  Downloading http://pypi-mirror.modal.local:5555/simple/python-dateutil/python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting polars-runtime-32==1.44.2 (from polars)
+  Downloading http://pypi-mirror.modal.local:5555/simple/polars-runtime-32/polars_runtime_32-1.44.2-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.5 kB)
+Collecting certifi (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/certifi/certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+Collecting fast-array-utils>=1.4 (from fast-array-utils[accel,sparse]>=1.4->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/fast-array-utils/fast_array_utils-1.5.1-py3-none-any.whl.metadata (2.8 kB)
+Collecting joblib (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/joblib/joblib-1.6.0-py3-none-any.whl.metadata (6.5 kB)
+Collecting matplotlib>=3.10 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/matplotlib/matplotlib-3.11.2-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (80 kB)
+Collecting networkx>=2.8.8 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/networkx/networkx-3.6.1-py3-none-any.whl.metadata (6.8 kB)
+Collecting numba>=0.60 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/numba/numba-0.67.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.7 kB)
+Collecting patsy (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/patsy/patsy-1.0.3-py2.py3-none-any.whl.metadata (3.7 kB)
+Collecting pynndescent>=0.5.13 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pynndescent/pynndescent-0.6.0-py3-none-any.whl.metadata (6.9 kB)
+Collecting scikit-learn>=1.6 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/scikit-learn/scikit_learn-1.9.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.3 kB)
+Collecting seaborn>=0.13.2 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/seaborn/seaborn-0.13.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting session-info2 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/session-info2/session_info2-0.4.2-py3-none-any.whl.metadata (2.4 kB)
+Collecting statsmodels>=0.14.5 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/statsmodels/statsmodels-0.15.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.6 kB)
+Collecting umap-learn>=0.5.12 (from scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/umap-learn/umap_learn-0.5.12-py3-none-any.whl.metadata (24 kB)
+Collecting texttable>=1.6.2 (from igraph>=0.11.8->cell-eval)
+  Downloading http://pypi-mirror.modal.local:5555/simple/texttable/texttable-1.7.0-py2.py3-none-any.whl.metadata (9.8 kB)
+Collecting contourpy>=1.0.1 (from matplotlib>=3.10->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/contourpy/contourpy-1.4.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+Collecting cycler>=0.10 (from matplotlib>=3.10->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/cycler/cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+Collecting fonttools>=4.28.2 (from matplotlib>=3.10->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/fonttools/fonttools-4.65.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (125 kB)
+Collecting kiwisolver>=1.3.1 (from matplotlib>=3.10->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/kiwisolver/kiwisolver-1.5.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.2 kB)
+Collecting pillow>=9 (from matplotlib>=3.10->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pillow/pillow-12.3.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
+Collecting pyparsing>=3 (from matplotlib>=3.10->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pyparsing/pyparsing-3.3.2-py3-none-any.whl.metadata (5.8 kB)
+Collecting llvmlite<0.50,>=0.49.0dev0 (from numba>=0.60->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/llvmlite/llvmlite-0.49.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.0 kB)
+Collecting numba-mwu>=0.2.0 (from pdex>=0.2.5->cell-eval)
+  Downloading http://pypi-mirror.modal.local:5555/simple/numba-mwu/numba_mwu-0.2.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting cloudpickle>=3.0 (from joblib->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/cloudpickle/cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas)
+  Downloading http://pypi-mirror.modal.local:5555/simple/six/six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting narwhals>=2.0.1 (from scikit-learn>=1.6->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/narwhals/narwhals-2.26.0-py3-none-any.whl.metadata (15 kB)
+Collecting threadpoolctl>=3.5.0 (from scikit-learn>=1.6->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/threadpoolctl/threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+Collecting pydantic-settings (from scverse-misc[settings]>=0.1.0->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pydantic-settings/pydantic_settings-2.15.0-py3-none-any.whl.metadata (3.9 kB)
+Collecting python-dotenv (from scverse-misc[settings]>=0.1.0->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/python-dotenv/python_dotenv-1.2.3-py3-none-any.whl.metadata (29 kB)
+Collecting formulaic>=1.1.0 (from statsmodels>=0.14.5->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/formulaic/formulaic-1.2.2-py3-none-any.whl.metadata (7.0 kB)
+Collecting interface-meta>=1.2.0 (from formulaic>=1.1.0->statsmodels>=0.14.5->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/interface-meta/interface_meta-2.0.1-py3-none-any.whl.metadata (6.4 kB)
+Collecting wrapt>=1.17.0rc1 (from formulaic>=1.1.0->statsmodels>=0.14.5->scanpy)
+  Downloading http://pypi-mirror.modal.local:5555/simple/wrapt/wrapt-2.4.1-cp314-cp314-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (7.4 kB)
+Collecting donfig>=0.8 (from zarr>=3.1->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/donfig/donfig-0.8.1.post1-py3-none-any.whl.metadata (5.0 kB)
+Collecting google-crc32c>=1.5 (from zarr>=3.1->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/google-crc32c/google_crc32c-1.8.0-cp314-cp314-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl.metadata (1.7 kB)
+Collecting msgspec>=0.19 (from zarr>=3.1->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/msgspec/msgspec-0.21.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.8 kB)
+Collecting numcodecs>=0.14 (from zarr>=3.1->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/numcodecs/numcodecs-0.17.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (3.2 kB)
+Collecting pydantic>=2.7.0 (from pydantic-settings->scverse-misc[settings]>=0.1.0->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pydantic/pydantic-2.13.5-py3-none-any.whl.metadata (110 kB)
+Collecting typing-inspection>=0.4.0 (from pydantic-settings->scverse-misc[settings]>=0.1.0->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/typing-inspection/typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+Collecting annotated-types>=0.6.0 (from pydantic>=2.7.0->pydantic-settings->scverse-misc[settings]>=0.1.0->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/annotated-types/annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.46.5 (from pydantic>=2.7.0->pydantic-settings->scverse-misc[settings]>=0.1.0->anndata)
+  Downloading http://pypi-mirror.modal.local:5555/simple/pydantic-core/pydantic_core-2.46.5-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/anndata/anndata-0.13.4-py3-none-any.whl (190 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/cell-eval/cell_eval-0.8.2-py3-none-any.whl (44 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/h5py/h5py-3.16.0-cp314-cp314-manylinux_2_28_x86_64.whl (5.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.4/5.4 MB 307.0 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/numpy/numpy-2.5.3-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 445.2 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/pandas/pandas-3.0.6-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (10.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.8/10.8 MB 442.6 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/polars/polars-1.44.2-py3-none-any.whl (865 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 865.8/865.8 kB 890.2 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/polars-runtime-32/polars_runtime_32-1.44.2-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (49.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 49.9/49.9 MB 457.2 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/scanpy/scanpy-1.12.4-py3-none-any.whl (2.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 341.0 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/scipy/scipy-1.18.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 253.3 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/array-api-compat/array_api_compat-1.15.0-py3-none-any.whl (79 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/fast-array-utils/fast_array_utils-1.5.1-py3-none-any.whl (40 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/igraph/igraph-1.0.0-cp39-abi3-manylinux_2_28_x86_64.whl (5.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.7/5.7 MB 301.6 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/legacy-api-wrap/legacy_api_wrap-1.5-py3-none-any.whl (10 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/matplotlib/matplotlib-3.11.2-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (11.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.0/11.0 MB 281.2 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/contourpy/contourpy-1.4.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (384 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/cycler/cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/fonttools/fonttools-4.65.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.3/5.3 MB 236.1 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/kiwisolver/kiwisolver-1.5.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.5/1.5 MB 365.0 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/networkx/networkx-3.6.1-py3-none-any.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 449.2 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/numba/numba-0.67.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.9/3.9 MB 339.5 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/llvmlite/llvmlite-0.49.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (59.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.9/59.9 MB 256.1 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/packaging/packaging-26.3-py3-none-any.whl (129 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/pdex/pdex-0.3.0-py3-none-any.whl (16 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/numba-mwu/numba_mwu-0.2.0-py3-none-any.whl (17 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/pillow/pillow-12.3.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.9/6.9 MB 304.1 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/pyarrow/pyarrow-25.0.1-cp314-cp314-manylinux_2_28_x86_64.whl (50.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 50.1/50.1 MB 245.4 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/pynndescent/pynndescent-0.6.0-py3-none-any.whl (73 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/joblib/joblib-1.6.0-py3-none-any.whl (306 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/cloudpickle/cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/pyparsing/pyparsing-3.3.2-py3-none-any.whl (122 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/python-dateutil/python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/pyyaml/pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (794 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 794.2/794.2 kB 721.1 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/scikit-learn/scikit_learn-1.9.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (9.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.2/9.2 MB 295.6 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/narwhals/narwhals-2.26.0-py3-none-any.whl (474 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/scverse-misc/scverse_misc-0.1.6-py3-none-any.whl (28 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/seaborn/seaborn-0.13.2-py3-none-any.whl (294 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/six/six-1.17.0-py2.py3-none-any.whl (11 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/statsmodels/statsmodels-0.15.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (12.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.1/12.1 MB 250.2 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/formulaic/formulaic-1.2.2-py3-none-any.whl (118 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/interface-meta/interface_meta-2.0.1-py3-none-any.whl (15 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/patsy/patsy-1.0.3-py2.py3-none-any.whl (233 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/texttable/texttable-1.7.0-py2.py3-none-any.whl (10 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/threadpoolctl/threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/tqdm/tqdm-4.70.1-py3-none-any.whl (80 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/typing-extensions/typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/umap-learn/umap_learn-0.5.12-py3-none-any.whl (91 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/wrapt/wrapt-2.4.1-cp314-cp314-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (237 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/zarr/zarr-3.4.0-py3-none-any.whl (376 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/donfig/donfig-0.8.1.post1-py3-none-any.whl (21 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/google-crc32c/google_crc32c-1.8.0-cp314-cp314-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl (33 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/msgspec/msgspec-0.21.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (224 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/numcodecs/numcodecs-0.17.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 289.1 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/certifi/certifi-2026.7.22-py3-none-any.whl (136 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/natsort/natsort-8.4.0-py3-none-any.whl (38 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/pydantic-settings/pydantic_settings-2.15.0-py3-none-any.whl (69 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/pydantic/pydantic-2.13.5-py3-none-any.whl (472 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/pydantic-core/pydantic_core-2.46.5-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 363.7 MB/s  0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/annotated-types/annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/python-dotenv/python_dotenv-1.2.3-py3-none-any.whl (22 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/typing-inspection/typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/session-info2/session_info2-0.4.2-py3-none-any.whl (17 kB)
+Installing collected packages: texttable, wrapt, typing-extensions, tqdm, threadpoolctl, six, session-info2, pyyaml, python-dotenv, pyparsing, pyarrow, polars-runtime-32, pillow, packaging, numpy, networkx, natsort, narwhals, msgspec, llvmlite, legacy-api-wrap, kiwisolver, interface-meta, igraph, google-crc32c, fonttools, cycler, cloudpickle, certifi, array-api-compat, annotated-types, typing-inspection, scverse-misc, scipy, python-dateutil, pydantic-core, polars, patsy, numcodecs, numba, joblib, h5py, fast-array-utils, donfig, contourpy, zarr, scikit-learn, pydantic, pandas, numba-mwu, matplotlib, seaborn, pynndescent, pydantic-settings, formulaic, umap-learn, statsmodels, anndata, scanpy, pdex, cell-eval
+
+Successfully installed anndata-0.13.4 annotated-types-0.8.0 array-api-compat-1.15.0 cell-eval-0.8.2 certifi-2026.7.22 cloudpickle-3.1.2 contourpy-1.4.0 cycler-0.12.1 donfig-0.8.1.post1 fast-array-utils-1.5.1 fonttools-4.65.0 formulaic-1.2.2 google-crc32c-1.8.0 h5py-3.16.0 igraph-1.0.0 interface-meta-2.0.1 joblib-1.6.0 kiwisolver-1.5.1 legacy-api-wrap-1.5 llvmlite-0.49.0 matplotlib-3.11.2 msgspec-0.21.1 narwhals-2.26.0 natsort-8.4.0 networkx-3.6.1 numba-0.67.0 numba-mwu-0.2.0 numcodecs-0.17.0 numpy-2.5.3 packaging-26.3 pandas-3.0.6 patsy-1.0.3 pdex-0.3.0 pillow-12.3.0 polars-1.44.2 polars-runtime-32-1.44.2 pyarrow-25.0.1 pydantic-2.13.5 pydantic-core-2.46.5 pydantic-settings-2.15.0 pynndescent-0.6.0 pyparsing-3.3.2 python-dateutil-2.9.0.post0 python-dotenv-1.2.3 pyyaml-6.0.3 scanpy-1.12.4 scikit-learn-1.9.1 scipy-1.18.1 scverse-misc-0.1.6 seaborn-0.13.2 session-info2-0.4.2 six-1.17.0 statsmodels-0.15.0 texttable-1.7.0 threadpoolctl-3.7.0 tqdm-4.70.1 typing-extensions-4.16.0 typing-inspection-0.4.4 umap-learn-0.5.12 wrapt-2.4.1 zarr-3.4.0
+
+[notice] A new release of pip is available: 25.3 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Saving image...
+Image saved, took 2.40s
+
+Built image im-REciOFmgAYqkxTkKZOvhYJ in 43.66s
+
+
+✓ Created objects.
+├── 🔨 Created mount 
+│   /Users/udingethe/Dev/kytos/tools/modal_k017_offline_cell_eval.py
+└── 🔨 Created function run_cell_eval.
+
+=== clone Kytos ===
++ rm -rf /root/kytos
++ git clone --depth 1 https://github.com/udirobert/kytos.git /root/kytos
+Cloning into '/root/kytos'...
+
+=== stage inputs ===
++ mkdir -p /root/atlas /root/paired /root/h1train
++ cp /kytos-vol/atlas/adata_Validation.h5ad /root/atlas/
++ cp /kytos-vol/paired-transfer/paired_transfer_train.npz /root/paired/
++ cp /kytos-vol/paired-transfer/delta_matrix_src.npz /root/paired/
++ cp /kytos-vol/h1-2025-train/h1_train_deltas.npz /root/h1train/
++ ls -lh /root/atlas /root/paired /root/h1train
+/root/atlas:
+total 6.5G
+-rw-r--r-- 1 root root 6.5G Sep 19 08:45 adata_Validation.h5ad
+
+/root/h1train:
+total 9.3M
+-rw-r--r-- 1 root root 9.3M Sep 19 08:45 h1_train_deltas.npz
+
+/root/paired:
+total 704M
+-rw-r--r-- 1 root root 699M Sep 19 08:45 delta_matrix_src.npz
+-rw-r--r-- 1 root root 5.2M Sep 19 08:45 paired_transfer_train.npz
+
+=== run offline cell-eval ===
++ cd /root/kytos
++ mkdir -p /root/kytos/experiments/k017-offline-cell-eval
++ python tools/run_k017_offline_cell_eval.py --val-h5ad /root/atlas/adata_Validation.h5ad --paired-npz /root/paired/paired_transfer_train.npz --h1-npz /root/h1train/h1_train_deltas.npz --src-matrix /root/paired/delta_matrix_src.npz --outdir /root/kytos/experiments/k017-offline-cell-eval --candidates identity_ds1p7,h1lr64_ds1p7_selfTrain,h1lr64_ds2p0_selfTrainScaled --cells-per-target 20 --control-cells 200 --max-targets 2 --profile vcc '\'
+usage: run_k017_offline_cell_eval.py [-h] --val-h5ad VAL_H5AD
+                                     --paired-npz PAIRED_NPZ --h1-npz H1_NPZ
+                                     --src-matrix SRC_MATRIX --outdir OUTDIR
+                                     [--candidates CANDIDATES]
+                                     [--cells-per-target CELLS_PER_TARGET]
+                                     [--control-cells CONTROL_CELLS]
+                                     [--max-targets MAX_TARGETS]
+                                     [--profile {full,minimal,vcc,pds}]
+                                     [--num-threads NUM_THREADS] [--seed SEED]
+                                     [--pool-k POOL_K] [--keep-pred]
+                                     [--ceiling]
+run_k017_offline_cell_eval.py: error: unrecognized arguments: \
+Traceback (most recent call last):
+  File "/pkg/modal/_runtime/container_io_manager.py", line 947, in handle_input_exception
+    yield
+  File "/pkg/modal/_container_entrypoint.py", line 172, in run_input_sync
+    values = io_context.call_function_sync()
+  File "/pkg/modal/_runtime/container_io_manager.py", line 225, in call_function_sync
+    expected_value_or_values = self.finalized_function.callable(*args, **kwargs)
+  File "/root/modal_k017_offline_cell_eval.py", line 82, in run_cell_eval
+    run_step(
+    ~~~~~~~~^
+        "run offline cell-eval",
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<13 lines>...
+        f"  {' '.join(flags)}".rstrip(),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/modal_k017_offline_cell_eval.py", line 63, in run_step
+    raise RuntimeError(f"{name} failed with exit code {result.returncode}")
+RuntimeError: run offline cell-eval failed with exit code 2
+Stopping app - uncaught exception raised locally: RuntimeError('run offline cell-eval failed with exit code 2').
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /Users/udingethe/Dev/kytos/tools/modal_k017_offline_cell_eval.py:128 in main │
+│                                                                              │
+│   127 ):                                                                     │
+│ ❱ 128 │   result = run_cell_eval.remote(                                     │
+│   129 │   │   candidates=candidates,                                         │
+│                                                                              │
+│ /Users/udingethe/.local/pipx/venvs/modal/lib/python3.14/site-packages/modal/ │
+│ _object.py:46 in wrapped                                                     │
+│                                                                              │
+│    45 │   │   await self.hydrate()                                           │
+│ ❱  46 │   │   return await method(self, *args, **kwargs)                     │
+│    47                                                                        │
+│                                                                              │
+│ /Users/udingethe/.local/pipx/venvs/modal/lib/python3.14/site-packages/modal/ │
+│ _functions.py:1702 in remote                                                 │
+│                                                                              │
+│   1701 │   │                                                                 │
+│ ❱ 1702 │   │   return await self._call_function(args, kwargs)                │
+│   1703                                                                       │
+│                                                                              │
+│ /Users/udingethe/.local/pipx/venvs/modal/lib/python3.14/site-packages/modal/ │
+│ _functions.py:1646 in _call_function                                         │
+│                                                                              │
+│   1645 │   │                                                                 │
+│ ❱ 1646 │   │   return await invocation.run_function()                        │
+│   1647                                                                       │
+│                                                                              │
+│ /Users/udingethe/.local/pipx/venvs/modal/lib/python3.14/site-packages/modal/ │
+│ _functions.py:494 in run_function                                            │
+│                                                                              │
+│    493 │   │   │   # No more retries left.                                   │
+│ ❱  494 │   │   │   return await _process_result(                             │
+│    495 │   │   │   │   await_response.output.result, await_response.output.d │
+│                                                                              │
+│ /Users/udingethe/.local/pipx/venvs/modal/lib/python3.14/site-packages/modal/ │
+│ _utils/function_utils.py:527 in _process_result                              │
+│                                                                              │
+│   526 │   │   │                                                              │
+│ ❱ 527 │   │   │   raise exc_with_hints(exc)                                  │
+│   528                                                                        │
+│                                                                              │
+│     ...Remote call to Modal Function (ta-01M2WDE8PEZ2W7P5PTD972VVFR)...      │
+│                                                                              │
+│ /root/modal_k017_offline_cell_eval.py:82 in run_cell_eval                    │
+│                                                                              │
+│ ❱ 82 run_step(                                                               │
+│                                                                              │
+│                                                                              │
+│ /root/modal_k017_offline_cell_eval.py:63 in run_step                         │
+│                                                                              │
+│ ❱ 63 raise RuntimeError(f"{name} failed with exit code {result.returncode}") │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+RuntimeError: run offline cell-eval failed with exit code 2

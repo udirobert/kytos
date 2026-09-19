@@ -1,0 +1,113 @@
+{
+  "created_utc": "2026-09-19T10:04:51Z",
+  "n_eval_targets": 3,
+  "dropped_targets": [
+    "CENPB",
+    "COX4I1",
+    "COX6C",
+    "CSK",
+    "CTSV",
+    "CXCL12",
+    "DOT1L",
+    "DPH2",
+    "EHMT1",
+    "EIF3H",
+    "FUBP1",
+    "GNG12",
+    "GSTZ1",
+    "HDAC3",
+    "HDAC8",
+    "HMGCR",
+    "HMGXB4",
+    "HTATSF1",
+    "IGF1R",
+    "ITGAV",
+    "JAZF1",
+    "JMJD8",
+    "KLHDC2",
+    "KRT18",
+    "MAT2A",
+    "MAX",
+    "MGST1",
+    "MTFR1",
+    "NFE2L1",
+    "PACSIN3",
+    "PAXIP1",
+    "PPP2R3C",
+    "SH3BP4",
+    "SLIRP",
+    "SMARCB1",
+    "SMARCE1",
+    "STRAP",
+    "SUPV3L1",
+    "TCF7L2",
+    "THY1",
+    "TUSC3",
+    "UQCRB",
+    "USF2",
+    "VCL",
+    "WAC",
+    "ZNF581",
+    "ZNF598"
+  ],
+  "cells_per_target": 50,
+  "control_cells": 200,
+  "self_median_train": -1.5989654064178467,
+  "profile": "vcc",
+  "candidates": {
+    "identity_ds1p7": {
+      "agg": {
+        "overlap_at_N": 0.024107150726707032,
+        "mae": 0.05532589756953643,
+        "discrimination_score_l1": 0.6666666666666666
+      },
+      "gen_plus_eval_s": 23.0,
+      "eval_s": 21.7,
+      "config": {
+        "name": "identity_ds1p7",
+        "amplitude": 1.0,
+        "bulk_amplitude": 1.0,
+        "transfer": "identity",
+        "delta_scale": 1.7,
+        "self_mode": "none"
+      }
+    },
+    "h1lr64_ds1p7_selfTrain": {
+      "agg": {
+        "overlap_at_N": 0.03448492600720978,
+        "mae": 0.050656513431069326,
+        "discrimination_score_l1": 0.6666666666666666
+      },
+      "gen_plus_eval_s": 17.1,
+      "eval_s": 15.9,
+      "config": {
+        "name": "h1lr64_ds1p7_selfTrain",
+        "amplitude": 1.0,
+        "bulk_amplitude": 1.0,
+        "transfer": "lowrank",
+        "rank": 64,
+        "delta_scale": 1.7,
+        "self_mode": "selfTrain"
+      }
+    },
+    "h1lr64_ds2p0_selfTrainScaled": {
+      "agg": {
+        "overlap_at_N": 0.03578497800928986,
+        "mae": 0.05111065621368941,
+        "discrimination_score_l1": 0.6666666666666666
+      },
+      "gen_plus_eval_s": 18.0,
+      "eval_s": 16.7,
+      "config": {
+        "name": "h1lr64_ds2p0_selfTrainScaled",
+        "amplitude": 1.0,
+        "bulk_amplitude": 1.0,
+        "transfer": "lowrank",
+        "rank": 64,
+        "delta_scale": 2.0,
+        "self_mode": "selfTrainScaled"
+      }
+    }
+  },
+  "elapsed_s": 231.7
+}
