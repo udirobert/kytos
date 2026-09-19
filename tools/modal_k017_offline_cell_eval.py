@@ -79,22 +79,22 @@ def run_cell_eval(
         flags.append("--keep-pred")
     if ceiling:
         flags.append("--ceiling")
+    flag_str = (" " + " ".join(flags)) if flags else ""
     run_step(
         "run offline cell-eval",
         f"cd {REPO_DIR}\n"
         f"mkdir -p {OUT_DIR}\n"
-        "python tools/run_k017_offline_cell_eval.py \\\n"
-        "  --val-h5ad /root/atlas/adata_Validation.h5ad \\\n"
-        "  --paired-npz /root/paired/paired_transfer_train.npz \\\n"
-        "  --h1-npz /root/h1train/h1_train_deltas.npz \\\n"
-        "  --src-matrix /root/paired/delta_matrix_src.npz \\\n"
-        f"  --outdir {OUT_DIR} \\\n"
-        f"  --candidates '{candidates}' \\\n"
-        f"  --cells-per-target {cells_per_target} \\\n"
-        f"  --control-cells {control_cells} \\\n"
-        f"  --max-targets {max_targets} \\\n"
-        f"  --profile {profile} \\\n"
-        f"  {' '.join(flags)}".rstrip(),
+        "python tools/run_k017_offline_cell_eval.py"
+        " --val-h5ad /root/atlas/adata_Validation.h5ad"
+        " --paired-npz /root/paired/paired_transfer_train.npz"
+        " --h1-npz /root/h1train/h1_train_deltas.npz"
+        " --src-matrix /root/paired/delta_matrix_src.npz"
+        f" --outdir {OUT_DIR}"
+        f" --candidates '{candidates}'"
+        f" --cells-per-target {cells_per_target}"
+        f" --control-cells {control_cells}"
+        f" --max-targets {max_targets}"
+        f" --profile {profile}{flag_str}",
     )
 
     run_step(
