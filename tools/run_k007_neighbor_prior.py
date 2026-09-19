@@ -120,7 +120,12 @@ def build_context_predictions(
     """
     print(f"[{context}] loading {control_path.name} ...", flush=True)
     ctrl = ad.read_h5ad(str(control_path))
-    X_ctrl = ctrl.X.tocsr() if not sparse.isspmatrix_csr(ctrl.X) else ctrl.X
+    if sparse.isspmatrix_csr(ctrl.X):
+        X_ctrl = ctrl.X
+    elif sparse.issparse(ctrl.X):
+        X_ctrl = ctrl.X.tocsr()
+    else:
+        X_ctrl = sparse.csr_matrix(np.asarray(ctrl.X))
     n_cells, n_genes = X_ctrl.shape
     assert n_genes == len(gene_order)
 
@@ -133,7 +138,7 @@ def build_context_predictions(
 
     basal = extract_basal_context(X_ctrl, gene_order)
     print(
-        f"  basal: {n_cells} cells, mean nnz/cell {ctrl.X.nnz / ctrl.n_obs:.1f}",
+        f"  basal: {n_cells} cells, mean nnz/cell {X_ctrl.nnz / ctrl.n_obs:.1f}",
         flush=True,
     )
 
