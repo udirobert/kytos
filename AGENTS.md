@@ -200,6 +200,27 @@ to git.
   no public corpus covers the panel in a matched lineage.** Remaining
   levers: transfer learning (2,393 shared essential targets x 4
   lineages as supervision) or Track-2 trained model.
+- `kytos-k015-lowrank-r256` (essential-screen low-rank transfer, rank 256,
+  all contexts) scored **-0.028** (rank 689) — regression vs k011. Detailed
+  components: `pds_cosine` 0.553 (score_pds 0.117), `expr_mse` 5.18
+  (score_mse 0.0), `nmae` 1.043 (score_nmae -0.073), `fidelity` 0.449
+  (score_fid -0.207), `reach` 0.092, `jaccard` 0.023. Diagnosis: the
+  essential-gene low-rank map is OOD for the 2026 panel (0/300 overlap);
+  rank-256 projection onto essential-response subspace discards target-
+  specific signal, collapsing PDS and fidelity. Norm ratios on paired
+  essential data were ~0.53–0.59 pred/dst; amplitude roughly OK with
+  delta_scale=1.7 but direction is wrong for panel targets. **Conclusion:
+  low-rank essential-screen transfer is a dead end for direct panel
+  prediction.** Saved: `experiments/k015-essential-transfer/leaderboard_result.json`.
+- **H1-2025 training data extracted** to `/kytos-vol/h1-2025-train/`:
+  `h1_train_deltas.npz` (150 targets × 18,080 genes), `adata_Training.h5ad`
+  (15.5 GB). Overlap with 2026 panel: 13/300. H1 validation set: 50 targets,
+  0 overlap with H1 training targets (clean train/val split). Offline delta-level
+  harness (`tools/modal_k017_h1_eval.py`) on 136 H1-train pairs → 47 H1-val
+  targets: raw K562 identity top-200 cosine 0.403; rank-64 low-rank + fixed
+  self-gene reset reaches top-200 cosine ~0.59–0.61 and Pearson ~0.44–0.46,
+  with pred/true norm ratio ~0.44–0.61 depending on scale. Next: count-level
+  offline validation with cell-eval on 2025 validation before any submission.
 - **Lineage score** (`experiments/k012-lineage-score/`): on top-2000
   discriminative genes, context **A is Jurkat-like (0.649)**, B weakly
   RPE1-leaning (0.369), C unresolved (hESC 0.379). Reference controls

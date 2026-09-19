@@ -1,0 +1,53 @@
+{
+  "model": "jev-1.13.0",
+  "answers": {
+    "safe_to_submit": {
+      "type": "noul",
+      "noul": 0.07
+    },
+    "next_focus": {
+      "type": "choice",
+      "choice": "improve_context_transfer",
+      "confidence": 0.31,
+      "probabilities": {
+        "replicate_top_method": 0.02,
+        "offline_eval_harness": 0.1,
+        "fix_delta_magnitude": 0.4,
+        "improve_context_transfer": 0.48
+      }
+    },
+    "risk_level": {
+      "type": "score",
+      "score": 3.17,
+      "confidence": 0.67,
+      "legend": {
+        "0": "Very low risk",
+        "1": "Low risk",
+        "2": "Medium risk",
+        "3": "High risk",
+        "4": "Very high risk"
+      },
+      "probabilities": {
+        "0": 0.01,
+        "1": 0.02,
+        "2": 0.05,
+        "3": 0.64,
+        "4": 0.28
+      }
+    },
+    "blocking_issues": {
+      "type": "noul",
+      "noul": 0.74
+    }
+  },
+  "usage": {
+    "input_tokens": 1285,
+    "output_tokens": 116
+  },
+  "kytos_guardrail": {
+    "verdict": "HOLD",
+    "submit_threshold": 0.65,
+    "safe_to_submit_noul": 0.07,
+    "note": "TypeSafe is advisory; final gating uses offline metrics and submission budget."
+  }
+}

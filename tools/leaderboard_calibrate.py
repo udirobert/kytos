@@ -13,7 +13,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import ssl
 import urllib.request
+
+try:
+    import certifi
+
+    _SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
+except ImportError:  # pragma: no cover
+    _SSL_CONTEXT = ssl.create_default_context()
 
 LEADERBOARD_URL = "https://virtualcellchallenge.org/api/leaderboard"
 OUR_TEAM = "kytos"
@@ -21,7 +29,7 @@ OUR_TEAM = "kytos"
 
 def fetch_leaderboard() -> dict:
     req = urllib.request.Request(LEADERBOARD_URL, headers={"User-Agent": "kytos-research/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    with urllib.request.urlopen(req, timeout=30, context=_SSL_CONTEXT) as resp:
         return json.loads(resp.read())
 
 

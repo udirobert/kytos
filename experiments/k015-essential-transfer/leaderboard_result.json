@@ -1,0 +1,46 @@
+{
+  "entry_id": "eKgWcwzfjkJAyT8vEE5i",
+  "model_name": "kytos-k015-lowrank-r256",
+  "submitted_at_utc": "2026-09-19T00:02:02.266340Z",
+  "status": "published",
+  "score_avg": -0.027965771766984917,
+  "rank": 683,
+  "score_pds": 0.11729829946854932,
+  "score_mse": 0.0,
+  "score_nmae": -0.07253311157072766,
+  "score_fid": -0.2072780321995548,
+  "score_reach": 0.014585751904105814,
+  "score_jac": -0.01986753820428217,
+  "current_best": {
+    "model_name": "kytos-k011-ds-x1p7",
+    "score_avg": 0.0596,
+    "components_note": "pds 0.339, fid -0.006, nmae -0.076 from prior notes"
+  },
+  "leaderboard": {
+    "as_of_utc": "2026-09-19T01:53Z",
+    "total_entries": 1042,
+    "top100_threshold": 0.1682,
+    "top_entry": {
+      "team": "Illumina AI",
+      "model": "PerturbationAI",
+      "score_avg": 0.3304,
+      "score_pds": 0.8395,
+      "score_mse": 0.3863,
+      "score_nmae": 0.2594
+    }
+  },
+  "diagnosis": {
+    "k015_effect": "low-rank essential-screen transfer worsened public score versus k011",
+    "likely_causes": [
+      "low-rank transform trained on essential genes may not generalize to panel targets",
+      "transformed deltas may lose sparse target-specific signal",
+      "distribution/count realism remains poor; MSE score remains zero"
+    ],
+    "offline_assets": [
+      "H1 2025 training deltas: 150 targets on /kytos-vol/h1-2025-train/h1_train_deltas.npz",
+      "2025 validation h5ad on /kytos-vol/atlas/adata_Validation.h5ad",
+      "Replogle K562 GWPS bulk downloadable on Modal",
+      "k015 low-rank models and transfer report on /kytos-vol/k015-essential-transfer/"
+    ]
+  }
+}
