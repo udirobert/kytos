@@ -326,12 +326,16 @@ def main(argv: list[str] | None = None) -> int:
             outdir=str(cand_dir),
         )
         results, agg = evaluator.compute(profile=args.profile, basename="results.csv")
-        agg_dict = dict(zip(agg["metric"].to_list(), agg["value"].to_list()))
+        agg_pd = agg.to_pandas().set_index("statistic")
+        agg_dict = agg_pd.loc["mean"].to_dict() if "mean" in agg_pd.index else {}
 
         def _finite(v):
             if v is None or (isinstance(v, float) and not np.isfinite(v)):
                 return None
-            return float(v)
+            try:
+                return float(v)
+            except (TypeError, ValueError):
+                return None
 
         summary["candidates"][name] = {
             "agg": {k: _finite(v) for k, v in agg_dict.items()},
