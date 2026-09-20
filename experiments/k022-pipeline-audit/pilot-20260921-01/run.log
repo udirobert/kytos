@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/root/kytos/tools/run_k022_pipeline_audit.py", line 451, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/kytos/tools/run_k022_pipeline_audit.py", line 414, in main
+    summary = run_audit(
+              ^^^^^^^^^^
+  File "/root/kytos/tools/run_k022_pipeline_audit.py", line 256, in run_audit
+    control_fit = real[ctrl_fit].to_memory() if real.isbacked else real[ctrl_fit].copy()
+                  ~~~~^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/anndata/_core/anndata.py", line 1012, in __getitem__
+    return AnnData(self, oidx=oidx, vidx=vidx, asview=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/anndata/_core/anndata.py", line 227, in __init__
+    self._init_as_view(X, oidx, vidx)
+  File "/usr/local/lib/python3.12/site-packages/anndata/_core/anndata.py", line 252, in _init_as_view
+    raise ValueError(msg)
+ValueError: Currently, you cannot index repeatedly into a backed AnnData, that is, you cannot make a view of a view.

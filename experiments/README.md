@@ -173,8 +173,30 @@ enrichment path.
   `TMSB15B-1`); no predictions or official scores were produced. Receipts:
   [`pilot-20260920-01/preflight.json`](k022-pipeline-audit/pilot-20260920-01/preflight.json),
   [`pilot-20260920-01/execution.json`](k022-pipeline-audit/pilot-20260920-01/execution.json).
+  The metadata-only axis audit (`axis-20260921-01`) proved the three labels
+  are `make_unique` duplicate-symbol artifacts with no stable IDs and
+  expression profiles distinct from their base symbols — suffix mapping
+  would fabricate effects, so they are dropped from the diagnostic axis
+  under an explicit `--allow-axis-drop` flag and recorded in each run
+  manifest:
+  [`axis-20260921-01/axis_report.json`](k022-pipeline-audit/axis-20260921-01/axis_report.json).
+  `pilot-20260921-01` exercised that path end to end and failed inside the
+  diagnostic on a backed-AnnData view-of-a-view defect (fixed; receipt:
+  [`pilot-20260921-01/execution.json`](k022-pipeline-audit/pilot-20260921-01/execution.json)).
+  `pilot-20260921-02` then **completed** the 3-target diagnostic
+  (ACLY/ANXA6/ARPC2, 400 cells + 1600/1600 controls) on the aligned
+  18,077-label axis. Proxy findings: transport null is calibrated on
+  controls (variance ratio 1.05); measured-delta transport preserves
+  direction moderately (cosines 0.33–0.87); borrowed K562 signatures are
+  strongly target-dependent (cosines -0.01 to 0.76); direct-moment arms
+  under-disperse (~0.28 variance ratio). Diagnostics only — not a
+  six-metric leaderboard surrogate:
+  [`pilot-20260921-02/summary.json`](k022-pipeline-audit/pilot-20260921-02/summary.json),
+  [`pilot-20260921-02/execution.json`](k022-pipeline-audit/pilot-20260921-02/execution.json).
   Scorer contract:
-  [`k022-pipeline-audit/scorer_contract.json`](k022-pipeline-audit/scorer_contract.json).
+  [`k022-pipeline-audit/scorer_contract.json`](k022-pipeline-audit/scorer_contract.json);
+  pinned `cell-eval2` 0.16.0 smoke report:
+  [`k022-pipeline-audit/eval2_contract_smoke.json`](k022-pipeline-audit/eval2_contract_smoke.json).
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /

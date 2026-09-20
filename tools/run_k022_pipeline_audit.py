@@ -226,11 +226,21 @@ def resolve_consumer_axis(genes, source_path, allow_drop):
 
 
 def run_audit(
-    real, out_dir, *, cells=32, controls=128, pool_k=4, seed=0, max_targets=0, source=None
+    real,
+    out_dir,
+    *,
+    cells=32,
+    controls=128,
+    pool_k=4,
+    seed=0,
+    max_targets=0,
+    source=None,
+    var_keep=None,
 ):
     if controls < cells * pool_k or pool_k < 1:
         raise ValueError("Fit-control count must cover cells * pool_k")
-    genes = real.var_names.astype(str).tolist()
+    vidx = var_keep if var_keep is not None else slice(None)
+    genes = real.var_names[vidx].astype(str).tolist()
     if len(set(genes)) != len(genes) or not real.obs_names.is_unique:
         raise ValueError("Unique cell and gene identifiers are required")
     labels = real.obs[PERT_COL].astype(str).to_numpy()
@@ -253,8 +263,8 @@ def run_audit(
         raise ValueError("No targets have enough independent fit/evaluation cells")
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=False)
-    control_fit = real[ctrl_fit].to_memory() if real.isbacked else real[ctrl_fit].copy()
-    control_eval = real[ctrl_eval].X
+    control_fit = real[ctrl_fit, vidx].to_memory() if real.isbacked else real[ctrl_fit, vidx].copy()
+    control_eval = real[ctrl_eval, vidx].X
     control_moments = moments(control_fit.X)
     summary = {
         "run_id": "k022-pipeline-audit",
@@ -319,7 +329,7 @@ def run_audit(
             "direct_moments": diagnostics(null_moment, control_eval, control_eval),
         }
         for target, (fit_rows, eval_rows) in splits.items():
-            fit, evaluation = real[fit_rows].X, real[eval_rows].X
+            fit, evaluation = real[fit_rows, vidx].X, real[eval_rows, vidx].X
             desired = moments(fit)
             delta = (desired["mean_log1p_raw"] - control_moments["mean_log1p_raw"]).astype(
                 np.float32
@@ -399,18 +409,21 @@ def main(argv=None):
         )
     real = synthetic_data(args.seed) if args.smoke else ad.read_h5ad(args.real_h5ad, backed="r")
     axis_resolution = None
+    var_keep = None
     try:
         if args.source_npz:
+            genes_all = real.var_names.astype(str).tolist()
             keep, axis_resolution = resolve_consumer_axis(
-                real.var_names.astype(str).tolist(), args.source_npz, args.allow_axis_drop
+                genes_all, args.source_npz, args.allow_axis_drop
             )
-            if keep and len(keep) < real.n_vars:
-                real = real[:, keep]
-        source = (
-            load_source(args.source_npz, real.var_names.astype(str).tolist())
-            if args.source_npz
-            else None
-        )
+            if keep and len(keep) < len(genes_all):
+                var_keep = keep
+            source = load_source(
+                args.source_npz,
+                [genes_all[i] for i in var_keep] if var_keep is not None else genes_all,
+            )
+        else:
+            source = None
         summary = run_audit(
             real,
             args.out_dir,
@@ -420,6 +433,7 @@ def main(argv=None):
             seed=args.seed,
             max_targets=args.max_targets,
             source=source,
+            var_keep=var_keep,
         )
         summary["synthetic"] = args.smoke
         if axis_resolution:

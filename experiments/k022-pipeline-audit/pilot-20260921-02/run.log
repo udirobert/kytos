@@ -1,0 +1,29 @@
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 null
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ACLY
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ACLY
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ANXA6
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ANXA6
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ARPC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ARPC2
+{"summary": "/kytos-vol/k022-pipeline-audit/pilot-20260921-02/diagnostics/summary.json", "targets": 3, "diagnostics_only": true}

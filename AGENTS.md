@@ -409,9 +409,29 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   without feature-ID evidence. Other gates passed: 38,176 controls; ACLY 1,026,
   ANXA6 2,496, ARPC2 980 cells. The diagnostic subprocess did NOT execute.
   Artifacts: `experiments/k022-pipeline-audit/pilot-20260920-01/` (preflight and
-  execution receipt). No GPU or submission; no second launch authorized.
-  Actual cost is unavailable from retrieved CLI metadata; do not substitute
-  the historical ~$0.13 per-attempt estimate for a billed charge.
+  execution receipt). Actual cost is unavailable from retrieved CLI metadata;
+  do not substitute the historical ~$0.13 per-attempt estimate for a billed
+  charge.
+- **Axis blocker resolved (2026-09-21).** Metadata-only audit
+  (`axis-20260921-01`, `tools/audit_gene_axis.py` +
+  `tools/modal_k022_axis_audit.py`) proved the three labels are
+  `make_unique`-style duplicate-symbol artifacts: each base symbol also
+  exists, the Atlas `var` has no stable feature-ID columns, and the
+  suffixed rows have distinct dropout/mean profiles — suffix mapping
+  would fabricate effects. Resolution: **recorded drop** to the 18,077-label
+  aligned axis via `--allow-axis-drop` (strict-by-default; >50-label
+  mismatch still blocks). Report:
+  `experiments/k022-pipeline-audit/axis-20260921-01/axis_report.json`.
+  `pilot-20260921-01` failed on a backed-AnnData view-of-a-view defect
+  (fixed — `var_keep` is threaded through `run_audit` and applied in one
+  `(obs, var)` index); `pilot-20260921-02` then COMPLETED the 3-target
+  proxy diagnostic. Findings: transport null calibrated on controls
+  (variance ratio 1.05); measured-delta transport direction moderate
+  (cosines 0.33–0.87, ACLY dispersion outlier 18.5); borrowed K562
+  signatures target-dependent (cosines -0.01/0.29/0.76); direct-moment
+  arms under-disperse (~0.28). Diagnostics only — proxy evidence class,
+  not a promotion gate. Receipts:
+  `experiments/k022-pipeline-audit/pilot-20260921-02/`.
 - Official scorer located via the VCC CLI guide: public
   `https://github.com/ArcInstitute/cell-eval2`, inspected revision
   `5e64833518a6603a0301cbe28185d49c30f4a986` (package version 0.16.0).
@@ -419,11 +439,18 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   PDS excludes ALL panel target genes; DE uses real controls, arithmetic CPM
   means, a control-expression filter of 5 CPM, per-perturbation BH and epsilon
   1e-9. Source settings and caveats are captured in
-  `experiments/k022-pipeline-audit/scorer_contract.json`. Not integrated or
-  installed by this task. CPU DE engine and reference-anchor compatibility
-  still need verification; published reference tables describe rule_version 3,
-  while saved leaderboard results use r4 anchor bundles. Local `cell-eval`
-  0.8.2 `vcc` profile remains the unrelated legacy three-metric suite.
+  `experiments/k022-pipeline-audit/scorer_contract.json`. **Pinned + smoke-tested
+  (2026-09-21):** `.venv-eval2` (Python 3.12.8) holds cell-eval2 0.16.0 at the
+  pinned revision plus `pdex`; `tools/check_cell_eval2_contract.py` exercised
+  `run → baseline → prep-real-bundle → score --real-bundle` end to end on a
+  synthetic fixture and enrolled a competition bundle (rule_digest set, zero
+  mismatches). Resolved contract: cpu + pdex + bulk_lognorm + counts input;
+  `pert_col` defaults to `target` (Atlas uses `target_gene` — must reconcile);
+  fractional predictions under `input_type=counts` are baseline-only. Report:
+  `experiments/k022-pipeline-audit/eval2_contract_smoke.json`. Production
+  equivalence remains unverified (anchor-bundle rules, DE-engine parity vs
+  production, pert_col naming). Local `cell-eval` 0.8.2 `vcc` profile remains
+  the unrelated legacy three-metric suite.
 - Local verification (existing science venv, no installations):
   `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv-science/bin/python -m pytest -q tests/test_prediction_parity.py tests/test_pipeline_audit.py tests/test_models.py tests/test_transfer.py`.
   The initial targeted run passed 39 tests; two subsequent output-safety tests

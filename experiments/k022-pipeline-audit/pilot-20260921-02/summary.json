@@ -1,0 +1,271 @@
+{
+  "run_id": "k022-pipeline-audit",
+  "diagnostics_only": true,
+  "official_score_computed": false,
+  "cells_per_target": 400,
+  "fit_controls": 1600,
+  "eval_controls": 1600,
+  "pool_k": 4,
+  "seed": 0,
+  "transport": {
+    "kd_std": 2.0,
+    "noise_scale": 0.05,
+    "library_cap": "median",
+    "mean_correct": false
+  },
+  "arm_definitions": {
+    "observed_fit_split": "Independent observed fit cells versus evaluation cells; not an upper bound.",
+    "measured_transport": "Fit mean log1p(raw) minus fit-control mean; delta_scale=1.0.",
+    "measured_direct_moments": "Fit mean per-cell probabilities and separate pooled-count probabilities.",
+    "borrowed_transport_ds1p7": "Optional K562 source vector; historical application with delta_scale=1.7."
+  },
+  "limitations": [
+    "Not a six-metric leaderboard surrogate and not a promotion gate.",
+    "Measured effects are split-sample diagnostics, not deployable predictions or perfect oracles.",
+    "Transport uses mean log1p(raw) shifts; dual-moment uses separate measured probability moments.",
+    "No additive signature-versus-generator headroom decomposition is justified.",
+    "Borrowed source effects, when provided, retain historical units without an implicit conversion.",
+    "DE significance and official metric calibration require the subsequent external evaluation."
+  ],
+  "dropped_targets": {},
+  "targets": {
+    "ACLY": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02627514512346831,
+          "bulk_probability_l1": 0.024806478369865454,
+          "raw_log_mean_mse": 0.0007047463351239409,
+          "raw_log_delta_cosine": 0.8863820006368166,
+          "probability_variance_ratio": 0.9878583280959378,
+          "pred_zero_fraction": 0.5151258505282956,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 55137.0,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.060095756608973525,
+          "bulk_probability_l1": 0.060246358399203684,
+          "raw_log_mean_mse": 0.00766166522380496,
+          "raw_log_delta_cosine": 0.4313498634897053,
+          "probability_variance_ratio": 18.472466533263205,
+          "pred_zero_fraction": 0.5171383526027549,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54663.5,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.026382179140601626,
+          "bulk_probability_l1": 0.024813990058037347,
+          "raw_log_mean_mse": 0.002693297119473991,
+          "raw_log_delta_cosine": 0.7409211459320004,
+          "probability_variance_ratio": 0.2818872836648413,
+          "pred_zero_fraction": 0.4669410023787133,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7": {
+          "mean_probability_l1": 0.13384890548778555,
+          "bulk_probability_l1": 0.13221662495830966,
+          "raw_log_mean_mse": 0.015595174473144662,
+          "raw_log_delta_cosine": -0.00859685361615738,
+          "probability_variance_ratio": 12.76022067620117,
+          "pred_zero_fraction": 0.517662914200365,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54198.5,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015414036352778284,
+        "bulk_probability": 0.00016182542978984286
+      }
+    },
+    "ANXA6": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027970168151295396,
+          "bulk_probability_l1": 0.026585775520226153,
+          "raw_log_mean_mse": 0.0008116466699954304,
+          "raw_log_delta_cosine": 0.5115422101133372,
+          "probability_variance_ratio": 1.0371725500404785,
+          "pred_zero_fraction": 0.5195607678265199,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 54229.5,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04385468672083165,
+          "bulk_probability_l1": 0.04300468706230848,
+          "raw_log_mean_mse": 0.008040861706187518,
+          "raw_log_delta_cosine": 0.3307311891523715,
+          "probability_variance_ratio": 1.1234829730329936,
+          "pred_zero_fraction": 0.5211699950212978,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 50189.0,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02809881199585972,
+          "bulk_probability_l1": 0.026591182973775586,
+          "raw_log_mean_mse": 0.004832160579190855,
+          "raw_log_delta_cosine": -0.023264581590212437,
+          "probability_variance_ratio": 0.28834135978197356,
+          "pred_zero_fraction": 0.46543453006582947,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7": {
+          "mean_probability_l1": 0.07045024777522517,
+          "bulk_probability_l1": 0.06967948920256165,
+          "raw_log_mean_mse": 0.006799094378870269,
+          "raw_log_delta_cosine": 0.2854265248418855,
+          "probability_variance_ratio": 1.1706517638741225,
+          "pred_zero_fraction": 0.5210287934944957,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 53976.0,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001555979113925219,
+        "bulk_probability": 0.00017118891078273424
+      }
+    },
+    "ARPC2": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.03058896691812802,
+          "bulk_probability_l1": 0.029091586647668515,
+          "raw_log_mean_mse": 0.0011223417955872226,
+          "raw_log_delta_cosine": 0.7914675909472548,
+          "probability_variance_ratio": 0.9580840414828068,
+          "pred_zero_fraction": 0.5214637384521768,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 51639.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.045418238069456614,
+          "bulk_probability_l1": 0.04445295987661151,
+          "raw_log_mean_mse": 0.004631880803212845,
+          "raw_log_delta_cosine": 0.8699586129327708,
+          "probability_variance_ratio": 1.0770201563467428,
+          "pred_zero_fraction": 0.523859877192012,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 48515.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.03074390231901488,
+          "bulk_probability_l1": 0.02909756476072066,
+          "raw_log_mean_mse": 0.010405970084418114,
+          "raw_log_delta_cosine": -0.4467527241187333,
+          "probability_variance_ratio": 0.2755575432898402,
+          "pred_zero_fraction": 0.4658604857000609,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7": {
+          "mean_probability_l1": 0.06859449648078964,
+          "bulk_probability_l1": 0.06726472910876251,
+          "raw_log_mean_mse": 0.004012141819813018,
+          "raw_log_delta_cosine": 0.7581216332510872,
+          "probability_variance_ratio": 1.0720734267707421,
+          "pred_zero_fraction": 0.5217281628588815,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 50701.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001569638027033547,
+        "bulk_probability": 0.0001758303288244422
+      }
+    }
+  },
+  "null": {
+    "champion_transport": {
+      "mean_probability_l1": 0.024798723255354246,
+      "bulk_probability_l1": 0.024604872104717047,
+      "raw_log_mean_mse": 0.004517864853831569,
+      "raw_log_delta_cosine": null,
+      "probability_variance_ratio": 1.0469705770257647,
+      "pred_zero_fraction": 0.5161362504840405,
+      "real_zero_fraction": 0.5162837099629363,
+      "pred_median_depth": 54393.5,
+      "real_median_depth": 54543.0,
+      "n_pred": 400,
+      "n_real": 1600
+    },
+    "direct_moments": {
+      "mean_probability_l1": 0.013916301465879685,
+      "bulk_probability_l1": 0.013161640904125414,
+      "raw_log_mean_mse": 0.003689380851198935,
+      "raw_log_delta_cosine": null,
+      "probability_variance_ratio": 0.2892564465107491,
+      "pred_zero_fraction": 0.4646910438678984,
+      "real_zero_fraction": 0.5162837099629363,
+      "pred_median_depth": 54693.0,
+      "real_median_depth": 54543.0,
+      "n_pred": 400,
+      "n_real": 1600
+    }
+  },
+  "code_hashes": {
+    "tools/run_k022_pipeline_audit.py": "1137b7e112bebb1ea89a2f47b5b4f30a4783eab9d080dd2989995b672c530d90",
+    "tools/run_k007_neighbor_prior.py": "1f74a369b41592e1100acc69e6c40501636d2a84cb73ed52d8ecede3f77295ff",
+    "src/kytos/models/dual_moment.py": "a87dc7ce956cabf24e46b227eb55d3bb78ee464d9920a92503c73c24bbe80682",
+    "src/kytos/models/layer_b.py": "1eba27fa1189d947b705809541967589c52971e5da141c8a80b84f00605ea69f"
+  },
+  "split_sha256": "9c029e2e3a851c6c27cd786e4fbd82f09efdb83d276abe97b935d3966c5ae5ab",
+  "versions": {
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "anndata": "0.11.4",
+    "pandas": "2.2.3"
+  },
+  "synthetic": false,
+  "axis_resolution": {
+    "rule": "drop_from_diagnostic_axis",
+    "dropped_labels": [
+      "HSPA14-1",
+      "TBCE-1",
+      "TMSB15B-1"
+    ],
+    "n_consumer_labels": 18080,
+    "n_aligned_labels": 18077,
+    "aligned_axis_sha256": "9e985eba098b1e972c2fa1a488d3774332bd65760b5949b8fbf3857329ac0561",
+    "audit_report": "experiments/k022-pipeline-audit/axis-20260921-01/axis_report.json"
+  },
+  "input_hashes": {
+    "/kytos-vol/atlas/adata_Validation.h5ad": "376f0bab27d9f22e00dfd888668d3602006d035edc182721c378f4802c77bfe1",
+    "/kytos-vol/paired-transfer/paired_transfer_train.npz": "3ec1dec471dc38a74ea2e0dc0d535f69465fec1c7e3ca1f2fabc7526729e14c1"
+  }
+}

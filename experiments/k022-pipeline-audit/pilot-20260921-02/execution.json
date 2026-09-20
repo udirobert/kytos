@@ -1,0 +1,44 @@
+{
+  "run_id": "pilot-20260921-02",
+  "date": "2026-09-21",
+  "app_id": "ap-B659YH3rCgyWnh7gT1av5u",
+  "app_url": "https://modal.com/apps/thepapajams/main/ap-B659YH3rCgyWnh7gT1av5u",
+  "status": "completed",
+  "app_stopped": true,
+  "launches": 1,
+  "diagnostic_subprocess_executed": true,
+  "diagnostic_subprocess_completed": true,
+  "official_score_computed": false,
+  "blockers": [],
+  "axis_resolution": {
+    "rule": "drop_from_diagnostic_axis",
+    "dropped_labels": ["HSPA14-1", "TBCE-1", "TMSB15B-1"],
+    "n_consumer_labels": 18080,
+    "n_aligned_labels": 18077,
+    "aligned_axis_sha256": "9e985eba098b1e972c2fa1a488d3774332bd65760b5949b8fbf3857329ac0561",
+    "audit_report": "experiments/k022-pipeline-audit/axis-20260921-01/axis_report.json"
+  },
+  "targets": ["ACLY", "ANXA6", "ARPC2"],
+  "sampling": {
+    "cells_per_target": 400,
+    "fit_controls": 1600,
+    "eval_controls": 1600,
+    "pool_k": 4,
+    "seed": 0
+  },
+  "preflight_artifact": "experiments/k022-pipeline-audit/pilot-20260921-02/preflight.json",
+  "summary_artifact": "experiments/k022-pipeline-audit/pilot-20260921-02/summary.json",
+  "run_log": "experiments/k022-pipeline-audit/pilot-20260921-02/run.log",
+  "actual_cost_usd": null,
+  "cost_note": "Actual billing not exposed by retrieved CLI metadata; the planning estimate is not an actual charge. Envelope was approximately $0.11-0.13 at the recorded Modal rates.",
+  "interpretation": "First completed k022 diagnostic on the aligned 18,077-label axis. Diagnostics only; not a six-metric leaderboard surrogate and not a promotion gate.",
+  "key_observations": [
+    "Null champion transport on eval controls: variance ratio 1.047, mean-probability L1 0.025 - the generator is well-calibrated on unperturbed cells.",
+    "Measured-transport delta cosines: ACLY 0.431, ANXA6 0.331, ARPC2 0.870 versus observed-fit-split 0.886/0.512/0.791 - transport preserves moderate direction signal but with elevated dispersion; ACLY variance ratio 18.5 is an outlier worth investigating.",
+    "Borrowed K562 signatures (delta_scale=1.7): cosines ACLY -0.009, ANXA6 0.285, ARPC2 0.758 - cross-lineage signature value is strongly target-dependent; ACLY's K562 delta is essentially uninformative for hESC.",
+    "Direct-moment arms consistently under-disperse (variance ratio ~0.28) and yield lower direction fidelity than transport on measured deltas."
+  ],
+  "evidence_class": "proxy_diagnostic",
+  "submissions": 0,
+  "gpu_jobs": 0
+}

@@ -1,0 +1,28 @@
+{
+  "run_id": "pilot-20260921-01",
+  "date": "2026-09-21",
+  "app_id": "ap-GfmRgCsDqVl1zaSgGIoWDY",
+  "app_url": "https://modal.com/apps/thepapajams/main/ap-GfmRgCsDqVl1zaSgGIoWDY",
+  "status": "failed_implementation_defect",
+  "app_stopped": true,
+  "launches": 1,
+  "diagnostic_subprocess_executed": true,
+  "diagnostic_subprocess_completed": false,
+  "official_score_computed": false,
+  "blockers": [],
+  "axis_resolution": {
+    "rule": "drop_from_diagnostic_axis",
+    "dropped_labels": ["HSPA14-1", "TBCE-1", "TMSB15B-1"],
+    "n_aligned_labels": 18077
+  },
+  "defect": "run_k022_pipeline_audit.py subset the backed AnnData to the aligned axis (real[:, keep]) and then indexed obs again, which anndata rejects as a view-of-a-view on backed objects",
+  "fix": "var_keep is now threaded through run_audit and applied in a single (obs, var) __getitem__ against the backed object; fixed in the same commit as the pilot-20260921-02 receipts",
+  "preflight_artifact": "experiments/k022-pipeline-audit/pilot-20260921-01/preflight.json",
+  "run_log": "experiments/k022-pipeline-audit/pilot-20260921-01/run.log",
+  "actual_cost_usd": null,
+  "cost_note": "Actual billing not exposed by retrieved CLI metadata; the planning estimate is not an actual charge. Failed during control-fit load, before any transport arm ran.",
+  "interpretation": "No model-performance result. The axis-resolution code path itself was exercised end to end (preflight passed, recorded drop applied) and exposed a backed-AnnData indexing defect.",
+  "superseded_by": "pilot-20260921-02",
+  "submissions": 0,
+  "gpu_jobs": 0
+}
