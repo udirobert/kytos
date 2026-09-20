@@ -1,0 +1,567 @@
+{
+  "tool": "check_cell_eval2_contract",
+  "pinned_revision": "5e64833518a6603a0301cbe28185d49c30f4a986",
+  "expected_version": "0.16.0",
+  "preset": "vcc2026",
+  "expected_metrics": [
+    "pds_cosine",
+    "expr_mse_unbiased_capped_norm",
+    "de_wilcoxon_direction_fidelity_yield_raw",
+    "de_wilcoxon_direction_reach_raw",
+    "de_wilcoxon_sig_jaccard",
+    "de_wilcoxon_lfc_nmae"
+  ],
+  "package": {
+    "cell_eval2": "0.16.0",
+    "python": ".venv-eval2/bin/python",
+    "python_version": "3.12.8"
+  },
+  "fixture": {
+    "real": "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/real.h5ad",
+    "pred": "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/pred.h5ad",
+    "n_genes": 400,
+    "targets": [
+      "G000",
+      "G001",
+      "G002",
+      "G003"
+    ],
+    "cells_per_target": 150,
+    "control_cells": 600,
+    "pert_col": "target",
+    "control_label": "non-targeting"
+  },
+  "steps": [
+    {
+      "step": "run",
+      "argv": [
+        ".venv-eval2/bin/cell-eval2",
+        "run",
+        "-ap",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/pred.h5ad",
+        "-ar",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/real.h5ad",
+        "--preset",
+        "vcc2026",
+        "-o",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/run"
+      ],
+      "returncode": 0,
+      "elapsed_s": 5.57,
+      "stdout_tail": [
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/run/results.csv"
+      ],
+      "stderr_tail": [
+        "de.backend='auto': no CUDA device, so the gpudge GPU backend was skipped -- using pdex. DE numbers differ between engines.",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference):  20%|\u2588\u2588        | 1/5 [00:01<00:05,  1.45s/it]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:01<00:00,  3.42it/s]",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 570.58it/s]"
+      ],
+      "notable_warnings": [
+        "de.backend='auto': no CUDA device, so the gpudge GPU backend was skipped -- using pdex. DE numbers differ between engines."
+      ],
+      "ok": true
+    },
+    {
+      "step": "baseline",
+      "argv": [
+        ".venv-eval2/bin/cell-eval2",
+        "baseline",
+        "-ar",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/real.h5ad",
+        "--save-pred",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/baseline/baseline_pred.h5ad",
+        "--preset",
+        "vcc2026",
+        "-o",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/baseline"
+      ],
+      "returncode": 0,
+      "elapsed_s": 7.23,
+      "stdout_tail": [
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/baseline/baseline_agg.csv"
+      ],
+      "stderr_tail": [
+        "de.backend='auto': no CUDA device, so the gpudge GPU backend was skipped -- using pdex. DE numbers differ between engines.",
+        "allow_fractional_counts=True was LOAD-BEARING here: the pred side has fractional values under declared input_type='counts', so it passed the input-type check ONLY because of the flag -- without it validation would have refused the run (\"declared input_type='counts' but values are fractional\"). If this is a BASELINE arm that is expected: a mean profile is fractional in any space. If this is a SUBMISSION and processing continues (later gates, including the scale limit, may still refuse it), these values will be INTERPRETED as counts. Note that config_digest cannot see this flag (baseline.DIGEST_EXEMPT_FIELDS), so `score --baseline-agg` pairing will NOT report a baseline/submission mismatch on it; the --real-bundle path IS protected (anchor._SEMANTIC_FIELDS compares it, via score.expect_from_run_meta).",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference):  20%|\u2588\u2588        | 1/5 [00:01<00:07,  1.85s/it]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:01<00:00,  2.69it/s]",
+        "allow_fractional_counts=True was LOAD-BEARING here: the pred side has fractional values under declared input_type='counts', so it passed the input-type check ONLY because of the flag -- without it validation would have refused the run (\"declared input_type='counts' but values are fractional\"). If this is a BASELINE arm that is expected: a mean profile is fractional in any space. If this is a SUBMISSION and processing continues (later gates, including the scale limit, may still refuse it), these values will be INTERPRETED as counts. Note that config_digest cannot see this flag (baseline.DIGEST_EXEMPT_FIELDS), so `score --baseline-agg` pairing will NOT report a baseline/submission mismatch on it; the --real-bundle path IS protected (anchor._SEMANTIC_FIELDS compares it, via score.expect_from_run_meta).",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 485.35it/s]"
+      ],
+      "notable_warnings": [
+        "de.backend='auto': no CUDA device, so the gpudge GPU backend was skipped -- using pdex. DE numbers differ between engines.",
+        "allow_fractional_counts=True was LOAD-BEARING here: the pred side has fractional values under declared input_type='counts', so it passed the input-type check ONLY because of the flag -- without it validation would have refused the run (\"declared input_type='counts' but values are fractional\"). If this is a BASELINE arm that is expected: a mean profile is fractional in any space. If this is a SUBMISSION and processing continues (later gates, including the scale limit, may still refuse it), these values will be INTERPRETED as counts. Note that config_digest cannot see this flag (baseline.DIGEST_EXEMPT_FIELDS), so `score --baseline-agg` pairing will NOT report a baseline/submission mismatch on it; the --real-bundle path IS protected (anchor._SEMANTIC_FIELDS compares it, via score.expect_from_run_meta).",
+        "allow_fractional_counts=True was LOAD-BEARING here: the pred side has fractional values under declared input_type='counts', so it passed the input-type check ONLY because of the flag -- without it validation would have refused the run (\"declared input_type='counts' but values are fractional\"). If this is a BASELINE arm that is expected: a mean profile is fractional in any space. If this is a SUBMISSION and processing continues (later gates, including the scale limit, may still refuse it), these values will be INTERPRETED as counts. Note that config_digest cannot see this flag (baseline.DIGEST_EXEMPT_FIELDS), so `score --baseline-agg` pairing will NOT report a baseline/submission mismatch on it; the --real-bundle path IS protected (anchor._SEMANTIC_FIELDS compares it, via score.expect_from_run_meta)."
+      ],
+      "ok": true
+    },
+    {
+      "step": "prep-real-bundle",
+      "argv": [
+        ".venv-eval2/bin/cell-eval2",
+        "prep-real-bundle",
+        "--real",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/real.h5ad",
+        "--baseline",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/baseline/baseline_pred.h5ad",
+        "--preset",
+        "vcc2026",
+        "--anchor-splits",
+        "5",
+        "-o",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/bundle"
+      ],
+      "returncode": 0,
+      "elapsed_s": 5.52,
+      "stdout_tail": [
+        "wrote competition bundle 'bundle' to /var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/bundle"
+      ],
+      "stderr_tail": [
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 1132.25it/s]",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 1072.93it/s]",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 1010.33it/s]",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 1158.46it/s]",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 1194.21it/s]",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 985.46it/s]",
+        "",
+        "Running parallel differential expression (against reference):   0%|          | 0/5 [00:00<?, ?it/s]",
+        "Running parallel differential expression (against reference): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 5/5 [00:00<00:00, 1007.04it/s]"
+      ],
+      "notable_warnings": [
+        "de.backend='auto': no CUDA device, so the gpudge GPU backend was skipped -- using pdex. DE numbers differ between engines.",
+        "allow_fractional_counts=True was LOAD-BEARING here: the pred side has fractional values under declared input_type='counts', so it passed the input-type check ONLY because of the flag -- without it validation would have refused the run (\"declared input_type='counts' but values are fractional\"). If this is a BASELINE arm that is expected: a mean profile is fractional in any space. If this is a SUBMISSION and processing continues (later gates, including the scale limit, may still refuse it), these values will be INTERPRETED as counts. Note that config_digest cannot see this flag (baseline.DIGEST_EXEMPT_FIELDS), so `score --baseline-agg` pairing will NOT report a baseline/submission mismatch on it; the --real-bundle path IS protected (anchor._SEMANTIC_FIELDS compares it, via score.expect_from_run_meta).",
+        "allow_fractional_counts=True was LOAD-BEARING here: the pred side has fractional values under declared input_type='counts', so it passed the input-type check ONLY because of the flag -- without it validation would have refused the run (\"declared input_type='counts' but values are fractional\"). If this is a BASELINE arm that is expected: a mean profile is fractional in any space. If this is a SUBMISSION and processing continues (later gates, including the scale limit, may still refuse it), these values will be INTERPRETED as counts. Note that config_digest cannot see this flag (baseline.DIGEST_EXEMPT_FIELDS), so `score --baseline-agg` pairing will NOT report a baseline/submission mismatch on it; the --real-bundle path IS protected (anchor._SEMANTIC_FIELDS compares it, via score.expect_from_run_meta)."
+      ],
+      "ok": true
+    },
+    {
+      "step": "score --real-bundle",
+      "argv": [
+        ".venv-eval2/bin/cell-eval2",
+        "score",
+        "--user-agg",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/run/agg_results.csv",
+        "--real-bundle",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/bundle",
+        "-o",
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/scored.csv"
+      ],
+      "returncode": 0,
+      "elapsed_s": 1.6,
+      "stdout_tail": [
+        "/var/folders/70/0d2zqmt917ng4z2hc30v8hvc0000gn/T/eval2-contract-ejodzaim/scored.csv"
+      ],
+      "stderr_tail": [
+        "metric 'expr_distance_unbiased' not scored (scored=False)",
+        "metric 'expr_mse_unbiased' not scored (scored=False)",
+        "metric 'expr_mse_unbiased_capped' not scored (scored=False)",
+        "metric 'expr_real_mass_ratio' not scored (scored=False)"
+      ],
+      "notable_warnings": [],
+      "ok": true
+    }
+  ],
+  "production_equivalence": "not_established",
+  "equivalence_caveats": [
+    "Fixture bundle is locally built, not the live competition bundle; score enrolment mechanics are exercised, anchor values are not.",
+    "resolved_de_backend records the CPU engine; parity with the production backend is a separate, unverified question.",
+    "Metric VALUES on synthetic data carry no leaderboard meaning."
+  ],
+  "run": {
+    "files": [
+      "agg_results.csv",
+      "metric_aggregation.csv",
+      "results.csv",
+      "run_meta.json",
+      "run_params.yaml"
+    ],
+    "run_meta": {
+      "cell_eval2_version": "0.16.0",
+      "config_digest": "23ea1f2e71afef1a3bd691e173bc9d3644f18f5367ec141777d4d548956ac33d",
+      "comparator": "bulk_lognorm",
+      "resolved_device": "cpu",
+      "resolved_de_backend": "pdex",
+      "source_fingerprint": "fa31f223b760d8597a86140053a575f2e09545c8def58b99324a4a1e95dc242c",
+      "source_fingerprint_strict": true,
+      "input_type_real_effective": "counts",
+      "de_real_fingerprint": null
+    },
+    "agg_metric_columns": [
+      "de_wilcoxon_direction_fidelity_yield_raw",
+      "de_wilcoxon_direction_reach_raw",
+      "de_wilcoxon_lfc_nmae",
+      "de_wilcoxon_sig_jaccard",
+      "expr_distance_unbiased",
+      "expr_mse_unbiased",
+      "expr_mse_unbiased_capped",
+      "expr_mse_unbiased_capped_norm",
+      "expr_real_mass_ratio",
+      "pds_cosine"
+    ],
+    "metric_aggregation": [
+      {
+        "metric": "de_wilcoxon_direction_fidelity_yield_raw",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      },
+      {
+        "metric": "de_wilcoxon_direction_reach_raw",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      },
+      {
+        "metric": "de_wilcoxon_lfc_nmae",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      },
+      {
+        "metric": "de_wilcoxon_sig_jaccard",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      },
+      {
+        "metric": "expr_distance_unbiased",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      },
+      {
+        "metric": "expr_mse_unbiased",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      },
+      {
+        "metric": "expr_mse_unbiased_capped",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      },
+      {
+        "metric": "expr_mse_unbiased_capped_norm",
+        "agg": "ratio_of_sums",
+        "n_used": "0",
+        "n_rows": "0",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "true"
+      },
+      {
+        "metric": "expr_real_mass_ratio",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      },
+      {
+        "metric": "pds_cosine",
+        "agg": "mean",
+        "n_used": "4",
+        "n_rows": "4",
+        "n_nan": "0",
+        "n_null": "0",
+        "derived": "false"
+      }
+    ],
+    "results_rows": 36,
+    "results_columns": [
+      "perturbation",
+      "metric",
+      "value"
+    ]
+  },
+  "emitted_metrics": [
+    "de_wilcoxon_direction_fidelity_yield_raw",
+    "de_wilcoxon_direction_reach_raw",
+    "de_wilcoxon_lfc_nmae",
+    "de_wilcoxon_sig_jaccard",
+    "expr_distance_unbiased",
+    "expr_mse_unbiased",
+    "expr_mse_unbiased_capped",
+    "expr_mse_unbiased_capped_norm",
+    "expr_real_mass_ratio",
+    "pds_cosine"
+  ],
+  "expected_metrics_present": [
+    "de_wilcoxon_direction_fidelity_yield_raw",
+    "de_wilcoxon_direction_reach_raw",
+    "de_wilcoxon_lfc_nmae",
+    "de_wilcoxon_sig_jaccard",
+    "expr_mse_unbiased_capped_norm",
+    "pds_cosine"
+  ],
+  "expected_metrics_missing": [],
+  "bundle_files": [
+    "anchor_agg.parquet",
+    "anchor_meta.json",
+    "anchor_splits.parquet",
+    "baseline_agg.csv",
+    "baseline_meta.json",
+    "config.yaml",
+    "manifest.json"
+  ],
+  "bundle_manifest.json": {
+    "anchor_config_hash": "a5519017556705abf9a6e553ebb4e517b9612e9546331ace7c5ec6c5c30a1a13",
+    "anchor_digest": "ab1ba863fcf446bdbe34a348427b7e9f5e7ef72287a2ca6ba07c144c311024d7",
+    "anchor_metric_names": [
+      "pds_cosine",
+      "expr_mse_unbiased",
+      "expr_mse_unbiased_capped",
+      "expr_distance_unbiased",
+      "expr_real_mass_ratio",
+      "expr_mse_unbiased_capped_norm",
+      "de_wilcoxon_lfc_nmae",
+      "de_wilcoxon_direction_fidelity_yield_raw",
+      "de_wilcoxon_direction_reach_raw",
+      "de_wilcoxon_sig_jaccard"
+    ],
+    "anchor_semantic_identity": "c7254a5808154f5206263dcfb56cdd034dac8328cb0d7a662ac9af08271c2fcb",
+    "base_seed": 0,
+    "bulk_target_sum": 50000.0,
+    "cell_eval2_version": "0.16.0",
+    "comparator": "bulk_lognorm",
+    "config_digest": "23ea1f2e71afef1a3bd691e173bc9d3644f18f5367ec141777d4d548956ac33d",
+    "control_source_effective": "pred",
+    "created_utc": "2026-09-20T17:27:46+00:00",
+    "de_real_fingerprint": null,
+    "derived_seeds": [
+      2968811710,
+      3677149159,
+      745650761,
+      2884920346,
+      2642120001
+    ],
+    "estimators": {
+      "de_wilcoxon_direction_fidelity_yield_raw": "split_half_raw",
+      "de_wilcoxon_direction_reach_raw": "split_half_raw",
+      "de_wilcoxon_lfc_nmae": "full_gate_raw",
+      "de_wilcoxon_sig_jaccard": "split_half_raw",
+      "expr_distance_unbiased": "split_half_raw",
+      "expr_mse_unbiased": "split_half_raw",
+      "expr_mse_unbiased_capped": "split_half_raw",
+      "expr_mse_unbiased_capped_norm": "split_half_raw",
+      "expr_real_mass_ratio": "split_half_raw",
+      "pds_cosine": "split_half_raw"
+    },
+    "input_type_pred_effective": "counts",
+    "input_type_real_effective": "counts",
+    "manifest_version": 1,
+    "members": [
+      "de_wilcoxon_direction_fidelity_yield_raw",
+      "de_wilcoxon_direction_reach_raw",
+      "de_wilcoxon_lfc_nmae",
+      "de_wilcoxon_sig_jaccard",
+      "expr_mse_unbiased_capped_norm",
+      "pds_cosine"
+    ],
+    "n_splits": 5,
+    "profile": "vcc2026",
+    "real_bundle_id": "bundle",
+    "real_fingerprint": "fa31f223b760d8597a86140053a575f2e09545c8def58b99324a4a1e95dc242c",
+    "resolved_de_backend": "pdex",
+    "resolved_device": "cpu",
+    "rule_digest": "fb5aa56b74368a7bc5befc8ccca8ca02a2cf4c8c7ad59b156ab86c3ae0859762",
+    "rule_mismatches": [],
+    "seed_derivation": "numpy.random.SeedSequence(base_seed).generate_state(n_splits)",
+    "source_fingerprint": "fa31f223b760d8597a86140053a575f2e09545c8def58b99324a4a1e95dc242c",
+    "source_fingerprint_strict": true
+  },
+  "bundle_anchor_meta.json": {
+    "base_seed": 0,
+    "bulk_target_sum": 50000.0,
+    "cell_eval2_version": "0.16.0",
+    "config_hash": "a5519017556705abf9a6e553ebb4e517b9612e9546331ace7c5ec6c5c30a1a13",
+    "control_source_effective": "pred",
+    "control_source_requested": "real",
+    "derived_seeds": [
+      2968811710,
+      3677149159,
+      745650761,
+      2884920346,
+      2642120001
+    ],
+    "metric_names": [
+      "pds_cosine",
+      "expr_mse_unbiased",
+      "expr_mse_unbiased_capped",
+      "expr_distance_unbiased",
+      "expr_real_mass_ratio",
+      "expr_mse_unbiased_capped_norm",
+      "de_wilcoxon_lfc_nmae",
+      "de_wilcoxon_direction_fidelity_yield_raw",
+      "de_wilcoxon_direction_reach_raw",
+      "de_wilcoxon_sig_jaccard"
+    ],
+    "n_splits": 5,
+    "real_fingerprint": "fa31f223b760d8597a86140053a575f2e09545c8def58b99324a4a1e95dc242c",
+    "real_fingerprint_meta": "296543c5aa454b092eb9c89296ccb099e8d71334df8f68a9c7414f043956cd15",
+    "seed_derivation": "numpy.random.SeedSequence(base_seed).generate_state(n_splits)",
+    "semantic_identity": "c7254a5808154f5206263dcfb56cdd034dac8328cb0d7a662ac9af08271c2fcb",
+    "semantic_params": {
+      "allow_discrete": false,
+      "allow_fractional_counts": false,
+      "autodetect_input_type": false,
+      "bulk_target_sum": 50000.0,
+      "comparator": "bulk_lognorm",
+      "control": "non-targeting",
+      "de.auc_pval_floor": "min_nonzero",
+      "de.auc_pval_floor_value": 1e-10,
+      "de.backend_resolved": "pdex",
+      "de.clip_value": null,
+      "de.epsilon": 1e-09,
+      "de.fdr_scope": "per_pert",
+      "de.mean_calc": "arithmetic",
+      "de.method": "wilcoxon",
+      "de.min_abs_log2fc": 0.0,
+      "de.nan_lfc_policy": "mask",
+      "de.p_adj_threshold": 0.05,
+      "de.sort_by": "abs_log2_fold_change",
+      "device": "cpu",
+      "discrimination.embed_key": null,
+      "discrimination.exclude_target_gene": true,
+      "discrimination.exclusion_scope": "panel",
+      "discrimination.rank_denominator": "n-1",
+      "discrimination.tie_policy": "midrank",
+      "filter.filter_gene_min_cpm_cell": 5.0,
+      "grouped_sum_reduction_semantics": 1,
+      "input_type": "counts",
+      "input_type_effective_pred": "counts",
+      "input_type_effective_real": "counts",
+      "max_counts_per_cell": 1000000.0,
+      "ontarget_exclusion_semantics": 2,
+      "pert_chunk": 512,
+      "pert_col": "target",
+      "reach_purity_floor": 0.9,
+      "target_gene_map": null,
+      "target_sum": 1000000.0,
+      "validate_input": true,
+      "version": "v2"
+    }
+  },
+  "scored_columns": [
+    "metric",
+    "from_baseline",
+    "from_replicate",
+    "anchor_source",
+    "anchor_digest",
+    "real_bundle_id",
+    "real_bundle_digest"
+  ],
+  "scored_rows": [
+    {
+      "metric": "de_wilcoxon_lfc_nmae",
+      "from_baseline": "0.7471330941200024",
+      "from_replicate": "2.789140973697836",
+      "anchor_source": "real_bundle",
+      "anchor_digest": "ab1ba863fcf446bdbe34a348427b7e9f5e7ef72287a2ca6ba07c144c311024d7",
+      "real_bundle_id": "bundle",
+      "real_bundle_digest": "2c36799e280a37ed99aff7602a26436d89fa84c83c6e760b2603c153e7b72c83"
+    },
+    {
+      "metric": "expr_mse_unbiased_capped_norm",
+      "from_baseline": "0.9705562496818178",
+      "from_replicate": "0.8683725752133367",
+      "anchor_source": "real_bundle",
+      "anchor_digest": "ab1ba863fcf446bdbe34a348427b7e9f5e7ef72287a2ca6ba07c144c311024d7",
+      "real_bundle_id": "bundle",
+      "real_bundle_digest": "2c36799e280a37ed99aff7602a26436d89fa84c83c6e760b2603c153e7b72c83"
+    },
+    {
+      "metric": "de_wilcoxon_direction_fidelity_yield_raw",
+      "from_baseline": "0.7123698939667416",
+      "from_replicate": "0.9008330276178615",
+      "anchor_source": "real_bundle",
+      "anchor_digest": "ab1ba863fcf446bdbe34a348427b7e9f5e7ef72287a2ca6ba07c144c311024d7",
+      "real_bundle_id": "bundle",
+      "real_bundle_digest": "2c36799e280a37ed99aff7602a26436d89fa84c83c6e760b2603c153e7b72c83"
+    },
+    {
+      "metric": "de_wilcoxon_direction_reach_raw",
+      "from_baseline": "1.0",
+      "from_replicate": "1.006661633098036",
+      "anchor_source": "real_bundle",
+      "anchor_digest": "ab1ba863fcf446bdbe34a348427b7e9f5e7ef72287a2ca6ba07c144c311024d7",
+      "real_bundle_id": "bundle",
+      "real_bundle_digest": "2c36799e280a37ed99aff7602a26436d89fa84c83c6e760b2603c153e7b72c83"
+    },
+    {
+      "metric": "de_wilcoxon_sig_jaccard",
+      "from_baseline": "0.49008610893288995",
+      "from_replicate": "1.0377418893867278",
+      "anchor_source": "real_bundle",
+      "anchor_digest": "ab1ba863fcf446bdbe34a348427b7e9f5e7ef72287a2ca6ba07c144c311024d7",
+      "real_bundle_id": "bundle",
+      "real_bundle_digest": "2c36799e280a37ed99aff7602a26436d89fa84c83c6e760b2603c153e7b72c83"
+    },
+    {
+      "metric": "pds_cosine",
+      "from_baseline": "1.0",
+      "from_replicate": "1.0",
+      "anchor_source": "real_bundle",
+      "anchor_digest": "ab1ba863fcf446bdbe34a348427b7e9f5e7ef72287a2ca6ba07c144c311024d7",
+      "real_bundle_id": "bundle",
+      "real_bundle_digest": "2c36799e280a37ed99aff7602a26436d89fa84c83c6e760b2603c153e7b72c83"
+    },
+    {
+      "metric": "avg_score",
+      "from_baseline": "",
+      "from_replicate": "1.2671250165022998",
+      "anchor_source": "real_bundle",
+      "anchor_digest": "ab1ba863fcf446bdbe34a348427b7e9f5e7ef72287a2ca6ba07c144c311024d7",
+      "real_bundle_id": "bundle",
+      "real_bundle_digest": "2c36799e280a37ed99aff7602a26436d89fa84c83c6e760b2603c153e7b72c83"
+    }
+  ],
+  "verdict": {
+    "all_steps_ok": true,
+    "full_competition_path_ok": true,
+    "six_expected_metrics_emitted": true
+  }
+}

@@ -192,6 +192,39 @@ def sha256_file(path):
     return digest.hexdigest()
 
 
+def axis_sha256(genes) -> str:
+    return hashlib.sha256("\n".join(str(g) for g in genes).encode()).hexdigest()
+
+
+def resolve_consumer_axis(genes, source_path, allow_drop):
+    """Return (keep_positions, axis_resolution_or_None) for the consumer axis.
+
+    Strict by default: uncovered labels return an empty keep list so the
+    caller's strict ``load_source`` still fails closed. With
+    ``allow_drop=True`` (the audited resolution for the Atlas-only
+    duplicate-symbol labels, see experiments/k022-pipeline-audit/
+    axis-20260921-01/axis_report.json), uncovered labels are dropped and the
+    drop is returned for the manifest -- never silent.
+    """
+    with np.load(source_path, allow_pickle=False) as data:
+        source_genes = set(data["genes"].astype(str).tolist())
+    missing = sorted(set(genes) - source_genes)
+    if not missing:
+        return list(range(len(genes))), None
+    if not allow_drop:
+        return [], missing
+    keep = [i for i, g in enumerate(genes) if g in source_genes]
+    aligned = [genes[i] for i in keep]
+    return keep, {
+        "rule": "drop_from_diagnostic_axis",
+        "dropped_labels": missing,
+        "n_consumer_labels": len(genes),
+        "n_aligned_labels": len(aligned),
+        "aligned_axis_sha256": axis_sha256(aligned),
+        "audit_report": "experiments/k022-pipeline-audit/axis-20260921-01/axis_report.json",
+    }
+
+
 def run_audit(
     real, out_dir, *, cells=32, controls=128, pool_k=4, seed=0, max_targets=0, source=None
 ):
@@ -344,6 +377,13 @@ def main(argv=None):
     parser.add_argument("--max-targets", type=int, default=0)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--allow-large-input", action="store_true")
+    parser.add_argument(
+        "--allow-axis-drop",
+        action="store_true",
+        help="record and drop consumer labels absent from --source-npz instead "
+        "of failing closed (audited resolution for the Atlas-only "
+        "duplicate-symbol labels)",
+    )
     args = parser.parse_args(argv)
     if args.cells < 1 or args.controls < 1 or args.max_targets < 0:
         parser.error("Cell counts must be positive and max-targets nonnegative")
@@ -358,7 +398,14 @@ def main(argv=None):
             "Large data requires external compute; --allow-large-input is an explicit opt-in"
         )
     real = synthetic_data(args.seed) if args.smoke else ad.read_h5ad(args.real_h5ad, backed="r")
+    axis_resolution = None
     try:
+        if args.source_npz:
+            keep, axis_resolution = resolve_consumer_axis(
+                real.var_names.astype(str).tolist(), args.source_npz, args.allow_axis_drop
+            )
+            if keep and len(keep) < real.n_vars:
+                real = real[:, keep]
         source = (
             load_source(args.source_npz, real.var_names.astype(str).tolist())
             if args.source_npz
@@ -375,6 +422,8 @@ def main(argv=None):
             source=source,
         )
         summary["synthetic"] = args.smoke
+        if axis_resolution:
+            summary["axis_resolution"] = axis_resolution
         summary["input_hashes"] = {
             str(path): sha256_file(path)
             for path in (args.real_h5ad, args.source_npz)

@@ -5,6 +5,7 @@ __pycache__/
 .venv/
 .venv-science/
 .venv-cleveland/
+.venv-eval2/
 venv/
 
 # Cell-eval / anndata intermediates

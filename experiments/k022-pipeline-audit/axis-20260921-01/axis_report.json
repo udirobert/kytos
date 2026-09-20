@@ -1,0 +1,401 @@
+{
+  "tool": "audit_gene_axis",
+  "decision": "review_required",
+  "labels_without_source_mapping": [],
+  "axes": [
+    {
+      "name": "adata_Validation.h5ad",
+      "role": "consumer",
+      "n": 18080,
+      "n_unique": 18080,
+      "unique": true,
+      "sha256": "da2b383939d0939e911d273539b136c7a10f0482b2ee509d294e1632d5629822",
+      "head": [
+        "SAMD11",
+        "NOC2L",
+        "KLHL17",
+        "PLEKHN1",
+        "PERM1"
+      ],
+      "tail": [
+        "MT-ND4L",
+        "MT-ND4",
+        "MT-ND5",
+        "MT-ND6",
+        "MT-CYB"
+      ]
+    },
+    {
+      "name": "paired_transfer_train.npz",
+      "role": "source",
+      "n": 18533,
+      "n_unique": 18533,
+      "unique": true,
+      "sha256": "e7f9a3f37c34fac61d98d2478eceec0806e2dffd19df49c7b9eb2f258fa42529",
+      "head": [
+        "TSPAN6",
+        "TNMD",
+        "DPM1",
+        "SCYL3",
+        "C1orf112"
+      ],
+      "tail": [
+        "AC007244.1",
+        "GABARAPL2",
+        "SLC39A4",
+        "TKT",
+        "PRH1"
+      ]
+    },
+    {
+      "name": "gene_names.csv",
+      "role": "reference",
+      "n": 18533,
+      "n_unique": 18533,
+      "unique": true,
+      "sha256": "e7f9a3f37c34fac61d98d2478eceec0806e2dffd19df49c7b9eb2f258fa42529",
+      "head": [
+        "TSPAN6",
+        "TNMD",
+        "DPM1",
+        "SCYL3",
+        "C1orf112"
+      ],
+      "tail": [
+        "AC007244.1",
+        "GABARAPL2",
+        "SLC39A4",
+        "TKT",
+        "PRH1"
+      ]
+    }
+  ],
+  "missing_from_source": {
+    "paired_transfer_train.npz": [
+      "HSPA14-1",
+      "TBCE-1",
+      "TMSB15B-1"
+    ]
+  },
+  "extra_in_source": {
+    "paired_transfer_train.npz": 456
+  },
+  "missing_in_references": {
+    "HSPA14-1": [],
+    "TBCE-1": [],
+    "TMSB15B-1": []
+  },
+  "resolutions": {
+    "HSPA14-1": {
+      "label": "HSPA14-1",
+      "candidates": [
+        {
+          "rule": "suffix_base_map",
+          "source": "paired_transfer_train.npz",
+          "source_label": "HSPA14",
+          "confidence": "requires_verification",
+          "caveat": "'HSPA14' also exists in the consumer axis, so 'HSPA14-1' is a distinct feature sharing a symbol. Mapping it to the base's source column is only defensible if stable IDs prove the two rows are the same feature; otherwise it fabricates an effect."
+        },
+        {
+          "rule": "drop_from_diagnostic_axis",
+          "confidence": "defensible_if_recorded",
+          "caveat": "Subset the consumer axis to labels the source covers; the drop must be recorded in the run manifest. Diagnostics then describe the aligned axis, not the full Atlas axis."
+        },
+        {
+          "rule": "stable_id_map",
+          "confidence": "requires_producer_metadata",
+          "caveat": "Regenerate or annotate the source artifact with stable feature IDs so the consumer row maps by identity, not spelling."
+        }
+      ],
+      "blockers": [],
+      "var_rows": {
+        "HSPA14-1": {
+          "n_cells_by_counts": 829637,
+          "mean_counts": 6.172703742980957,
+          "log1p_mean_counts": 1.9702826738357544,
+          "pct_dropout_by_counts": 1.7874223426017077,
+          "total_counts": 5214305.0,
+          "log1p_total_counts": 15.466917037963867,
+          "mt": false,
+          "ribo": false,
+          "n_cells": 829637
+        },
+        "HSPA14": {
+          "n_cells_by_counts": 417707,
+          "mean_counts": 0.754016637802124,
+          "log1p_mean_counts": 0.5619083642959595,
+          "pct_dropout_by_counts": 50.5517700204561,
+          "total_counts": 636945.0,
+          "log1p_total_counts": 13.364439964294434,
+          "mt": false,
+          "ribo": false,
+          "n_cells": 417707
+        }
+      },
+      "suffix_analysis": {
+        "base": "HSPA14",
+        "copy_index": 1,
+        "base_in_consumer_axis": true,
+        "consumer_labels_sharing_base": [
+          "HSPA14",
+          "HSPA14-1"
+        ],
+        "looks_like_make_unique_artifact": true,
+        "base_present_in_sources": [
+          "paired_transfer_train.npz"
+        ]
+      },
+      "has_mapping_candidate": true
+    },
+    "TBCE-1": {
+      "label": "TBCE-1",
+      "candidates": [
+        {
+          "rule": "suffix_base_map",
+          "source": "paired_transfer_train.npz",
+          "source_label": "TBCE",
+          "confidence": "requires_verification",
+          "caveat": "'TBCE' also exists in the consumer axis, so 'TBCE-1' is a distinct feature sharing a symbol. Mapping it to the base's source column is only defensible if stable IDs prove the two rows are the same feature; otherwise it fabricates an effect."
+        },
+        {
+          "rule": "drop_from_diagnostic_axis",
+          "confidence": "defensible_if_recorded",
+          "caveat": "Subset the consumer axis to labels the source covers; the drop must be recorded in the run manifest. Diagnostics then describe the aligned axis, not the full Atlas axis."
+        },
+        {
+          "rule": "stable_id_map",
+          "confidence": "requires_producer_metadata",
+          "caveat": "Regenerate or annotate the source artifact with stable feature IDs so the consumer row maps by identity, not spelling."
+        }
+      ],
+      "blockers": [],
+      "var_rows": {
+        "TBCE-1": {
+          "n_cells_by_counts": 789852,
+          "mean_counts": 3.5948259830474854,
+          "log1p_mean_counts": 1.5249308347702026,
+          "pct_dropout_by_counts": 6.497177816501254,
+          "total_counts": 3036679.0,
+          "log1p_total_counts": 14.926275253295898,
+          "mt": false,
+          "ribo": false,
+          "n_cells": 789852
+        },
+        "TBCE": {
+          "n_cells_by_counts": 658979,
+          "mean_counts": 1.777762532234192,
+          "log1p_mean_counts": 1.0216457843780518,
+          "pct_dropout_by_counts": 21.989947155087506,
+          "total_counts": 1501740.0,
+          "log1p_total_counts": 14.222135543823242,
+          "mt": false,
+          "ribo": false,
+          "n_cells": 658979
+        }
+      },
+      "suffix_analysis": {
+        "base": "TBCE",
+        "copy_index": 1,
+        "base_in_consumer_axis": true,
+        "consumer_labels_sharing_base": [
+          "TBCE",
+          "TBCE-1"
+        ],
+        "looks_like_make_unique_artifact": true,
+        "base_present_in_sources": [
+          "paired_transfer_train.npz"
+        ]
+      },
+      "has_mapping_candidate": true
+    },
+    "TMSB15B-1": {
+      "label": "TMSB15B-1",
+      "candidates": [
+        {
+          "rule": "suffix_base_map",
+          "source": "paired_transfer_train.npz",
+          "source_label": "TMSB15B",
+          "confidence": "requires_verification",
+          "caveat": "'TMSB15B' also exists in the consumer axis, so 'TMSB15B-1' is a distinct feature sharing a symbol. Mapping it to the base's source column is only defensible if stable IDs prove the two rows are the same feature; otherwise it fabricates an effect."
+        },
+        {
+          "rule": "drop_from_diagnostic_axis",
+          "confidence": "defensible_if_recorded",
+          "caveat": "Subset the consumer axis to labels the source covers; the drop must be recorded in the run manifest. Diagnostics then describe the aligned axis, not the full Atlas axis."
+        },
+        {
+          "rule": "stable_id_map",
+          "confidence": "requires_producer_metadata",
+          "caveat": "Regenerate or annotate the source artifact with stable feature IDs so the consumer row maps by identity, not spelling."
+        }
+      ],
+      "blockers": [],
+      "var_rows": {
+        "TMSB15B-1": {
+          "n_cells_by_counts": 2966,
+          "mean_counts": 0.0035194428637623787,
+          "log1p_mean_counts": 0.0035132640041410923,
+          "pct_dropout_by_counts": 99.6488843851807,
+          "total_counts": 2973.0,
+          "log1p_total_counts": 7.9976630210876465,
+          "mt": false,
+          "ribo": false,
+          "n_cells": 2966
+        },
+        "TMSB15B": {
+          "n_cells_by_counts": 526747,
+          "mean_counts": 1.1231284141540527,
+          "log1p_mean_counts": 0.7528906464576721,
+          "pct_dropout_by_counts": 37.64359515872414,
+          "total_counts": 948747.0,
+          "log1p_total_counts": 13.762898445129395,
+          "mt": false,
+          "ribo": false,
+          "n_cells": 526747
+        }
+      },
+      "suffix_analysis": {
+        "base": "TMSB15B",
+        "copy_index": 1,
+        "base_in_consumer_axis": true,
+        "consumer_labels_sharing_base": [
+          "TMSB15B",
+          "TMSB15B-1"
+        ],
+        "looks_like_make_unique_artifact": true,
+        "base_present_in_sources": [
+          "paired_transfer_train.npz"
+        ]
+      },
+      "has_mapping_candidate": true
+    }
+  },
+  "var_id_columns": {
+    "n_cells_by_counts": {
+      "dtype": "int64",
+      "n_unique": 15734,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    },
+    "mean_counts": {
+      "dtype": "float32",
+      "n_unique": 16322,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    },
+    "log1p_mean_counts": {
+      "dtype": "float32",
+      "n_unique": 16321,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    },
+    "pct_dropout_by_counts": {
+      "dtype": "float64",
+      "n_unique": 15734,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    },
+    "total_counts": {
+      "dtype": "float32",
+      "n_unique": 16322,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    },
+    "log1p_total_counts": {
+      "dtype": "float32",
+      "n_unique": 16313,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    },
+    "mt": {
+      "dtype": "bool",
+      "n_unique": 2,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    },
+    "ribo": {
+      "dtype": "bool",
+      "n_unique": 1,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    },
+    "n_cells": {
+      "dtype": "int64",
+      "n_unique": 15734,
+      "n_null": 0,
+      "ensg_like_fraction": 0.0,
+      "name_suggests_id": false
+    }
+  },
+  "notes": [
+    "Proposals are evidence, not approvals: no mapping is applied by this tool.",
+    "drop_from_diagnostic_axis is always available but changes the axis the diagnostic describes; record the drop in the run manifest.",
+    "suffix_base_map is only defensible when stable IDs prove the consumer row is the same feature as the base label's row."
+  ],
+  "run_id": "axis-20260921-01",
+  "real": {
+    "path": "/kytos-vol/atlas/adata_Validation.h5ad",
+    "obs_columns": [
+      "target_gene",
+      "guide_id",
+      "batch"
+    ],
+    "target_counts_top10": {
+      "non-targeting": 38176,
+      "SH3BP4": 2925,
+      "ZNF581": 2502,
+      "ANXA6": 2496,
+      "PACSIN3": 2101,
+      "MGST1": 2096,
+      "IGF1R": 2056,
+      "ITGAV": 2034,
+      "SLIRP": 2000,
+      "CTSV": 1989
+    },
+    "control_cells": 38176
+  },
+  "source_artifacts": {
+    "paired_transfer_train.npz": {
+      "keys": [
+        "basal_ctx_log1p",
+        "basal_ctx_rank",
+        "basal_ctx_raw",
+        "basal_ctx_sparsity",
+        "basal_hesc_log1p",
+        "basal_k562_log1p",
+        "contexts",
+        "delta_hesc",
+        "delta_k562",
+        "genes",
+        "paired_targets",
+        "vcc_targets"
+      ],
+      "n_paired_targets": 47,
+      "delta_k562_shape": [
+        47,
+        18533
+      ]
+    },
+    "delta_matrix_src.npz": {
+      "keys": [
+        "deltas",
+        "targets"
+      ],
+      "n_targets": 9869,
+      "deltas_shape": [
+        9869,
+        18533
+      ],
+      "has_explicit_gene_axis": false,
+      "contract_note": "delta_matrix_src.npz stores targets+deltas but no 'genes' array; consumers assume the paired_transfer gene order \u2014 an implicit axis the audit flags for a future schema fix."
+    }
+  }
+}

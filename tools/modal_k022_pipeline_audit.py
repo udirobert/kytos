@@ -76,6 +76,12 @@ def run_pilot(run_id: str) -> dict:
         shared = sorted(set(counts.index) & set(source_targets) - {"non-targeting"})
         selected = shared[:3]
         missing_genes = sorted(set(genes) - set(source_genes))
+        # The axis audit (axis-20260921-01) ruled: Atlas-only duplicate-symbol
+        # labels have no source counterpart and no stable IDs, so the
+        # defensible resolution is a RECORDED drop. A large mismatch is a
+        # different problem and still blocks.
+        axis_drop_limit = 50
+        axis_drop = missing_genes if len(missing_genes) <= axis_drop_limit else []
         blockers = []
         if (
             not real.obs_names.is_unique
@@ -84,7 +90,7 @@ def run_pilot(run_id: str) -> dict:
             or len(set(source_targets)) != len(source_targets)
         ):
             blockers.append("non_unique_axes")
-        if missing_genes:
+        if missing_genes and not axis_drop:
             blockers.append("source_gene_axis_incomplete")
         if delta_shape != [len(source_targets), len(source_genes)] or not finite:
             blockers.append("invalid_source_delta_matrix")
@@ -100,6 +106,15 @@ def run_pilot(run_id: str) -> dict:
             "source_delta_shape": delta_shape,
             "source_genes": len(source_genes),
             "missing_source_genes": missing_genes,
+            "axis_resolution": (
+                {
+                    "rule": "drop_from_diagnostic_axis",
+                    "dropped_labels": axis_drop,
+                    "n_aligned_labels": len(genes) - len(axis_drop),
+                }
+                if axis_drop
+                else None
+            ),
             "shared_targets": shared,
             "pilot_targets": selected,
             "pilot_cell_counts": {t: int(counts[t]) for t in selected},
@@ -140,6 +155,8 @@ def run_pilot(run_id: str) -> dict:
         "0",
         "--allow-large-input",
     ]
+    if axis_drop:
+        command += ["--allow-axis-drop"]
     with (out / "run.log").open("w") as log:
         try:
             result = subprocess.run(

@@ -154,3 +154,56 @@ def test_source_alignment_rejects_missing_genes(tmp_path):
     np.testing.assert_array_equal(audit.load_source(path, ["A", "B"])["T"], [1, 2])
     with pytest.raises(ValueError, match="missing"):
         audit.load_source(path, ["A", "B", "C"])
+
+
+def test_resolve_consumer_axis_strict_and_recorded_drop(tmp_path):
+    source = tmp_path / "source.npz"
+    np.savez(source, genes=np.array(["A", "B", "C"]), deltas=np.zeros((1, 3)))
+    genes = ["A", "C-1", "B"]
+    keep, resolution = audit.resolve_consumer_axis(genes, source, allow_drop=False)
+    assert keep == [] and resolution == ["C-1"]
+    keep, resolution = audit.resolve_consumer_axis(genes, source, allow_drop=True)
+    assert keep == [0, 2]
+    assert resolution["rule"] == "drop_from_diagnostic_axis"
+    assert resolution["dropped_labels"] == ["C-1"]
+    assert resolution["n_aligned_labels"] == 2
+    assert len(resolution["aligned_axis_sha256"]) == 64
+    keep, resolution = audit.resolve_consumer_axis(["A", "B"], source, allow_drop=False)
+    assert keep == [0, 1] and resolution is None
+
+
+def test_axis_drop_subsets_real_and_records_manifest(tmp_path):
+    real = audit.synthetic_data(3)
+    real_path = tmp_path / "real.h5ad"
+    real.write_h5ad(real_path)
+    # Source covers every synthetic gene except G11.
+    source_path = tmp_path / "source.npz"
+    np.savez(
+        source_path,
+        genes=np.array([f"G{i}" for i in range(11)]),
+        paired_targets=np.array(["G0"]),
+        delta_k562=np.ones((1, 11)),
+    )
+    argv = [
+        "--real-h5ad",
+        str(real_path),
+        "--source-npz",
+        str(source_path),
+        "--out-dir",
+        str(tmp_path / "out"),
+        "--cells",
+        "8",
+        "--controls",
+        "32",
+        "--max-targets",
+        "1",
+    ]
+    with pytest.raises(ValueError, match="missing"):
+        audit.main(argv)
+    assert audit.main([*argv, "--allow-axis-drop"]) == 0
+    summary = json.loads((tmp_path / "out" / "summary.json").read_text())
+    resolution = summary["axis_resolution"]
+    assert resolution["rule"] == "drop_from_diagnostic_axis"
+    assert resolution["dropped_labels"] == ["G11"]
+    assert resolution["n_aligned_labels"] == 11
+    assert set(summary["targets"]) == {"G0"}

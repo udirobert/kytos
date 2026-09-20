@@ -1,6 +1,6 @@
 {
   "reviewed_date": "2026-09-20",
-  "status": "public_implementation_identified_not_integrated",
+  "status": "installed_and_fixture_smoke_passed_not_production_equivalent",
   "official_guide": "https://vcc-cli-wiki.virtualcellchallenge.org/",
   "repository": "https://github.com/ArcInstitute/cell-eval2",
   "inspected_revision": "5e64833518a6603a0301cbe28185d49c30f4a986",
@@ -10,6 +10,35 @@
   "reference_measured_bundle_version": "cell-eval2 0.15.0, rule_version 3",
   "cpu_path_documented": true,
   "installed_by_this_task": false,
+  "local_integration": {
+    "date": "2026-09-21",
+    "environment": ".venv-eval2 (CPython 3.12.8, arm64 macOS)",
+    "install": "git+https://github.com/ArcInstitute/cell-eval2@5e64833518a6603a0301cbe28185d49c30f4a986 + pdex 0.3.0",
+    "installed_version": "0.16.0",
+    "harness": "tools/check_cell_eval2_contract.py",
+    "report": "experiments/k022-pipeline-audit/eval2_contract_smoke.json",
+    "resolved": {
+      "device": "cpu",
+      "de_backend": "pdex",
+      "de_backend_selection": "auto skips gpudge without CUDA; pdex is the CPU engine",
+      "comparator": "bulk_lognorm",
+      "input_type_real_effective": "counts",
+      "source_fingerprint_strict": true
+    },
+    "competition_path_exercised": "run -> baseline --save-pred -> prep-real-bundle (n_splits=5) -> score --real-bundle; bundle enrolled as competition (rule_digest set, zero rule mismatches)",
+    "fixture_findings": [
+      "de_wilcoxon_lfc_nmae's replicate gate needs split-half NMAE < 1; weak fixtures abort bundle builds, which is the intended fail-closed behavior.",
+      "The generic baseline degenerates when perturbations share a direction; the fixture uses an opposing shared gene block.",
+      "baseline arms emit fractional predictions under declared input_type=counts via an explicit allow_fractional_counts flag; a SUBMISSION with fractional values would be refused.",
+      "Emitted run metrics include the six scored members plus diagnostic columns (expr_distance_unbiased, expr_mse_unbiased, expr_mse_unbiased_capped, expr_real_mass_ratio)."
+    ],
+    "still_unverified": [
+      "pdex (CPU) versus production DE backend numeric parity -- engines differ by the scorer's own warning.",
+      "The live competition bundle identity (anchors, real fingerprint, rule version) versus the documented rule_version 3 reference.",
+      "pert_col: the vcc2026 preset defaults to 'target'; Atlas/validation files use 'target_gene' -- a real run must reconcile the column name.",
+      "Whether the local install's six-metric values match the live scorer on the same inputs (needs the official bundle or a shared reference)."
+    ]
+  },
   "scored_metrics": [
     "pds_cosine",
     "expr_mse_unbiased_capped_norm",
