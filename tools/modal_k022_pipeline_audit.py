@@ -46,14 +46,14 @@ for filename in (
     image=image,
     cpu=(4.0, 4.0),
     memory=(32768, 32768),
-    timeout=900,
+    timeout=3600,
     startup_timeout=120,
     retries=0,
     max_containers=1,
     scaledown_window=2,
     volumes={str(VOLUME_ROOT): volume},
 )
-def run_pilot(run_id: str) -> dict:
+def run_pilot(run_id: str, max_targets: int = 3) -> dict:
     import anndata as ad
     import numpy as np
 
@@ -74,7 +74,7 @@ def run_pilot(run_id: str) -> dict:
             delta_shape = list(source["delta_k562"].shape)
             finite = bool(np.isfinite(source["delta_k562"]).all())
         shared = sorted(set(counts.index) & set(source_targets) - {"non-targeting"})
-        selected = shared[:3]
+        selected = shared[:max_targets] if max_targets else shared
         missing_genes = sorted(set(genes) - set(source_genes))
         # The axis audit (axis-20260921-01) ruled: Atlas-only duplicate-symbol
         # labels have no source counterpart and no stable IDs, so the
@@ -94,9 +94,10 @@ def run_pilot(run_id: str) -> dict:
             blockers.append("source_gene_axis_incomplete")
         if delta_shape != [len(source_targets), len(source_genes)] or not finite:
             blockers.append("invalid_source_delta_matrix")
+        underpowered = [t for t in selected if int(counts[t]) < 800]
         if int(counts.get("non-targeting", 0)) < 3200:
             blockers.append("need_3200_disjoint_control_cells")
-        if len(selected) < 3 or any(int(counts[t]) < 800 for t in selected):
+        if len(selected) < 3 or any(t in underpowered for t in selected[:3]):
             blockers.append("need_800_cells_for_each_of_first_three_shared_targets")
         preflight = {
             "run_id": run_id,
@@ -117,6 +118,7 @@ def run_pilot(run_id: str) -> dict:
             ),
             "shared_targets": shared,
             "pilot_targets": selected,
+            "targets_below_800_cells": underpowered,
             "pilot_cell_counts": {t: int(counts[t]) for t in selected},
             "control_cells": int(counts.get("non-targeting", 0)),
             "sampling": {
@@ -150,13 +152,14 @@ def run_pilot(run_id: str) -> dict:
         "--pool-k",
         "4",
         "--max-targets",
-        "3",
+        str(max_targets),
         "--seed",
         "0",
         "--allow-large-input",
     ]
     if axis_drop:
         command += ["--allow-axis-drop"]
+    subprocess_timeout = 780 if len(selected) <= 3 else 3300
     with (out / "run.log").open("w") as log:
         try:
             result = subprocess.run(
@@ -164,7 +167,7 @@ def run_pilot(run_id: str) -> dict:
                 cwd=REMOTE_ROOT,
                 stdout=log,
                 stderr=subprocess.STDOUT,
-                timeout=780,
+                timeout=subprocess_timeout,
                 check=False,
             )
         finally:
@@ -181,5 +184,5 @@ def run_pilot(run_id: str) -> dict:
 
 
 @app.local_entrypoint()
-def main(run_id: str):
-    print(json.dumps(run_pilot.remote(run_id), indent=2))
+def main(run_id: str, max_targets: int = 3):
+    print(json.dumps(run_pilot.remote(run_id, max_targets), indent=2))

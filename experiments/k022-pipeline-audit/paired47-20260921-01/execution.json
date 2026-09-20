@@ -1,0 +1,47 @@
+{
+  "run_id": "paired47-20260921-01",
+  "date": "2026-09-21",
+  "app_id": "ap-DzIlPaBdRUjLM6PskErXXy",
+  "app_url": "https://modal.com/apps/thepapajams/main/ap-DzIlPaBdRUjLM6PskErXXy",
+  "status": "completed",
+  "app_stopped": true,
+  "launches": 1,
+  "diagnostic_subprocess_executed": true,
+  "diagnostic_subprocess_completed": true,
+  "official_score_computed": false,
+  "blockers": [],
+  "axis_resolution": {
+    "rule": "drop_from_diagnostic_axis",
+    "dropped_labels": ["HSPA14-1", "TBCE-1", "TMSB15B-1"],
+    "n_consumer_labels": 18080,
+    "n_aligned_labels": 18077,
+    "aligned_axis_sha256": "9e985eba098b1e972c2fa1a488d3774332bd65760b5949b8fbf3857329ac0561",
+    "audit_report": "experiments/k022-pipeline-audit/axis-20260921-01/axis_report.json"
+  },
+  "targets_evaluated": 32,
+  "targets_dropped_underpowered": 15,
+  "panel_overlap_note": "Only 4/47 paired targets (ACLY, HDAC8, NFE2L1, SLIRP) are in the 2026 panel; this run measures the K562->hESC transfer problem, not per-target submission decisions.",
+  "sampling": {
+    "cells_per_target": 400,
+    "fit_controls": 1600,
+    "eval_controls": 1600,
+    "pool_k": 4,
+    "seed": 0
+  },
+  "preflight_artifact": "experiments/k022-pipeline-audit/paired47-20260921-01/preflight.json",
+  "summary_artifact": "experiments/k022-pipeline-audit/paired47-20260921-01/summary.json",
+  "split_manifest": "experiments/k022-pipeline-audit/paired47-20260921-01/splits.json",
+  "run_log": "experiments/k022-pipeline-audit/paired47-20260921-01/run.log",
+  "actual_cost_usd": null,
+  "cost_note": "Actual billing not exposed by retrieved CLI metadata. Function timeout was raised to 3600s for the 47-target run; the planning envelope is approximately $0.44/hour at recorded Modal rates.",
+  "evidence_class": "proxy_diagnostic",
+  "findings": {
+    "generator_calibration": "Null champion transport on eval controls: variance ratio 1.047 - the transport generator is well-calibrated on unperturbed cells; dispersion is not the primary defect.",
+    "borrowed_signature_quality": "Borrowed K562 deltas (delta_scale=1.7): mean cosine 0.179, median 0.268 vs measured-delta transport median 0.514 and observed fit-split ceiling median 0.701. Borrowed beats measured in only 1/32 targets; 11/32 borrowed cosines <0.1 and 8 are negative (actively wrong direction).",
+    "transferability_gate_falsified": "corr(cos(delta_k562, delta_hesc), borrowed_cosine) = 0.219 overall and 0.322 among high-ceiling targets (obs>0.6). A precomputable per-target gate from the paired source deltas does NOT reliably predict which borrowed signatures transfer; the paired cosine itself is weak across the board (median ~0.10, max 0.37), consistent with prior LOO ~0.13.",
+    "amplitude_ratio": "||delta_hesc||/||delta_k562|| median 1.09 (mean 1.57) in the paired training corpus - within-corpus hESC signature norms are comparable to K562, though this is a different measurement from the k013 lineage-ratio estimate (~0.44) that motivated context C down-scaling.",
+    "conclusion": "Signature content is the quantified bottleneck (median cosine gap 0.27 borrowed vs 0.51 measured), and no cheap per-target gate exists in the paired source data. Uniform levers (delta_scale, kd_std, context amplitudes) and gate-based selection are exhausted; remaining routes are context-matched signature content (lineage-matched corpora, which do not cover this panel) or a learned transfer model (Track 2)."
+  },
+  "submissions": 0,
+  "gpu_jobs": 0
+}

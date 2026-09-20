@@ -193,6 +193,17 @@ enrichment path.
   six-metric leaderboard surrogate:
   [`pilot-20260921-02/summary.json`](k022-pipeline-audit/pilot-20260921-02/summary.json),
   [`pilot-20260921-02/execution.json`](k022-pipeline-audit/pilot-20260921-02/execution.json).
+  The full paired-panel run `paired47-20260921-01` evaluated 32/47 paired
+  targets (15 dropped for <800 cells). Findings: borrowed K562 deltas
+  reach median cosine 0.268 vs 0.514 for measured in-context deltas —
+  signature content is the quantified bottleneck — and a precomputable
+  transferability gate is **falsified**: `cos(delta_k562, delta_hesc)`
+  predicts borrowed-signature success at r≈0.22 (0.32 among high-ceiling
+  targets). Uniform levers and gate-based selection are exhausted;
+  remaining routes are context-matched signatures or a learned transfer
+  model. Receipts:
+  [`paired47-20260921-01/summary.json`](k022-pipeline-audit/paired47-20260921-01/summary.json),
+  [`paired47-20260921-01/execution.json`](k022-pipeline-audit/paired47-20260921-01/execution.json).
   Scorer contract:
   [`k022-pipeline-audit/scorer_contract.json`](k022-pipeline-audit/scorer_contract.json);
   pinned `cell-eval2` 0.16.0 smoke report:

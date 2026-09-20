@@ -425,13 +425,15 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   `pilot-20260921-01` failed on a backed-AnnData view-of-a-view defect
   (fixed — `var_keep` is threaded through `run_audit` and applied in one
   `(obs, var)` index); `pilot-20260921-02` then COMPLETED the 3-target
-  proxy diagnostic. Findings: transport null calibrated on controls
-  (variance ratio 1.05); measured-delta transport direction moderate
-  (cosines 0.33–0.87, ACLY dispersion outlier 18.5); borrowed K562
-  signatures target-dependent (cosines -0.01/0.29/0.76); direct-moment
-  arms under-disperse (~0.28). Diagnostics only — proxy evidence class,
-  not a promotion gate. Receipts:
-  `experiments/k022-pipeline-audit/pilot-20260921-02/`.
+  proxy diagnostic. The full paired-panel run `paired47-20260921-01`
+  evaluated 32/47 targets (15 under-powered). Key findings: transport
+  null calibrated on controls (variance ratio 1.05); borrowed K562
+  signatures reach median cosine 0.268 vs 0.514 for measured in-context
+  deltas — **signature content is the quantified bottleneck**; and the
+  precomputable transferability gate is **falsified**
+  (cos(delta_k562, delta_hesc) predicts borrowed success at r≈0.22).
+  Diagnostics only — proxy evidence class, not a promotion gate.
+  Receipts: `experiments/k022-pipeline-audit/paired47-20260921-01/`.
 - Official scorer located via the VCC CLI guide: public
   `https://github.com/ArcInstitute/cell-eval2`, inspected revision
   `5e64833518a6603a0301cbe28185d49c30f4a986` (package version 0.16.0).
