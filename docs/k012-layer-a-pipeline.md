@@ -1,8 +1,13 @@
 # k012 — learned Layer A implementation spec
 
+> **STATUS 2026-09-20: HISTORICAL PROPOSAL — not the active plan.** The LOO
+> result was a proxy-only negative and does not justify implementation work
+> before the validation gates in `docs/vcc-two-track-strategy.md` pass. Kept
+> as design history.
+
 Companion to `docs/k012-learned-layer-a.md` (the "why"). This is the "how" —
-concrete pipeline for the paired-signature transfer model, Track 1 of
-`docs/vcc-two-track-strategy.md`.
+concrete pipeline for the paired-signature transfer model proposed during the
+former Track 1 plan.
 
 ## Data extraction (Modal job, ~10 min)
 

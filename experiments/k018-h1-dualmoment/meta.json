@@ -1,0 +1,37 @@
+{
+  "run_id": "k018-h1-dualmoment",
+  "created_at": "2026-09-19T13:48:50Z",
+  "contexts": [
+    "A",
+    "B",
+    "C"
+  ],
+  "h1_contexts": [
+    "C"
+  ],
+  "targets": 300,
+  "cells_per_pert": 400,
+  "total_cells": 360000,
+  "dispatch_totals": {
+    "champion": 600,
+    "h1_direct": 17,
+    "h1_transfer": 255,
+    "h1_neighbor": 18,
+    "fallback": 10
+  },
+  "self_median_train": -1.5989654064178467,
+  "rank": 64,
+  "h1_delta_scale": 2.0,
+  "champion_delta_scale": 1.7,
+  "dual_moment": {
+    "amplitude": 1.0,
+    "bulk_amplitude": 1.0,
+    "pool_k": 4
+  },
+  "champion_sampler": {
+    "type": "heterogeneous",
+    "kd_std": 2.0,
+    "noise_scale": 0.05
+  },
+  "elapsed_s": 1200.6
+}

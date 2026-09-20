@@ -2,9 +2,10 @@
 
 Loads `prediction_deltas.npz` produced by `tools/track2/train_conditional_mlp.py`
 (on the Nebius box) and feeds the per-context trained deltas into the champion
-k011 pipeline as the 'real' tier. Targets the trained model did not cover
-(coverage_mask false — e.g. the ~28 unscoped targets without embeddings) fall
-through to the k007 neighbor-imputation tier, then the fallback.
+k011 pipeline as overrides on top of the combined real prior. Targets the
+trained model did not cover (coverage_mask false — e.g. the ~28 unscoped
+targets without embeddings) retain the baseline backfill: combined real prior,
+then the k007 neighbor-imputation tier, then the fallback.
 
 The trained deltas are magnitude-calibrated against ground truth during
 training, so the default delta-scale is 1.0 (the k011 x1.7 scalar was a blind
@@ -20,6 +21,7 @@ Run (Modal; see tools/modal_k014_trained_model.py):
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -47,20 +49,68 @@ RUN_ID = "k014-track2-mlp"
 
 def load_trained_deltas(
     npz_path: Path,
+    gene_order: list[str],
 ) -> tuple[dict[str, dict[str, np.ndarray]], list[str], list[str], np.ndarray]:
     """Load prediction_deltas.npz -> per-context {target: delta}, contexts, targets, mask."""
-    d = np.load(npz_path, allow_pickle=False)
-    contexts = [str(c) for c in d["contexts"].tolist()]
-    vcc_targets = [str(t) for t in d["vcc_targets"].tolist()]
-    deltas = d["deltas"]  # (C, T, G)
-    mask = d["coverage_mask"]  # (C, T)
-
-    per_context: dict[str, dict[str, np.ndarray]] = {}
-    for ci, ctx in enumerate(contexts):
-        per_context[ctx] = {
-            vcc_targets[ti]: deltas[ci, ti] for ti in range(len(vcc_targets)) if mask[ci, ti]
+    with np.load(npz_path, allow_pickle=False) as d:
+        required = {
+            "schema_version",
+            "effect_space",
+            "gene_names",
+            "contexts",
+            "vcc_targets",
+            "deltas",
+            "coverage_mask",
         }
-    return per_context, contexts, vcc_targets, mask
+        missing = required - set(d.files)
+        if missing:
+            raise ValueError(
+                f"Prediction artifact missing metadata: {sorted(missing)}; "
+                "legacy artifacts require an explicit audited conversion"
+            )
+        if d["schema_version"].shape != () or d["schema_version"].item() != 1:
+            raise ValueError("Unsupported prediction artifact schema")
+        if d["effect_space"].shape != () or d["effect_space"].item() != "additive_log1p":
+            raise ValueError("Consumer requires additive_log1p effects; no implicit conversion")
+        axes = {}
+        for name in ("gene_names", "contexts", "vcc_targets"):
+            values = d[name]
+            if values.ndim != 1 or values.dtype.kind not in "US" or not len(values):
+                raise ValueError(f"Invalid {name} axis")
+            labels = values.astype(str).tolist()
+            if any(not s or s != s.strip() for s in labels) or len(set(labels)) != len(labels):
+                raise ValueError(f"Duplicate or empty {name} labels")
+            axes[name] = labels
+        genes, contexts, targets = axes["gene_names"], axes["contexts"], axes["vcc_targets"]
+        if len(set(gene_order)) != len(gene_order) or set(genes) != set(gene_order):
+            raise ValueError("Prediction gene_names must exactly cover the consumer gene axis")
+        if not set(contexts) <= {"A", "B", "C"}:
+            raise ValueError("Unknown prediction context")
+        deltas = d["deltas"]  # (C, T, G)
+        mask = d["coverage_mask"]  # (C, T)
+        if deltas.shape != (len(contexts), len(targets), len(genes)):
+            raise ValueError("Prediction delta shape disagrees with named axes")
+        if deltas.dtype.kind not in "fiu" or not np.isfinite(deltas).all():
+            raise ValueError("Prediction deltas must be finite numeric values")
+        if mask.dtype != np.dtype(bool) or mask.shape != deltas.shape[:2]:
+            raise ValueError("coverage_mask must be boolean with context-by-target shape")
+        positions = {g: i for i, g in enumerate(genes)}
+        aligned = deltas[:, :, [positions[g] for g in gene_order]].copy()
+        per_context = {
+            ctx: {
+                target: aligned[ci, ti].copy() for ti, target in enumerate(targets) if mask[ci, ti]
+            }
+            for ci, ctx in enumerate(contexts)
+        }
+        return per_context, contexts, targets, mask.copy()
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -110,6 +160,9 @@ def main(argv: list[str] | None = None) -> int:
     raw_dir: Path = args.raw_dir
     out_dir: Path = args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
+    for filename in ("prediction.h5ad", "meta.json"):
+        if (out_dir / filename).exists():
+            raise FileExistsError(out_dir / filename)
 
     gene_order = pd.read_csv(raw_dir / "gene_names.csv", header=None, skiprows=1)[0].tolist()
     all_targets = pd.read_csv(raw_dir / "pert_counts.csv", header=None, skiprows=1)[0].tolist()
@@ -126,7 +179,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"missing neighbor map {args.neighbor_map}", file=sys.stderr)
         return 4
 
-    trained_deltas, delta_contexts, delta_targets, coverage_mask = load_trained_deltas(args.deltas)
+    if args.atlas_src is not None and not args.atlas_src.is_file():
+        raise FileNotFoundError(args.atlas_src)
+    trained_deltas, delta_contexts, delta_targets, coverage_mask = load_trained_deltas(
+        args.deltas, gene_order
+    )
+    unknown_targets = set(delta_targets) - set(all_targets)
+    if unknown_targets:
+        raise ValueError(f"Prediction artifact has unknown targets: {sorted(unknown_targets)}")
     coverage_per_ctx = {ctx: len(trained_deltas.get(ctx, {})) for ctx in contexts}
     print(
         f"[trained] contexts {delta_contexts}, targets {len(delta_targets)}, "
@@ -135,8 +195,8 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # Neighbor-imputation coverage source: combined real priors (K562-based),
-    # exactly as the k011 champion — used only for targets the trained model
-    # did not cover.
+    # exactly as the k011 champion — used as baseline backfill for targets the
+    # trained model did not cover.
     combined_deltas = build_combined_deltas(args.atlas_src, args.replogle_src, gene_order)
     neighbor_map = json.loads(args.neighbor_map.read_text())
     neighbor_deltas = k007.build_neighbor_deltas(
@@ -160,12 +220,16 @@ def main(argv: list[str] | None = None) -> int:
     ctx_blocks: list[sparse.csr_matrix] = []
     ctx_obs: list[pd.DataFrame] = []
     totals = {"real": 0, "neighbor": 0, "fallback": 0}
+    dispatch_by_context = {}
+    override_counts = {}
     for ctx in contexts:
         ctrl_path = raw_dir / f"context_{ctx}.h5ad"
         if not ctrl_path.exists():
             print(f"missing {ctrl_path}", file=sys.stderr)
             return 5
-        real = trained_deltas.get(ctx, {})
+        overrides = trained_deltas.get(ctx, {})
+        real = {**combined_deltas, **overrides}
+        override_counts[ctx] = sum(t in overrides for t in targets)
         # Neighbor tier only for targets the trained model left uncovered.
         ctx_neighbors = {t: d for t, d in neighbor_deltas.items() if t not in real}
         X_pred, obs, used = k007.build_context_predictions(
@@ -184,6 +248,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         ctx_blocks.append(X_pred)
         ctx_obs.append(obs)
+        dispatch_by_context[ctx] = used.copy()
         for k, v in used.items():
             totals[k] += v
     print(f"[dispatch] totals over {len(contexts)} contexts: {totals}", flush=True)
@@ -203,6 +268,25 @@ def main(argv: list[str] | None = None) -> int:
     )
     adata.write_h5ad(str(pred_path), compression="gzip")
 
+    input_paths = {
+        "deltas": args.deltas,
+        "gene_names": raw_dir / "gene_names.csv",
+        "pert_counts": raw_dir / "pert_counts.csv",
+        "replogle": args.replogle_src,
+        "neighbor_map": args.neighbor_map,
+        **{f"context_{ctx}": raw_dir / f"context_{ctx}.h5ad" for ctx in contexts},
+    }
+    if args.atlas_src is not None:
+        input_paths["atlas"] = args.atlas_src
+    code_paths = [
+        Path(__file__),
+        REPO / "tools/run_k007_neighbor_prior.py",
+        REPO / "tools/run_k006_replogle_prior.py",
+        REPO / "tools/perturbation_priors.py",
+        REPO / "src/kytos/features/basal.py",
+        REPO / "src/kytos/models/layer_a.py",
+        REPO / "src/kytos/models/layer_b.py",
+    ]
     meta = {
         "run_id": RUN_ID,
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -221,6 +305,12 @@ def main(argv: list[str] | None = None) -> int:
         "coverage_per_context": coverage_per_ctx,
         "coverage_mask_shape": list(coverage_mask.shape),
         "dispatch": totals,
+        "artifact_schema_version": 1,
+        "effect_space": "additive_log1p",
+        "dispatch_by_context": dispatch_by_context,
+        "override_counts": override_counts,
+        "input_hashes": {name: file_sha256(path) for name, path in input_paths.items()},
+        "code_hashes": {path.name: file_sha256(path) for path in code_paths},
         "kd_std": args.kd_std,
         "delta_scale": args.delta_scale,
         "library_cap": args.library_cap,

@@ -1,6 +1,7 @@
 # Kytos Observatory — build-in-public surface
 
-Status: **ACTIVE** · Owner: udingethe · Started: **2026-08-22**
+Status: **ACTIVE** · Owner: udingethe · Started: **2026-08-22** · Scorer wording
+updated **2026-09-20**
 
 The **Observatory** is Kytos's public-facing layer: a visual, engaging experience
 where experiment progress, biological audit flags, and literature context are
@@ -21,13 +22,13 @@ Companion docs: [`architecture.md`](architecture.md) (model stack),
 The Virtual Cell Challenge runs for months (validation open Aug 20; final
 submission Nov 5, 2026). Arc explicitly seeks people who *"know when a model is
 wrong for biological rather than numerical reasons"* — yet official
-infrastructure provides a **leaderboard and `cell-eval` scores**, not public
+infrastructure provides a **leaderboard and scorer metrics**, not public
 interpretability of failure modes.
 
 We build in public:
 
 - **Show** every run's metrics, ceiling headroom, and provenance.
-- **Flag** predictions that pass cell-eval but fail biological sanity checks.
+- **Flag** predictions that score well on official metrics but fail biological sanity checks.
 - **Ground** flags in literature — evidence, not prescription.
 - **Explain** runs via auto-generated video briefings (VEED Fabric).
 - **Invite** critique, replication, and collaboration before we overfit validation.
@@ -294,7 +295,7 @@ Ruthless cut for hackathon deadline (19:00 opt-in):
 | Priority | Ship | Defer |
 |---|---|---|
 | P0 | One **Run detail page** with stage layout (strip + center + rail) | Full Runs polish, Critique page |
-| P0 | `facts.json` + k001 seed (mock metrics OK) | Real `cell-eval` run |
+| P0 | `facts.json` + k001 seed (mock metrics OK) | Real scorer/eval run |
 | P0 | `render_briefing.py` → `visual/briefing.mp4` | LoRA experimentation |
 | P0 | `render_visuals.py` → hero still | — |
 | P0 | Narrative + literature tools with cached outputs | Weekly digest |
@@ -348,7 +349,7 @@ labels from base GLiNER2 + regex fallback → upload JSONL → synthetic `/gener
 
 ### Shipped since Milestone 0 (2026-08-22)
 
-- **k002 — first real `cell-eval` 0.8.2 run.** VCC 2025 validation (H1 hESC,
+- **k002 — first real legacy `cell-eval` 0.8.2 run.** VCC 2025 validation (H1 hESC,
   98,927 cells, 50 targets; public Arc bucket, sha256-checked) through the
   actual submission harness → mean-shift prediction → `ceiling/targets` +
   `de/targets` → adapter import. Floor results: DE sig-genes recall 0.0 vs
@@ -356,10 +357,12 @@ labels from base GLiNER2 + regex fallback → upload JSONL → synthetic `/gener
   vs ceiling 0.667; audit clean. The mirror image of k001: invisible to the
   audit, legible to the metric. Both preregistered hypotheses confirmed.
   Scoring matrix subsampled (200 cells/pert + 3,000 controls, seed 0) —
-  disclosed in meta.json and on the page; full-depth run queued as k003.
+  disclosed in meta.json and on the page; a full-depth eval run was queued
+  at the time, while the actual `k003` leaderboard submission was a sparse
+  pipeline test.
 - **Undefined-metric honesty end to end.** NaN → empty CSV cell → JSON null
   → "undefined"/"not reported" rendering across chart, pillars, comparison,
-  home pill. Metric-name aliasing bridges cell-eval's schema to our facts.
+  home pill. Metric-name aliasing bridges legacy `cell-eval`'s schema to our facts.
 - **Narrative grounding checker** (`tools/check_narrative.py`, deterministic,
   offline): digest numbers must trace to facts.json, no debug-annotation
   leaks (`(facts:…)` — root-caused in the generator prompt), per-gene
@@ -397,8 +400,9 @@ labels from base GLiNER2 + regex fallback → upload JSONL → synthetic `/gener
 
 ### Later (Aug → Nov 2026)
 
-- k003 = full-depth cell-eval scoring (the deterministic checker matrix
-  already in place; just needs overnight GPU-free time)
+- Full-depth evaluator/scorer runs remain external-compute decisions; the
+  actual `k003` submission was a sparse leaderboard pipeline test, not a
+  full-depth eval run
 - Each new run auto-publishes to Observatory (workflow above; secrets needed
   for enrichment steps in CI)
 - Leaderboard tracker; audit rules mature; weekly digests
@@ -430,7 +434,7 @@ The Observatory is built with a modular, template-driven design system optimized
 * **Modularity:** Monolithic string concatenation replaced with clean layouts (`base.html`, `home.html`, `about.html`, `runs_index.html`, `run_detail.html`) and reusable partials (`matrix.html`, `journey.html`, `disclosure.html`, `agent_trace.html`).
 
 ### 2. Multi-Run Comparison Matrix
-* **Cross-Experiment Scorecard:** `/runs/` renders an interactive comparative scorecard comparing models (`k001` mock baseline vs `k002` real mean-shift vs `k003` Layer A) across all 6 `cell-eval` metrics, ceiling headroom bars, and biological audit statuses.
+* **Cross-Experiment Scorecard:** `/runs/` renders an interactive comparative scorecard comparing models (`k001` mock baseline vs `k002` real mean-shift vs `k003` Layer A) across committed scorer metrics, ceiling headroom bars, and biological audit statuses.
 
 ### 3. Interactive Volcano Plot & DE Explorer
 * **Biological Effect Exploration:** Embedded Plotly scatter plot ($\log_2\text{FC}$ vs. $-\log_{10}p$-value) categorizing unperturbed genes, CRISPRi targets, and audit-flagged violations with responsive tooltips.
@@ -445,7 +449,7 @@ The Observatory is built with a modular, template-driven design system optimized
 * **Luminous Gradient Aesthetics:** Replaced flat panels with multi-stop dark blue-glass gradients and cyan highlights.
 
 ### 6. Beautiful UI Agentic Investigation Trace
-* **Living Lab Notebook:** Visualizes Dr. Kytos’s autonomous pipeline execution (`cell-eval` metric evaluation, `kytos.audit` invariant checks, `tavily` literature search, and `narrative` synthesis) as an AI-native step-by-step trace with status indicators and execution timings.
+* **Living Lab Notebook:** Visualizes Dr. Kytos’s autonomous pipeline execution (metric/scorer evaluation, `kytos.audit` invariant checks, `tavily` literature search, and `narrative` synthesis) as an AI-native step-by-step trace with status indicators and execution timings.
 
 ### 7. Fragment-Assembly Vessel Callout
 * **Tooltips that assemble like the vessel founds itself:** when a crack/organelle is hovered (3D-raycast and SVG-fallback paths), the `.vessel-callout` doesn't just fade in — a **pure-CSS fragment field** marches across the glass, scatters outward, "goo-merges" through a mid-dissolve blur, then dissolves to zero as the legible signal body hardens beneath it. The motif borrows the coalescing-fragments idea from Codrops' *PixelGooeyTooltip* without its GSAP/SVG-filter deps.

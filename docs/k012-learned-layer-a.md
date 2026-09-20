@@ -1,9 +1,16 @@
 # k012 — learned Layer A: context-conditioned signature transfer
 
-Status: **design** (not yet implemented). Written 2026-09-16 after the
-k009/k010 mean-shape experiments isolated *applied delta magnitude* as the
-load-bearing score axis and marker analysis revealed the 2026 contexts are
-not H1 hESC.
+> **STATUS 2026-09-20: HISTORICAL PROPOSAL — not the active plan.** This
+> document records the rationale for a candidate transfer direction. Its
+> offline proxy did not clear the acceptance bar, and later k020/k020b results
+> were implementation-confounded rather than class-wide falsifications. Do
+> not resume work here until the validation gates in
+> `docs/vcc-two-track-strategy.md` pass.
+
+Status: **design history** (not implemented). Written 2026-09-16 after the
+k009/k010 mean-shape experiments isolated *applied delta magnitude* as an
+important score axis and marker analysis suggested the 2026 contexts are not
+H1 hESC.
 
 ## Why this is the lever
 
@@ -78,12 +85,12 @@ Selection criterion: LOO cosine similarity and DE-logFC recovery on the
 paired set, then a small panel submission only if the winner clearly beats
 the global scalar.
 
-### 3. Residual covariance (Layer B) — orthogonal
+### 3. Residual covariance (Layer B) — exploratory hypothesis
 
-The fid -0.111 residual on the champion is off-direction structure: fit
-per-target or pooled residual covariance of Atlas perturbed cells after
-removing the delta-mean, sample correlated residuals in transport.
-Independent of Layer A and can stack.
+At the time this was written, the `fid` residual was interpreted as possible
+off-direction structure. `fid` is DE direction fidelity, not a covariance
+diagnostic. Per-target or pooled residual covariance remains only a gated
+hypothesis, independent of Layer A.
 
 ## Compute / cost
 

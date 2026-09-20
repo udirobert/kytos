@@ -1,6 +1,7 @@
 # Build-in-public — hackathon day posts
 
-Status: **ACTIVE** · Started: **2026-08-22**
+Status: **HISTORICAL** · Started: **2026-08-22** · Updated **2026-09-20** —
+hackathon-day post copy preserved; scorer wording generalized.
 
 Companion to [`demo-script.md`](demo-script.md). Post as milestones land; edit
 timestamps if the day slips.
@@ -139,7 +140,7 @@ Arc's 2026 brief to entrants, verbatim:
 
 "know when a model is wrong for biological rather than numerical reasons"
 
-But official infra gives you: leaderboard + cell-eval scores.
+But official infra gives you: leaderboard + scorer metrics.
 
 Not: "your housekeeping genes shifted 2 log2FC and your interferon pathway
 points in opposite directions — and everyone can see it."
@@ -236,7 +237,7 @@ Kytos (κύτος, "hollow vessel") = Observatory for the @ArcInstitute Virtual
 Cell Challenge.
 
 Every experiment run publishes:
-• cell-eval metrics vs ceiling
+• scorer metrics vs ceiling
 • deterministic biological audit flags
 • literature (Tavily) + grounded narrative (OpenAI)
 • VEED Fabric run briefings (fal)
@@ -333,7 +334,7 @@ Live: https://kytosapp.netlify.app
 Hackathon day wrap: what shipped, what we'd redo, run #2 next.
 
 [1–3 bullets: e.g. planted-signal self-test, degrade-empty enrichment, mock
-metrics → real cell-eval next week]
+metrics → real scorer run next week]
 ```
 
 ---

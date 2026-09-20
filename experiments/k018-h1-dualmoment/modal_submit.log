@@ -1,0 +1,12 @@
+✓ Initialized. View run at 
+https://modal.com/apps/thepapajams/main/ap-nCct0AqXGGD3LDGvzO6YIk
+✓ Created objects.
+├── 🔨 Created mount 
+│   /Users/udingethe/Dev/kytos/tools/modal_k018_h1_dualmoment.py
+├── 🔨 Created function build_and_prep.
+└── 🔨 Created function submit_from_volume.
+submitting /kytos-vol/k018-h1-dualmoment/prediction.prep.vcc
+{"entry_id": "Y0vXtrifL3obbDtWwNjX", "file_path": "2026/submissions/ungethe@gmail.com/Y0vXtrifL3obbDtWwNjX/prediction.prep.vcc", "model_name": "kytos-k018-h1lr-dm-c", "is_final": false, "bytes_uploaded": 3704985600, "md5_verified": true, "job_name": "projects/vcc-prod/locations/us-east1/jobs/vcc-metrics-prod-y0vxtrifl3obbdtwwnjx", "prepared_from": null, "final_status": null}
+Stopping app - local entrypoint completed.
+✓ App completed. View run at 
+https://modal.com/apps/thepapajams/main/ap-nCct0AqXGGD3LDGvzO6YIk

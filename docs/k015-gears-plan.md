@@ -1,13 +1,13 @@
 # k015+ Plan: Path to Top 100
 
-> **STATUS 2026-09-20: SUPERSEDED — planning doc from 2026-09-18, kept as the
-> record of options considered.** Outcomes since: Lever 1 (GEARS GNN / k020,
-> k020b) trained and submitted → **−0.114 / −0.098, `pds` flat, negative**;
-> essential low-rank transfer (k015) → **−0.028, negative**; H1 transfer
-> (k017→k018) offline win did **not** transfer. The **k021 ceiling analysis**
-> then showed `pds` is *signature*-bound (public corpora exhausted) while the
-> DE-count metrics are *modeling*-bound via generator DE over-calling — the
-> latter is the one remaining no-GPU lever. Canonical record: `AGENTS.md` §4.
+> **STATUS 2026-09-20: HISTORICAL — planning doc kept as the record of options
+> considered, not the active plan.** Outcomes since: k020/k020b regressed on
+> the leaderboard and k015 also regressed, but implementation and coverage
+> confounds mean those results do not falsify transfer learning as a class.
+> The k021 diagnostic is exploratory and does not establish a
+> signature/modeling headroom split or a `kd_std` mechanism. The active plan
+> is `docs/vcc-two-track-strategy.md` (“VCC strategy — validation first”);
+> canonical experiment interpretation is `experiments/README.md`.
 
 Status: ~~**planning**~~ (2026-09-18, post-k014 negative result) — **superseded, see banner above**
 

@@ -1,10 +1,15 @@
 # Kytos — Release infrastructure: where everything lives
 
-Status: **PROPOSAL** · Owner: udingethe · Started: **2026-08-22**
+Status: **PROPOSAL / HISTORICAL** · Owner: udingethe · Updated: **2026-09-20**
 Companion to [`code-organization.md`](code-organization.md) (repo layout) and
-[`architecture.md`](architecture.md) (model stack). This doc answers: **which
-artifact goes on which platform, and why** — so we never fight git for a 2 GB
-matrix or lose a model to a dead laptop.
+[`architecture.md`](architecture.md) (implemented stack versus proposals).
+This doc answers: **which artifact goes on which platform, and why** — so we
+never fight git for a 2 GB matrix or lose a model to a dead laptop.
+
+References to future Layer A/B weights or flow-matching training are proposed
+artifacts, not active work. Current sequencing is governed by
+[`vcc-two-track-strategy.md`](vcc-two-track-strategy.md) (“VCC strategy —
+validation first”).
 
 The rule of thumb that decides everything:
 
@@ -55,8 +60,8 @@ hash, schema, and the reproduce command** (the lemma/orbura provenance habit).
 
 | Model | Contents | When |
 |---|---|---|
-| `kytos/layer-a-transfer` | gene-level transfer head checkpoints | mid-Sep |
-| `kytos/layer-b-sampler` | flow-matching cell sampler | early Oct |
+| `kytos/layer-a-transfer` | proposed gene-level transfer head checkpoints | only if a gated model ships |
+| `kytos/layer-b-sampler` | proposed conditional cell sampler weights | only if a gated model ships |
 | `kytos/pioneer-narrative` | fine-tuned facts→digest model | hackathon (side challenge) |
 
 Every model card carries: **training data, eval numbers vs the mean-shift
@@ -120,10 +125,10 @@ Options, cheapest first:
 | Option | Fit | Notes |
 |---|---|---|
 | **Kaggle free GPU/CPU** | smoke tests, EDA, small notebooks | weekly quota; use the ratiocine two-phase pattern first — live: `vcc2026-controls` dataset + `k004` notebook (10–20 targets × 3 contexts) |
-| **Rented CPU/GPU by the hour** (Vast.ai / RunPod) | full `vcc prep`, bursts of training | pick ≥32 GB system RAM for `vcc prep`; pay only for use — next: promote k004 to 300-target (360k cells) |
+| **Rented CPU/GPU by the hour** (Vast.ai / RunPod) | full `vcc prep`, bursts of training | pick ≥32 GB system RAM for `vcc prep`; use only after the active strategy gates approve the run |
 | **VPS with 1× T4 / 32 GB+** | sustained training + cron | only if a long-running worker is needed |
 
-**What a VPS / rented instance runs:** heavy data prep, `vcc prep`, `cell-eval`
+**What a VPS / rented instance runs:** heavy data prep, `vcc prep`, scorer/eval
 runs, training. **What it does not run:** the Observatory (Netlify does that —
 no backend during the challenge), and it is never the source of truth (GitHub/HF
 are). External compute is a worker, not a store.
@@ -181,4 +186,4 @@ script and its commit hash ride along in each dataset/model card and each
 
 ---
 
-*Status 2026-09-10: Kaggle Dataset `udingethe/vcc2026-controls` + Notebook `udingethe/kytos-k004-kaggle-smoke` v2 live (private); `notebooks/kaggle_k004_smoke.py` validated locally (10×3 → 69.6M vs 136.7M nnz). Next: promote k004 to 300-target on 32 GB Vast/RunPod, then HF Datasets mirror. See [`notebooks/README.md`](../notebooks/README.md) and [`architecture.md`](architecture.md) §4.*
+*Status 2026-09-20: Kaggle Dataset `udingethe/vcc2026-controls` + Notebook `udingethe/kytos-k004-kaggle-smoke` v2 remain historical smoke artifacts. Current sequencing is validation-first: resolve the k022 source-axis mismatch, pin the official `cell-eval2`/`vcc2026` scoring contract, then run controlled diagnostics. No new heavyweight training run is justified by this infrastructure document. See [`notebooks/README.md`](../notebooks/README.md), [`architecture.md`](architecture.md), and [`vcc-two-track-strategy.md`](vcc-two-track-strategy.md).*

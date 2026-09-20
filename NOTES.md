@@ -9,6 +9,10 @@ Created **2026-08-22**. This file is the foundation: what we're building, why th
 name, what the challenge demands, and — most importantly — the distilled
 learnings from every project in this catalog that feeds into it.
 
+> **Update 2026-09-20:** foundation notes are historical. The active plan is
+> `docs/vcc-two-track-strategy.md`; scorer/context wording below is corrected
+> where needed, but old proposals remain preserved rather than rewritten.
+
 ---
 
 ## 1. The Task (2026 Virtual Cell Challenge)
@@ -17,17 +21,18 @@ Hosted by Arc Institute; sponsored by NVIDIA, 10x Genomics, Ultima Genomics.
 Register at virtualcellchallenge.org.
 
 - **Zero-shot across cellular contexts.** No challenge training set this year.
-  Models must predict CRISPRi knockdown responses in **six cell lines never
-  seen perturbed**, using only:
+  Models must predict CRISPRi knockdown responses in **held-out cell lines**,
+  using only:
   1. expression profiles of cells expressing non-targeting guides (the
      **basal state**), and
   2. gene identifiers for the knockdown targets.
 - **Predict:** post-perturbation expression profiles as measured by CRISPRi →
   10x Flex single-cell profiling. Arc's own measurements are withheld ground truth.
-- **Split:** 3 cell lines for validation + live leaderboard; 3 held back for
-  final scoring.
-- **Scoring:** new `cell-eval` (built with NVIDIA). Final ranking uses an
-  **aggregate of six metrics** — deliberately broad so nobody optimizes the
+- **Split:** 3 held-out cell lines for validation + live leaderboard; final
+  scoring details are governed by the official challenge release.
+- **Scoring:** the 2026 scorer is now identified as public `cell-eval2`
+  (`vcc2026` preset); local `cell-eval 0.8.2` is a legacy harness. Final ranking
+  uses an **aggregate of six metrics** — deliberately broad so nobody optimizes the
   metric instead of the biology. Last year proved no single metric captures
   model quality.
 - **Data:** 2025's full dataset (train/val/held-out) is downloadable via the
@@ -82,7 +87,7 @@ the predictor is the Nov 5 deliverable. Full demarcation:
 The realistic path:
 
 1. Baselines first (mean-shift / linear transfer from basal state) — establish
-   the floor and wire up `cell-eval` locally.
+   the floor and wire up a local scorer/eval harness.
 2. Main model trained on public perturb-seq corpora (Atlas 2025 + Replogle /
    Norman-style datasets), flow-matching or in-context-learning formulation.
 3. An agentic sanity layer (lemma-derived) that flags predictions that are
@@ -112,7 +117,7 @@ The realistic path:
   site needs no backend. Adopt for every experiment run: config + seed + code
   hash committed alongside predictions.
 - **Lesson on scope:** lemma generalizes one audited workflow to any paper.
-  Kytos should generalize one prediction formulation across all six contexts —
+  Kytos should generalize one prediction formulation across all held-out contexts —
   resist per-cell-line hand-tuning; that's metric-gaming the biology.
 
 ### orbura — fine-tuning & release infrastructure
@@ -144,7 +149,7 @@ The realistic path:
 - **Competition-harness discipline:** a `submission/script.py` that reads the
   official input paths and writes the official output format, tested against a
   frozen local copy long before deadline day. Ratiocine shipped this shape;
-  Kytos must too (cell-eval expects specific prediction formats).
+  Kytos must too (the scorer expects specific prediction formats).
 - **Hardware reality:** ratiocine targeted T4/16GB. Know the compute envelope
   early; NVIDIA Brev credits (part of prizes) arrive too late to design around.
 
@@ -240,7 +245,7 @@ The realistic path:
 
 1. Flow-matching (Altos' winning approach) vs in-context learning (Arc's Stack)
    vs simpler delta-prediction baselines — read the preprint first.
-2. Which public corpora best cover tissue diversity for the six unseen lines?
+2. Which public corpora best cover tissue diversity for the held-out lines?
    (Atlas 2025 first; then Replogle/Nadig-scale genome-wide screens.)
 3. How much does basal-state conditioning alone buy? Build the "predict the
    mean shift scaled by context similarity" baseline before anything fancy.
@@ -250,13 +255,13 @@ The realistic path:
 
 ---
 
-*Next (hackathon day, 2026-08-22): finish the live enrichment run (Dev A),
-connect Netlify for the deployed Observatory (Dev B), record the
-2-min Loom (Dev C). Science track: `cell-eval 0.8.2` + `anndata` are now
+*Historical hackathon-day note (2026-08-22): finish the live enrichment run
+(Dev A), connect Netlify for the deployed Observatory (Dev B), record the
+2-min Loom (Dev C). Science track: legacy `cell-eval 0.8.2` + `anndata` are
 installed in **`.venv-science`** (native arm64 3.12.8 — the Rosetta x86_64
 3.12 has no llvmlite/numba wheels) and the harness obs contract is **verified
-against cell-eval source** (`target_gene` / `non-targeting`) and passes
-`cell-eval prep`. Next: download Atlas 2025, run k001 through
-`cell-eval run --ceiling`, register, read the Altos preprint, and publish the
-first run page. Milestone 0 progress:
+against legacy `cell-eval` source** (`target_gene` / `non-targeting`) and passes
+`cell-eval prep`. Historical next step: download Atlas 2025, run k001 through
+legacy `cell-eval run --ceiling`, register, read the Altos preprint, and publish
+the first run page. Milestone 0 progress:
 [`docs/milestone-0-worksplit.md`](docs/milestone-0-worksplit.md).*

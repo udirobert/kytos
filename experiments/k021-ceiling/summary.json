@@ -1,0 +1,95 @@
+{
+  "created_utc": "2026-09-20T12:46:36Z",
+  "n_eval_targets": 47,
+  "dropped_targets": [
+    "CXCL12",
+    "SH3BP4",
+    "THY1"
+  ],
+  "cells_per_target": 400,
+  "control_cells": 4000,
+  "identity_scale": 1.7,
+  "mean_cos_identity_vs_true": 0.1138,
+  "profile": "minimal",
+  "arms": {
+    "identity_ds1p7": {
+      "agg": {
+        "overlap_at_N": 0.20532080804120262,
+        "precision_at_N": 0.21245362498059267,
+        "de_nsig_counts_real": 3436.0425531914893,
+        "de_nsig_counts_pred": 6704.617021276596,
+        "pearson_delta": 0.0759503815445489,
+        "mse": 0.010001452527084365,
+        "mae": 0.0611984451946285,
+        "discrimination_score_l1": 0.5301041195110912
+      },
+      "gen_plus_eval_s": 162.7,
+      "eval_s": 78.2
+    },
+    "true_ds1p0": {
+      "agg": {
+        "overlap_at_N": 0.3767785706304885,
+        "precision_at_N": 0.32064659242199306,
+        "de_nsig_counts_real": 3436.0425531914893,
+        "de_nsig_counts_pred": 5462.36170212766,
+        "pearson_delta": 0.6667930588298415,
+        "mse": 0.0041461056243468335,
+        "mae": 0.04683482734965505,
+        "discrimination_score_l1": 0.9592575826165686
+      },
+      "gen_plus_eval_s": 152.5,
+      "eval_s": 71.0
+    }
+  },
+  "ceiling": {
+    "overlap_at_N": 0.6452536327314699,
+    "precision_at_N": 0.6525769888714585,
+    "pearson_delta": 0.8606351147661113,
+    "discrimination_score_l1": 0.989247311827957
+  },
+  "attribution": {
+    "discrimination_score_l1": {
+      "identity": 0.5301,
+      "true": 0.9593,
+      "ceiling": 0.9892,
+      "signature_headroom": 0.4292,
+      "modeling_headroom": 0.03,
+      "sig_frac": 0.9347,
+      "mod_frac": 0.0653
+    },
+    "overlap_at_N": {
+      "identity": 0.2053,
+      "true": 0.3768,
+      "ceiling": 0.6453,
+      "signature_headroom": 0.1715,
+      "modeling_headroom": 0.2685,
+      "sig_frac": 0.3897,
+      "mod_frac": 0.6103
+    },
+    "pearson_delta": {
+      "identity": 0.076,
+      "true": 0.6668,
+      "ceiling": 0.8606,
+      "signature_headroom": 0.5908,
+      "modeling_headroom": 0.1938,
+      "sig_frac": 0.753,
+      "mod_frac": 0.247
+    },
+    "precision_at_N": {
+      "identity": 0.2125,
+      "true": 0.3206,
+      "ceiling": 0.6526,
+      "signature_headroom": 0.1082,
+      "modeling_headroom": 0.3319,
+      "sig_frac": 0.2458,
+      "mod_frac": 0.7542
+    }
+  },
+  "headroom_totals": {
+    "n_metrics": 4,
+    "mean_signature_frac": 0.5808,
+    "mean_modeling_frac": 0.4192,
+    "verdict": "signature-limited: a perfect delta nearly reaches the ceiling -> our count pipeline is faithful; corpus coverage caps us (polish-only)"
+  },
+  "elapsed_s": 913.8
+}

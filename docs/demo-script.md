@@ -1,6 +1,8 @@
 # Kytos — 2-minute demo script (Loom, hackathon opt-in)
 
-Status: **ACTIVE** · Owner: Dev C (record by 17:30) · Last updated: 2026-08-22
+Status: **HISTORICAL / COMPLETED** · Owner: Dev C · Last updated: **2026-09-20**
+— hackathon-day script preserved; scorer wording generalized so it is not
+mistaken for the pending `cell-eval2` integration.
 
 **Canonical script** — merges the VEED/Fabric front-load ([`observatory.md §7`](observatory.md#7-demo-script-2-minutes))
 with the self-own credibility beat. **No PowerPoint** — the live site is the deck.
@@ -83,7 +85,7 @@ close. Do not talk over the opening frame.
 
 ## 0:55–1:30 — Metrics vs ceiling → provenance
 
-> "Metrics come from `cell-eval` — nothing here is LLM-generated. Scores vs
+> "Metrics come from committed scorer/eval artifacts — nothing here is LLM-generated. Scores vs
 > noise-adjusted ceiling; every headline value links to the committed CSV.
 > Click a value — that's the source. Chart, flags, reproduce command — all
 > trace to artifacts in the repo."

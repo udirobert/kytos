@@ -1,0 +1,114 @@
+✓ Initialized. View run at 
+https://modal.com/apps/thepapajams/main/ap-zlhFad7MCzKGAClNCOrI73
+✓ Created objects.
+├── 🔨 Created mount 
+│   /Users/udingethe/Dev/kytos/tools/modal_k018_h1_dualmoment.py
+├── 🔨 Created function submit_from_volume.
+└── 🔨 Created function build_and_prep.
+
+=== clone Kytos ===
++ rm -rf /root/kytos
++ git clone --depth 1 https://github.com/udirobert/kytos.git /root/kytos
+Cloning into '/root/kytos'...
+
+=== download controls ===
++ cd /root/kytos
++ vcc datasets download controls
+→ downloading vcc_2026_controls.zip (631.4 MiB) → /root/kytos/vcc_2026_controls.zip
+  [░░░░░░░░░░░░░░░░░░░░░░░░]   0%  0 B / 631.4 MiB  -- B/s  ETA --
+  [██░░░░░░░░░░░░░░░░░░░░░░]  10%  64.0 MiB / 631.4 MiB  63.5 MiB/s  ETA 8s
+  [████░░░░░░░░░░░░░░░░░░░░]  20%  127.0 MiB / 631.4 MiB  69.9 MiB/s  ETA 7s
+  [███████░░░░░░░░░░░░░░░░░]  30%  190.0 MiB / 631.4 MiB  70.1 MiB/s  ETA 6s
+  [█████████░░░░░░░░░░░░░░░]  40%  253.0 MiB / 631.4 MiB  73.3 MiB/s  ETA 5s
+  [████████████░░░░░░░░░░░░]  50%  316.0 MiB / 631.4 MiB  76.5 MiB/s  ETA 4s
+  [██████████████░░░░░░░░░░]  60%  379.0 MiB / 631.4 MiB  78.6 MiB/s  ETA 3s
+  [████████████████░░░░░░░░]  70%  443.0 MiB / 631.4 MiB  84.9 MiB/s  ETA 2s
+  [███████████████████░░░░░]  80%  506.0 MiB / 631.4 MiB  83.2 MiB/s  ETA 1s
+  [█████████████████████░░░]  90%  569.0 MiB / 631.4 MiB  86.4 MiB/s  ETA 0s
+  [████████████████████████] 100%  631.4 MiB / 631.4 MiB  87.6 MiB/s  ETA 0s
+  [████████████████████████] 100%  631.4 MiB / 631.4 MiB  87.6 MiB/s  ETA 0s
+  downloaded 631.4 MiB in 7s (avg 81.5 MiB/s)
+✓ downloaded vcc_2026_controls.zip → /root/kytos/vcc_2026_controls.zip
+  verified: crc32c checksum matches
++ mkdir -p data/raw/vcc2026
++ unzip -q vcc_2026_controls.zip -d data/raw/vcc2026
+
+=== stage inputs ===
++ mkdir -p /root/paired /root/h1train
++ cp /kytos-vol/paired-transfer/paired_transfer_train.npz /root/paired/
++ cp /kytos-vol/paired-transfer/delta_matrix_src.npz /root/paired/
++ cp /kytos-vol/h1-2025-train/h1_train_deltas.npz /root/h1train/
++ ls -lh /root/paired /root/h1train
+/root/h1train:
+total 9.3M
+-rw-r--r-- 1 root root 9.3M Sep 19 11:29 h1_train_deltas.npz
+
+/root/paired:
+total 704M
+-rw-r--r-- 1 root root 699M Sep 19 11:29 delta_matrix_src.npz
+-rw-r--r-- 1 root root 5.2M Sep 19 11:29 paired_transfer_train.npz
+
+=== build k018 prediction ===
++ cd /root/kytos
++ mkdir -p /root/kytos/experiments/k018-h1-dualmoment
++ python tools/run_k018_h1_dualmoment.py --raw-dir /root/kytos/data/raw/vcc2026 --src-matrix /root/paired/delta_matrix_src.npz --paired-npz /root/paired/paired_transfer_train.npz --h1-npz /root/h1train/h1_train_deltas.npz --out-dir /root/kytos/experiments/k018-h1-dualmoment --contexts A,B,C --h1-contexts C --cells-per-pert 400 --max-targets 0 --h1-delta-scale 2.0 --champion-delta-scale 1.7 --seed 0
+[source] 272/300 targets have source deltas
+[train] pairs=136 common_genes=18077 self_median=-1.599
+[direct] 17 panel targets have direct H1 deltas
+[ctx A] loading controls ...
+[A] loading context_A.h5ad ...
+  library_cap=median -> 20109
+  basal: 18400 cells, mean nnz/cell 5973.4
+  [A] 0/300 ABCD1
+  [A] 50/300 DVL3
+  [A] 100/300 MAN2A1
+  [A] 150/300 PKN3
+  [A] 200/300 SMYD2
+  [A] 250/300 USP28
+[ctx A] champion done ((120000, 18533), nnz 698.8M)
+[ctx B] loading controls ...
+[B] loading context_B.h5ad ...
+  library_cap=median -> 19946
+  basal: 18400 cells, mean nnz/cell 5518.8
+  [B] 0/300 ABCD1
+  [B] 50/300 DVL3
+  [B] 100/300 MAN2A1
+  [B] 150/300 PKN3
+  [B] 200/300 SMYD2
+  [B] 250/300 USP28
+[ctx B] champion done ((120000, 18533), nnz 651.1M)
+[ctx C] loading controls ...
+[ctx C] dual-moment done ((120000, 18533), nnz 828.2M)
+[write] /root/kytos/experiments/k018-h1-dualmoment/prediction.h5ad shape=(360000, 18533) nnz=2178.0M
+[done] 1198.3s
+
+=== vcc prep ===
++ cd /root/kytos
++ vcc prep -g /root/kytos/data/raw/vcc2026/gene_names.csv --perts /root/kytos/data/raw/vcc2026/pert_counts.csv -o /root/kytos/experiments/k018-h1-dualmoment/prediction.prep.vcc /root/kytos/experiments/k018-h1-dualmoment/prediction.h5ad
+vcc prep: Context A: perturbation labels do not match the official list.
+  1 expected perturbation(s) not predicted: C5orf22
+  1 unexpected perturbation(s) present: C5ORF22
+  Each context must predict exactly the perturbations listed for it.
+Traceback (most recent call last):
+  File "/pkg/modal/_runtime/container_io_manager.py", line 947, in handle_input_exception
+    yield
+  File "/pkg/modal/_container_entrypoint.py", line 172, in run_input_sync
+    values = io_context.call_function_sync()
+  File "/pkg/modal/_runtime/container_io_manager.py", line 225, in call_function_sync
+    expected_value_or_values = self.finalized_function.callable(*args, **kwargs)
+  File "/root/modal_k018_h1_dualmoment.py", line 103, in build_and_prep
+    run_step(
+    ~~~~~~~~^
+        "vcc prep",
+        ^^^^^^^^^^^
+    ...<5 lines>...
+        f" {OUT_DIR}/prediction.h5ad",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/modal_k018_h1_dualmoment.py", line 62, in run_step
+    raise RuntimeError(f"{name} failed with exit code {result.returncode}")
+RuntimeError: vcc prep failed with exit code 1
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ vcc prep failed with exit code 1                                             │
+╰──────────────────────────────────────────────────────────────────────────────╯

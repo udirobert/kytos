@@ -1,7 +1,7 @@
 # k002 Retro — what worked, what didn't, what changes for k003
 
-Status: **SHIPPED NOTES** · 2026-08-22 · Scope: the first real `cell-eval` run
-(VCC 2025 validation through the submission harness). Companion to
+Status: **SHIPPED NOTES** · 2026-08-22 · Scope: the first real legacy
+`cell-eval` run (VCC 2025 validation through the submission harness). Companion to
 [`run-protocol.md`](run-protocol.md) and the k002 entry in
 [`experiments/README.md`](../experiments/README.md).
 
@@ -65,9 +65,10 @@ which renders the same philosophy on the Trust panel.
    refuses to delete unless the on-disk file matches the recorded hash, and
    always hashes every output into `prep_manifest.json` first. Post-prep
    footprint: ~5.5GB instead of 12.9GB.
-2. **Decide depth before compute.** k003 is full-depth in the scoring matrix:
-   overnight, `nohup`-ed, launched only after confirming the disk budget
-   (~13GB peak during prep; 46Gi free at time of writing is fine).
+2. **Decide depth before compute.** The original k003 plan was full-depth in
+   the scoring matrix: overnight, `nohup`-ed, launched only after confirming
+   the disk budget (~13GB peak during prep; 46Gi free at time of writing is
+   fine). The actual `k003` submission later became a sparse pipeline test.
 3. **Offload intermediates as they exist**, not as a cleanup step — the HF
    bundle pattern is proven.
 4. **Benchmark the first 3 targets**, log the ETA into the pipeline log, walk
@@ -88,6 +89,6 @@ disk. This Mac has 8 GB, so:
 - The first 2026 submission, `k003-mean-shift-validation`, had to be a
   top-300-sparse baseline to fit. It scored the same as the random `vcc sample`
   floor (~-0.948) because it does not differentiate targets.
-- k003 proves the **external-first compute rule**: write the script locally,
+- k003 demonstrates the **external-first compute rule**: write the script locally,
   generate a submittable `.vcc` if it is small, but anything with real
   per-target/cell distribution must run on a 32 GB+ machine.

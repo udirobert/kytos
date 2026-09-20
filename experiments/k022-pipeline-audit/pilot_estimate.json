@@ -1,0 +1,51 @@
+{
+  "prepared_date": "2026-09-20",
+  "status": "awaiting_launch_approval",
+  "platform": "Modal Functions, standard pricing, no pinned region",
+  "pricing_source": "https://modal.com/pricing?calculator=",
+  "resource_documentation": "https://modal.com/docs/guide/resources.md",
+  "rates_usd_per_second": {
+    "physical_cpu_core": 0.0000131,
+    "memory_gib": 0.00000222
+  },
+  "resources": {
+    "cpu_request": 4,
+    "cpu_limit": 4,
+    "memory_request_gib": 32,
+    "memory_limit_gib": 32,
+    "gpu": null,
+    "max_containers": 1,
+    "function_timeout_seconds": 900,
+    "startup_timeout_seconds": 120,
+    "scaledown_window_seconds": 2,
+    "application_retries": 0
+  },
+  "scope": {
+    "preflight": "Read axes and counts from existing cached files; stop on invalid alignment or insufficient cells.",
+    "targets": "First three alphabetically shared targets, only if each has at least 800 cells.",
+    "fit_cells_per_target": 400,
+    "evaluation_cells_per_target": 400,
+    "fit_controls": 1600,
+    "evaluation_controls": 1600,
+    "pool_k": 4,
+    "seed": 0,
+    "official_score_computed": false,
+    "submissions": 0,
+    "training_jobs": 0
+  },
+  "compute_cost_calculation": {
+    "formula": "(4 * 0.0000131 + 32 * 0.00000222) * billed_seconds",
+    "usd_per_second": 0.00012344,
+    "usd_per_hour": 0.444384,
+    "usd_for_900_seconds_execution": 0.111096,
+    "usd_for_1022_seconds_with_startup_and_scaledown_allowance": 0.12615568
+  },
+  "caveats": [
+    "Resource-duration envelope per attempt, not a predicted completion time or a hard account-spend cap.",
+    "Image-building charges, platform-initiated retries, storage and taxes are not included.",
+    "No account credits or free allowances assumed.",
+    "Container dependency installation and Linux execution have not been run or verified.",
+    "Current cell-eval vcc profile is not the official six-metric 2026 scorer.",
+    "Full-panel evaluation and scorer integration require a later decision; no automatic escalation."
+  ]
+}

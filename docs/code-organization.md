@@ -51,7 +51,7 @@ kytos/
 │   ├── data/            # corpus loaders + the gene-space alignment layer
 │   ├── features/        # context conditioning (basal-derived features: mean, var, rank, sparsity)
 │   ├── models/          # Layer A (gene-level transfer) + Layer B (single-cell sampler)
-│   ├── eval/            # cell-eval wrappers, facts.json assembly, metrics
+│   ├── eval/            # scorer/eval wrappers, facts.json assembly, metrics
 │   ├── audit/           # biological sanity layer (deterministic rules)
 │   └── serve/           # (deferred) thin API — elcaro pattern, post-challenge
 │
@@ -83,7 +83,7 @@ kytos/
 │    local narration: Venice — see docs/venice-dev.md)
 │
 ├── submission/           # competition harness (the load-bearing contract)
-│   ├── script.py         # official inputs → cell-eval AnnData
+│   ├── script.py         # official inputs → scorer-compatible AnnData
 │   └── fixtures/         # smoke-test inputs + committed outputs
 │
 ├── experiments/          # run outputs — artifacts + meta.json per run
@@ -112,7 +112,7 @@ frozen submission model. **One language, one env manager, one test runner.**
 | Data & arrays | `numpy`, `scipy`, `pandas`, `polars`, `anndata`, `h5py/hdf5plugin` | now |
 | Single-cell | `scanpy`, `scvi-tools` | now |
 | Modeling | `torch` (Layer A + B) | now → Phase 2 |
-| Eval | `cell-eval`, `pdex` | now |
+| Eval | `cell-eval2`/`vcc2026` (pending integration); legacy `cell-eval`/`pdex` for historical checks | now |
 | Tests | `pytest` | now |
 | Lint/format/secrets | `ruff` + `tools/scan_secrets.py` via pre-commit | now |
 | **API serving** | **FastAPI + uvicorn + pydantic** | **deferred to post-challenge** |

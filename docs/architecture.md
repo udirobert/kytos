@@ -1,219 +1,233 @@
-# Kytos — Phase 0 Architecture & Decision Record
+# Kytos — architecture and decision record
 
-Status: **DRAFT** · Owner: udingethe · Started: **2026-08-22**
-Companion to `NOTES.md §3 Honest Positioning` and `§4 Learnings`. This is the
-decision record for the 2026 Virtual Cell Challenge stack. It is a *proposal*,
-not a contract — each numbered decision has a gate below it that must be
-re-checked before it is relied upon.
+Status: **ACTIVE** · Updated **2026-09-20** · Owner: udingethe
+
+This document separates the architecture that currently exists from research
+proposals. It should not be read as a claim that every model family discussed
+below has been implemented or cleanly evaluated.
+
+## 1. Current champion — k011 frozen control
+
+The best recorded submission is `kytos-k011-ds-x1p7`, produced by
+`tools/run_k011_delta_scale.py`:
+
+- overall score **+0.059575**, observed rank **486** at publication;
+- source priors: 2025 Atlas effects where available, Replogle K562 effects,
+  STRING-neighbor imputation, and the existing fallback chain;
+- dispatch recorded in the run metadata: **816 real**, **54 neighbor**, and
+  **30 fallback** target-context assignments;
+- fully assembled delta is scaled by `delta_scale=1.7`, including
+  self-knockdown, before transport;
+- sampler: `HeterogeneousTransportSampler` with
+  `eta = clip(N(1, kd_std=2.0), 0)`, `mean_correct=False`, and
+  `noise_scale=0.05`.
+
+k011 remains the frozen comparison control. Candidate changes should be
+evaluated as controlled modifications of this path, not as wholesale
+replacements by default.
+
+## 2. Implemented pipeline safeguards
+
+`tools/run_k014_trained_model.py` is the shared consumer for trained-effect
+artifacts. The current implementation is intentionally conservative:
+
+- strict artifact schema: scalar `schema_version=1`, scalar
+  `effect_space="additive_log1p"`, unique `gene_names`, explicit `contexts`,
+  explicit `vcc_targets`, finite `(C,T,G)` deltas, and a boolean `(C,T)`
+  coverage mask;
+- gene names may be reordered, but must exactly cover the consumer axis;
+- unknown contexts, unknown targets, malformed axes, and missing metadata
+  fail closed;
+- trained effects are overlaid on the combined baseline prior:
+  `real = {**combined_deltas, **overrides}`;
+- uncovered targets retain the baseline backfill chain: combined real prior,
+  neighbor prior, then fallback;
+- existing `prediction.h5ad` and `meta.json` cannot be overwritten;
+- metadata records dispatch by context, override counts, input hashes, code
+  hashes, effect space, and artifact schema.
+
+Verified on synthetic fixtures:
+
+- exact no-op parity with k011;
+- A-only trained overrides leave B/C unchanged;
+- malformed or legacy artifacts are rejected.
+
+Not yet verified: full-panel real-data parity or official-score equivalence.
+Legacy MLP/GNN `.npz` artifacts intentionally fail the new schema until an
+audited producer/conversion exists.
+
+## 3. Diagnostic infrastructure
+
+### k022 pipeline audit
+
+`tools/run_k022_pipeline_audit.py` is a diagnostics-only harness. It uses
+disjoint fit/evaluation cells, the champion transport path, direct cell and
+bulk moments, null arms, split manifests, and code/input hashes.
+
+It does **not** compute:
+
+- official 2026 scores;
+- Wilcoxon DE metrics;
+- a six-metric leaderboard surrogate;
+- a promotion gate.
+
+Synthetic smoke passed: `experiments/k022-pipeline-audit/smoke/summary.json`.
+
+The real Modal pilot `pilot-20260920-01` completed preflight and stopped
+safely on `source_gene_axis_incomplete`. Atlas was `98,927 × 18,080`; the
+source axis was `47 × 18,533`. Three Atlas labels were absent from source:
+
+- `HSPA14-1`
+- `TBCE-1`
+- `TMSB15B-1`
+
+No diagnostic subprocess ran, no predictions were generated, and no official
+score was computed. Do not strip suffixes or infer equivalence without
+feature-ID evidence. Receipts:
+`experiments/k022-pipeline-audit/pilot-20260920-01/preflight.json` and
+`execution.json`.
+
+### Official scorer contract
+
+The public `cell-eval2` implementation and `vcc2026` preset were identified at
+revision `5e64833518a6603a0301cbe28185d49c30f4a986` (package version `0.16.0`).
+The preset contains six metrics:
+
+- `pds_cosine`
+- `expr_mse_unbiased_capped_norm`
+- `de_wilcoxon_direction_fidelity_yield_raw`
+- `de_wilcoxon_direction_reach_raw`
+- `de_wilcoxon_sig_jaccard`
+- `de_wilcoxon_lfc_nmae`
+
+Contract notes are in
+`experiments/k022-pipeline-audit/scorer_contract.json`.
+
+Important: this scorer is **identified, not installed or integrated**. CPU DE
+backend behavior and reference-anchor compatibility remain unverified. The
+older local `cell-eval 0.8.2` `vcc` profile is a legacy three-metric suite and
+is not equivalent to the 2026 leaderboard scorer.
+
+## 4. Effect representations are not interchangeable
+
+Do not describe all response vectors as one generic “delta”. These are
+distinct quantities:
+
+| Representation | Meaning | Where it appears |
+|---|---|---|
+| raw-count log shift | log-scale change applied in count/transport code | k007/k011-style transport |
+| additive log1p effect | exported artifact contract for trained-effect overrides | k014 consumer |
+| mean single-cell log expression shift | `mean(log expression)` difference across cells | k021-style measured effect |
+| bulk-log expression effect | `log(mean expression)` difference | bulk/pseudobulk signatures |
+| per-cell probability moments | cell-level expression probability moments | dual-moment generator |
+| pooled/bulk probability moments | aggregated moments for a perturbation group | dual-moment generation/evaluation |
+
+`mean(log expression)` is not `log(mean expression)`. Supplying one
+representation where a generator expects another invalidates attribution of
+the remaining error.
+
+## 5. Implemented model components
+
+### Layer A — effect signatures
+
+`src/kytos/models/layer_a.py` currently implements:
+
+- `MeanShiftTransfer`
+- `ContextConditionedTransfer`
+
+The current API is `predict_delta(target_gene, context: BasalContext)`. The
+implemented model uses target basal rank and mean expression to determine
+direct knockdown and secondary effects. It is not the full learned
+context-transfer model proposed in older design documents.
+
+The deployed champion primarily uses data-derived source signatures plus
+neighbor/fallback dispatch, not a trained neural Layer A replacement.
+
+### Layer B — count generation
+
+Implemented components include:
+
+- `AdditiveTransportSampler`
+- `HeterogeneousTransportSampler`
+- `src/kytos/models/dual_moment.py`
+
+The champion uses `HeterogeneousTransportSampler`. k021 used the dual-moment
+generator, so its results are not a controlled diagnosis of the champion's
+generator.
+
+## 6. Proposed research, gated
+
+These are hypotheses, not current architecture:
+
+1. **Partial common-response adjustment** — estimate and partially correct
+   response components shared across source perturbations while protecting
+   target-specific signal.
+2. **Uncertainty-aware shrinkage** — attenuate unreliable gene effects where
+   replicate or guide-level support exists.
+3. **Small residual corrections** — learn strongly regularized corrections
+   that shrink toward the baseline under weak support.
+4. **Complementary data audit** — assess panel coverage, assay, effect space,
+   replicate quality, access, and eligibility rather than assuming coverage
+   is exhausted.
+5. **Future transfer/generative models** — only revisit after Gate A–C
+   evidence identifies a concrete limitation that the model can address.
+
+Flow-matching/diffusion, GEARS-style GNNs, and foundation-model fine-tunes are
+historical proposals. They are not the active architecture and remain paused
+for spending purposes.
+
+## 7. Compute boundary
+
+The 8 GB arm64 Mac is for code, docs, small fixtures, and the Observatory
+build. Full panels, Atlas-scale data, official scorer validation, and any
+training require external compute and explicit approval.
+
+## 8. Observatory
+
+The Observatory remains the public accountability layer: run IDs, immutable
+artifacts, metrics, audit flags, provenance, and generated narration. It is
+separate from the inference path and can proceed independently of the
+validation bottleneck.
 
 ---
 
-## 0. The input/output contract (from cell-eval)
+## Historical Phase-0 proposal
+
+The text below preserves the original architecture proposal that informed the
+first implementation. It is not the current experiment sequence.
+
+### Original input/output contract
 
 Cell-eval compares **two cell × gene AnnData matrices** (`adata_pred` vs
-`adata_real`), runs differential expression (pdex) on each independently, and
-scores a panel of metrics. The perturbation identity lives in an **obs column**
-(**`target_gene`** by default), and a **`non-targeting`** label denotes
-non-targeting / basal cells — **verified against cell-eval 0.8.2 source**
-(`cell_eval/_cli/_const.py`: `DEFAULT_PERT_COL="target_gene"`,
-`DEFAULT_CTRL="non-targeting"`). Gene identity is the **var axis**
-(`-g <expected_genelist>` in `cell-eval prep`). The submission harness
-(`submission/script.py`) writes these exact names so a zero-flag
-`cell-eval run -ap pred.h5ad -ar real.h5ad` just works.
+`adata_real`), runs differential expression on each independently, and scores
+a panel of metrics. The perturbation identity lives in an **obs column**
+(`target_gene` by default), and a `non-targeting` label denotes basal cells.
+Gene identity is the **var axis**.
 
-**Consequence**: the prediction is a **generated single-cell distribution per
-knocked gene, plus a control group** — not a gene-level delta vector. A
-point-estimate delta model can rank genes but cannot satisfy the
-single-cell + DE-gated metrics. This is the load-bearing constraint on the
-whole stack.
+The consequence remains true: the prediction is a generated single-cell
+distribution per perturbation plus controls, not just a gene-level delta
+vector.
 
----
+### Original two-layer frame
 
-## 1. The metric panel (what we must move)
+- **Layer A:** map knocked gene → gene-wise response field, conditioned on
+  basal context.
+- **Layer B:** draw synthetic post-perturbation cells from target basal cells
+  and the response field.
+- Ensemble at evaluation, not per-metric.
 
-From `cell_eval.metrics` (registry current as of 2026-08-21). The 2026
-challenge uses an aggregate of six; the registry is broader. All six of the
-final panel share a core — *recover the genes that actually change, in the
-right direction, in the right order, in a believable cell distribution* — so
-the strategy below optimizes the shared core, not any single metric.
+The original proposal favored a gene-projection/ICL-style Layer A and a
+flow-matching Layer B. Those choices were never established as the deployed
+architecture.
 
-| Family | Metrics | What they reward |
-|---|---|---|
-| Array / error | `mse`, `mae`, `mse_delta`, `mae_delta`, `pearson_delta` | per-cell & per-gene closeness to real perturbed cells |
-| Array / structure | `clustering_agreement`, `discrimination_score` | does prediction discriminate control vs perturbed like reality |
-| DE-gated | `DESigGenesRecall`, `compute_pr_auc`, `compute_roc_auc`, `de_overlap_metric` | recovering the *set* of genes that change |
-| DE / direction | `DEDirectionMatch`, `DESpearmanSignificant`, `DESpearmanLFC`, `DENsigCounts` | correct direction + monotone ordering of effects |
+### Original sequencing
 
-**Ceiling**: `cell-eval run --ceiling` computes per-metric upper bounds
-(disjoint half-split + Spearman-Brown correction). Run this on the first
-baseline — it tells us the noise-adjusted headroom *per metric* and prevents
-chasing unreachable gains.
+- Observatory Milestone 0;
+- install the legacy cell-eval harness;
+- run baseline and ceiling checks;
+- build sparse then real-resampling baselines;
+- add Atlas/Replogle priors;
+- explore learned transfer and generative Layer B.
 
-**Gate 1 (before modeling):** pin the final single six-metric aggregation. Not
-needed to start; needed before tuning a submission. Acting early is low-risk
-because all six share the core above.
-
----
-
-## 2. The two-layer modeling frame
-
-### Layer A — gene-level transfer (the science)
-Map knocked gene *k* → gene-wise response field, in a **learned gene-embedding
-space**, conditioned on a **context encoding derived only from the target
-basal cells**. Context features (cheap, high signal at first):
-- per-gene mean / quantile expression and rank in the target (`src/kytos/features/basal.py`),
-- gene–gene **co-expression / covariation structure of the target baseline**
-  (a strong prior for how a knockdown propagates across genes in that context).
-
-**Implemented in `src/kytos/models/layer_a.py`:**
-- `BaseLayerA`: Abstract interface `predict_gene_deltas(basal_context, target_genes)`.
-- `MeanShiftTransfer`: Unconditioned empirical cross-cell-type transfer baseline.
-- `ContextConditionedTransfer`: Basal mean/variance/rank conditioned transfer with damping.
-
-### Layer B — conditional cell sample generator
-Given target basal cells and Layer A's gene-delta field, **draw synthetic
-post-perturbation cells** per gene and for the control. This is the
-flow-matching / diffusion piece; it satisfies the single-cell and DE-gated
-metrics rather than a point estimate.
-
-**Implemented in `src/kytos/models/layer_b.py`:**
-- `BaseLayerB`: Abstract interface `sample_cells(X_basal, delta, n_samples)`.
-- `AdditiveTransportSampler`: Vectorized non-negative transport sampler with biological dispersion preservation.
-
-**Two formulations, one decision**
-- **Layer A:** favor an in-context-learning / gene-projection style regression
-  (Stack-like) — best for *gene* coverage; the challenge's difficulty is
-  *context* transfer, which the basal conditioning handles.
-- **Layer B:** flow-matching (Altos' 2025 winning approach fits) — natural fit
-  for generating the cell distribution cell-eval rewards.
-- Ensemble at *eval*, not per-metric (NOTES: resist per-cell-line hand-tuning).
-
-**Gate 2 (Phase 1/2):** choose the Layer A formulation (ICL regression vs a
-transfer field learned via the flow model). Evidence = how much Layer A alone
-improves over the mean-shift baseline on held-out simulated zero-shot (train on
-Replogle multi-line; validate on an all-split-out cell type).
-
----
-
-## 3. Data stack
-
-| Priority | Corpus | Role |
-|---|---|---|
-| 1 | **Arc Atlas 2025** | in-distribution assay prior; fast baseline validation; intra-context covariance |
-| 2 | **Replogle / Nadig genome-wide CRISPRi screens** | the **cross-context supervision**: CRISPRi knockdowns across multiple cell lines — trains the transfer itself |
-| 3 | Basal-only cell-expression reference (Gene Atlas, etc.) | target-context conditioning; detect overlap between challenge lines & publicly perturbed data (legit edge if so) |
-
-**Gene-space alignment**: an early, deterministic layer maps every corpus to one
-gene namespace under the `expected_genelist`. Wraps in a reproducible artifact
-(`meta.json` + seed + code hash) per the lemma/orbura habit.
-
----
-
-## 4. Compute ladder (do not design around Brev)
-
-**Updated 2026-09-10:** the primary dev machine has only **8 GB RAM** (arm64
-Mac). That is enough for dry-runs, sparse baseline `.vcc` generation, and code
-docs, but it is *not* enough for a full 2026 `vcc prep` (peak ~28 GB), a full
-2025 Atlas prep (peak ~13 GB), or any real cell-distribution sampler. Treat the
-Mac as the orchestration + small-dry-run node; the heavy work lives elsewhere.
-
-| Window | Envelope | Use |
-|---|---|---|
-| Local (8 GB arm64 Mac) | 6–8 GB free | dry-runs; docs; sparse 300-gene baselines; `vcc prep --dry-run` on small subsets |
-| Phase 0–1 smoke tests | Kaggle free CPU/GPU / 13–16 GB | small `cell-eval` and model smoke tests; validate shapes — **live:** `udingethe/vcc2026-controls` (632 MB) + notebook `udingethe/kytos-k004-kaggle-smoke` v2 (10–20 targets × 3 contexts, real resampling vs ContextConditioned Layer A/B) |
-| Phase 0–1 real runs | 32 GB+ VPS / Vast / RunPod | full `vcc prep`; Atlas 2025 prep; `cell-eval run --ceiling`; full 300-target k004 (360k cells) |
-| Phase 2+ | cloud / Brev (post-prize) | Layer B cell sampling at scale |
-
-`ratiocine` lesson: know the envelope early; a prize-time credit is too late to
-design around.
-
----
-
-## 5. Engineering & hygiene (from the catalog)
-
-- **Submission harness first** (`ratiocine`): `submission/script.py` reads
-  official inputs (basal AnnData + gene list + expected_genelist), returns a
-  cell-eval-ready prediction AnnData. Tested locally against a **frozen**
-  `cell-eval run -ap … -ar …` before ever touching the live leaderboard.
-- **No LLM in the inference path** (`weft`); LLM narration only for audit /
-  leaderboard prose, rendered from facts JSON (`matcha-hack`).
-- **Biological audit layer** (`lemma`-derived): housekeeping for gene-cat
-  stability, control-group sanity, gene-group coherence, known dose/direction. **Sidecar**:
-  it blocks impossible-in-vivo genes; it never fits one biomarker to climb a metric.
-- **Shadow-review linking** (`poker`): run-ID-linked logs, monitored deps, spend
-  caps + manual overrides.
-- **Pre-registration** (`lenitnes`): lock expected effect directions before
-  reading leaderboard feedback.
-
----
-
-## 5b. Kytos Observatory (build-in-public)
-
-Parallel to the prediction stack, the **Observatory** (`docs/observatory.md`) is
-the **public accountability layer** for VCC experiments: metrics, biological
-audit flags, literature, provenance, and video briefings. It does not sit on
-the inference path. Problem, evidence, and wedge:
-[`docs/competitive-landscape.md`](competitive-landscape.md).
-
-| Layer | Role | Partner / stack |
-|---|---|---|
-| Render contract | `facts.json` per run — metrics, flags, provenance, visual paths | deterministic (`src/kytos/eval/`) |
-| Narration | Run digest, briefing script — **from facts only** | OpenAI (weft / matcha) |
-| Literature | Evidence sidebar for audit-flagged genes | Tavily (famile; degrade empty) |
-| Stills | Hero imagery, share cards | **fal** (image gen) |
-| Video briefings | Run explainers from committed artifacts | **fal** [`veed/fabric-1.0`](https://fal.ai/models/veed/fabric-1.0) (VEED Fabric) |
-
-**Milestone 0 (2026-08-22):** ship static Observatory + k001 run page as the
-{Tech: Europe} × VEED Hackathon entry — initial milestone toward Nov 5, not a
-detour from the science track.
-
-**Frontend status (post-hackathon, 2026-08-22):** the Observatory is now a
-full-bleed immersive experience — real-time Three.js 3D κύτος vessel (glass
-with transmission/refraction, animated liquid fill, rising bubbles, emissive
-crack halos, floor reflection, UnrealBloomPass) on both home and run detail
-pages, with glassmorphism evidence cards and scroll-reveal. SVG fallback if
-WebGL is unavailable. 89 tests green, ruff clean, Netlify auto-deploys on push.
-Home hero uses a 3-phase guided flow (claim → argument → evidence) — each
-phase shows 3 things at a time; selecting one closes the previous.
-
----
-
-## 6. Phase-0 sequencing to deadline (Nov 5, 2026)
-
-| Window | Milestone |
-|---|---|
-| **2026-08-22** | Observatory Milestone 0: `frontend/`, `facts.json`, enrichment tools, k001 page; hackathon submit ✓ |
-| **Late Aug** | install `cell-eval`; baseline through harness → `cell-eval run --ceiling` ✓ (`cell-eval` 0.8.2 in `.venv-science`) |
-| **Early Sep** | inspect validation basal: gene-set overlap; k003 VCC 2026 sparse baseline (300 targets, `vcc` 0.2.0, score -0.948) ✓ |
-| **2026-09-10** | **k004 Kaggle smoke:** `vcc2026-controls` dataset + real resampling vs ContextConditioned Layer A/B (10–20 targets × 3 contexts) — free tier ✓ |
-| **Mid Sep** | promote k004 to 300-target on 32 GB Vast/RunPod; `vcc prep --dry-run` → `vcc submit`; lock normalization (counts vs log1p Gate 3) |
-| **Late Sep–Oct** | gene-level transfer head; train on Replogle multi-line; decide Layer A/B split; freeze AnnData gating |
-| **Late Oct → Nov 5** | test set (Oct 22); audit → ensembled final → capped submissions |
-
-**Status (2026-09-10):** k001–k003 baselines committed; **k004 Kaggle smoke live:**
-`udingethe/vcc2026-controls` (632 MB, private) + notebook `udingethe/kytos-k004-kaggle-smoke` v2
-validate real control-cell resampling vs `ContextConditionedTransfer`+
-`AdditiveTransportSampler` on 10–20 targets × 3 contexts (free tier); 300-target
-full (360k cells) gated on 32 GB Vast/RunPod.
-
-**Science-track status (2026-09-10):** `cell-eval 0.8.2` + `anndata` in
-`.venv-science` (arm64 3.12.8) with harness verified (`target_gene` /
-`non-targeting`). k003 (`vcc` 0.2.0) scored -0.948 (random floor). k004
-local dry-runs: 5 targets × 1 context — resample 11.9M nnz vs layer 22.9M nnz,
-knockdown e.g. ACLY 4.83→2.80 Δ-2.03 ✓; 10×3 contexts 69.6M vs 136.7M nnz.
-
----
-
-## 7. Open decisions pending gates
-
-1. (Gate 1) the final **six-metric aggregate**; assume the shared core until then.
-2. (Gate 2) **Layer A internal resolution**: ICL vs flow transfer field,
-   steered by the cheap basal-conditioning experiment.
-3. (Hygiene) **counts vs log-normalized** submission encoding — must match what
-   `cell-eval prep` expects (check `tutorials/vcc` + `-g` handling early).
-4. (Data) whether any of the six unseen lines are already perturbed in a public
-   corpus — check on validation release; legitimate if so.
-
-*Next: Observatory Milestone 0 (today) — see `docs/observatory.md`. Then install
-cell-eval (uv), stand up the harness, run the mean-shift baseline + `--ceiling`.
-See `submission/README.md` and `experiments/README.md`.*
+That sequence produced the current historical run set, but the active plan is
+now `docs/vcc-two-track-strategy.md` (“VCC strategy — validation first”).

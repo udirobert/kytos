@@ -1,0 +1,107 @@
+✓ Initialized. View run at 
+https://modal.com/apps/thepapajams/main/ap-Q4y1Xhl2ggimv0CL2iW3Sj
+✓ Created objects.
+├── 🔨 Created mount 
+│   /Users/udingethe/Dev/kytos/tools/modal_k018_h1_dualmoment.py
+├── 🔨 Created function build_and_prep.
+└── 🔨 Created function submit_from_volume.
+
+=== clone Kytos ===
++ rm -rf /root/kytos
++ git clone --depth 1 https://github.com/udirobert/kytos.git /root/kytos
+Cloning into '/root/kytos'...
+
+=== download controls ===
++ cd /root/kytos
++ vcc datasets download controls
+→ downloading vcc_2026_controls.zip (631.4 MiB) → /root/kytos/vcc_2026_controls.zip
+  [░░░░░░░░░░░░░░░░░░░░░░░░]   0%  0 B / 631.4 MiB  -- B/s  ETA --
+  [██░░░░░░░░░░░░░░░░░░░░░░]  10%  64.0 MiB / 631.4 MiB  30.9 MiB/s  ETA 18s
+  [████░░░░░░░░░░░░░░░░░░░░]  20%  127.0 MiB / 631.4 MiB  37.5 MiB/s  ETA 13s
+  [███████░░░░░░░░░░░░░░░░░]  30%  190.0 MiB / 631.4 MiB  40.4 MiB/s  ETA 10s
+  [█████████░░░░░░░░░░░░░░░]  40%  253.0 MiB / 631.4 MiB  47.5 MiB/s  ETA 7s
+  [████████████░░░░░░░░░░░░]  50%  316.0 MiB / 631.4 MiB  45.6 MiB/s  ETA 6s
+  [██████████████░░░░░░░░░░]  60%  379.0 MiB / 631.4 MiB  45.7 MiB/s  ETA 5s
+  [████████████████░░░░░░░░]  70%  443.0 MiB / 631.4 MiB  45.5 MiB/s  ETA 4s
+  [███████████████████░░░░░]  80%  506.0 MiB / 631.4 MiB  46.6 MiB/s  ETA 2s
+  [█████████████████████░░░]  90%  569.0 MiB / 631.4 MiB  47.0 MiB/s  ETA 1s
+  [████████████████████████] 100%  631.4 MiB / 631.4 MiB  46.8 MiB/s  ETA 0s
+  [████████████████████████] 100%  631.4 MiB / 631.4 MiB  46.8 MiB/s  ETA 0s
+  downloaded 631.4 MiB in 14s (avg 44.3 MiB/s)
+✓ downloaded vcc_2026_controls.zip → /root/kytos/vcc_2026_controls.zip
+  verified: crc32c checksum matches
++ mkdir -p data/raw/vcc2026
++ unzip -q vcc_2026_controls.zip -d data/raw/vcc2026
+
+=== stage inputs ===
++ mkdir -p /root/paired /root/h1train
++ cp /kytos-vol/paired-transfer/paired_transfer_train.npz /root/paired/
++ cp /kytos-vol/paired-transfer/delta_matrix_src.npz /root/paired/
++ cp /kytos-vol/h1-2025-train/h1_train_deltas.npz /root/h1train/
++ ls -lh /root/paired /root/h1train
+/root/h1train:
+total 9.3M
+-rw-r--r-- 1 root root 9.3M Sep 19 13:20 h1_train_deltas.npz
+
+/root/paired:
+total 704M
+-rw-r--r-- 1 root root 699M Sep 19 13:20 delta_matrix_src.npz
+-rw-r--r-- 1 root root 5.2M Sep 19 13:20 paired_transfer_train.npz
+
+=== build k018 prediction ===
++ cd /root/kytos
++ mkdir -p /root/kytos/experiments/k018-h1-dualmoment
++ python tools/run_k018_h1_dualmoment.py --raw-dir /root/kytos/data/raw/vcc2026 --src-matrix /root/paired/delta_matrix_src.npz --paired-npz /root/paired/paired_transfer_train.npz --h1-npz /root/h1train/h1_train_deltas.npz --out-dir /root/kytos/experiments/k018-h1-dualmoment --contexts A,B,C --h1-contexts C --cells-per-pert 400 --max-targets 0 --h1-delta-scale 2.0 --champion-delta-scale 1.7 --seed 0
+[source] 272/300 targets have source deltas
+[train] pairs=136 common_genes=18077 self_median=-1.599
+[direct] 17 panel targets have direct H1 deltas
+[ctx A] loading controls ...
+[A] loading context_A.h5ad ...
+  library_cap=median -> 20109
+  basal: 18400 cells, mean nnz/cell 5973.4
+  [A] 0/300 ABCD1
+  [A] 50/300 DVL3
+  [A] 100/300 MAN2A1
+  [A] 150/300 PKN3
+  [A] 200/300 SMYD2
+  [A] 250/300 USP28
+[ctx A] champion done ((120000, 18533), nnz 698.8M)
+[ctx B] loading controls ...
+[B] loading context_B.h5ad ...
+  library_cap=median -> 19946
+  basal: 18400 cells, mean nnz/cell 5518.8
+  [B] 0/300 ABCD1
+  [B] 50/300 DVL3
+  [B] 100/300 MAN2A1
+  [B] 150/300 PKN3
+  [B] 200/300 SMYD2
+  [B] 250/300 USP28
+[ctx B] champion done ((120000, 18533), nnz 651.1M)
+[ctx C] loading controls ...
+[ctx C] dual-moment done ((120000, 18533), nnz 828.2M)
+[write] /root/kytos/experiments/k018-h1-dualmoment/prediction.h5ad shape=(360000, 18533) nnz=2178.0M
+[done] 1200.6s
+
+=== vcc prep ===
++ cd /root/kytos
++ vcc prep -g /root/kytos/data/raw/vcc2026/gene_names.csv --perts /root/kytos/data/raw/vcc2026/pert_counts.csv -o /root/kytos/experiments/k018-h1-dualmoment/prediction.prep.vcc /root/kytos/experiments/k018-h1-dualmoment/prediction.h5ad
+✓ prep complete
+  input:         /root/kytos/experiments/k018-h1-dualmoment/prediction.h5ad
+  output:        /root/kytos/experiments/k018-h1-dualmoment/prediction.prep.vcc
+  cells:         360000
+  genes:         18533  (encoding: float32)
+  perturbations: column 'target_gene' → 'target_gene'
+  contexts:      column 'context' → A=120000, B=120000, C=120000
+  targets:       verified against the official list
+  normalization: counts-preserved
+
+=== persist to volume ===
++ mkdir -p /kytos-vol/k018-h1-dualmoment
++ cp /root/kytos/experiments/k018-h1-dualmoment/prediction.prep.vcc /kytos-vol/k018-h1-dualmoment/prediction.prep.vcc
++ cp /root/kytos/experiments/k018-h1-dualmoment/meta.json /kytos-vol/k018-h1-dualmoment/meta.json
++ ls -lh /kytos-vol/k018-h1-dualmoment
+total 3.5G
+-rw-r--r-- 1 root root  687 Sep 19 13:51 meta.json
+-rw-r--r-- 1 root root 3.5G Sep 19 13:51 prediction.prep.vcc
+✓ App completed. View run at 
+https://modal.com/apps/thepapajams/main/ap-Q4y1Xhl2ggimv0CL2iW3Sj

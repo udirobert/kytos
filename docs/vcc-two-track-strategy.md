@@ -1,46 +1,143 @@
-# VCC two-track strategy — top 200 on Modal, top 100 on rented GPU
+# VCC strategy — validation first
 
-> **STATUS 2026-09-20: SUPERSEDED — read this banner before acting on
-> anything below.** This was the plan as of 2026-09-17. Track 2 (rented-GPU
-> trained model) and the essential-screen transfer have since been run to
-> **decisive negative results**, and a ceiling analysis reframed where the
-> remaining score lives. Canonical per-run record: `AGENTS.md` §4. What
-> actually happened:
->
-> - **Track 2 / Nebius GNN is CLOSED.** The GEARS-style cross-lineage GNN
->   (k020, raw) scored **−0.114** and the norm-matched re-run (k020b) **−0.098**
->   — both big regressions vs the k011 champion (+0.0596). Critically,
->   `pds_cosine` never improved (0.528→0.521), so the GNN's per-gene
->   *direction* on the real panel is no better than the borrowed K562 prior.
->   **Nebius is fully deleted** (no residual spend); the provisioning
->   commands in §9 below are dead references. Cross-lineage essential-set
->   transfer is a dead scoring avenue.
-> - **k015 low-rank essential transfer was also negative** (−0.028): OOD for
->   the non-essential panel.
-> - **The kaipengm2 "highest-EV replicate" note (§10) is moot** — we already
->   ship its dual-moment generator (`src/kytos/models/dual_moment.py`); its
->   0.1546 came from a 4-source lineage-matched ensemble (K562/HCT116/
->   HEK293T/H1) + CD4 + promoter prior we cannot assemble from corpora that
->   cover the panel in a matched lineage.
-> - **k021 ceiling analysis (`experiments/k021-ceiling/summary.json`) is the
->   current decision tool.** It shows the gap splits by metric family:
->   *direction* metrics (discrimination, pearson_delta) are **signature-bound**
->   — a perfect per-target delta nearly hits the ceiling, so `pds` is capped by
->   our inability to *recover* the true delta (public corpora exhausted);
->   *DE-count* metrics (overlap_at_N, precision_at_N) stay **modeling-bound
->   even with a perfect delta** because the generator over-calls DE genes
->   ~1.6–2× (5462 pred vs 3436 real). **That over-calling is the one large
->   lever that needs no GPU and no new corpus — calibrate generator dispersion
->   so predicted DE-count ≈ real, gated offline on the k021 harness first.**
->
-> Champion remains `kytos-k011-ds-x1p7` (+0.0596, rank ~486). Everything under
-> "Track 2", §9, and the §10 "Revised priorities" is historical — kept for the
-> record, not as a plan.
+Status: **ACTIVE** · Updated **2026-09-20** · Owner: udingethe
 
-Status: ~~**active plan**~~ (agreed 2026-09-17 after k011 x1.3/x1.7 set new
-best scores of +0.0559 / +0.0596, rank ~486) — **see SUPERSEDED banner above.**
+This file is the single active research strategy. Historical scores and run
+notes stay in `experiments/README.md`; older strategy/runbook documents are
+appendices only and must not be used to select the next experiment without
+checking their validity caveats.
 
-## Scoreboard reality (live leaderboard, 984+ entries)
+## Current state
+
+- **Best recorded submission:** `kytos-k011-ds-x1p7`, overall
+  **+0.059575**, observed rank **486** at publication (entry
+  `dZk0Sca5UtJluzzfUdMf`). Treat all ranks and thresholds as dated snapshots;
+  refresh them before using them for planning.
+- **Objective:** make comparisons trustworthy before choosing the next model
+  change. We are not assuming that more architecture complexity is the missing
+  ingredient.
+- **Implementation progress:** strict prediction-artifact metadata, baseline
+  backfill for uncovered targets/contexts, no-op parity and A-only context
+  isolation are verified on synthetic fixtures. Full-panel parity is not yet
+  verified.
+- **Current blocker:** k022 stopped at preflight because the source axis lacks
+  three Atlas labels: `HSPA14-1`, `TBCE-1`, and `TMSB15B-1`. No prediction and
+  no model-performance result was produced.
+- **Scorer:** the public `cell-eval2` implementation and `vcc2026` preset were
+  identified, including the six scored metrics and CPU execution path. It is
+  **identified, not integrated or proven equivalent to the live scorer**.
+  Contract notes: `experiments/k022-pipeline-audit/scorer_contract.json`.
+- **Next action:** resolve the three features using stable identifiers, then
+  obtain approval for the next bounded run. No automatic second launch.
+
+## What the history establishes—and does not
+
+| Earlier interpretation | Updated reading |
+|---|---|
+| Cross-lineage transfer is dead | The tested implementations regressed, but consumer, graph, and axis confounds prevent a clean model-class conclusion. Spending stays paused. |
+| k020 failed because cosine loss left magnitude unconstrained | Norm matching reduced magnitude damage, but other unresolved implementation differences remain; direction transfer is still unproven. |
+| k021 proves the remaining gap splits cleanly into signature vs count modeling | It is exploratory evidence only: it used a different generator and an effect representation mismatched to that generator. |
+| `fid` indicates missing covariance | The leaderboard `fid` is DE direction fidelity, not a distribution distance. It does not diagnose covariance by itself. |
+| Public corpora are exhausted | Audited sources have real coverage limits, but a targeted complementary-source audit has not been completed. |
+| k022 was a negative experiment | Preflight blocked on gene alignment. It was not a model result. |
+
+## Decision sequence
+
+### Gate A — data and pipeline integrity
+
+Resolve the k022 source-axis mismatch using feature metadata and stable gene
+IDs. Do not strip suffixes or infer equivalence from spelling. Record the gene
+universe and every dropped or remapped feature.
+
+Also establish real-input parity:
+
+- an unchanged artifact must reproduce the intended baseline;
+- an A-only intervention must leave B/C unchanged;
+- missing targets, genes, contexts, and ambiguous units must fail closed;
+- artifact hashes and cell splits must be preserved.
+
+**Pass criterion:** the experiment changes only what it claims to change.
+
+### Gate B — official scoring contract
+
+Integrate a pinned `cell-eval2` environment using the `vcc2026` preset, not
+legacy `vcc` or `minimal`. Explicitly pin and record the DE backend, target
+column, control handling, normalization, target-gene exclusions, panel, and
+reference-anchor version. Validate backend differences rather than assuming
+CPU/GPU numerical equivalence.
+
+Important implication: `pds_cosine` excludes all panel target genes. Direct
+self-knockdown is not PDS signal, and PDS rank values are panel-dependent.
+
+**Pass criterion:** we can state precisely what an offline score measures and
+what production differences remain.
+
+### Gate C — controlled baseline diagnosis
+
+After alignment and scorer setup, compare borrowed and measured effects using
+disjoint fit/evaluation cells and generator-appropriate representations.
+Measure achieved effects after count generation, not only requested vectors.
+Report cell-fit statistics, variance, zeros, depth, and target-level
+uncertainty alongside any official metrics.
+
+Do not construct a new “overall” score from unrelated diagnostics.
+
+**Pass criterion:** the result identifies a specific error mechanism, not
+merely another aggregate that looks better.
+
+### Gate D — conservative signature correction
+
+Only then test bounded corrections to the champion:
+
+- partial common-response adjustment, with target-specific signal protected;
+- uncertainty-aware shrinkage using replicate/guide evidence where available;
+- a small, regularized residual correction that degrades to the baseline under
+  weak support;
+- complementary data where it answers a specific coverage or uncertainty gap.
+
+**Pass criterion:** improvement survives count generation, target-grouped or
+context-held-out validation, and does not depend on a few targets.
+
+### Gate E — submission
+
+A submission needs a frozen artifact, the recorded k011 comparison, declared
+expected component changes, and explicit approval. A favorable proxy cosine,
+three-target result, or unverified scorer output is not sufficient.
+
+## Paused work
+
+- GPU training and new architectures remain paused pending Gates A–C.
+- The archived MLP/GNN artifacts intentionally fail the strict consumer schema;
+  reuse requires an audited conversion and code-revision provenance.
+- Do not relabel old runs or change their saved scores. Add dated corrections
+  beside their interpretation.
+- Observatory work may continue independently because it does not depend on
+  this validation bottleneck.
+
+## If a gate fails
+
+- **Gene axis unresolved:** inspect source and Atlas feature metadata; do not
+  normalize labels silently.
+- **Scorer not production-equivalent:** use only raw diagnostic comparisons and
+  record the limitation; do not spend a submission slot.
+- **Measured-effect diagnostics disagree with transport assumptions:** fix
+  representation or generation before choosing a signature model.
+- **A candidate correction wins on one proxy but damages production-equivalent
+  metrics:** reject it rather than averaging conflicting evidence.
+
+Top 100 remains the objective. The current plan is validation-first because a
+larger model cannot compensate for an experiment whose axes, units, scorer, or
+unchanged controls are wrong.
+
+---
+
+## Historical two-track plan (appendix only)
+
+The sections below preserve the plan that led to the rented-GPU Track 2
+experiment. Its scores remain observations; its causal conclusions and action
+items are superseded by this file, `AGENTS.md`, and `experiments/README.md`.
+
+## Historical scoreboard snapshot (984+ entries, dated)
 
 | | us (best) | top 200 | top 100 | #1 |
 |---|---:|---:|---:|---:|
@@ -49,11 +146,12 @@ best scores of +0.0559 / +0.0596, rank ~486) — **see SUPERSEDED banner above.*
 | nmae | -0.076 | ~+0.13 | +0.145 | +0.220 |
 | fid | -0.006 | ~-0.003 | -0.019 | +0.085 |
 
-`pds` (perturbation discrimination) and `nmae` (DE log-FC accuracy) are the
-gating metrics for both tiers. `fid` is effectively solved on our current
-config. The remaining gap is **signature quality**, not sampling shape.
+`pds` (perturbation discrimination) and `nmae` (DE log-FC accuracy) were the
+gating metrics in this historical plan. The statement that `fid` was solved
+and that the remaining gap was cleanly signature-bound is superseded; `fid`
+is DE direction fidelity, not a covariance diagnostic.
 
-## Track 1 — top 200 on Modal (current infra)
+## Historical Track 1 — top-200 Modal plan
 
 Goal: ~+0.13 overall. Stays on the existing Modal pipeline (64 GiB CPU
 Functions, `kytos-vcc` Volume, `submit_from_volume` flow). Ordered by
@@ -62,8 +160,9 @@ expected value per engineering hour:
 1. ~~Bracket delta_scale~~ — **done 2026-09-18**: x1.3 +0.0559 →
    x1.7 **+0.0596** (champion) → x2.0 +0.0566. Optimum ~1.7; `pds`/`fid`
    keep improving with scale but `nmae` cost now dominates
-   (+0.004 → -0.023 → -0.076 → -0.125). The scalar magnitude axis is
-   exhausted — remaining levers are signature content, not amplitude.
+   (+0.004 → -0.023 → -0.076 → -0.125). The then-current reading was that
+   the scalar magnitude axis was exhausted — remaining levers appeared to be
+   signature content, not amplitude.
 2. ~~Learned Layer A — paired-signature transfer~~ — **LOO done
    2026-09-17** (`experiments/k012-transfer-loo/`): raw K562→hESC
    transfer cosine ~0.13; no transfer class cleared the +0.05 acceptance
@@ -89,11 +188,12 @@ matrix problem; corpus swaps reuse the existing builder). Estimated
 ceiling for this track: plausibly +0.10–0.14 — i.e., top 200 is
 reachable, top 100 probably is not.
 
-## Track 2 — top 100 on rented GPU (parallel) — **CLOSED 2026-09-20: negative**
+## Historical Track 2 — top-100 rented-GPU plan (paused after implementation-specific negatives)
 
 *(Ran to completion below: k020 raw GNN −0.114, k020b norm-matched −0.098,
-`pds` flat → direction no better than the K562 prior. Nebius deleted. See the
-SUPERSEDED banner and `AGENTS.md` §4. Kept as the record of what was tried.)*
+with `pds` not improving. Source review later found implementation confounds,
+so this is not a class-wide falsification of transfer models. Nebius deleted.
+Kept as the record of what was tried.)*
 
 Goal: ~+0.16 overall. Requires a genuinely **trained perturbation model** —
 the pds=0.70 tier is almost certainly occupied by GEARS-class or
@@ -122,27 +222,26 @@ Guardrails (same as always): tune on held-out targets/contexts in-corpus,
 never on leaderboard feedback; ≤2 submissions/day; record negative
 results.
 
-## Sequencing
+## Historical sequencing (not active)
 
 - **Done**: x2.0 submitted + scored (2026-09-18); scale bracketed at ~1.7.
 - **Done (negative)**: Track 1 item 3(b) — the RPE1 GWPS panel-coverage check
   is answered by `experiments/k013-lineage-ratios/report.json`: **no RPE1 GWPS
   arm exists** (only K562 has a genome-wide arm; rpe1/jurkat/hepg2 public files
   are the 2,393-target essential screen, overlapping **0/300** panel targets).
-  The context-B lineage-swap variant is dead; do not re-check.
+  The specific context-B lineage-swap variant failed that coverage check.
 - **Done (negative)**: k014 conditional MLP baseline (2026-09-18). Model cosine
-  0.0425 vs identity 0.1406 — worse than raw transplant. Root cause: only 47
-  paired examples; no cross-context signal to learn. See
+  0.0425 vs identity 0.1406 — worse than raw transplant. Root cause recorded at
+  the time: only 47 paired examples; no cross-context signal to learn. See
   `docs/track2-nebius-setup.md` §8 for full details.
-- **Now**: 4-lineage essential-screen transfer learning (item 3a) —
+- **Then-current**: 4-lineage essential-screen transfer learning (item 3a) —
   richer paired data (2,393 targets × 4 contexts) than the 47-pair
   K562/hESC set that failed LOO. Run ID: k015 (k014 is reserved for
   Track-2 trained-model submissions).
-- **Next (Track 2)**: GEARS-style GNN on Nebius. The conditional MLP failure
-  confirms we need graph structure (gene-gene interactions) to generalize to
-  unseen targets, not just context conditioning. See §9 below.
-- Track 1 keeps spending daily slots on its best variant; Track 2 submits
-  only when in-corpus eval clearly beats the running champion.
+- **Then-next (Track 2)**: GEARS-style GNN on Nebius. The conditional MLP
+  failure motivated graph structure for generalization. See §9 below.
+- The old rule to keep spending daily slots on Track 1 is superseded by the
+  Gate E submission requirements in the active strategy.
 
 ## 9. Track 2 revised plan (post-k014) — **EXECUTED, NEGATIVE (historical)**
 
@@ -246,11 +345,12 @@ Prompted by user question "are we using all the resources available to us?"
    - **Top-100 threshold today: 0.1685** (team "xxx yan", model
      "atlas-transfer v1.1"). Rank 100 component profile: pds 0.690,
      nmae 0.165, reach 0.119, mse 0.052, fid -0.015, jac 0.001.
-     ⇒ PDS is the dominant lever; MSE near zero is common even at rank 100.
-   - The live leaderboard shows only each team's **latest** submission.
-     Our public position is therefore k013-ctx-scale (0.0312, rank ~554),
-     NOT our best k011-ds-x1p7 (0.0596, ~rank 489). Next submission must
-     beat k011 just to restore standing.
+     ⇒ In that snapshot, PDS appeared to be the dominant scored component;
+     MSE near zero was common even at rank 100. This was a leaderboard
+     reading, not proof of the causal mechanism.
+   - The live leaderboard at that time showed only each team's **latest**
+     submission. Our public position was therefore k013-ctx-scale (0.0312,
+     rank ~554), NOT our best k011-ds-x1p7 (0.0596, ~rank 489).
 
 2. **Official `vcc skill install`** — ships with vcc-cli; installed to
    `~/.claude/skills/vcc`. Confirms 2026 scorer requirements: raw integer
@@ -307,23 +407,24 @@ Prompted by user question "are we using all the resources available to us?"
 Full-rank-256 refits persisted to `/kytos-vol/k015-essential-transfer/lowrank_models.npz`
 (60 MB). Per-gene shrinkage remains worse than identity — drop it.
 
-### Revised priorities — **how each landed (2026-09-20)**
+### Then-current revised priorities — **how each landed (2026-09-20)**
 
 *(1) k015 rank-256 was still submitted (`kytos-k015-lowrank-r256`) and
 scored −0.028 — negative, confirming the caution. (2) kaipengm2 dual-moment
 generator already adopted; its ensemble sources are corpus-blocked. (3) H1
 train/val used via k017/k018 — offline win did NOT transfer to leaderboard.
-(4) count-generation discipline in place. (5) offline-gate rule is now the
-k021 ceiling/attribution harness. Current live lever: generator-dispersion
-calibration for the DE over-calling (see top banner).)*
+(4) count-generation discipline in place. (5) k021 is now classified as an
+exploratory diagnostic with generator/effect-space mismatches, not a proven
+offline gate. The then-current generator-dispersion hypothesis is superseded
+by Gates A–C in the active strategy.)*
 
 1. **Do not submit k015 rank-256 blindly.** Held-out cosine improved, but
    (a) 256 may overfit with ~1,900 train pairs, (b) the top-100 reference
    uses far smaller amplitudes and moment-matched counts, (c) our delta_scale
    1.7 was tuned for raw K562 deltas, not low-rank-transformed ones.
 2. **Study/replicate the kaipengm2 pipeline** (MIT, CPU-only, ~10 min
-   inference). It already scores 0.1546 ≈ top-100 threshold. Highest
-   expected value per hour currently visible.
+   inference). It scored 0.1546 ≈ the then-current top-100 threshold. Highest
+   expected value per hour then visible.
 3. **Pull 2025 H1 training set on Modal** for context-C transfer training
    (150 pairs vs 47) and use the 2025 test set for honest offline eval.
 4. **Adopt count-generation discipline**: promoter prior + dual-moment

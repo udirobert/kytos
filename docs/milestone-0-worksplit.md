@@ -1,6 +1,8 @@
 # Milestone 0 — three-developer parallel work split
 
-Status: **ACTIVE** · Owner: udingethe · Started: **2026-08-22**
+Status: **HISTORICAL / COMPLETED** · Owner: udingethe · Started: **2026-08-22** ·
+Updated **2026-09-20** — post-Milestone assignments are historical; current
+sequencing follows `docs/vcc-two-track-strategy.md`.
 
 How to divide **Observatory Milestone 0** (hackathon day) across three developers
 working simultaneously. Split by **artifact contract** so branches rarely conflict;
@@ -163,7 +165,7 @@ One complete run page beats three half-finished surfaces.
 
 | Dev | Long-running track |
 |---|---|
-| **A** | Data + eval — corpora, `cell-eval`, submission harness, ceiling runs |
+| **A** | Data + eval — corpora, eval/scorer tooling (`cell-eval` at the time), submission harness, ceiling runs |
 | **B** | Layer A — gene transfer head, baselines, training |
 | **C** | Layer B + Observatory ops — cell sampler, UMAP exports, deploy, digests |
 
@@ -187,8 +189,9 @@ Observatory maintenance stays with **C**; **A** feeds new runs into `experiments
 The 8 GB arm64 Mac cannot hold the full 2025 Atlas or run full 2026 `vcc prep`.
 Adjust the post-Milestone tracks:
 
-- **A (data/eval)** — still owns the submission harness and `cell-eval`; full
-  ceiling/Atlas prep runs on a **32 GB+ VPS or rented instance**. Local is for
+- **A (data/eval)** — still owns the submission harness and eval/scorer
+  integration (`cell-eval` at the time); full ceiling/Atlas prep runs on a
+  **32 GB+ VPS or rented instance**. Local is for
   small dry-runs and meta.json provenance.
 - **B (Layer A)** — training and cross-corpus gene transfer also external; the
   Mac is for small shape checks and the sparse baseline.

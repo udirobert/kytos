@@ -1,12 +1,16 @@
 # Kytos — Kaggle notebooks (free tier smoke)
 
+> **Status 2026-09-20:** historical smoke recipe. The active plan is
+> validation-first in `docs/vcc-two-track-strategy.md`; do not treat the
+> "next after smoke" section as approval for a new submission.
+
 Ratiocine two-phase pattern: validate data format + model wiring on Kaggle free GPU/CPU before burning paid 32GB Vast/RunPod.
 
 ## What's here
 
-| Notebook | What it proves | Fits free tier |
+| Notebook | What it checks | Fits free tier |
 |---|---|---|
-| `kaggle_k004_smoke.ipynb` (+ `kaggle_k004_smoke.py`) | EDA on 2026 controls + **Exp A** real control-cell resampling baseline (dispersion-preserving) + **Exp B** `ContextConditionedTransfer` + `AdditiveTransportSampler` → cell-eval-ready `pred_*.h5ad` | 10 targets × 3 contexts = 12k cells (~140MB resample / ~1.2GB layer_a_b) in ~2 min; 20×3 = 24k cells ~2.4GB — keep 10-20 on free tier, 300 needs 32GB |
+| `kaggle_k004_smoke.ipynb` (+ `kaggle_k004_smoke.py`) | EDA on 2026 controls + **Exp A** real control-cell resampling baseline (dispersion-preserving) + **Exp B** `ContextConditionedTransfer` + `AdditiveTransportSampler` → scorer-compatible `pred_*.h5ad` | 10 targets × 3 contexts = 12k cells (~140MB resample / ~1.2GB layer_a_b) in ~2 min; 20×3 = 24k cells ~2.4GB — keep 10-20 on free tier, 300 needs 32GB |
 
 Local 8GB Mac can't run full `vcc prep` (28GB peak) or hold Atlas (13GB) — see `AGENTS.md:1` + `docs/architecture.md:114`.
 

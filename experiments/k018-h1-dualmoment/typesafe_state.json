@@ -1,0 +1,61 @@
+{
+  "objective": "Improve VCC 2026 overall score above current best k011 +0.0596 toward top-100 threshold 0.1682.",
+  "current_best": {
+    "run_id": "kytos-k011-ds-x1p7",
+    "score_avg": 0.0596,
+    "rank": 486,
+    "pds": 0.339,
+    "nmae": -0.076,
+    "fid": -0.006
+  },
+  "constraints": {
+    "daily_submissions_used": 1,
+    "daily_submissions_remaining": 1,
+    "no_control_cells_in_submission": true,
+    "required_cells_per_target_context": 400,
+    "contexts": ["A", "B", "C"]
+  },
+  "offline_validation": {
+    "dataset": "2025 H1 validation held-out targets",
+    "n_targets": 47,
+    "cells_per_target": 400,
+    "control_cells": 4000,
+    "profile": "minimal",
+    "candidates": {
+      "identity_ds1p7": {
+        "discrimination_score_l1": 0.5301,
+        "pearson_delta": 0.0760,
+        "overlap_at_N": 0.2053,
+        "precision_at_N": 0.2125,
+        "mse": 0.0100,
+        "mae": 0.0612
+      },
+      "h1lr64_ds1p7_selfTrain": {
+        "discrimination_score_l1": 0.6012,
+        "pearson_delta": 0.2113,
+        "overlap_at_N": 0.2279,
+        "precision_at_N": 0.2230,
+        "mse": 0.00779,
+        "mae": 0.05539
+      },
+      "h1lr64_ds2p0_selfTrainScaled": {
+        "discrimination_score_l1": 0.6129,
+        "pearson_delta": 0.2465,
+        "overlap_at_N": 0.2334,
+        "precision_at_N": 0.2285,
+        "mse": 0.00798,
+        "mae": 0.05588
+      }
+    }
+  },
+  "submission_candidate": {
+    "run_id": "k018-h1-dualmoment",
+    "strategy": "Hybrid: contexts A/B use k011 champion deltas + HeterogeneousTransportSampler kd_std=2.0 delta_scale=1.7; context C uses H1-trained rank-64 transfer, direct H1 deltas where available, self-gene reset, delta_scale=2.0, dual-moment count generation.",
+    "rationale": "H1 validation shows clear offline improvement over identity baseline, especially discrimination and Pearson delta. Context C is most H1-like among 2026 contexts. Keeping A/B champion reduces regression risk.",
+    "unknowns": [
+      "No offline validation for contexts A/B with dual-moment generator.",
+      "H1 transfer may not generalize to context C if 2026 C differs from H1.",
+      "Official leaderboard metric weighting may differ from local minimal profile."
+    ]
+  }
+}

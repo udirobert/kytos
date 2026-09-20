@@ -1,0 +1,22 @@
+{
+  "run_id": "pilot-20260920-01",
+  "date": "2026-09-20",
+  "app_id": "ap-tT4vyif5ZftRY7WPcFJlRR",
+  "app_url": "https://modal.com/apps/thepapajams/main/ap-tT4vyif5ZftRY7WPcFJlRR",
+  "status": "blocked_at_preflight",
+  "app_stopped": true,
+  "launches": 1,
+  "diagnostic_subprocess_executed": false,
+  "official_score_computed": false,
+  "blockers": ["source_gene_axis_incomplete"],
+  "missing_source_genes": ["HSPA14-1", "TBCE-1", "TMSB15B-1"],
+  "preflight_artifact": "experiments/k022-pipeline-audit/pilot-20260920-01/preflight.json",
+  "launch_log": "experiments/k022-pipeline-audit/modal_pilot_20260920_01.log",
+  "actual_cost_usd": null,
+  "cost_note": "Actual billing not exposed by retrieved CLI metadata; the planning estimate is not an actual charge.",
+  "interpretation": "No model-performance result. Source and evaluation axes require an explicit evidence-backed alignment decision.",
+  "next_required_evidence": "Relevant feature metadata and stable gene identifiers for the missing suffixed labels and their unsuffixed counterparts. Do not infer equivalence from suffix spelling.",
+  "second_launch_authorized": false,
+  "submissions": 0,
+  "gpu_jobs": 0
+}

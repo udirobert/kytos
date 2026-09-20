@@ -32,11 +32,11 @@ Companion docs: [`observatory.md`](observatory.md) (what we ship),
 | Resource | Provides | Does *not* provide |
 |---|---|---|
 | [Virtual Cell Challenge](https://virtualcellchallenge.org/) | Leaderboard, submission portal | Biological audit, build log, public interpretability |
-| [Arc `cell-eval`](https://github.com/ArcInstitute/cell-eval) | Six-metric scoring, ceiling analysis | Plausibility flags separate from score |
+| Arc [`cell-eval2`](https://github.com/ArcInstitute/cell-eval2) `vcc2026` | Six-metric official scoring contract | Plausibility flags separate from score |
 | VCC participant repos (e.g. [STATE](https://github.com/ArcInstitute/state), [vcc-latent-space](https://github.com/rcurrie/vcc-latent-space)) | Prediction pipelines | Public accountability layer for the competition |
 
-**Kytos does not replace any of the above.** We consume `cell-eval` and publish
-everything else the leaderboard cannot show.
+**Kytos does not replace any of the above.** We consume official scorer outputs
+and publish everything else the leaderboard cannot show.
 
 ---
 
@@ -87,7 +87,7 @@ scrutiny beyond the scoreboard matters.
 
 ### Why 2026 makes the gap worse
 
-- **Zero-shot across six unseen cell contexts** — harder to interpret than 2025's single-context task
+- **Zero-shot across three held-out cell contexts** — harder to interpret than 2025's single-context task
 - **No challenge training set** — more room for models that transfer numerically but not biologically
 - **Live leaderboard for ~78 days** (Aug 20 → Nov 5) — long window where public scrutiny should run *during* the competition, not only at the end
 
@@ -108,14 +108,14 @@ scrutiny beyond the scoreboard matters.
 |---|---|
 | **Predictor** (Nov 5 goal) | Zero-shot perturbation model via `submission/script.py` |
 | **Observatory** (ships first) | Visual build-in-public surface for experiment scrutiny |
-| **Audit layer** | Deterministic biological sanity rules *separate from* `cell-eval` six metrics |
+| **Audit layer** | Deterministic biological sanity rules *separate from* the official six metrics |
 
 ### What Kytos is not
 
 | Not… | Because… |
 |---|---|
 | Another perturbation predictor | Crowded field (STATE, GEARS, thousands of VCC registrants in 2025) |
-| A replacement for `cell-eval` | Official metrics stay source of truth; we add interpretability |
+| A replacement for the official scorer | Official metrics stay source of truth; we add interpretability |
 | BioSurface / karyon | They audit analysis bundles or tool outputs post hoc; we audit **our competition runs** in a **public, longitudinal** loop |
 | OpenLab ResearchBook / Researka | They scrutinize research-agent **claims**; we scrutinize **ML experiment artifacts** tied to a live benchmark |
 | Generic experiment tracking (W&B, MLflow) | No biological sanity rules, no public critique contract, no competition-specific `facts.json` |
@@ -124,7 +124,7 @@ scrutiny beyond the scoreboard matters.
 
 No surveyed project combines all of:
 
-1. `cell-eval` metrics + ceiling headroom (official numbers)
+1. Official scorer metrics + ceiling headroom (official numbers)
 2. Biological audit flags (lemma-inspired, **separate from score**)
 3. `facts.json` provenance contract (deterministic core)
 4. Public Observatory UX (visual, engaging)
@@ -183,11 +183,13 @@ baseline paper.
 **Solution:** Kytos Observatory — metrics + audit + literature + provenance +
 Fabric briefings.
 
-**Honest scope:** Predictor is early (Nov 5); transparency layer ships today and
-carries through the competition.
+**Honest scope:** the predictor remains under validation; the transparency layer
+ships today and carries through the competition.
 
 **Ask:** Critique our audit rules and pre-registered hypotheses via Discussions.
 
 ---
 
-*Next: implement per [`observatory.md`](observatory.md) Milestone 0 scope.*
+*Maintain alongside [`vcc-two-track-strategy.md`](vcc-two-track-strategy.md);
+predictor sequencing follows the validation-first gates, not the historical
+Milestone 0 plan.*

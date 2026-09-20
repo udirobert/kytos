@@ -26,7 +26,7 @@ Companion: [`competitive-landscape.md`](competitive-landscape.md) (strategy),
 | 2025 submissions | **1,200+** teams submitted; **300+** final | Same |
 | 2026 scoring | **Six-metric aggregate** (not one score) | [VCC 2026](https://arcinstitute.org/news/virtual-cell-challenge-2026) |
 | Why six metrics | *"No single metric captures model quality… narrow surface invites optimization against the metric rather than the biology"* | Same |
-| 2026 task | **Zero-shot** across **six unseen cell contexts**; **no challenge training set** | Same |
+| 2026 task | **Zero-shot** across **three held-out cell contexts**; **no challenge training set** | Same |
 | Generalist Prize | **$100k** for robust performance **across seven metrics** (2025 lesson) | [2025 wrap-up](https://arcinstitute.org/news/virtual-cell-challenge-2025-wrap-up) |
 | Metric scale (2026) | Each scored metric: **0 = mean-response baseline**, **1 = replicate** | [cell-eval2 / vcc2026](https://pypi.org/project/cell-eval2/) |
 | Public build window | **~78 days** (validation open Aug 20 → submission Nov 5, 2026) | Challenge timeline |
@@ -36,7 +36,7 @@ Companion: [`competitive-landscape.md`](competitive-landscape.md) (strategy),
 
 - *"Six metrics because one score wasn't enough — we publish what the leaderboard can't."*
 - *"5,000+ people joined VCC 2025. We publish every run for all 78 days of 2026."*
-- *"Scores from cell-eval; biological audit flags are separate and reproducible."*
+- *"Scores come from the official challenge scorer; biological audit flags are separate and reproducible."*
 
 ---
 
@@ -83,8 +83,8 @@ Companion: [`competitive-landscape.md`](competitive-landscape.md) (strategy),
 
 ## What not to claim
 
-- We replace cell-eval or the official leaderboard
-- We outperform STATE / GEARS / other predictors (predictor is early)
+- We replace the official scorer or leaderboard
+- We outperform STATE / GEARS / other predictors (the predictor remains under validation)
 - Audit flags are ground truth — they are **deterministic sanity checks**, published for critique
 
 ---
