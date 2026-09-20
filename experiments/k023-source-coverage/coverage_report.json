@@ -1,0 +1,65 @@
+{
+  "run_id": "k023-source-coverage",
+  "date": "2026-09-21",
+  "question": "Do the complementary perturbation corpora identified in the resource audit cover the 300-target 2026 panel and its 18,533-gene axis?",
+  "method": {
+    "x_atlas": "Downloaded HF datasets-server parquet conversions of the cells.lance metadata (HCT116 250 MB, HEK293T 260 MB) and genes.lance (1.7 MB); counted gene_target occurrences against the 300 panel targets and gene_id against the 18,533 panel genes. No expression data downloaded.",
+    "cd4": "Downloaded the 7.3 MB DE_stats.suppl_table.csv from the Marson 2025 S3 bucket; counted target_contrast_gene_name against the panel and applied the publisher quality flags used by the kaipengm2 prepare step (ontarget_significant, >=2 guides, not single_guide_estimate, not distal_offtarget_flag, not low_target_gex).",
+    "h1_2025": "Downloaded pert_counts_Training.csv (2.8 KB) from the Arc 2025 bucket; intersected target_gene with the panel.",
+    "k562_gwps": "Known from prior work: Replogle K562 genome-wide arm covers 272/300 panel targets."
+  },
+  "results": {
+    "xatlas_HCT116": {
+      "distinct_targets": 18294,
+      "total_cells": 3409169,
+      "panel_targets_covered": 300,
+      "panel_targets_missing": [],
+      "covered_with_lt_50_cells": 37,
+      "panel_gene_axis_coverage": "18106/18533 (97.7%)",
+      "axis_note": "gene_id uses gene symbols; the 427 unmatched panel labels are mostly uncharacterized AC*/lncRNA loci",
+      "median_kd_efficiency_pct": 75.4,
+      "median_cells_per_pert": ">=140"
+    },
+    "xatlas_HEK293T": {
+      "distinct_targets": 18308,
+      "total_cells": 3531264,
+      "panel_targets_covered": 300,
+      "panel_targets_missing": [],
+      "covered_with_lt_50_cells": 36,
+      "median_kd_efficiency_pct": 51.5,
+      "median_cells_per_pert": ">=140"
+    },
+    "cd4_marson2025": {
+      "panel_targets_covered": 291,
+      "panel_targets_missing": ["ABCD1", "C5orf22", "EEF1A2", "EPHB2", "FZD2", "KIF21B", "LENG1", "NICN1", "REV1"],
+      "targets_with_quality_pass_row": 251,
+      "covered_but_zero_quality_pass": 40,
+      "conditions": ["Rest", "Stim8hr", "Stim48hr"]
+    },
+    "h1_2025_train": {
+      "n_targets": 150,
+      "panel_overlap": 13,
+      "panel_targets": ["AKT2", "HSBP1", "MED13", "MTA1", "RNF2", "SHPRH", "SIN3B", "SMARCA5", "STAT6", "TARBP2", "TRAPPC6A", "TWF2", "ZNF714"],
+      "note": "too sparse for direct deltas; still useful as a transfer-learning corpus for hESC-like context C"
+    },
+    "k562_gwps_replogle": {
+      "panel_targets_covered": 272,
+      "note": "current champion source"
+    }
+  },
+  "conclusions": [
+    "The coverage objection that killed the essential-screen route (0/300) does NOT apply: X-Atlas HCT116 and HEK293T each cover all 300 panel targets genome-wide, with >=140 median cells per perturbation.",
+    "A 4-lineage consensus ensemble (K562 GWPS 272 + HCT116 300 + HEK293T 300 + CD4 291) could supply at least 3 independent lineage measurements for ~270+ panel targets - the denoising premise of the kaipengm2-style pipeline is data-feasible.",
+    "CD4 adds an immune lineage (relevant to Jurkat-like context A) at 291/300 coverage with 251 quality-passing targets.",
+    "X-Atlas gene axis covers 97.7% of the panel gene universe; residual labels are mostly uncharacterized loci.",
+    "H1-2025 remains a transfer-learning corpus (13/300 direct coverage), not a direct-delta source."
+  ],
+  "caveats": [
+    "Coverage is not transferability: paired47 falsified per-target gating, so consensus must denoise on average rather than select per target.",
+    "Lineage distance ordering is unknown for 2026 contexts; HCT116/HEK293T are not closer to the panel contexts than K562 a priori.",
+    "Cell counts <50 for ~37 targets per X-Atlas arm mean noisy deltas there even though coverage is nominally complete.",
+    "CC-BY-NC-SA-4.0 license on X-Atlas - non-commercial share-alike; fine for a competition, flag for any commercial reuse.",
+    "Downloading the full SLAF expression data for delta computation is a Modal job (expression.lance is ~5 GB in parquet terms for cells metadata alone; actual expression shards are much larger)."
+  ],
+  "next_step": "Gate D option 1: build consensus deltas (multi-lineage weighted mean, common-response centering) and evaluate through the k022 diagnostic harness offline before any submission."
+}

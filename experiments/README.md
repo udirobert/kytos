@@ -208,6 +208,13 @@ enrichment path.
   [`k022-pipeline-audit/scorer_contract.json`](k022-pipeline-audit/scorer_contract.json);
   pinned `cell-eval2` 0.16.0 smoke report:
   [`k022-pipeline-audit/eval2_contract_smoke.json`](k022-pipeline-audit/eval2_contract_smoke.json).
+- `k023-source-coverage` — metadata-only coverage audit (2026-09-21):
+  X-Atlas HCT116 and HEK293T each cover **300/300** panel targets
+  (genome-wide, ≥140 median cells/pert), CD4 Marson-2025 covers **291/300**
+  (251 with quality-pass rows), H1-2025 train overlaps **13/300**. The 0/300
+  essential-screen blocker does not apply — a 4-lineage consensus ensemble
+  is data-feasible. Report:
+  [`k023-source-coverage/coverage_report.json`](k023-source-coverage/coverage_report.json).
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /
