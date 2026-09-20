@@ -1,6 +1,6 @@
 # VCC strategy — validation first
 
-Status: **ACTIVE** · Updated **2026-09-20** · Owner: udingethe
+Status: **ACTIVE** · Updated **2026-09-21** · Owner: udingethe
 
 This file is the single active research strategy. Historical scores and run
 notes stay in `experiments/README.md`; older strategy/runbook documents are
@@ -20,15 +20,35 @@ checking their validity caveats.
   backfill for uncovered targets/contexts, no-op parity and A-only context
   isolation are verified on synthetic fixtures. Full-panel parity is not yet
   verified.
-- **Current blocker:** k022 stopped at preflight because the source axis lacks
-  three Atlas labels: `HSPA14-1`, `TBCE-1`, and `TMSB15B-1`. No prediction and
-  no model-performance result was produced.
-- **Scorer:** the public `cell-eval2` implementation and `vcc2026` preset were
-  identified, including the six scored metrics and CPU execution path. It is
-  **identified, not integrated or proven equivalent to the live scorer**.
-  Contract notes: `experiments/k022-pipeline-audit/scorer_contract.json`.
-- **Next action:** resolve the three features using stable identifiers, then
-  obtain approval for the next bounded run. No automatic second launch.
+- **Gate A (axis): RESOLVED 2026-09-21.** The three Atlas-only labels are
+  `make_unique` duplicate-symbol artifacts with no stable IDs and distinct
+  expression profiles; they are dropped under an explicit recorded-drop rule
+  (`--allow-axis-drop`, >50-label mismatch still blocks). Audit report:
+  `experiments/k022-pipeline-audit/axis-20260921-01/axis_report.json`.
+- **Gate B (scorer): pinned + smoke-tested 2026-09-21.** `.venv-eval2` has
+  `cell-eval2` 0.16.0 @`5e64833` + `pdex`; the full
+  `run → baseline → prep-real-bundle → score` path passes on a synthetic
+  fixture and enrolls a competition bundle. Resolved contract: cpu + pdex +
+  bulk_lognorm + counts; `pert_col` defaults to `target` vs Atlas
+  `target_gene`; fractional predictions refused under `input_type=counts`.
+  **Production equivalence still unverified** (anchor-bundle rules, DE-engine
+  parity, pert_col naming). Report:
+  `experiments/k022-pipeline-audit/eval2_contract_smoke.json`.
+- **Gate C (controlled diagnosis): DONE 2026-09-21.** `paired47-20260921-01`
+  evaluated 32/47 paired targets on the aligned axis. **Signature content is
+  the bottleneck:** borrowed K562 deltas reach median cosine 0.268 vs 0.514
+  for measured in-context deltas; the transport generator is calibrated
+  (null variance ratio 1.05). A precomputable transferability gate is
+  **falsified**: `cos(delta_k562, delta_hesc)` predicts borrowed-signature
+  success at only r≈0.22. Receipts:
+  `experiments/k022-pipeline-audit/paired47-20260921-01/`.
+- **Gate D consequence:** uniform levers (delta_scale, kd_std, per-context
+  amplitude) and gate-based signature selection are exhausted. Remaining
+  signature-content routes: multi-source consensus ensembles, common-response
+  centering, promoter-neighbor priors, or a learned transfer model.
+- **Next action:** pick a Gate-D correction from the falsification-constrained
+  option set below; no submission until an offline gate shows improvement
+  over the k011 config.
 
 ## What the history establishes—and does not
 
@@ -40,60 +60,83 @@ checking their validity caveats.
 | `fid` indicates missing covariance | The leaderboard `fid` is DE direction fidelity, not a distribution distance. It does not diagnose covariance by itself. |
 | Public corpora are exhausted | Audited sources have real coverage limits, but a targeted complementary-source audit has not been completed. |
 | k022 was a negative experiment | Preflight blocked on gene alignment. It was not a model result. |
+| A per-target transferability gate can pick good K562 signatures | **Falsified 2026-09-21 (paired47):** `cos(delta_k562, delta_hesc)` predicts borrowed-signature success at r≈0.22 (0.32 among high-ceiling targets). No cheap gate exists in the paired source data. |
+| The generator/dispersion is a main defect | **Refuted 2026-09-21:** transport null on real controls has variance ratio 1.05; borrowed-signature direction is the quantified gap (median cosine 0.27 vs 0.51 measured). |
 
 ## Decision sequence
 
-### Gate A — data and pipeline integrity
+### Gate A — data and pipeline integrity — **PASSED 2026-09-21**
 
-Resolve the k022 source-axis mismatch using feature metadata and stable gene
-IDs. Do not strip suffixes or infer equivalence from spelling. Record the gene
-universe and every dropped or remapped feature.
+The axis mismatch was resolved by a recorded drop of three `make_unique`
+duplicate-symbol artifacts (no stable IDs, distinct expression evidence —
+suffix mapping would fabricate effects). Aligned axis: 18,077 labels, hash
+`9e985eba…0561`. Strict-by-default with an explicit `--allow-axis-drop`
+opt-in; >50-label mismatches still block. Report:
+`experiments/k022-pipeline-audit/axis-20260921-01/axis_report.json`.
 
-Also establish real-input parity:
+Real-input parity remains partially open: verified on synthetic fixtures and
+on the k022 diagnostic path; a full-panel consumer parity run has not been
+done.
 
-- an unchanged artifact must reproduce the intended baseline;
-- an A-only intervention must leave B/C unchanged;
-- missing targets, genes, contexts, and ambiguous units must fail closed;
-- artifact hashes and cell splits must be preserved.
+### Gate B — official scoring contract — **SMOKE-VERIFIED 2026-09-21**
 
-**Pass criterion:** the experiment changes only what it claims to change.
-
-### Gate B — official scoring contract
-
-Integrate a pinned `cell-eval2` environment using the `vcc2026` preset, not
-legacy `vcc` or `minimal`. Explicitly pin and record the DE backend, target
-column, control handling, normalization, target-gene exclusions, panel, and
-reference-anchor version. Validate backend differences rather than assuming
-CPU/GPU numerical equivalence.
+Pinned `cell-eval2` 0.16.0 @`5e64833` + `pdex` in `.venv-eval2` (Python
+3.12.8). The full competition path
+(`run → baseline --save-pred → prep-real-bundle → score --real-bundle`)
+passes on a synthetic fixture and enrolls a real competition bundle
+(`rule_digest` set, zero mismatches). Resolved contract: cpu + pdex +
+bulk_lognorm + counts input; `pert_col` defaults to `target` while the Atlas
+uses `target_gene`; fractional predictions are refused under
+`input_type=counts` (baseline-only flag). Report:
+`experiments/k022-pipeline-audit/eval2_contract_smoke.json`.
 
 Important implication: `pds_cosine` excludes all panel target genes. Direct
 self-knockdown is not PDS signal, and PDS rank values are panel-dependent.
 
-**Pass criterion:** we can state precisely what an offline score measures and
-what production differences remain.
+**Remaining before production-equivalence claims:** anchor-bundle rule
+compatibility, DE-engine parity vs production, and `pert_col`/`target_gene`
+naming on real data.
 
-### Gate C — controlled baseline diagnosis
+### Gate C — controlled baseline diagnosis — **DONE 2026-09-21**
 
-After alignment and scorer setup, compare borrowed and measured effects using
-disjoint fit/evaluation cells and generator-appropriate representations.
-Measure achieved effects after count generation, not only requested vectors.
-Report cell-fit statistics, variance, zeros, depth, and target-level
-uncertainty alongside any official metrics.
+`paired47-20260921-01` evaluated 32/47 paired targets (15 under-powered) on
+the aligned axis with disjoint fit/eval cells. The diagnosis is specific:
 
-Do not construct a new “overall” score from unrelated diagnostics.
+- **Signature content is the bottleneck.** Borrowed K562 deltas reach median
+  cosine 0.268 vs 0.514 for measured in-context deltas and 0.701 for the
+  observed split ceiling; borrowed beats measured in only 1/32 targets.
+- **The generator is calibrated.** Transport null variance ratio 1.05 on
+  real controls; direct-moment arms under-disperse (~0.28) but are not the
+  shipped path.
+- **No cheap gate exists.** `cos(delta_k562, delta_hesc)` predicts borrowed
+  success at r≈0.22 — a per-target transferability filter is falsified.
+- Scope caveat: only 4/47 paired targets are in the 2026 panel; this
+  measures the transfer problem class, not per-target submission calls.
 
-**Pass criterion:** the result identifies a specific error mechanism, not
-merely another aggregate that looks better.
+Receipts: `experiments/k022-pipeline-audit/paired47-20260921-01/`.
 
 ### Gate D — conservative signature correction
 
-Only then test bounded corrections to the champion:
+Uniform levers are exhausted (delta_scale peaked at 1.7, kd_std at ~2.0,
+per-context amplitude negative, transferability gate falsified). Remaining
+signature-content options, in expected-value order:
 
-- partial common-response adjustment, with target-specific signal protected;
-- uncertainty-aware shrinkage using replicate/guide evidence where available;
-- a small, regularized residual correction that degrades to the baseline under
-  weak support;
-- complementary data where it answers a specific coverage or uncertainty gap.
+- **Multi-source consensus ensemble** — the falsified test was "select the
+  good K562 signature"; the untested variant is *denoising* by consensus
+  across independent lineages (K562 + HCT116 + HEK293T + H1-2025 +
+  CD4/immune). This is what the public rank-~82 MIT pipeline (`kaipengm2`,
+  0.1546 at snapshot) does with a 2:1:1:2 weighted ensemble plus
+  common-response centering and a promoter-neighbor prior. Highest expected
+  value: targets the measured bottleneck, uses identified public corpora,
+  runs CPU-only.
+- **Common-response centering** — subtract the shared transcriptional
+  reaction component before transport; cheap, orthogonal, part of the same
+  proven pipeline.
+- **Promoter-neighbor prior** — CRISPRi local effects from gencode
+  distances; cheap additive signal independent of transferred signatures.
+- **Learned transfer model (Track 2 retry)** — k014/k020 were negative with
+  identified implementation confounds; the model class is not cleanly
+  falsified but costs GPU spend. Defer until the CPU options are tried.
 
 **Pass criterion:** improvement survives count generation, target-grouped or
 context-held-out validation, and does not depend on a few targets.
