@@ -1,9 +1,11 @@
 """Modal k021 job: ceiling / attribution analysis on the 2025 Atlas validation set.
 
-Stages the persisted validation h5ad + paired K562 transfer npz, clones the repo
-for the runner and kytos.models.dual_moment, runs the three-arm attribution
-(identity_ds1p7 vs true_ds1p0 vs real-data ceiling), and persists the summaries
-back to the volume. CPU only -- no GPU, no submission slot. Does NOT submit.
+Self-contained: the runner (tools/run_k021_ceiling.py) and the kytos package are
+injected into the image via add_local_* rather than cloning from GitHub, so this
+job needs no repo-push credential. It stages the persisted validation h5ad +
+paired K562 transfer npz, runs the three-arm attribution (identity_ds1p7 vs
+true_ds1p0 vs real-data ceiling), and persists the summaries back to the volume.
+CPU only -- no GPU, no submission slot. Does NOT submit.
 
 Run:
   modal run -d tools/modal_k021_ceiling.py::run_ceiling
@@ -16,6 +18,7 @@ from __future__ import annotations
 
 import subprocess
 import time
+from pathlib import Path
 
 import modal
 
@@ -23,16 +26,39 @@ app = modal.App("kytos-k021-ceiling")
 
 vol = modal.Volume.from_name("kytos-vcc", create_if_missing=True)
 
-REPO_URL = "https://github.com/udirobert/kytos.git"
 REPO_DIR = "/root/kytos"
 OUT_DIR = "/root/kytos/experiments/k021-ceiling"
 VOL_OUT = "/kytos-vol/k021-ceiling"
 
+LOCAL_ROOT = Path(__file__).resolve().parents[1]
+
+_cell_eval_pkgs = [
+    "cell-eval",
+    "anndata",
+    "scanpy",
+    "numpy",
+    "pandas",
+    "scipy",
+    "polars",
+    "h5py",
+]
+
+
+def _build_image() -> modal.Image:
+    return (
+        modal.Image.debian_slim()
+        .pip_install(*_cell_eval_pkgs)
+        .add_local_dir(LOCAL_ROOT / "src/kytos", f"{REPO_DIR}/src/kytos", copy=True)
+        .add_local_file(
+            LOCAL_ROOT / "tools/run_k021_ceiling.py",
+            f"{REPO_DIR}/tools/run_k021_ceiling.py",
+            copy=True,
+        )
+    )
+
 
 @app.function(
-    image=modal.Image.debian_slim()
-    .apt_install("git", "curl")
-    .pip_install("cell-eval", "anndata", "scanpy", "numpy", "pandas", "scipy", "polars", "h5py"),
+    image=_build_image(),
     timeout=60 * 60 * 4,
     memory=64 * 1024,
     cpu=8,
@@ -57,8 +83,6 @@ def run_ceiling(
         )
         if result.returncode != 0:
             raise RuntimeError(f"{name} failed with exit code {result.returncode}")
-
-    run_step("clone Kytos", f"rm -rf {REPO_DIR}\ngit clone --depth 1 {REPO_URL} {REPO_DIR}")
 
     run_step(
         "stage inputs",
