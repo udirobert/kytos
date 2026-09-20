@@ -245,6 +245,115 @@ to git.
   2,393-target essential screens overlapping **0/300** panel targets. The
   context-B lineage-swap variant is dead; remaining Track-1 lever is
   4-lineage essential-set transfer learning (k015).
+- `kytos-k018-h1lr-dm-c` (H1 rank-64 transfer + dual-moment counts for
+  context C only; A/B stay on the k011 champion) scored **+0.042** (rank
+  546) — a **regression** vs k011 (+0.0596). Deltas vs champion: `pds`
+  -0.058, `nmae` -0.018, `fid` -0.005, `reach` -0.026, `jac` +0.004. The
+  k017 offline count-level "clear improvement on every metric" did **not**
+  transfer to the leaderboard — another caution that an in-corpus/proxy win
+  is not proof. One-context (C) sampling tweaks are a dead end; only A/B
+  signature content moves `pds`. Saved:
+  `experiments/k018-h1-dualmoment/leaderboard_result.json`. Champion remains
+  `kytos-k011-ds-x1p7` (+0.0596, rank 486).
+- **k019 cross-lineage OOD-proxy gate (KEY finding, `experiments/k019-
+  crosslineage/`)**: added an out-of-distribution split to the ~2.3k paired
+  essential K562↔lineage deltas (train on cross-lineage-conserved targets,
+  test on lineage-specific ones — the closest stand-in for the non-essential
+  panel). Held-out cosine on the **OOD-proxy tail**: identity transplant
+  (what k011/k018 ship on A/B) is **negative** — Jurkat −0.090, RPE1
+  −0.077 — i.e. wrong *sign* of effect on panel-like targets; this is the
+  mechanical cause of `pds`~0.34. `global_scalar`/`gene_scale` = identity
+  (scaling / per-gene cannot fix direction). **Across-gene maps flip OOD
+  positive**: low_rank Jurkat +0.099 / RPE1 +0.296; kernel_rbf +0.138 /
+  +0.268. So k015's rank-256 map direction was fine — its leaderboard
+  regression was config, not sign. Caveat: OOD-proxy targets are still
+  essential-lineage-specific, not the real 272 panel targets; only a slot
+  proves it. Tool: `tools/run_k019_crosslineage.py` (Modal CPU). Builder +
+  submission (k019 = map-applied A/B) deliberately **held** per user
+  2026-09-19 in favour of Track 2; fallback if the GNN stalls.
+- **k020 Track-2 GNN trainer ready + CPU-proven** (`tools/track2/
+  train_gnn_crosslineage.py`): GEARS-style message-passing model — gene-node
+  embeddings + co-perturbation correlation graph (no STRING download needed;
+  built from `delta_matrix_src` across-target correlation) + context-basal
+  conditioning, predicts the lineage delta from the K562 delta. Uses the same
+  in-dist vs OOD-proxy split as k019 for validation (never repeat k015).
+  Loss falls and it beats identity on the synthetic OOD smoke; NOT a science
+  result. Real run needs Nebius GPU + staged `essential_transfer_data.npz`.
+  **Path B blocked 2026-09-19**: router DNS returns "No answer" for
+  `*.api.nebius.cloud` (public 1.1.1.1/8.8.8.8 resolve it); Nebius OAuth token
+  expired → needs `networksetup -setdnsservers Wi-Fi 1.1.1.1 8.8.8.8` +
+  interactive browser sign-in (user action). CLI at `~/.nebius/bin/nebius`,
+  project-e00sz92bpr005x5c3r80zr.
+- **k020 GNN RUN ON NEBIUS + SUBMITTED (2026-09-20, `entry
+  iKItvQOyDdOzw4gv4zDJ`)**: DNS fixed, VM booted (L40S), trained on the real
+  2,661-sample K562→{Jurkat,RPE1} essential set (HepG2 absent from
+  `essential_transfer_data.npz`, so only contexts A/B get GNN deltas; C stays
+  on the k011 prior). **Offline OOD gate PASSED at scale**: identity cos_ood
+  −0.088 → GNN cos_ood **+0.199**, cos_all 0.249→0.374, in-dist parity
+  (0.604→0.585). Panel predict: 300 targets × 272 K562-covered, scattered to
+  full 18,533-gene space (`coverage_mask` set to the covered flag; 28
+  no-signature targets → neighbour/fallback). Submitted A/B=GNN, C=champion,
+  `delta_scale=1.7`, `kd_std=2.0`.
+  **Result: rank 811, score_avg −0.114 — a big REGRESSION** vs k011 (+0.0596).
+  Components: `expr_mse` raw **23.7** (→ score_mse 0), `score_nmae` **−0.745**
+  (the killer), `pds_cosine` 0.528 (≈ parity, no direction gain), `fid` −0.028.
+  **Diagnosis: the cosine loss is scale-invariant, so GNN delta magnitudes were
+  un-calibrated; the ×1.7 knob (tuned for near-norm K562 signatures) over-
+  amplified them → expression blew up.** This is the 3rd proxy-vs-leaderboard
+  gap (k017→k018, k020). Likely a calibration bug, not a dead model: next test
+  would norm-match each GNN delta to its borrowed K562 signature *before* the
+  sampler and drop the blind ×1.7. But direction was only ~parity, so even
+  fixed the upside may be small. Nebius VM STOPPED (disk persists, ~small
+  monthly SSD cost) pending that decision. `modal_k020_gnn_model.py` is the
+  build/submit path (`submit_from_volume` uses `vcc submit <file> --model-name
+  <tag>`, NOT `--file/--name`). Champion remains `kytos-k011-ds-x1p7`.
+- **k020b norm-matched GNN — DECISIVE NEGATIVE, closes Path B (2026-09-20,
+  `entry coCmgLQW2T5OZRnAk5yW`)**: re-ran the SAME trained `gnn.pt` (no
+  retrain, Modal CPU predict via `modal_k020_gnn_model.py::predict_and_stage`)
+  but rescaled every GNN delta to the L2 norm of its own borrowed K562
+  signature (`--norm-match`), so *direction* was the only change vs the k011
+  champion (raw GNN median magnitude ratio had been A 0.50 / B 0.37). Result:
+  rank 802, score_avg **−0.098** (still a big regression vs k011 +0.0596).
+  Norm-matching halved the expression damage (`expr_mse` 23.7→13.0, `score_nmae`
+  −0.745→−0.601) — so k020's blow-up WAS largely a magnitude bug — **but
+  `pds_cosine` did NOT improve (0.528→0.521)**. Kill criterion (pds meaningfully
+  above champion) failed. Conclusion: the GNN's per-gene *direction* on the real
+  panel is no better than the K562 prior; the OOD-proxy gate (cos_ood −0.088→
+  +0.199) was again non-predictive (4th proxy-vs-leaderboard miss: k015,
+  k017→k018, k019→k020, k020b). **Cross-lineage essential-set transfer is DEAD
+  as a scoring avenue — no more slots/GPU on Path B.** Nebius disk now safe to
+  delete. Next real levers (untouched): `fidelity`/off-direction covariance
+  (Layer B), or a per-cell Atlas-trained generative model. Champion still
+  `kytos-k011-ds-x1p7`.
+- **k021 ceiling/attribution analysis (`tools/run_k021_ceiling.py` +
+  `tools/modal_k021_ceiling.py`, self-contained Modal CPU, `experiments/k021-ceiling/summary.json`)**:
+  the decision tool for "signature vs modeling". Three arms on the SAME 47
+  H1-val eval targets: `identity_ds1p7` (borrowed K562 signature), `true_ds1p0`
+  (the *true* per-target log1p delta pushed through the identical dual-moment
+  generator), and the real-vs-real cell-eval `ceiling`. Direction-robust
+  `frac = (arm−identity)/(ceiling−identity)`. Result — **the gap splits by
+  metric family**:
+  - **Direction metrics are SIGNATURE-bound.** discrimination_l1 0.53→**0.96**
+    (ceiling 0.99, sig_frac 0.93); pearson_delta 0.08→0.67 (ceiling 0.86,
+    sig_frac 0.75). A perfect delta nearly reaches the ceiling ⇒ the count
+    pipeline is faithful; leaderboard `pds` (~0.34) is capped by our inability
+    to *recover* the true delta (mean cos(identity,true)=0.11), and public
+    corpora are exhausted (K562-only; k020 transfer left direction flat).
+  - **DE-count metrics are MODELING-bound even with a perfect delta.**
+    overlap_at_N 0.21→0.38 (ceiling 0.65, mod_frac 0.61); precision_at_N
+    0.21→0.32 (ceiling 0.65, mod_frac 0.75). Mechanism: `de_nsig_counts_pred`
+    = 6704 (identity) / 5462 (true@1.0) vs **real 3436** — the generator
+    **over-calls DE genes ~1.6–2×** because the dual-moment per-cell dispersion
+    (kd_std=2.0) inflates apparent DE. This feeds `jaccard`/`reach`/`de_nmae`
+    and is a **cheap, no-GPU, no-corpus, in-pipeline calibration lever** —
+    tune generator dispersion so predicted DE-gene-count ≈ real, testable
+    offline on this exact k021 harness *before* spending a slot.
+  - Auto-verdict string ("signature-limited") is dragged by the mean of the two
+    L1-delta metrics; treat it as the split above, not one word. Caveat: this
+    is the H1 corpus (k017 offline ≠ k018 leaderboard), but DE-count
+    over-calling is a mechanical magnitude artifact, more likely to transfer
+    than the "direction" proxy that misled us. Nebius deleted (no residual
+    spend). Champion still `kytos-k011-ds-x1p7`.
 
 ---
 

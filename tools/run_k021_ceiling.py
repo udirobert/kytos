@@ -71,6 +71,15 @@ def _row_mean(x, mask: np.ndarray) -> np.ndarray:
     return np.asarray(sub.mean(axis=0)).ravel()
 
 
+def _finite(v):
+    if v is None or (isinstance(v, float) and not np.isfinite(v)):
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--val-h5ad", type=Path, required=True)
@@ -254,14 +263,6 @@ def main(argv: list[str] | None = None) -> int:
         agg_pd = agg.to_pandas().set_index("statistic")
         agg_dict = agg_pd.loc["mean"].to_dict() if "mean" in agg_pd.index else {}
 
-        def _finite(v):
-            if v is None or (isinstance(v, float) and not np.isfinite(v)):
-                return None
-            try:
-                return float(v)
-            except (TypeError, ValueError):
-                return None
-
         summary["arms"][name] = {
             "agg": {k: _finite(v) for k, v in agg_dict.items()},
             "gen_plus_eval_s": round(time.time() - t_c, 1),
@@ -284,8 +285,17 @@ def main(argv: list[str] | None = None) -> int:
     evaluator.compute_ceiling(profile=args.profile, basename="ceiling_results.csv")
     ceil_path = ceiling_dir / "agg_ceiling_results.csv"
     if ceil_path.exists():
+        # agg_ceiling_results.csv is a single WIDE row: one column per metric.
+        # Non-reliability metrics (mae/mse/counts/clustering_agreement/...) carry
+        # no defensible ceiling and are emitted as NaN -> drop them.
         ceil = pd.read_csv(ceil_path)
-        summary["ceiling"] = dict(zip(ceil["metric"], ceil["ceiling"]))
+        summary["ceiling"] = {}
+        if len(ceil):
+            row = ceil.iloc[0].to_dict()
+            for m, v in row.items():
+                fv = _finite(v)
+                if fv is not None:
+                    summary["ceiling"][str(m)] = fv
 
     # ---- Attribution table ---------------------------------------------
     # Direction-robust: for each metric normalise by the full identity->ceiling
