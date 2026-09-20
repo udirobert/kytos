@@ -1,7 +1,44 @@
 # VCC two-track strategy — top 200 on Modal, top 100 on rented GPU
 
-Status: **active plan** (agreed 2026-09-17 after k011 x1.3/x1.7 set new
-best scores of +0.0559 / +0.0596, rank ~486).
+> **STATUS 2026-09-20: SUPERSEDED — read this banner before acting on
+> anything below.** This was the plan as of 2026-09-17. Track 2 (rented-GPU
+> trained model) and the essential-screen transfer have since been run to
+> **decisive negative results**, and a ceiling analysis reframed where the
+> remaining score lives. Canonical per-run record: `AGENTS.md` §4. What
+> actually happened:
+>
+> - **Track 2 / Nebius GNN is CLOSED.** The GEARS-style cross-lineage GNN
+>   (k020, raw) scored **−0.114** and the norm-matched re-run (k020b) **−0.098**
+>   — both big regressions vs the k011 champion (+0.0596). Critically,
+>   `pds_cosine` never improved (0.528→0.521), so the GNN's per-gene
+>   *direction* on the real panel is no better than the borrowed K562 prior.
+>   **Nebius is fully deleted** (no residual spend); the provisioning
+>   commands in §9 below are dead references. Cross-lineage essential-set
+>   transfer is a dead scoring avenue.
+> - **k015 low-rank essential transfer was also negative** (−0.028): OOD for
+>   the non-essential panel.
+> - **The kaipengm2 "highest-EV replicate" note (§10) is moot** — we already
+>   ship its dual-moment generator (`src/kytos/models/dual_moment.py`); its
+>   0.1546 came from a 4-source lineage-matched ensemble (K562/HCT116/
+>   HEK293T/H1) + CD4 + promoter prior we cannot assemble from corpora that
+>   cover the panel in a matched lineage.
+> - **k021 ceiling analysis (`experiments/k021-ceiling/summary.json`) is the
+>   current decision tool.** It shows the gap splits by metric family:
+>   *direction* metrics (discrimination, pearson_delta) are **signature-bound**
+>   — a perfect per-target delta nearly hits the ceiling, so `pds` is capped by
+>   our inability to *recover* the true delta (public corpora exhausted);
+>   *DE-count* metrics (overlap_at_N, precision_at_N) stay **modeling-bound
+>   even with a perfect delta** because the generator over-calls DE genes
+>   ~1.6–2× (5462 pred vs 3436 real). **That over-calling is the one large
+>   lever that needs no GPU and no new corpus — calibrate generator dispersion
+>   so predicted DE-count ≈ real, gated offline on the k021 harness first.**
+>
+> Champion remains `kytos-k011-ds-x1p7` (+0.0596, rank ~486). Everything under
+> "Track 2", §9, and the §10 "Revised priorities" is historical — kept for the
+> record, not as a plan.
+
+Status: ~~**active plan**~~ (agreed 2026-09-17 after k011 x1.3/x1.7 set new
+best scores of +0.0559 / +0.0596, rank ~486) — **see SUPERSEDED banner above.**
 
 ## Scoreboard reality (live leaderboard, 984+ entries)
 
@@ -52,7 +89,11 @@ matrix problem; corpus swaps reuse the existing builder). Estimated
 ceiling for this track: plausibly +0.10–0.14 — i.e., top 200 is
 reachable, top 100 probably is not.
 
-## Track 2 — top 100 on rented GPU (parallel)
+## Track 2 — top 100 on rented GPU (parallel) — **CLOSED 2026-09-20: negative**
+
+*(Ran to completion below: k020 raw GNN −0.114, k020b norm-matched −0.098,
+`pds` flat → direction no better than the K562 prior. Nebius deleted. See the
+SUPERSEDED banner and `AGENTS.md` §4. Kept as the record of what was tried.)*
 
 Goal: ~+0.16 overall. Requires a genuinely **trained perturbation model** —
 the pds=0.70 tier is almost certainly occupied by GEARS-class or
@@ -103,7 +144,11 @@ results.
 - Track 1 keeps spending daily slots on its best variant; Track 2 submits
   only when in-corpus eval clearly beats the running champion.
 
-## 9. Track 2 revised plan (post-k014)
+## 9. Track 2 revised plan (post-k014) — **EXECUTED, NEGATIVE (historical)**
+
+*(The GEARS-style GNN below was built and trained on Nebius as k020/k020b and
+both regressed on the leaderboard with `pds` unchanged; scGPT fine-tune not
+pursued. The VM-provisioning snippet is dead — Nebius torn down.)*
 
 The conditional MLP baseline (k014-run-1) failed because it tried to learn
 a context-transfer function from only 47 paired examples. The model needs
@@ -262,7 +307,15 @@ Prompted by user question "are we using all the resources available to us?"
 Full-rank-256 refits persisted to `/kytos-vol/k015-essential-transfer/lowrank_models.npz`
 (60 MB). Per-gene shrinkage remains worse than identity — drop it.
 
-### Revised priorities
+### Revised priorities — **how each landed (2026-09-20)**
+
+*(1) k015 rank-256 was still submitted (`kytos-k015-lowrank-r256`) and
+scored −0.028 — negative, confirming the caution. (2) kaipengm2 dual-moment
+generator already adopted; its ensemble sources are corpus-blocked. (3) H1
+train/val used via k017/k018 — offline win did NOT transfer to leaderboard.
+(4) count-generation discipline in place. (5) offline-gate rule is now the
+k021 ceiling/attribution harness. Current live lever: generator-dispersion
+calibration for the DE over-calling (see top banner).)*
 
 1. **Do not submit k015 rank-256 blindly.** Held-out cosine improved, but
    (a) 256 may overfit with ~1,900 train pairs, (b) the top-100 reference

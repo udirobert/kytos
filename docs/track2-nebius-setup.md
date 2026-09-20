@@ -1,5 +1,14 @@
 # Track 2 — Nebius provisioning + training-data spec
 
+> **STATUS 2026-09-20: HISTORICAL — Track 2 CLOSED, Nebius DELETED.** The GNN
+> this spec provisioned was trained and submitted as k020/k020b; both
+> regressed on the leaderboard (−0.114 / −0.098) with `pds` flat, so the
+> cross-lineage transfer direction was no better than the K562 prior. The
+> Nebius instance and boot disk are gone (no residual spend) — the commands
+> below are kept only as the record of how it was set up, not as a live
+> runbook. Canonical record: `AGENTS.md` §4; current lever: the k021
+> generator-dispersion calibration (`docs/vcc-two-track-strategy.md` banner).
+
 Companion to `docs/vcc-two-track-strategy.md`. Concrete setup for the
 top-100 track: a trained perturbation model on a rented Nebius GPU VM.
 Everything here assumes the Modal pipeline stays the build/submit path —

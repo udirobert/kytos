@@ -1,6 +1,15 @@
 # k015+ Plan: Path to Top 100
 
-Status: **planning** (2026-09-18, post-k014 negative result)
+> **STATUS 2026-09-20: SUPERSEDED — planning doc from 2026-09-18, kept as the
+> record of options considered.** Outcomes since: Lever 1 (GEARS GNN / k020,
+> k020b) trained and submitted → **−0.114 / −0.098, `pds` flat, negative**;
+> essential low-rank transfer (k015) → **−0.028, negative**; H1 transfer
+> (k017→k018) offline win did **not** transfer. The **k021 ceiling analysis**
+> then showed `pds` is *signature*-bound (public corpora exhausted) while the
+> DE-count metrics are *modeling*-bound via generator DE over-calling — the
+> latter is the one remaining no-GPU lever. Canonical record: `AGENTS.md` §4.
+
+Status: ~~**planning**~~ (2026-09-18, post-k014 negative result) — **superseded, see banner above**
 
 ## Where we are
 
