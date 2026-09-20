@@ -167,10 +167,25 @@ def synthetic_data(seed: int):
 
 
 def load_source(path, genes):
+    """Load a borrowed-delta source NPZ.
+
+    Two accepted schemas: the original paired-transfer layout
+    (``genes`` + ``paired_targets`` + ``delta_k562``) and the generic
+    multi-lineage layout (``genes`` + ``targets`` + ``deltas``). Returns
+    ``{target: delta_vector}`` subset to the consumer ``genes`` axis.
+    """
     with np.load(path, allow_pickle=False) as data:
         source_genes = data["genes"].astype(str).tolist()
-        targets = data["paired_targets"].astype(str).tolist()
-        deltas = data["delta_k562"]
+        if "paired_targets" in data.files and "delta_k562" in data.files:
+            targets = data["paired_targets"].astype(str).tolist()
+            deltas = data["delta_k562"]
+        elif "targets" in data.files and "deltas" in data.files:
+            targets = data["targets"].astype(str).tolist()
+            deltas = data["deltas"]
+        else:
+            raise ValueError(
+                "Source NPZ must carry (paired_targets, delta_k562) or (targets, deltas) keys"
+            )
         if len(set(source_genes)) != len(source_genes) or len(set(targets)) != len(targets):
             raise ValueError("Source axes must be unique")
         if deltas.shape != (len(targets), len(source_genes)) or not np.isfinite(deltas).all():
@@ -235,10 +250,15 @@ def run_audit(
     seed=0,
     max_targets=0,
     source=None,
+    sources=None,
     var_keep=None,
 ):
     if controls < cells * pool_k or pool_k < 1:
         raise ValueError("Fit-control count must cover cells * pool_k")
+    if source is not None and sources is not None:
+        raise ValueError("Pass either source or sources, not both")
+    if source is not None:
+        sources = {"default": source}
     vidx = var_keep if var_keep is not None else slice(None)
     genes = real.var_names[vidx].astype(str).tolist()
     if len(set(genes)) != len(genes) or not real.obs_names.is_unique:
@@ -248,8 +268,9 @@ def run_audit(
         np.flatnonzero(labels == CONTROL), controls, controls, stable_seed(seed, CONTROL)
     )
     targets = sorted(set(labels) - {CONTROL})
-    if source is not None:
-        targets = [t for t in targets if t in source]
+    if sources:
+        covered = set().union(*[set(s) for s in sources.values()])
+        targets = [t for t in targets if t in covered]
     if max_targets:
         targets = targets[:max_targets]
     splits, dropped = {}, {}
@@ -289,8 +310,10 @@ def run_audit(
             "measured_direct_moments": (
                 "Fit mean per-cell probabilities and separate pooled-count probabilities."
             ),
-            "borrowed_transport_ds1p7": (
-                "Optional K562 source vector; historical application with delta_scale=1.7."
+            "borrowed_transport_ds1p7[__name]": (
+                "Optional borrowed source vector(s); historical application "
+                "with delta_scale=1.7. Multiple --source-npz inputs produce "
+                "one arm per named source on identical splits."
             ),
         },
         "limitations": [
@@ -345,11 +368,25 @@ def run_audit(
                 "measured_transport": diagnostics(transport, evaluation, control_eval),
                 "measured_direct_moments": diagnostics(generated, evaluation, control_eval),
             }
-            if source is not None:
-                borrowed = transport_counts(
-                    control_path, genes, target, source[target], cells, target_seed, 1.7
-                )
-                arms["borrowed_transport_ds1p7"] = diagnostics(borrowed, evaluation, control_eval)
+            if sources:
+                for name, source_deltas in sources.items():
+                    if target not in source_deltas:
+                        continue
+                    borrowed = transport_counts(
+                        control_path,
+                        genes,
+                        target,
+                        source_deltas[target],
+                        cells,
+                        target_seed,
+                        1.7,
+                    )
+                    arm = (
+                        "borrowed_transport_ds1p7"
+                        if len(sources) == 1 and name == "default"
+                        else f"borrowed_transport_ds1p7__{name}"
+                    )
+                    arms[arm] = diagnostics(borrowed, evaluation, control_eval)
             summary["targets"][target] = {
                 "arms": arms,
                 "moment_constraint_error": {
@@ -379,7 +416,14 @@ def main(argv=None):
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--smoke", action="store_true")
     mode.add_argument("--real-h5ad", type=Path)
-    parser.add_argument("--source-npz", type=Path)
+    parser.add_argument(
+        "--source-npz",
+        action="append",
+        default=[],
+        metavar="[NAME=]PATH",
+        help="borrowed-delta source NPZ; repeat to evaluate multiple sources "
+        "on identical splits (each gets a borrowed_transport_ds1p7__NAME arm)",
+    )
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--cells", type=int, default=32)
     parser.add_argument("--controls", type=int, default=128)
@@ -410,20 +454,35 @@ def main(argv=None):
     real = synthetic_data(args.seed) if args.smoke else ad.read_h5ad(args.real_h5ad, backed="r")
     axis_resolution = None
     var_keep = None
+    named = {}
     try:
         if args.source_npz:
+            for entry in args.source_npz:
+                name, _, path = str(entry).partition("=")
+                if not path:
+                    name, path = "default", name
+                if name in named:
+                    parser.error(f"Duplicate source name {name!r}")
+                named[name] = Path(path)
             genes_all = real.var_names.astype(str).tolist()
-            keep, axis_resolution = resolve_consumer_axis(
-                genes_all, args.source_npz, args.allow_axis_drop
-            )
+            first = next(iter(named.values()))
+            keep, axis_resolution = resolve_consumer_axis(genes_all, first, args.allow_axis_drop)
             if keep and len(keep) < len(genes_all):
                 var_keep = keep
-            source = load_source(
-                args.source_npz,
-                [genes_all[i] for i in var_keep] if var_keep is not None else genes_all,
-            )
+            aligned = [genes_all[i] for i in var_keep] if var_keep is not None else genes_all
+            sources = {}
+            with np.load(first, allow_pickle=False) as ref:
+                ref_genes = ref["genes"].astype(str).tolist()
+            for name, path in named.items():
+                with np.load(path, allow_pickle=False) as probe:
+                    if probe["genes"].astype(str).tolist() != ref_genes:
+                        raise ValueError(
+                            f"Source {name!r} has a different gene axis; all "
+                            "sources in one run must share an axis"
+                        )
+                sources[name] = load_source(path, aligned)
         else:
-            source = None
+            sources = None
         summary = run_audit(
             real,
             args.out_dir,
@@ -432,17 +491,14 @@ def main(argv=None):
             pool_k=args.pool_k,
             seed=args.seed,
             max_targets=args.max_targets,
-            source=source,
+            sources=sources,
             var_keep=var_keep,
         )
         summary["synthetic"] = args.smoke
         if axis_resolution:
             summary["axis_resolution"] = axis_resolution
-        summary["input_hashes"] = {
-            str(path): sha256_file(path)
-            for path in (args.real_h5ad, args.source_npz)
-            if path is not None
-        }
+        hash_inputs = ([args.real_h5ad] if args.real_h5ad else []) + list(named.values())
+        summary["input_hashes"] = {str(path): sha256_file(path) for path in hash_inputs}
         (args.out_dir / "summary.json").write_text(
             json.dumps(summary, indent=2, allow_nan=False) + "\n"
         )

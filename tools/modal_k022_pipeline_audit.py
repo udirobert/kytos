@@ -42,6 +42,18 @@ for filename in (
     )
 
 
+def _npz_schema(path):
+    """Return (targets_key, deltas_key) for a source NPZ."""
+    import numpy as np
+
+    with np.load(path, allow_pickle=False) as data:
+        if "paired_targets" in data.files and "delta_k562" in data.files:
+            return "paired_targets", "delta_k562"
+        if "targets" in data.files and "deltas" in data.files:
+            return "targets", "deltas"
+        raise ValueError(f"{path} lacks a recognized source schema")
+
+
 @app.function(
     image=image,
     cpu=(4.0, 4.0),
@@ -53,27 +65,46 @@ for filename in (
     scaledown_window=2,
     volumes={str(VOLUME_ROOT): volume},
 )
-def run_pilot(run_id: str, max_targets: int = 3) -> dict:
+def run_pilot(run_id: str, max_targets: int = 3, source_npzs=None) -> dict:
     import anndata as ad
     import numpy as np
 
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,79}", run_id):
         raise ValueError("Use a new alphanumeric run ID (hyphens/underscores allowed)")
-    for path in (REAL_PATH, SOURCE_PATH):
+    named_sources = {}
+    for entry in source_npzs or [str(SOURCE_PATH)]:
+        name, _, path = str(entry).partition("=")
+        if not path:
+            name, path = "default", name
+        named_sources[name] = Path(path)
+    for path in [REAL_PATH, *named_sources.values()]:
         if not path.is_file():
             raise FileNotFoundError(path)
     out = VOLUME_ROOT / "k022-pipeline-audit" / run_id
     out.mkdir(parents=True, exist_ok=False)
+    first_source = next(iter(named_sources.values()))
     real = ad.read_h5ad(REAL_PATH, backed="r")
     try:
         genes = real.var_names.astype(str).tolist()
         counts = real.obs["target_gene"].astype(str).value_counts()
-        with np.load(SOURCE_PATH, allow_pickle=False) as source:
+        tkey, dkey = _npz_schema(first_source)
+        with np.load(first_source, allow_pickle=False) as source:
             source_genes = source["genes"].astype(str).tolist()
-            source_targets = source["paired_targets"].astype(str).tolist()
-            delta_shape = list(source["delta_k562"].shape)
-            finite = bool(np.isfinite(source["delta_k562"]).all())
-        shared = sorted(set(counts.index) & set(source_targets) - {"non-targeting"})
+            source_targets = source[tkey].astype(str).tolist()
+            delta_shape = list(source[dkey].shape)
+            finite = bool(np.isfinite(source[dkey]).all())
+        source_genes_set = set(source_genes)
+        all_source_targets = set(source_targets)
+        for name, path in named_sources.items():
+            tkey_i, _ = _npz_schema(path)
+            with np.load(path, allow_pickle=False) as probe:
+                if set(probe["genes"].astype(str).tolist()) != source_genes_set:
+                    raise ValueError(
+                        f"Source {name!r} has a different gene axis; all "
+                        "sources in one run must share an axis"
+                    )
+                all_source_targets |= set(probe[tkey_i].astype(str).tolist())
+        shared = sorted(set(counts.index) & all_source_targets - {"non-targeting"})
         selected = shared[:max_targets] if max_targets else shared
         missing_genes = sorted(set(genes) - set(source_genes))
         # The axis audit (axis-20260921-01) ruled: Atlas-only duplicate-symbol
@@ -103,6 +134,7 @@ def run_pilot(run_id: str, max_targets: int = 3) -> dict:
             "run_id": run_id,
             "status": "blocked" if blockers else "ready",
             "blockers": blockers,
+            "sources": {name: str(path) for name, path in named_sources.items()},
             "real_shape": list(real.shape),
             "source_delta_shape": delta_shape,
             "source_genes": len(source_genes),
@@ -141,8 +173,6 @@ def run_pilot(run_id: str, max_targets: int = 3) -> dict:
         str(REMOTE_ROOT / "tools/run_k022_pipeline_audit.py"),
         "--real-h5ad",
         str(REAL_PATH),
-        "--source-npz",
-        str(SOURCE_PATH),
         "--out-dir",
         str(out / "diagnostics"),
         "--cells",
@@ -157,6 +187,8 @@ def run_pilot(run_id: str, max_targets: int = 3) -> dict:
         "0",
         "--allow-large-input",
     ]
+    for name, path in named_sources.items():
+        command += ["--source-npz", f"{name}={path}"]
     if axis_drop:
         command += ["--allow-axis-drop"]
     subprocess_timeout = 780 if len(selected) <= 3 else 3300
@@ -184,5 +216,6 @@ def run_pilot(run_id: str, max_targets: int = 3) -> dict:
 
 
 @app.local_entrypoint()
-def main(run_id: str, max_targets: int = 3):
-    print(json.dumps(run_pilot.remote(run_id, max_targets), indent=2))
+def main(run_id: str, max_targets: int = 3, source_npzs: str = ""):
+    sources = [s for s in source_npzs.split(",") if s] or None
+    print(json.dumps(run_pilot.remote(run_id, max_targets, sources), indent=2))
