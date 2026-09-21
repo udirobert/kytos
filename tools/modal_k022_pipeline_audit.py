@@ -60,7 +60,10 @@ def _npz_schema(path):
     memory=(32768, 32768),
     timeout=14400,
     startup_timeout=120,
-    retries=0,
+    # Idempotent resume (summary.json marker) makes retries safe: a preempted
+    # container restarts the deterministic diagnostic rather than corrupting
+    # the run directory.
+    retries=2,
     max_containers=1,
     scaledown_window=2,
     volumes={str(VOLUME_ROOT): volume},
@@ -81,7 +84,17 @@ def run_pilot(run_id: str, max_targets: int = 3, source_npzs=None) -> dict:
         if not path.is_file():
             raise FileNotFoundError(path)
     out = VOLUME_ROOT / "k022-pipeline-audit" / run_id
-    out.mkdir(parents=True, exist_ok=False)
+    done_marker = out / "diagnostics" / "summary.json"
+    if done_marker.is_file():
+        # Idempotent restart: a previous attempt completed the diagnostic.
+        return {
+            "status": "completed",
+            "summary": str(done_marker),
+            "preflight": str(out / "preflight.json"),
+            "official_score_computed": False,
+            "resumed": True,
+        }
+    out.mkdir(parents=True, exist_ok=True)
     first_source = next(iter(named_sources.values()))
     real = ad.read_h5ad(REAL_PATH, backed="r")
     try:
