@@ -58,7 +58,7 @@ def _npz_schema(path):
     image=image,
     cpu=(4.0, 4.0),
     memory=(32768, 32768),
-    timeout=3600,
+    timeout=14400,
     startup_timeout=120,
     retries=0,
     max_containers=1,
@@ -191,7 +191,10 @@ def run_pilot(run_id: str, max_targets: int = 3, source_npzs=None) -> dict:
         command += ["--source-npz", f"{name}={path}"]
     if axis_drop:
         command += ["--allow-axis-drop"]
-    subprocess_timeout = 780 if len(selected) <= 3 else 3300
+    # Each named source adds a full borrowed-transport pass per target, so the
+    # diagnostic subprocess cost scales ~linearly in the number of arms.
+    subprocess_timeout = (780 if len(selected) <= 3 else 3300) * max(1, len(named_sources))
+    subprocess_timeout = min(subprocess_timeout, 13800)
     with (out / "run.log").open("w") as log:
         try:
             result = subprocess.run(
