@@ -60,6 +60,7 @@ XATLAS_ARMS = {"hct116": "HCT116", "hek293t": "HEK293T"}
 XATLAS_CONTROL = "Non-Targeting"
 CONTROL_CAP_PER_SAMPLE = 150
 SCAN_BATCH_ROWS = 2_000_000
+SCAN_MAX_RETRIES = 20
 
 CD4_URL = (
     "https://genome-scale-tcell-perturb-seq.s3.amazonaws.com/marson2025_data/GWCD4i.DE_stats.h5ad"
@@ -110,6 +111,19 @@ def _check_run_id(run_id):
         raise ValueError("Use a new alphanumeric run ID (hyphens/underscores allowed)")
 
 
+def _hf_secret():
+    """Scoped secret containing only HF_TOKEN (not the whole .env)."""
+    env_path = LOCAL_ROOT / ".env"
+    if not env_path.exists():
+        return []
+    wanted = "HF" + "_TOKEN"
+    for line in env_path.read_text().splitlines():
+        key, sep, val = line.partition("=")
+        if sep and key.strip() == wanted and val.strip():
+            return [modal.Secret.from_dict({wanted: val.strip().strip('"').strip("'")})]
+    return []
+
+
 def _load_request_targets():
     """Union of the 300-target 2026 panel and the 47 Atlas-eval targets."""
     import numpy as np
@@ -131,6 +145,9 @@ def _load_request_targets():
     max_containers=1,
     scaledown_window=2,
     volumes={str(VOLUME_ROOT): volume},
+    # HF_TOKEN lives in the repo .env; attached so anonymous resolver
+    # rate limits (HTTP 429) do not stall the 17B-row expression scan.
+    secrets=_hf_secret(),
 )
 def extract_xatlas(source: str, run_id: str) -> dict:
     import sys
@@ -147,7 +164,10 @@ def extract_xatlas(source: str, run_id: str) -> dict:
     if source not in XATLAS_ARMS:
         raise ValueError(f"source must be one of {sorted(XATLAS_ARMS)}")
     out = OUT_DIR / run_id
-    out.mkdir(parents=True, exist_ok=False)
+    out.mkdir(parents=True, exist_ok=True)
+    stem = out / f"deltas_{source}"
+    if (stem.parent / (stem.name + ".npz")).exists():
+        raise FileExistsError(f"{stem}.npz already exists -- use a new run ID")
 
     targets_requested, panel_targets, eval_targets = _load_request_targets()
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
@@ -196,23 +216,49 @@ def extract_xatlas(source: str, run_id: str) -> dict:
 
     rows_buf, cols_buf, vals_buf = [], [], []
     scanned = kept = 0
-    scanner = expression.scanner(batch_size=SCAN_BATCH_ROWS)
-    for batch in scanner.to_batches():
-        if not batch.num_rows:
-            continue
-        cid = batch.column("cell_integer_id").to_numpy()
-        gid = batch.column("gene_integer_id").to_numpy()
-        val = batch.column("value").to_numpy()
-        scanned += batch.num_rows
-        in_range = cid < len(cell_group)
-        grp = np.where(in_range, cell_group[np.clip(cid, 0, len(cell_group) - 1)], -1)
-        pos = gene_to_panel[gid]
-        keep = (grp >= 0) & (pos >= 0)
-        if keep.any():
-            rows_buf.append(grp[keep])
-            cols_buf.append(pos[keep].astype(np.int64))
-            vals_buf.append(np.log1p(val[keep].astype(np.float64)))
-        kept += int(keep.sum())
+    retries = 0
+    while True:
+        # Recreate the scanner at `scanned` so transient HF read errors resume
+        # rather than restarting the 17B-row scan from zero.
+        scanner = expression.scanner(batch_size=SCAN_BATCH_ROWS, offset=scanned)
+        try:
+            for batch in scanner.to_batches():
+                if not batch.num_rows:
+                    continue
+                cid = batch.column("cell_integer_id").to_numpy()
+                gid = batch.column("gene_integer_id").to_numpy()
+                val = batch.column("value").to_numpy()
+                in_range = cid < len(cell_group)
+                grp = np.where(in_range, cell_group[np.clip(cid, 0, len(cell_group) - 1)], -1)
+                pos = np.where(
+                    gid < len(gene_to_panel),
+                    gene_to_panel[np.clip(gid, 0, len(gene_to_panel) - 1)],
+                    -1,
+                )
+                keep = (grp >= 0) & (pos >= 0)
+                if keep.any():
+                    rows_buf.append(grp[keep])
+                    cols_buf.append(pos[keep].astype(np.int64))
+                    vals_buf.append(np.log1p(val[keep].astype(np.float64)))
+                kept += int(keep.sum())
+                scanned += batch.num_rows
+                if scanned % (SCAN_BATCH_ROWS * 50) < SCAN_BATCH_ROWS:
+                    print(
+                        f"[{source}] scanned {scanned}/{total_rows} kept {kept}",
+                        flush=True,
+                    )
+            break
+        except Exception as exc:
+            retries += 1
+            if retries > SCAN_MAX_RETRIES:
+                raise
+            wait = min(60, 5 * retries)
+            print(
+                f"[{source}] scan error at row {scanned} "
+                f"(retry {retries}/{SCAN_MAX_RETRIES} in {wait}s): {exc}",
+                flush=True,
+            )
+            time.sleep(wait)
 
     row = np.concatenate(rows_buf) if rows_buf else np.zeros(0, dtype=np.int64)
     col = np.concatenate(cols_buf) if cols_buf else np.zeros(0, dtype=np.int64)
@@ -255,6 +301,7 @@ def extract_xatlas(source: str, run_id: str) -> dict:
         "expression_rows_scanned": int(scanned),
         "expression_rows_kept": int(kept),
         "expression_table_rows": int(total_rows),
+        "scan_retries": retries,
         "selected_cells": int(len(cells)),
         "targets_requested": len(order),
         "targets_covered": int(covered.sum()),
@@ -296,7 +343,10 @@ def extract_cd4(run_id: str) -> dict:
 
     _check_run_id(run_id)
     out = OUT_DIR / run_id
-    out.mkdir(parents=True, exist_ok=False)
+    out.mkdir(parents=True, exist_ok=True)
+    stem = out / "deltas_cd4"
+    if (stem.parent / (stem.name + ".npz")).exists():
+        raise FileExistsError(f"{stem}.npz already exists -- use a new run ID")
     targets_requested, _, _ = _load_request_targets()
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
 
@@ -413,7 +463,10 @@ def extract_k562(run_id: str) -> dict:
 
     _check_run_id(run_id)
     out = OUT_DIR / run_id
-    out.mkdir(parents=True, exist_ok=False)
+    out.mkdir(parents=True, exist_ok=True)
+    stem = out / "deltas_k562"
+    if (stem.parent / (stem.name + ".npz")).exists():
+        raise FileExistsError(f"{stem}.npz already exists -- use a new run ID")
     targets_requested, _, _ = _load_request_targets()
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
 
