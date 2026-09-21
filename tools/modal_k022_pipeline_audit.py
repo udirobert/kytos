@@ -34,6 +34,7 @@ for filename in (
     "run_k006_replogle_prior.py",
     "run_k005_atlas_prior.py",
     "perturbation_priors.py",
+    "promoter_neighbor.py",
 ):
     image = image.add_local_file(
         LOCAL_ROOT / "tools" / filename,
@@ -68,7 +69,9 @@ def _npz_schema(path):
     scaledown_window=2,
     volumes={str(VOLUME_ROOT): volume},
 )
-def run_pilot(run_id: str, max_targets: int = 3, source_npzs=None) -> dict:
+def run_pilot(
+    run_id: str, max_targets: int = 3, source_npzs=None, promoter_pairs: str = ""
+) -> dict:
     import anndata as ad
     import numpy as np
 
@@ -80,7 +83,8 @@ def run_pilot(run_id: str, max_targets: int = 3, source_npzs=None) -> dict:
         if not path:
             name, path = "default", name
         named_sources[name] = Path(path)
-    for path in [REAL_PATH, *named_sources.values()]:
+    pairs_path = Path(promoter_pairs) if promoter_pairs else None
+    for path in [REAL_PATH, *named_sources.values(), *([pairs_path] if pairs_path else [])]:
         if not path.is_file():
             raise FileNotFoundError(path)
     out = VOLUME_ROOT / "k022-pipeline-audit" / run_id
@@ -202,11 +206,17 @@ def run_pilot(run_id: str, max_targets: int = 3, source_npzs=None) -> dict:
     ]
     for name, path in named_sources.items():
         command += ["--source-npz", f"{name}={path}"]
+    if pairs_path is not None:
+        command += ["--promoter-pairs", str(pairs_path)]
     if axis_drop:
         command += ["--allow-axis-drop"]
     # Each named source adds a full borrowed-transport pass per target, so the
     # diagnostic subprocess cost scales ~linearly in the number of arms.
-    subprocess_timeout = (780 if len(selected) <= 3 else 3300) * max(1, len(named_sources))
+    # The promoter prior adds one extra transport per sourced target plus a
+    # standalone arm -- count it as +1 effective arm when present.
+    n_arms = max(1, len(named_sources)) * (2 if pairs_path is not None else 1)
+    n_arms += 1 if pairs_path is not None else 0
+    subprocess_timeout = (780 if len(selected) <= 3 else 3300) * n_arms
     subprocess_timeout = min(subprocess_timeout, 13800)
     with (out / "run.log").open("w") as log:
         try:
@@ -232,6 +242,6 @@ def run_pilot(run_id: str, max_targets: int = 3, source_npzs=None) -> dict:
 
 
 @app.local_entrypoint()
-def main(run_id: str, max_targets: int = 3, source_npzs: str = ""):
+def main(run_id: str, max_targets: int = 3, source_npzs: str = "", promoter_pairs: str = ""):
     sources = [s for s in source_npzs.split(",") if s] or None
-    print(json.dumps(run_pilot.remote(run_id, max_targets, sources), indent=2))
+    print(json.dumps(run_pilot.remote(run_id, max_targets, sources, promoter_pairs), indent=2))

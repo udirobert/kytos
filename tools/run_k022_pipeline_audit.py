@@ -19,6 +19,7 @@ for directory in (REPO / "src", REPO / "tools"):
         sys.path.insert(0, str(directory))
 
 k007 = importlib.import_module("run_k007_neighbor_prior")
+promoter_neighbor = importlib.import_module("promoter_neighbor")
 dual_moment_counts = importlib.import_module("kytos.models.dual_moment").dual_moment_counts
 ContextConditionedTransfer = importlib.import_module(
     "kytos.models.layer_a"
@@ -252,6 +253,7 @@ def run_audit(
     source=None,
     sources=None,
     var_keep=None,
+    promoter_pairs=None,
 ):
     if controls < cells * pool_k or pool_k < 1:
         raise ValueError("Fit-control count must cover cells * pool_k")
@@ -259,8 +261,10 @@ def run_audit(
         raise ValueError("Pass either source or sources, not both")
     if source is not None:
         sources = {"default": source}
+    pn_pairs = pd.read_csv(promoter_pairs) if promoter_pairs is not None else None
     vidx = var_keep if var_keep is not None else slice(None)
     genes = real.var_names[vidx].astype(str).tolist()
+    gene_index = {g: i for i, g in enumerate(genes)}
     if len(set(genes)) != len(genes) or not real.obs_names.is_unique:
         raise ValueError("Unique cell and gene identifiers are required")
     labels = real.obs[PERT_COL].astype(str).to_numpy()
@@ -287,6 +291,12 @@ def run_audit(
     control_fit = real[ctrl_fit, vidx].to_memory() if real.isbacked else real[ctrl_fit, vidx].copy()
     control_eval = real[ctrl_eval, vidx].X
     control_moments = moments(control_fit.X)
+    # Raw-count control mean on the aligned axis parameterizes the
+    # promoter-neighbor cap (fit split only -- the same cells the transport
+    # sampler legitimately sees).
+    control_raw_mean = (
+        np.asarray(control_fit.X.mean(axis=0)).ravel() if pn_pairs is not None else None
+    )
     summary = {
         "run_id": "k022-pipeline-audit",
         "diagnostics_only": True,
@@ -314,6 +324,17 @@ def run_audit(
                 "Optional borrowed source vector(s); historical application "
                 "with delta_scale=1.7. Multiple --source-npz inputs produce "
                 "one arm per named source on identical splits."
+            ),
+            "promoter_neighbor_only": (
+                "Deterministic CRISPRi local-silencing prior (kaipengm2 "
+                "port): neighbor genes within 5kb of the target TSS get "
+                "delta = log1p(r*M) - log1p(M) with r the remaining "
+                "fraction and M the fit-control raw mean; scale=1.0."
+            ),
+            "borrowed_transport_ds1p7_pncap[__name]": (
+                "Borrowed source at delta_scale=1.7, then capped at the "
+                "promoter-neighbor ceiling on neighbor positions only "
+                "(min(1.7*borrowed, pn_ceiling))."
             ),
         },
         "limitations": [
@@ -368,6 +389,26 @@ def run_audit(
                 "measured_transport": diagnostics(transport, evaluation, control_eval),
                 "measured_direct_moments": diagnostics(generated, evaluation, control_eval),
             }
+            pn_delta = None
+            if pn_pairs is not None:
+                pn_delta = promoter_neighbor.promoter_delta(
+                    pn_pairs, target, gene_index, control_raw_mean
+                )
+                if pn_delta.any():
+                    pn_transport = transport_counts(
+                        control_path,
+                        genes,
+                        target,
+                        pn_delta.astype(np.float32),
+                        cells,
+                        target_seed,
+                        1.0,
+                    )
+                    arms["promoter_neighbor_only"] = diagnostics(
+                        pn_transport, evaluation, control_eval
+                    )
+                else:
+                    pn_delta = None
             if sources:
                 for name, source_deltas in sources.items():
                     if target not in source_deltas:
@@ -387,6 +428,24 @@ def run_audit(
                         else f"borrowed_transport_ds1p7__{name}"
                     )
                     arms[arm] = diagnostics(borrowed, evaluation, control_eval)
+                    if pn_delta is not None:
+                        # Cap post-scale, matching the reference where the
+                        # prior is applied last in probability space.
+                        capped = promoter_neighbor.apply_promoter_cap(
+                            source_deltas[target].astype(np.float64) * 1.7, pn_delta
+                        )
+                        capped_transport = transport_counts(
+                            control_path,
+                            genes,
+                            target,
+                            capped.astype(np.float32),
+                            cells,
+                            target_seed,
+                            1.0,
+                        )
+                        arms[arm.replace("ds1p7", "ds1p7_pncap")] = diagnostics(
+                            capped_transport, evaluation, control_eval
+                        )
             summary["targets"][target] = {
                 "arms": arms,
                 "moment_constraint_error": {
@@ -398,6 +457,7 @@ def run_audit(
         str(path.relative_to(REPO)): sha256_file(path)
         for path in (
             Path(__file__),
+            REPO / "tools/promoter_neighbor.py",
             REPO / "tools/run_k007_neighbor_prior.py",
             REPO / "src/kytos/models/dual_moment.py",
             REPO / "src/kytos/models/layer_b.py",
@@ -431,6 +491,13 @@ def main(argv=None):
     parser.add_argument("--max-targets", type=int, default=0)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--allow-large-input", action="store_true")
+    parser.add_argument(
+        "--promoter-pairs",
+        type=Path,
+        default=None,
+        help="promoter-neighbor pairs CSV (target, neighbor, distance); adds "
+        "promoter_neighbor_only and *_pncap arms",
+    )
     parser.add_argument(
         "--allow-axis-drop",
         action="store_true",
@@ -493,11 +560,28 @@ def main(argv=None):
             max_targets=args.max_targets,
             sources=sources,
             var_keep=var_keep,
+            promoter_pairs=args.promoter_pairs,
         )
         summary["synthetic"] = args.smoke
         if axis_resolution:
             summary["axis_resolution"] = axis_resolution
-        hash_inputs = ([args.real_h5ad] if args.real_h5ad else []) + list(named.values())
+        if args.promoter_pairs is not None:
+            pairs_df = pd.read_csv(args.promoter_pairs)
+            summary["promoter_prior"] = {
+                "pairs_csv": str(args.promoter_pairs),
+                "n_pairs": int(len(pairs_df)),
+                "window_bp": promoter_neighbor.WINDOW_BP,
+                "ramp_floor_bp": promoter_neighbor.RAMP_FLOOR_BP,
+                "fraction": promoter_neighbor.FRACTION,
+                "targets_with_prior": sorted(
+                    set(pairs_df.target.astype(str).unique()) & set(summary["targets"])
+                ),
+            }
+        hash_inputs = (
+            ([args.real_h5ad] if args.real_h5ad else [])
+            + list(named.values())
+            + ([args.promoter_pairs] if args.promoter_pairs else [])
+        )
         summary["input_hashes"] = {str(path): sha256_file(path) for path in hash_inputs}
         (args.out_dir / "summary.json").write_text(
             json.dumps(summary, indent=2, allow_nan=False) + "\n"
