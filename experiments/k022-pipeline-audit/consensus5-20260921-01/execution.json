@@ -1,0 +1,30 @@
+{
+  "run_id": "consensus5-20260921-01",
+  "date": "2026-09-21",
+  "status": "completed_leaked_baseline",
+  "function_call": "fc-01M32CE3NJG71XGAVHBENSD8J9",
+  "sources": [
+    "k562 (variant_k562.npz from extract-20260921-01)",
+    "hct116_batch",
+    "consensus_mean",
+    "consensus_w",
+    "consensus_w_ctr"
+  ],
+  "median_raw_log_delta_cosine": {
+    "observed_fit_split": 0.7012,
+    "measured_transport": 0.5140,
+    "measured_direct_moments": 0.3486,
+    "k562": 0.6044,
+    "consensus_w": 0.4888,
+    "consensus_w_ctr": 0.4954,
+    "consensus_mean": 0.4085,
+    "hct116_batch": 0.2114
+  },
+  "leak": {
+    "finding": "delta_matrix_src.npz rows for the 47 paired/eval targets are in-context hESC deltas (atlas-preferred merge in extract_paired_transfer.py); cos(src, paired.delta_hesc) = 1.0000",
+    "consequence": "the 'k562' arm was an in-context measured delta (pseudo-ceiling ~0.60), not a borrowed K562 signature; consensus variants were inflated by the leaked weight share (0.4 for consensus_w)",
+    "fix": "extract_k562 prefers paired_transfer.delta_k562 (honest Replogle) for paired targets; honest re-run is consensus5-20260921-02"
+  },
+  "official_score_computed": false,
+  "honest_reference": "paired47-20260921-01 borrowed_transport_ds1p7 median 0.2683 (paired_transfer.delta_k562, identical splits)"
+}

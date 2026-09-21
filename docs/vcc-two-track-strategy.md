@@ -46,9 +46,24 @@ checking their validity caveats.
   amplitude) and gate-based signature selection are exhausted. Remaining
   signature-content routes: multi-source consensus ensembles, common-response
   centering, promoter-neighbor priors, or a learned transfer model.
-- **Next action:** pick a Gate-D correction from the falsification-constrained
-  option set below; no submission until an offline gate shows improvement
-  over the k011 config.
+- **k023 multi-lineage consensus (2026-09-21, diagnostic only):** extracted
+  per-target deltas from X-Atlas HCT116 (343/343 covered) and HEK293T
+  (343/343) via streaming `expression.lance` scans (46.5B rows total), CD4
+  Marson 2025 `log_fc` (282/343, sha256-pinned), and a K562 repack. Cross-
+  lineage delta agreement is near-orthogonal (median cos 0.02–0.05 on the
+  panel axis). A consensus-weighted variant set (`consensus_mean`,
+  `consensus_w` 2:1:1:1, `*_ctr` common-response-centered, `*_ncell`
+  cell-count-weighted) was built by `tools/build_consensus_deltas.py`.
+  **Leak found & fixed:** `delta_matrix_src.npz` rows for the 47 eval targets
+  are in-context hESC deltas (atlas-preferred merge), so the first
+  consensus5 audit's "k562" arm (0.604) was a leaked pseudo-ceiling, not a
+  borrowed source. The honest re-run (`consensus5-20260921-02`) uses
+  Replogle-K562 for paired targets. Receipts:
+  `experiments/k023-consensus/extract-20260921-01/`,
+  `experiments/k022-pipeline-audit/consensus5-20260921-01/` (leaked-baseline
+  record), `consensus5-20260921-02` (honest).
+- **Next action:** read the honest consensus5 result vs the true K562
+  baseline (0.268); submit only if an offline gate clears k011.
 
 ## What the history establishes—and does not
 
