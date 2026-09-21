@@ -112,16 +112,12 @@ def _check_run_id(run_id):
 
 
 def _hf_secret():
-    """Scoped secret containing only HF_TOKEN (not the whole .env)."""
-    env_path = LOCAL_ROOT / ".env"
-    if not env_path.exists():
-        return []
-    wanted = "HF" + "_TOKEN"
-    for line in env_path.read_text().splitlines():
-        key, sep, val = line.partition("=")
-        if sep and key.strip() == wanted and val.strip():
-            return [modal.Secret.from_dict({wanted: val.strip().strip('"').strip("'")})]
-    return []
+    """Scoped named secret containing only HF_TOKEN (not the whole .env).
+
+    Created once via `modal secret create kytos-hf HF_TOKEN=...` — referenced
+    by name so function serialization is identical locally and remotely.
+    """
+    return [modal.Secret.from_name("kytos-hf")]
 
 
 def _load_request_targets():
@@ -452,6 +448,14 @@ def extract_k562(run_id: str) -> dict:
     order is implicitly the paired_transfer genes axis (established by the
     axis audit). This subsets by target name and re-emits on the explicit
     panel axis so downstream consumers never rely on the implicit axis.
+
+    For the 47 paired targets the source matrix rows are the *hESC* deltas
+    (``atlas_deltas`` preferred over ``replogle_deltas`` in
+    ``extract_paired_transfer.py``), i.e. in-context measurements on the same
+    file the k022 audit evaluates. Using them as the "k562" arm leaks the eval
+    context. To keep the borrowed arm honest we therefore prefer
+    ``paired_transfer.delta_k562`` (Replogle) for paired targets and fall back
+    to the src matrix only for non-paired targets.
     """
     import sys
     import time
@@ -488,12 +492,14 @@ def extract_k562(run_id: str) -> dict:
     covered = np.zeros(len(targets_requested), dtype=bool)
     src_pos = {t: i for i, t in enumerate(src_targets)}
     paired_pos = {t: i for i, t in enumerate(paired_targets)}
+    n_paired_honest = 0
     for i, t in enumerate(targets_requested):
-        if t in src_pos:
-            delta[i] = src_deltas[src_pos[t]]
-            covered[i] = True
-        elif t in paired_pos:
+        if t in paired_pos:
             delta[i] = paired_delta[paired_pos[t]]
+            covered[i] = True
+            n_paired_honest += 1
+        elif t in src_pos:
+            delta[i] = src_deltas[src_pos[t]]
             covered[i] = True
 
     stem = out / "deltas_k562"
@@ -510,7 +516,11 @@ def extract_k562(run_id: str) -> dict:
         "run_id": run_id,
         "units": "mean log1p(raw counts) perturbed minus control",
         "note": "delta_matrix_src.npz has an implicit axis assumed equal to "
-        "the paired_transfer/panel axis; verified by column count only",
+        "the paired_transfer/panel axis; verified by column count only. "
+        "Paired targets use paired_transfer.delta_k562 (honest Replogle); "
+        "src-matrix rows for those targets are in-context hESC deltas and "
+        "would leak the k022 eval.",
+        "paired_targets_from_replogle": n_paired_honest,
         "targets_requested": len(targets_requested),
         "targets_covered": int(covered.sum()),
         "elapsed_seconds": round(time.time() - t0, 1),
