@@ -101,6 +101,8 @@ def test_builder_emits_variants_and_consensus(tmp_path):
         "consensus_mean_ctr",
         "consensus_w",
         "consensus_w_ctr",
+        "consensus_w_ncell",
+        "consensus_w_ncell_ctr",
     }
     assert set(manifest["variants"]) == expected
     for name in expected:
@@ -108,6 +110,38 @@ def test_builder_emits_variants_and_consensus(tmp_path):
             assert v["deltas"].shape == (3, 3)
             assert v["targets"].tolist() == targets.tolist()
             assert np.isfinite(v["deltas"]).all()
+
+
+def test_builder_ncell_downweights_sparse_source(tmp_path):
+    genes = np.array(["A", "B", "C"])
+    targets = np.array(["T1", "T2", "T3"])
+    rng = np.random.default_rng(2)
+    k562_delta = np.vstack([[1.0, 0.0, 0.0], rng.normal(size=(2, 3))]).astype(np.float32)
+    hct_delta = np.vstack([[0.0, 1.0, 0.0], rng.normal(size=(2, 3))]).astype(np.float32)
+    np.savez_compressed(
+        tmp_path / "deltas_k562.npz",
+        genes=genes,
+        targets=targets,
+        delta=k562_delta,
+        covered=np.array([True, True, True]),
+    )
+    np.savez_compressed(
+        tmp_path / "deltas_hct116.npz",
+        genes=genes,
+        targets=targets,
+        delta=hct_delta,
+        covered=np.array([True, True, True]),
+        n_cells=np.array([2, 200, 200]),  # T1 far below NCELL_FULL_WEIGHT
+    )
+    out = tmp_path / "out"
+    assert builder.main(["--src-dir", str(tmp_path), "--out-dir", str(out)]) == 0
+    with np.load(out / "variant_consensus_w.npz") as v:
+        plain = v["deltas"][0]
+    with np.load(out / "variant_consensus_w_ncell.npz") as v:
+        ncell = v["deltas"][0]
+    # With hct116 down-weighted ~0.02 on T1, the ncell consensus stays closer to
+    # k562's direction (gene A) than the plain weighted consensus does.
+    assert ncell[0] / np.linalg.norm(ncell) > plain[0] / np.linalg.norm(plain)
 
 
 def test_multi_source_audit_runs_named_arms(tmp_path):
