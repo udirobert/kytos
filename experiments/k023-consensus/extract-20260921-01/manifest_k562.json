@@ -1,0 +1,13 @@
+{
+  "source": "k562",
+  "datasets": [
+    "/kytos-vol/paired-transfer/delta_matrix_src.npz",
+    "/kytos-vol/paired-transfer/paired_transfer_train.npz"
+  ],
+  "run_id": "extract-20260921-01",
+  "units": "mean log1p(raw counts) perturbed minus control",
+  "note": "delta_matrix_src.npz has an implicit axis assumed equal to the paired_transfer/panel axis; verified by column count only",
+  "targets_requested": 343,
+  "targets_covered": 315,
+  "elapsed_seconds": 3.2
+}

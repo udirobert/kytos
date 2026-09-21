@@ -1,0 +1,48 @@
+{
+  "sources": {
+    "cd4": {
+      "targets": 282,
+      "has_batch_delta": false
+    },
+    "hct116": {
+      "targets": 343,
+      "has_batch_delta": true
+    },
+    "hek293t": {
+      "targets": 343,
+      "has_batch_delta": true
+    },
+    "k562": {
+      "targets": 315,
+      "has_batch_delta": false
+    }
+  },
+  "variants": [
+    "cd4",
+    "consensus_mean",
+    "consensus_mean_ctr",
+    "consensus_w",
+    "consensus_w_ctr",
+    "consensus_w_ncell",
+    "consensus_w_ncell_ctr",
+    "hct116",
+    "hct116_batch",
+    "hek293t",
+    "hek293t_batch",
+    "k562"
+  ],
+  "weights": {
+    "k562": 2.0,
+    "hct116": 1.0,
+    "hek293t": 1.0,
+    "cd4": 1.0
+  },
+  "ncell_full_weight": 100.0,
+  "semantics": [
+    "source deltas unit-normalized before mixing",
+    "consensus norm scales with cross-source directional agreement",
+    "amplitude restored to the target's K562 delta norm",
+    "*_ctr subtracts the per-gene median across targets",
+    "*_ncell down-weights a source by min(1, n_cells/100) per target"
+  ]
+}

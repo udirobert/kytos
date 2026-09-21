@@ -1,0 +1,57 @@
+{
+  "run_id": "extract-20260921-01",
+  "date": "2026-09-21",
+  "phase": "consensus-delta extraction",
+  "status": "completed",
+  "deployed_app": "kytos-k023-consensus-extract",
+  "volume_dir": "/kytos-vol/k023-consensus/extract-20260921-01/",
+  "sources": {
+    "k562": {
+      "targets_covered": 315,
+      "units": "mean log1p(raw counts) perturbed minus control",
+      "elapsed_seconds": 3.2,
+      "n_missing_panel_genes": 0,
+      "note": "repack of delta_matrix_src.npz (implicit axis verified by column count)"
+    },
+    "hct116": {
+      "targets_covered": 343,
+      "units": "mean log1p(raw counts) perturbed minus control",
+      "elapsed_seconds": 473.8,
+      "expression_rows_scanned": 17395402897,
+      "expression_rows_kept": 327815368,
+      "scan_retries": 0,
+      "n_missing_panel_genes": 427
+    },
+    "hek293t": {
+      "targets_covered": 343,
+      "units": "mean log1p(raw counts) perturbed minus control",
+      "elapsed_seconds": 1559.0,
+      "expression_rows_scanned": 29136391388,
+      "expression_rows_kept": 620551825,
+      "scan_retries": 0,
+      "n_missing_panel_genes": 427
+    },
+    "cd4": {
+      "targets_covered": 282,
+      "units": "publisher log2 fold-change (NOT mean-log1p shift)",
+      "elapsed_seconds": 1056.4,
+      "n_missing_panel_genes": 8420,
+      "sha256": "c355f535ff32cf7ba1edc49cf9c6039fe84f2c9ebe4d005515cba75790cfbb62",
+      "quality_filter": "n_guides>=2 & !single_guide & ontarget_significant & !distal_offtarget & !low_target_gex"
+    }
+  },
+  "engineering_notes": [
+    "cell_start_index offsets in X-Atlas cells.lance are unreliable (drift of millions of rows); extraction filters expression.lance by cell_integer_id membership during a full streaming scan instead",
+    "anonymous hf:// resolver hits HTTP 429 rate limits mid-scan; fixed by attaching HF_TOKEN as named Modal secret 'kytos-hf'",
+    "expression scan recreates the Lance scanner at offset=rows_consumed on transient errors (up to 20 retries); zero retries were needed after the token fix",
+    "modal run --detach inputs were cancelled when the local client died; extraction was relaunched via a deployed app + Function.spawn so the work is fully server-side",
+    "shared run directory across sources guarded by per-source npz existence checks"
+  ],
+  "cross_source_diagnostics": {
+    "median_cos_k562_vs_hct116": 0.048,
+    "median_cos_cd4_vs_k562": 0.021,
+    "median_cos_cd4_vs_hct116": 0.022,
+    "note": "full-panel-axis cosine between lineage deltas is near-orthogonal; the consensus premise is independent-noise averaging, not lineage agreement"
+  },
+  "official_score_computed": false
+}
