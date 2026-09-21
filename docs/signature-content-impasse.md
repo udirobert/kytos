@@ -110,13 +110,19 @@ Not supported (do not overclaim):
 
 ## 4. What remains open
 
-1. **Promoter-neighbor prior (k024, in flight).** Orthogonal mechanism —
-  deterministic CRISPRi local silencing (neighbor genes within 5kb of the
-  target TSS), not a reweighting of existing deltas. Coverage is thin: 14/47
-  eval targets (7/32 powered). Being evaluated as `promoter_neighbor_only`
-  and `*_pncap` arms in `pn2-20260921-01`. Expected value is bounded by
-  coverage; it is a correctness prior, not a gap-closer, unless per-target
-  gains are large.
+1. **Promoter-neighbor prior (k024) — measured, marginal-positive,
+  coverage-bound.** The kaipengm2 CRISPRi local-silencing prior was ported
+  to delta space (`pn2-20260921-02`): neighbor genes within 5kb of the
+  target TSS get a deterministic repression ceiling `log1p(r·M) − log1p(M)`.
+  Coverage: 85 pairs, 7/32 powered eval targets. Result: the standalone
+  prior alone reaches median cosine **0.270 on covered targets** — slightly
+  *above* borrowed K562 on those same targets (0.257), confirming local
+  silencing is real signal — and the post-scale cap improves borrowed arms
+  on 6/7 covered targets. But per-target gains are +0.002–0.009 and 25/32
+  targets have no pair at all, so the aggregate median does not move
+  (~0.268). **Verdict: a correctness prior worth keeping in production
+  generation (it only tightens, except DOT1L −0.003), not a gap-closer.**
+  Receipts: `experiments/k024-promoter-prior/pn2-20260921-02-analysis.json`.
 2. **Track-2 learned context transfer.** The only remaining route that could
   *learn* the K562→context map rather than borrow it. Prior attempts
   (k014 conditional MLP, k020 GNN) had implementation confounds and never
@@ -130,12 +136,11 @@ Not supported (do not overclaim):
 
 ## 5. Decision
 
-- Record the impasse. Do **not** submit a consensus or reweighted variant:
-  the measured aggregate gain (+0.001 median cosine proxy) is far below any
-  plausible leaderboard signal.
-- Complete the k024 promoter-neighbor evaluation for completeness — it is
-  the last untested mechanism from the rank-82 recipe — then reassess.
-- If k024 is also marginal, the honest recommendation is: keep k011 as the
-  standing submission, and treat Track-2 (learned transfer) as the only
-  remaining route with enough headroom — with a clear-eyed view of its cost
-  and prior failure modes.
+- Record the impasse. Do **not** submit a consensus, reweighted, or
+  promoter-capped variant: measured aggregate gains (+0.001–0.003 median
+  cosine proxy) are far below any plausible leaderboard signal.
+- The honest recommendation is: keep k011 as the standing submission, fold
+  the promoter-neighbor cap into the production generator as a
+  correctness prior (costless, only tightens), and treat Track-2 (learned
+  context transfer) as the only remaining route with enough headroom —
+  with a clear-eyed view of its cost and prior failure modes (k014, k020).

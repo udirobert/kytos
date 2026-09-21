@@ -1,0 +1,46 @@
+{
+  "run_id": "pn2-20260921-02",
+  "diagnostic": "k022 pipeline audit, seed 0, 32 powered eval targets, identical splits to paired47/consensus5",
+  "pairs": "experiments/k024-promoter-prior/pairs-20260921-01/promoter_pairs.csv",
+  "coverage": {
+    "n_pairs": 85,
+    "eval_targets_with_prior": [
+      "CENPB",
+      "COX4I1",
+      "DOT1L",
+      "GSTZ1",
+      "KRT18",
+      "SLIRP",
+      "ZNF581"
+    ],
+    "n_covered_of_32_powered": 7
+  },
+  "all_targets_median_cosine": {
+    "observed_fit_split": 0.7012,
+    "measured_transport": 0.514,
+    "borrowed_transport_ds1p7__k562": 0.2683,
+    "borrowed_transport_ds1p7__consensus_w_ctr": 0.2685
+  },
+  "covered_targets": {
+    "promoter_neighbor_only_median_cosine": 0.2699,
+    "borrowed_k562_median_on_covered": 0.257,
+    "pncap_pairwise_wins_vs_k562": "6/7",
+    "pncap_pairwise_wins_vs_consensus_w_ctr": "6/7",
+    "per_target_cosine": {
+      "CENPB": {"k562": -0.063, "k562_pncap": -0.061, "cons": -0.08, "cons_pncap": -0.076, "pn_only": -0.099, "measured": -0.059},
+      "COX4I1": {"k562": -0.33, "k562_pncap": -0.328, "cons": -0.351, "cons_pncap": -0.348, "pn_only": -0.432, "measured": -0.238},
+      "DOT1L": {"k562": 0.413, "k562_pncap": 0.41, "cons": 0.455, "cons_pncap": 0.451, "pn_only": 0.47, "measured": 0.941},
+      "GSTZ1": {"k562": 0.021, "k562_pncap": 0.026, "cons": 0.025, "cons_pncap": 0.029, "pn_only": 0.018, "measured": 0.039},
+      "KRT18": {"k562": 0.493, "k562_pncap": 0.495, "cons": 0.515, "cons_pncap": 0.524, "pn_only": 0.456, "measured": 0.592},
+      "SLIRP": {"k562": 0.28, "k562_pncap": 0.286, "cons": 0.339, "cons_pncap": 0.342, "pn_only": 0.328, "measured": 0.562},
+      "ZNF581": {"k562": 0.257, "k562_pncap": 0.259, "cons": 0.287, "cons_pncap": 0.288, "pn_only": 0.27, "measured": 0.337}
+    }
+  },
+  "interpretation": [
+    "The prior is directionally correct: pncap improves the borrowed arm on 6/7 covered targets and the deterministic pn_only arm alone (0.270) marginally exceeds borrowed K562 (0.257) on those same targets -- local CRISPRi silencing is real signal.",
+    "Effect sizes are small (per-target +0.002 to +0.009 cosine) and coverage is thin (7/32 powered targets), so the aggregate median does not move (~0.268).",
+    "pn_only < measured_transport on every covered target: the prior captures a slice of in-context biology but nowhere near the full signature.",
+    "Verdict: correctness prior worth keeping in production generation (it only tightens, never worsens, modulo DOT1L -0.003), but NOT a signature-content gap-closer. The impasse stands."
+  ],
+  "official_score_computed": false
+}

@@ -68,19 +68,24 @@ checking their validity caveats.
   `experiments/k023-consensus/extract-20260921-01/`,
   `experiments/k022-pipeline-audit/consensus5-20260921-01/` (leaked-baseline
   record), `consensus5-20260921-03` (honest result).
-- **k024 promoter-neighbor prior (2026-09-21, in flight):** ported the
-  kaipengm2 CRISPRi local-silencing prior into the k022 diagnostic.
-  Coordinates from UCSC `wgEncodeGencodeCompV47` (gencode v47; EBI refused
-  at build time — provenance noted). 85 pairs over 343 targets; 14/47 eval
-  targets covered (7/32 powered) — thin coverage bounds the expected gain.
-  Arms: `promoter_neighbor_only`, `borrowed_transport_ds1p7_pncap__<src>`.
-  Run: `pn2-20260921-01`. Receipts:
-  `experiments/k024-promoter-prior/pairs-20260921-01/`.
+- **k024 promoter-neighbor prior (2026-09-21, measured):** ported the
+  kaipengm2 CRISPRi local-silencing prior into the k022 diagnostic
+  (`pn2-20260921-02`). Coordinates from UCSC `wgEncodeGencodeCompV47`
+  (gencode v47; EBI refused at build time — provenance noted). 85 pairs
+  over 343 targets; 7/32 powered eval targets covered. Result: the
+  standalone prior reaches median cosine 0.270 on covered targets (vs
+  k562 0.257 on the same) and the post-scale cap improves borrowed arms
+  on 6/7 covered targets, but per-target gains are +0.002–0.009 — the
+  aggregate median does not move. **A correctness prior worth keeping,
+  not a gap-closer.** Receipts:
+  `experiments/k024-promoter-prior/` and
+  `experiments/k022-pipeline-audit/pn2-20260921-02/`.
 - **Signature-content impasse — formally recorded:**
   `docs/signature-content-impasse.md`. Uniform tuning exhausted, the
-  transferability gate is falsified, and consensus denoising is marginal.
-  No submission is justified by current evidence; remaining routes are the
-  promoter-neighbor prior (k024) and a Track-2 learned transfer model.
+  transferability gate is falsified, consensus denoising is marginal, and
+  the promoter-neighbor prior is coverage-bound. No submission is
+  justified by current evidence; the only remaining route with headroom
+  is a Track-2 learned transfer model.
 
 ## What the history establishes—and does not
 

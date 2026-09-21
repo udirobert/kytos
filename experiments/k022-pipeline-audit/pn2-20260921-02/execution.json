@@ -1,0 +1,17 @@
+{
+  "run_id": "pn2-20260921-02",
+  "date": "2026-09-21",
+  "status": "completed",
+  "function_call": "fc-01M32NB53SZRERKX5BVCE91XHX",
+  "supersedes": "pn2-20260921-01 (container preempted after splits.json; retries then hit the run_audit mkdir guard -- fixed in 23223b3)",
+  "purpose": "evaluate the promoter-neighbor prior (k024) through the k022 diagnostic",
+  "sources": {
+    "k562": "honest Replogle (extract-20260921-02-honest variant_k562)",
+    "consensus_w_ctr": "weighted 2:1:1:1 consensus + common-response centering (extract-20260921-02-honest)"
+  },
+  "promoter_pairs": "/kytos-vol/k024-promoter-prior/pairs-20260921-01/promoter_pairs.csv (85 pairs, UCSC wgEncodeGencodeCompV47-derived TSS)",
+  "eval": "32/47 paired targets, seed-0 identical splits to paired47-20260921-01 and consensus5-20260921-03",
+  "result": "promoter_neighbor_only med 0.270 on the 7 covered targets (vs k562 0.257 on the same targets); pncap improves borrowed arms on 6/7 covered targets by +0.002..+0.009; aggregate median unchanged ~0.268 -- coverage-limited, not a gap-closer",
+  "analysis": "experiments/k024-promoter-prior/pn2-20260921-02-analysis.json",
+  "official_score_computed": false
+}
