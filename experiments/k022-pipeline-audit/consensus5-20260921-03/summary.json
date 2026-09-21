@@ -1,0 +1,3740 @@
+{
+  "run_id": "k022-pipeline-audit",
+  "diagnostics_only": true,
+  "official_score_computed": false,
+  "cells_per_target": 400,
+  "fit_controls": 1600,
+  "eval_controls": 1600,
+  "pool_k": 4,
+  "seed": 0,
+  "transport": {
+    "kd_std": 2.0,
+    "noise_scale": 0.05,
+    "library_cap": "median",
+    "mean_correct": false
+  },
+  "arm_definitions": {
+    "observed_fit_split": "Independent observed fit cells versus evaluation cells; not an upper bound.",
+    "measured_transport": "Fit mean log1p(raw) minus fit-control mean; delta_scale=1.0.",
+    "measured_direct_moments": "Fit mean per-cell probabilities and separate pooled-count probabilities.",
+    "borrowed_transport_ds1p7[__name]": "Optional borrowed source vector(s); historical application with delta_scale=1.7. Multiple --source-npz inputs produce one arm per named source on identical splits."
+  },
+  "limitations": [
+    "Not a six-metric leaderboard surrogate and not a promotion gate.",
+    "Measured effects are split-sample diagnostics, not deployable predictions or perfect oracles.",
+    "Transport uses mean log1p(raw) shifts; dual-moment uses separate measured probability moments.",
+    "No additive signature-versus-generator headroom decomposition is justified.",
+    "Borrowed source effects, when provided, retain historical units without an implicit conversion.",
+    "DE significance and official metric calibration require the subsequent external evaluation."
+  ],
+  "dropped_targets": {
+    "DPH2": {
+      "available_cells": 670,
+      "required_cells": 800
+    },
+    "EIF3H": {
+      "available_cells": 323,
+      "required_cells": 800
+    },
+    "FUBP1": {
+      "available_cells": 288,
+      "required_cells": 800
+    },
+    "GNG12": {
+      "available_cells": 677,
+      "required_cells": 800
+    },
+    "HDAC3": {
+      "available_cells": 504,
+      "required_cells": 800
+    },
+    "JAZF1": {
+      "available_cells": 709,
+      "required_cells": 800
+    },
+    "JMJD8": {
+      "available_cells": 767,
+      "required_cells": 800
+    },
+    "MAX": {
+      "available_cells": 161,
+      "required_cells": 800
+    },
+    "PPP2R3C": {
+      "available_cells": 624,
+      "required_cells": 800
+    },
+    "SMARCE1": {
+      "available_cells": 597,
+      "required_cells": 800
+    },
+    "STRAP": {
+      "available_cells": 644,
+      "required_cells": 800
+    },
+    "SUPV3L1": {
+      "available_cells": 339,
+      "required_cells": 800
+    },
+    "TCF7L2": {
+      "available_cells": 484,
+      "required_cells": 800
+    },
+    "WAC": {
+      "available_cells": 267,
+      "required_cells": 800
+    },
+    "ZNF598": {
+      "available_cells": 255,
+      "required_cells": 800
+    }
+  },
+  "targets": {
+    "ACLY": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02627514512346831,
+          "bulk_probability_l1": 0.024806478369865454,
+          "raw_log_mean_mse": 0.0007047463351239409,
+          "raw_log_delta_cosine": 0.8863820006368166,
+          "probability_variance_ratio": 0.9878583280959378,
+          "pred_zero_fraction": 0.5151258505282956,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 55137.0,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.060095756608973525,
+          "bulk_probability_l1": 0.060246358399203684,
+          "raw_log_mean_mse": 0.00766166522380496,
+          "raw_log_delta_cosine": 0.4313498634897053,
+          "probability_variance_ratio": 18.472466533263205,
+          "pred_zero_fraction": 0.5171383526027549,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54663.5,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.026382179140601626,
+          "bulk_probability_l1": 0.024813990058037347,
+          "raw_log_mean_mse": 0.002693297119473991,
+          "raw_log_delta_cosine": 0.7409211459320004,
+          "probability_variance_ratio": 0.2818872836648413,
+          "pred_zero_fraction": 0.4669410023787133,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.13384890548778555,
+          "bulk_probability_l1": 0.13221662495830966,
+          "raw_log_mean_mse": 0.015595174473144662,
+          "raw_log_delta_cosine": -0.00859685361615738,
+          "probability_variance_ratio": 12.76022067620117,
+          "pred_zero_fraction": 0.517662914200365,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54198.5,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.15233678631077469,
+          "bulk_probability_l1": 0.15430982401311227,
+          "raw_log_mean_mse": 0.015786585212708506,
+          "raw_log_delta_cosine": 0.007628090543262354,
+          "probability_variance_ratio": 1.919512318319,
+          "pred_zero_fraction": 0.5154931681141782,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54669.0,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.08238777912690824,
+          "bulk_probability_l1": 0.08144477355706174,
+          "raw_log_mean_mse": 0.009711091138046211,
+          "raw_log_delta_cosine": -0.017915702897672223,
+          "probability_variance_ratio": 1.038804433161429,
+          "pred_zero_fraction": 0.5162301543397687,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54197.0,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.0860302868454885,
+          "bulk_probability_l1": 0.084873110595652,
+          "raw_log_mean_mse": 0.010119608838722325,
+          "raw_log_delta_cosine": -0.015925582864489564,
+          "probability_variance_ratio": 1.0533319370069354,
+          "pred_zero_fraction": 0.5163774409470598,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 53984.5,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.08588057146791267,
+          "bulk_probability_l1": 0.08519648042234401,
+          "raw_log_mean_mse": 0.00939391210812934,
+          "raw_log_delta_cosine": -0.01204881921789607,
+          "probability_variance_ratio": 1.0464648743704617,
+          "pred_zero_fraction": 0.5161712396968523,
+          "real_zero_fraction": 0.5137775903081263,
+          "pred_median_depth": 54409.5,
+          "real_median_depth": 56152.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015414036352778284,
+        "bulk_probability": 0.00016182542978984286
+      }
+    },
+    "ANXA6": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027970168151295396,
+          "bulk_probability_l1": 0.026585775520226153,
+          "raw_log_mean_mse": 0.0008116466699954304,
+          "raw_log_delta_cosine": 0.5115422101133372,
+          "probability_variance_ratio": 1.0371725500404785,
+          "pred_zero_fraction": 0.5195607678265199,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 54229.5,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04385468672083165,
+          "bulk_probability_l1": 0.04300468706230848,
+          "raw_log_mean_mse": 0.008040861706187518,
+          "raw_log_delta_cosine": 0.3307311891523715,
+          "probability_variance_ratio": 1.1234829730329936,
+          "pred_zero_fraction": 0.5211699950212978,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 50189.0,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02809881199585972,
+          "bulk_probability_l1": 0.026591182973775586,
+          "raw_log_mean_mse": 0.004832160579190855,
+          "raw_log_delta_cosine": -0.023264581590212437,
+          "probability_variance_ratio": 0.28834135978197356,
+          "pred_zero_fraction": 0.46543453006582947,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.07045024777522517,
+          "bulk_probability_l1": 0.06967948920256165,
+          "raw_log_mean_mse": 0.006799094378870269,
+          "raw_log_delta_cosine": 0.2854265248418855,
+          "probability_variance_ratio": 1.1706517638741225,
+          "pred_zero_fraction": 0.5210287934944957,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 53976.0,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.08746592545476227,
+          "bulk_probability_l1": 0.08519053000961371,
+          "raw_log_mean_mse": 0.008994301377749743,
+          "raw_log_delta_cosine": 0.26558139920024887,
+          "probability_variance_ratio": 1.2132043374470927,
+          "pred_zero_fraction": 0.5217068650771699,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 52436.5,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.04217183962756811,
+          "bulk_probability_l1": 0.0413499542989535,
+          "raw_log_mean_mse": 0.005477713800665025,
+          "raw_log_delta_cosine": 0.31603074071205656,
+          "probability_variance_ratio": 1.1035200047623117,
+          "pred_zero_fraction": 0.5205051999778725,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 53758.5,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.04462400673384216,
+          "bulk_probability_l1": 0.04368891588201916,
+          "raw_log_mean_mse": 0.005541442278493823,
+          "raw_log_delta_cosine": 0.31432608417479285,
+          "probability_variance_ratio": 1.1081415632440486,
+          "pred_zero_fraction": 0.5205201360845273,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 53783.5,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.044857534717619496,
+          "bulk_probability_l1": 0.044218722795228184,
+          "raw_log_mean_mse": 0.005046462179304727,
+          "raw_log_delta_cosine": 0.31547139976946376,
+          "probability_variance_ratio": 1.1076657250675626,
+          "pred_zero_fraction": 0.5206524865851634,
+          "real_zero_fraction": 0.5177333075178403,
+          "pred_median_depth": 54312.5,
+          "real_median_depth": 53387.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001555979113925219,
+        "bulk_probability": 0.00017118891078273424
+      }
+    },
+    "ARPC2": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.03058896691812802,
+          "bulk_probability_l1": 0.029091586647668515,
+          "raw_log_mean_mse": 0.0011223417955872226,
+          "raw_log_delta_cosine": 0.7914675909472548,
+          "probability_variance_ratio": 0.9580840414828068,
+          "pred_zero_fraction": 0.5214637384521768,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 51639.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.045418238069456614,
+          "bulk_probability_l1": 0.04445295987661151,
+          "raw_log_mean_mse": 0.004631880803212845,
+          "raw_log_delta_cosine": 0.8699586129327708,
+          "probability_variance_ratio": 1.0770201563467428,
+          "pred_zero_fraction": 0.523859877192012,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 48515.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.03074390231901488,
+          "bulk_probability_l1": 0.02909756476072066,
+          "raw_log_mean_mse": 0.010405970084418114,
+          "raw_log_delta_cosine": -0.4467527241187333,
+          "probability_variance_ratio": 0.2755575432898402,
+          "pred_zero_fraction": 0.4658604857000609,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.06859449648078964,
+          "bulk_probability_l1": 0.06726472910876251,
+          "raw_log_mean_mse": 0.004012141819813018,
+          "raw_log_delta_cosine": 0.7581216332510872,
+          "probability_variance_ratio": 1.0720734267707421,
+          "pred_zero_fraction": 0.5217281628588815,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 50701.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.09923917622043665,
+          "bulk_probability_l1": 0.09457786546967513,
+          "raw_log_mean_mse": 0.0074928309868802475,
+          "raw_log_delta_cosine": 0.7220015450825097,
+          "probability_variance_ratio": 1.1866201759436734,
+          "pred_zero_fraction": 0.5245239807490181,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 48437.5,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.05001187982257653,
+          "bulk_probability_l1": 0.04859599173390913,
+          "raw_log_mean_mse": 0.003226559913728029,
+          "raw_log_delta_cosine": 0.798055366477057,
+          "probability_variance_ratio": 1.0421151420441133,
+          "pred_zero_fraction": 0.5211738673452453,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 50043.0,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.05174264914993944,
+          "bulk_probability_l1": 0.05029048287288508,
+          "raw_log_mean_mse": 0.0032750374734461,
+          "raw_log_delta_cosine": 0.7951573213293522,
+          "probability_variance_ratio": 1.0426236981782337,
+          "pred_zero_fraction": 0.5212190905570615,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 50129.5,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.04810219237490361,
+          "bulk_probability_l1": 0.04708967762525804,
+          "raw_log_mean_mse": 0.0027936839101107484,
+          "raw_log_delta_cosine": 0.7986043722029741,
+          "probability_variance_ratio": 1.0325639785950063,
+          "pred_zero_fraction": 0.5210951761907396,
+          "real_zero_fraction": 0.5242313436964098,
+          "pred_median_depth": 51469.5,
+          "real_median_depth": 49716.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001569638027033547,
+        "bulk_probability": 0.0001758303288244422
+      }
+    },
+    "CENPB": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027659205088798437,
+          "bulk_probability_l1": 0.02705735317315447,
+          "raw_log_mean_mse": 0.0007949226310930092,
+          "raw_log_delta_cosine": 0.3612214304587188,
+          "probability_variance_ratio": 0.9719382782959812,
+          "pred_zero_fraction": 0.5134069535874315,
+          "real_zero_fraction": 0.5148896387674946,
+          "pred_median_depth": 55659.0,
+          "real_median_depth": 56425.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.03667059909791471,
+          "bulk_probability_l1": 0.03733962335733477,
+          "raw_log_mean_mse": 0.004282302705397306,
+          "raw_log_delta_cosine": -0.05908541712784253,
+          "probability_variance_ratio": 1.0482454380678212,
+          "pred_zero_fraction": 0.5159626873928196,
+          "real_zero_fraction": 0.5148896387674946,
+          "pred_median_depth": 54569.5,
+          "real_median_depth": 56425.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027745165965784843,
+          "bulk_probability_l1": 0.02706276321313453,
+          "raw_log_mean_mse": 0.0035466232798146246,
+          "raw_log_delta_cosine": 0.265209680863704,
+          "probability_variance_ratio": 0.28945297544333903,
+          "pred_zero_fraction": 0.46656801460419317,
+          "real_zero_fraction": 0.5148896387674946,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 56425.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.06508625454648173,
+          "bulk_probability_l1": 0.06570292699607921,
+          "raw_log_mean_mse": 0.0056693185290269225,
+          "raw_log_delta_cosine": -0.06343465050137961,
+          "probability_variance_ratio": 1.041292597375975,
+          "pred_zero_fraction": 0.5153714665043978,
+          "real_zero_fraction": 0.5148896387674946,
+          "pred_median_depth": 54501.5,
+          "real_median_depth": 56425.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.13974066745851096,
+          "bulk_probability_l1": 0.1373372542002727,
+          "raw_log_mean_mse": 0.015059625881292426,
+          "raw_log_delta_cosine": -0.08266078088046372,
+          "probability_variance_ratio": 1.3033600915418158,
+          "pred_zero_fraction": 0.5194798639154727,
+          "real_zero_fraction": 0.5148896387674946,
+          "pred_median_depth": 52778.5,
+          "real_median_depth": 56425.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.03687115637521293,
+          "bulk_probability_l1": 0.03711536988645989,
+          "raw_log_mean_mse": 0.005093153534518297,
+          "raw_log_delta_cosine": -0.09011091777402899,
+          "probability_variance_ratio": 0.9838693920279868,
+          "pred_zero_fraction": 0.5150633401559994,
+          "real_zero_fraction": 0.5148896387674946,
+          "pred_median_depth": 53680.0,
+          "real_median_depth": 56425.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.03969730031001846,
+          "bulk_probability_l1": 0.03989187727922714,
+          "raw_log_mean_mse": 0.00503673178848154,
+          "raw_log_delta_cosine": -0.08654483597400095,
+          "probability_variance_ratio": 0.9856744698916924,
+          "pred_zero_fraction": 0.5150608508048902,
+          "real_zero_fraction": 0.5148896387674946,
+          "pred_median_depth": 53868.5,
+          "real_median_depth": 56425.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.039304520821618394,
+          "bulk_probability_l1": 0.03960665095489633,
+          "raw_log_mean_mse": 0.004598456744561227,
+          "raw_log_delta_cosine": -0.0796339180031792,
+          "probability_variance_ratio": 0.9846593105501086,
+          "pred_zero_fraction": 0.5151973502240417,
+          "real_zero_fraction": 0.5148896387674946,
+          "pred_median_depth": 54286.0,
+          "real_median_depth": 56425.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001566406874947818,
+        "bulk_probability": 0.0001597777089868467
+      }
+    },
+    "COX4I1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027882931068538147,
+          "bulk_probability_l1": 0.02705168272319502,
+          "raw_log_mean_mse": 0.0008245254315757699,
+          "raw_log_delta_cosine": 0.70503006255743,
+          "probability_variance_ratio": 1.0186209375348452,
+          "pred_zero_fraction": 0.5144101620844166,
+          "real_zero_fraction": 0.5127753498921281,
+          "pred_median_depth": 54553.5,
+          "real_median_depth": 56907.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.03818135543872012,
+          "bulk_probability_l1": 0.03786531589564603,
+          "raw_log_mean_mse": 0.010200992539847485,
+          "raw_log_delta_cosine": -0.23807437846579893,
+          "probability_variance_ratio": 1.1530235379935367,
+          "pred_zero_fraction": 0.5205580295402998,
+          "real_zero_fraction": 0.5127753498921281,
+          "pred_median_depth": 53469.0,
+          "real_median_depth": 56907.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027995340726566967,
+          "bulk_probability_l1": 0.02705917694670954,
+          "raw_log_mean_mse": 0.0023068916705987416,
+          "raw_log_delta_cosine": 0.6849439972124609,
+          "probability_variance_ratio": 0.30146317549440504,
+          "pred_zero_fraction": 0.4667715882060076,
+          "real_zero_fraction": 0.5127753498921281,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 56907.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.0892541403047232,
+          "bulk_probability_l1": 0.08669781839496901,
+          "raw_log_mean_mse": 0.015015087171202517,
+          "raw_log_delta_cosine": -0.3304549524626104,
+          "probability_variance_ratio": 1.1675321117064625,
+          "pred_zero_fraction": 0.5218246943630027,
+          "real_zero_fraction": 0.5127753498921281,
+          "pred_median_depth": 51996.5,
+          "real_median_depth": 56907.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.1004876654580482,
+          "bulk_probability_l1": 0.10186313676055003,
+          "raw_log_mean_mse": 0.012547563730365542,
+          "raw_log_delta_cosine": -0.2806164052484531,
+          "probability_variance_ratio": 1.2798172707931204,
+          "pred_zero_fraction": 0.5193114178237539,
+          "real_zero_fraction": 0.5127753498921281,
+          "pred_median_depth": 54529.0,
+          "real_median_depth": 56907.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.05503206191021964,
+          "bulk_probability_l1": 0.05430905685320814,
+          "raw_log_mean_mse": 0.01144456848259895,
+          "raw_log_delta_cosine": -0.36467226975370076,
+          "probability_variance_ratio": 1.1095472394964412,
+          "pred_zero_fraction": 0.5202684350279361,
+          "real_zero_fraction": 0.5127753498921281,
+          "pred_median_depth": 52780.5,
+          "real_median_depth": 56907.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.05815859118508568,
+          "bulk_probability_l1": 0.057189563150703754,
+          "raw_log_mean_mse": 0.011782753386385568,
+          "raw_log_delta_cosine": -0.36080910607715616,
+          "probability_variance_ratio": 1.105545912888309,
+          "pred_zero_fraction": 0.5203716048016818,
+          "real_zero_fraction": 0.5127753498921281,
+          "pred_median_depth": 52604.0,
+          "real_median_depth": 56907.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.05846928096009398,
+          "bulk_probability_l1": 0.057853661612442854,
+          "raw_log_mean_mse": 0.011099986404216512,
+          "raw_log_delta_cosine": -0.35115779000803327,
+          "probability_variance_ratio": 1.1131617739169786,
+          "pred_zero_fraction": 0.520377413287603,
+          "real_zero_fraction": 0.5127753498921281,
+          "pred_median_depth": 53335.5,
+          "real_median_depth": 56907.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015573376521646207,
+        "bulk_probability": 0.00015836252622800597
+      }
+    },
+    "COX6C": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.026954984240314603,
+          "bulk_probability_l1": 0.02557133419205514,
+          "raw_log_mean_mse": 0.0006842230295821582,
+          "raw_log_delta_cosine": 0.7775393485782525,
+          "probability_variance_ratio": 0.9950984820743327,
+          "pred_zero_fraction": 0.5153299773192455,
+          "real_zero_fraction": 0.5166451844885767,
+          "pred_median_depth": 54340.5,
+          "real_median_depth": 53724.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04293470123465555,
+          "bulk_probability_l1": 0.04318068514297748,
+          "raw_log_mean_mse": 0.005052600978373648,
+          "raw_log_delta_cosine": 0.39223793545383656,
+          "probability_variance_ratio": 1.3939689478191284,
+          "pred_zero_fraction": 0.5168325773081817,
+          "real_zero_fraction": 0.5166451844885767,
+          "pred_median_depth": 54367.0,
+          "real_median_depth": 53724.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02708744252772625,
+          "bulk_probability_l1": 0.02557656131800274,
+          "raw_log_mean_mse": 0.003849058152656913,
+          "raw_log_delta_cosine": 0.44684082908001344,
+          "probability_variance_ratio": 0.2892862730781739,
+          "pred_zero_fraction": 0.4667876306909332,
+          "real_zero_fraction": 0.5166451844885767,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53724.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.1310421624159211,
+          "bulk_probability_l1": 0.12313594845963927,
+          "raw_log_mean_mse": 0.015013727056395693,
+          "raw_log_delta_cosine": 0.07198363195007738,
+          "probability_variance_ratio": 1.3542454760327371,
+          "pred_zero_fraction": 0.5205645295126404,
+          "real_zero_fraction": 0.5166451844885767,
+          "pred_median_depth": 49903.0,
+          "real_median_depth": 53724.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.10946251496931596,
+          "bulk_probability_l1": 0.10986323896632204,
+          "raw_log_mean_mse": 0.00969127044988465,
+          "raw_log_delta_cosine": 0.10739262430965454,
+          "probability_variance_ratio": 1.246186325667526,
+          "pred_zero_fraction": 0.5165521104165514,
+          "real_zero_fraction": 0.5166451844885767,
+          "pred_median_depth": 54406.5,
+          "real_median_depth": 53724.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.07669982505657999,
+          "bulk_probability_l1": 0.07458329113425055,
+          "raw_log_mean_mse": 0.007374696158527778,
+          "raw_log_delta_cosine": 0.10587571676416446,
+          "probability_variance_ratio": 1.0953654917237847,
+          "pred_zero_fraction": 0.5162045693422581,
+          "real_zero_fraction": 0.5166451844885767,
+          "pred_median_depth": 53008.0,
+          "real_median_depth": 53724.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.08263875780732666,
+          "bulk_probability_l1": 0.07995905848627038,
+          "raw_log_mean_mse": 0.008055621374699175,
+          "raw_log_delta_cosine": 0.10074672311805209,
+          "probability_variance_ratio": 1.1175383665742058,
+          "pred_zero_fraction": 0.5167473861813354,
+          "real_zero_fraction": 0.5166451844885767,
+          "pred_median_depth": 52589.5,
+          "real_median_depth": 53724.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.07733835035066666,
+          "bulk_probability_l1": 0.07537833622408999,
+          "raw_log_mean_mse": 0.007096148032602072,
+          "raw_log_delta_cosine": 0.11319903265289097,
+          "probability_variance_ratio": 1.1020534654898546,
+          "pred_zero_fraction": 0.5161138463240582,
+          "real_zero_fraction": 0.5166451844885767,
+          "pred_median_depth": 53114.5,
+          "real_median_depth": 53724.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015448396396649067,
+        "bulk_probability": 0.00015997906609132028
+      }
+    },
+    "CSK": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02758052286271781,
+          "bulk_probability_l1": 0.026821553388059124,
+          "raw_log_mean_mse": 0.000766192768288276,
+          "raw_log_delta_cosine": 0.8288145630128516,
+          "probability_variance_ratio": 1.0406114418422265,
+          "pred_zero_fraction": 0.5215021850970847,
+          "real_zero_fraction": 0.5191995353211263,
+          "pred_median_depth": 51493.5,
+          "real_median_depth": 53508.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.043301203430519276,
+          "bulk_probability_l1": 0.041295240074335736,
+          "raw_log_mean_mse": 0.0063160558566704005,
+          "raw_log_delta_cosine": 0.6057351691285578,
+          "probability_variance_ratio": 1.098990122327979,
+          "pred_zero_fraction": 0.5195300658295071,
+          "real_zero_fraction": 0.5191995353211263,
+          "pred_median_depth": 50838.0,
+          "real_median_depth": 53508.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027690712783054967,
+          "bulk_probability_l1": 0.0268254981628392,
+          "raw_log_mean_mse": 0.006420865144793883,
+          "raw_log_delta_cosine": 0.12343649303560297,
+          "probability_variance_ratio": 0.2949941079547218,
+          "pred_zero_fraction": 0.465434944957681,
+          "real_zero_fraction": 0.5191995353211263,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53508.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.09111650949308785,
+          "bulk_probability_l1": 0.09129576967330043,
+          "raw_log_mean_mse": 0.006541837160723459,
+          "raw_log_delta_cosine": 0.3323735497775136,
+          "probability_variance_ratio": 1.1790778076129134,
+          "pred_zero_fraction": 0.5171819162471649,
+          "real_zero_fraction": 0.5191995353211263,
+          "pred_median_depth": 54564.0,
+          "real_median_depth": 53508.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.08831343565430332,
+          "bulk_probability_l1": 0.08686805743664032,
+          "raw_log_mean_mse": 0.006693975884214893,
+          "raw_log_delta_cosine": 0.3811728022463716,
+          "probability_variance_ratio": 1.1658343246428196,
+          "pred_zero_fraction": 0.5178552857221884,
+          "real_zero_fraction": 0.5191995353211263,
+          "pred_median_depth": 53941.0,
+          "real_median_depth": 53508.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.05305103686238324,
+          "bulk_probability_l1": 0.05248214160878599,
+          "raw_log_mean_mse": 0.004933012564977006,
+          "raw_log_delta_cosine": 0.4250164038365307,
+          "probability_variance_ratio": 1.076297919117484,
+          "pred_zero_fraction": 0.5173556176356696,
+          "real_zero_fraction": 0.5191995353211263,
+          "pred_median_depth": 53413.0,
+          "real_median_depth": 53508.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.055941579949853416,
+          "bulk_probability_l1": 0.055427850961701025,
+          "raw_log_mean_mse": 0.004851991219248543,
+          "raw_log_delta_cosine": 0.4171907857828158,
+          "probability_variance_ratio": 1.082177061002409,
+          "pred_zero_fraction": 0.5173676494993638,
+          "real_zero_fraction": 0.5191995353211263,
+          "pred_median_depth": 53971.5,
+          "real_median_depth": 53508.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.055291939920145,
+          "bulk_probability_l1": 0.05517556501757739,
+          "raw_log_mean_mse": 0.004428042071689467,
+          "raw_log_delta_cosine": 0.4161531540323561,
+          "probability_variance_ratio": 1.0781613667971486,
+          "pred_zero_fraction": 0.5171564695469382,
+          "real_zero_fraction": 0.5191995353211263,
+          "pred_median_depth": 54258.5,
+          "real_median_depth": 53508.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015425650496655558,
+        "bulk_probability": 0.00017351498286737795
+      }
+    },
+    "CTSV": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02816601228941554,
+          "bulk_probability_l1": 0.026618525554880215,
+          "raw_log_mean_mse": 0.0011426594782814774,
+          "raw_log_delta_cosine": 0.6760525604771578,
+          "probability_variance_ratio": 0.9892389154587847,
+          "pred_zero_fraction": 0.5166310781656248,
+          "real_zero_fraction": 0.5215884826022017,
+          "pred_median_depth": 54527.0,
+          "real_median_depth": 53239.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.040006761191032754,
+          "bulk_probability_l1": 0.03957103521817154,
+          "raw_log_mean_mse": 0.0027339552541617482,
+          "raw_log_delta_cosine": 0.7428931553416377,
+          "probability_variance_ratio": 1.016510979778802,
+          "pred_zero_fraction": 0.5168931515185042,
+          "real_zero_fraction": 0.5215884826022017,
+          "pred_median_depth": 53996.0,
+          "real_median_depth": 53239.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02826794926961226,
+          "bulk_probability_l1": 0.026623694682085162,
+          "raw_log_mean_mse": 0.007430990401440064,
+          "raw_log_delta_cosine": -0.10072536108975086,
+          "probability_variance_ratio": 0.2850250920541031,
+          "pred_zero_fraction": 0.4652687116225037,
+          "real_zero_fraction": 0.5215884826022017,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53239.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.09442043265137468,
+          "bulk_probability_l1": 0.08862404036231837,
+          "raw_log_mean_mse": 0.00745018860235453,
+          "raw_log_delta_cosine": 0.5227003308819808,
+          "probability_variance_ratio": 1.1061134718432006,
+          "pred_zero_fraction": 0.5195111191016208,
+          "real_zero_fraction": 0.5215884826022017,
+          "pred_median_depth": 51240.5,
+          "real_median_depth": 53239.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.11390201764519209,
+          "bulk_probability_l1": 0.11039484125038908,
+          "raw_log_mean_mse": 0.008641670475796474,
+          "raw_log_delta_cosine": 0.4524569275548624,
+          "probability_variance_ratio": 1.1752484237784224,
+          "pred_zero_fraction": 0.518478868175029,
+          "real_zero_fraction": 0.5215884826022017,
+          "pred_median_depth": 52973.0,
+          "real_median_depth": 53239.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.07555813764055455,
+          "bulk_probability_l1": 0.07096924932169457,
+          "raw_log_mean_mse": 0.005804917118744411,
+          "raw_log_delta_cosine": 0.5501606072308932,
+          "probability_variance_ratio": 1.0596049272630916,
+          "pred_zero_fraction": 0.5179381257952094,
+          "real_zero_fraction": 0.5215884826022017,
+          "pred_median_depth": 51632.0,
+          "real_median_depth": 53239.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.07705834765959432,
+          "bulk_probability_l1": 0.07227590692681031,
+          "raw_log_mean_mse": 0.005921833206262312,
+          "raw_log_delta_cosine": 0.5495282132151449,
+          "probability_variance_ratio": 1.0589848892226326,
+          "pred_zero_fraction": 0.5180482104331471,
+          "real_zero_fraction": 0.5215884826022017,
+          "pred_median_depth": 51408.0,
+          "real_median_depth": 53239.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.07076233088072285,
+          "bulk_probability_l1": 0.06729701374813678,
+          "raw_log_mean_mse": 0.004944340553650914,
+          "raw_log_delta_cosine": 0.5551447408166582,
+          "probability_variance_ratio": 1.0367562250847346,
+          "pred_zero_fraction": 0.5172536925374785,
+          "real_zero_fraction": 0.5215884826022017,
+          "pred_median_depth": 52443.0,
+          "real_median_depth": 53239.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015607732144493442,
+        "bulk_probability": 0.00016669206294467578
+      }
+    },
+    "DOT1L": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.0326124981431241,
+          "bulk_probability_l1": 0.03009643354650285,
+          "raw_log_mean_mse": 0.0008180453155426862,
+          "raw_log_delta_cosine": 0.9768926886903716,
+          "probability_variance_ratio": 1.026934401060407,
+          "pred_zero_fraction": 0.5212435691763013,
+          "real_zero_fraction": 0.5233545389168557,
+          "pred_median_depth": 50337.5,
+          "real_median_depth": 48936.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.10817095903532045,
+          "bulk_probability_l1": 0.11233819190250095,
+          "raw_log_mean_mse": 0.005989342669771345,
+          "raw_log_delta_cosine": 0.9405903937945094,
+          "probability_variance_ratio": 45.790259891755426,
+          "pred_zero_fraction": 0.5228516899928086,
+          "real_zero_fraction": 0.5233545389168557,
+          "pred_median_depth": 50403.0,
+          "real_median_depth": 48936.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.0327246434484904,
+          "bulk_probability_l1": 0.030129912576566685,
+          "raw_log_mean_mse": 0.01536793390971815,
+          "raw_log_delta_cosine": 0.5986321450874347,
+          "probability_variance_ratio": 0.21559873561580886,
+          "pred_zero_fraction": 0.4566002378713282,
+          "real_zero_fraction": 0.5233545389168557,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 48936.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.15749563306759704,
+          "bulk_probability_l1": 0.15286401668163047,
+          "raw_log_mean_mse": 0.015634455287747494,
+          "raw_log_delta_cosine": 0.41258920327376003,
+          "probability_variance_ratio": 0.6710180341483262,
+          "pred_zero_fraction": 0.5170761188250264,
+          "real_zero_fraction": 0.5233545389168557,
+          "pred_median_depth": 53766.0,
+          "real_median_depth": 48936.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.1573849805248761,
+          "bulk_probability_l1": 0.15228500414780433,
+          "raw_log_mean_mse": 0.01573411336944958,
+          "raw_log_delta_cosine": 0.41255550903690075,
+          "probability_variance_ratio": 0.6856113325743383,
+          "pred_zero_fraction": 0.517557531670078,
+          "real_zero_fraction": 0.5233545389168557,
+          "pred_median_depth": 52684.5,
+          "real_median_depth": 48936.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.14332379643778143,
+          "bulk_probability_l1": 0.13834001145805333,
+          "raw_log_mean_mse": 0.014412092745465984,
+          "raw_log_delta_cosine": 0.45649541817948713,
+          "probability_variance_ratio": 0.6427980331723144,
+          "pred_zero_fraction": 0.5165147701499142,
+          "real_zero_fraction": 0.5233545389168557,
+          "pred_median_depth": 52259.5,
+          "real_median_depth": 48936.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.14448128200925484,
+          "bulk_probability_l1": 0.13958147043495986,
+          "raw_log_mean_mse": 0.014467180562025991,
+          "raw_log_delta_cosine": 0.4532256843371183,
+          "probability_variance_ratio": 0.6420643932447537,
+          "pred_zero_fraction": 0.5165172595010235,
+          "real_zero_fraction": 0.5233545389168557,
+          "pred_median_depth": 52562.5,
+          "real_median_depth": 48936.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.14258600253193981,
+          "bulk_probability_l1": 0.13782872054958553,
+          "raw_log_mean_mse": 0.014283833386178672,
+          "raw_log_delta_cosine": 0.4547644461781352,
+          "probability_variance_ratio": 0.6352975094003034,
+          "pred_zero_fraction": 0.5163452176799248,
+          "real_zero_fraction": 0.5233545389168557,
+          "pred_median_depth": 53586.0,
+          "real_median_depth": 48936.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015325718273045384,
+        "bulk_probability": 0.0002207434418950394
+      }
+    },
+    "EHMT1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.029482107057674466,
+          "bulk_probability_l1": 0.027759144249102446,
+          "raw_log_mean_mse": 0.0007566810107763729,
+          "raw_log_delta_cosine": 0.90705242187207,
+          "probability_variance_ratio": 1.0312269675415788,
+          "pred_zero_fraction": 0.5169801405100404,
+          "real_zero_fraction": 0.5175880953698069,
+          "pred_median_depth": 54469.0,
+          "real_median_depth": 53370.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.05115116657313039,
+          "bulk_probability_l1": 0.04905160372554711,
+          "raw_log_mean_mse": 0.004712919166749781,
+          "raw_log_delta_cosine": 0.705436248387451,
+          "probability_variance_ratio": 3.2696435923117013,
+          "pred_zero_fraction": 0.5154597001714887,
+          "real_zero_fraction": 0.5175880953698069,
+          "pred_median_depth": 54403.0,
+          "real_median_depth": 53370.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02960016739793704,
+          "bulk_probability_l1": 0.02776886782599458,
+          "raw_log_mean_mse": 0.005380685344400865,
+          "raw_log_delta_cosine": 0.5671645256038291,
+          "probability_variance_ratio": 0.2914275594004259,
+          "pred_zero_fraction": 0.4655280190297063,
+          "real_zero_fraction": 0.5175880953698069,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53370.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.1328219327417964,
+          "bulk_probability_l1": 0.12518406313612873,
+          "raw_log_mean_mse": 0.015010828570358856,
+          "raw_log_delta_cosine": 0.14819269534398846,
+          "probability_variance_ratio": 1.192850715297364,
+          "pred_zero_fraction": 0.5185038999834044,
+          "real_zero_fraction": 0.5175880953698069,
+          "pred_median_depth": 51204.5,
+          "real_median_depth": 53370.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.22085310614826864,
+          "bulk_probability_l1": 0.21744667248134955,
+          "raw_log_mean_mse": 0.03107124857034413,
+          "raw_log_delta_cosine": 0.11369281993383867,
+          "probability_variance_ratio": 1.9868923829431464,
+          "pred_zero_fraction": 0.5216384079216685,
+          "real_zero_fraction": 0.5175880953698069,
+          "pred_median_depth": 54164.5,
+          "real_median_depth": 53370.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.08611604055206921,
+          "bulk_probability_l1": 0.08327272676336919,
+          "raw_log_mean_mse": 0.008296933500921477,
+          "raw_log_delta_cosine": 0.1914502435397147,
+          "probability_variance_ratio": 1.03234052188137,
+          "pred_zero_fraction": 0.5138681750290424,
+          "real_zero_fraction": 0.5175880953698069,
+          "pred_median_depth": 53689.5,
+          "real_median_depth": 53370.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.0910487051739044,
+          "bulk_probability_l1": 0.08781952770312929,
+          "raw_log_mean_mse": 0.008977729091681989,
+          "raw_log_delta_cosine": 0.18478388505813367,
+          "probability_variance_ratio": 1.0450564370890065,
+          "pred_zero_fraction": 0.5145304807213587,
+          "real_zero_fraction": 0.5175880953698069,
+          "pred_median_depth": 53104.5,
+          "real_median_depth": 53370.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.08754656791479196,
+          "bulk_probability_l1": 0.08500681090359645,
+          "raw_log_mean_mse": 0.008221712107340653,
+          "raw_log_delta_cosine": 0.19180987053300966,
+          "probability_variance_ratio": 1.032026668298724,
+          "pred_zero_fraction": 0.5143451623610112,
+          "real_zero_fraction": 0.5175880953698069,
+          "pred_median_depth": 53789.5,
+          "real_median_depth": 53370.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015591615551554263,
+        "bulk_probability": 0.0001734975204634825
+      }
+    },
+    "GSTZ1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02651197220834235,
+          "bulk_probability_l1": 0.025756673009789677,
+          "raw_log_mean_mse": 0.0006921918080475942,
+          "raw_log_delta_cosine": 0.3229983064745665,
+          "probability_variance_ratio": 1.0005988398127277,
+          "pred_zero_fraction": 0.5164400896166399,
+          "real_zero_fraction": 0.5157351883609006,
+          "pred_median_depth": 54620.5,
+          "real_median_depth": 54939.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.037346699242384956,
+          "bulk_probability_l1": 0.03778032735076603,
+          "raw_log_mean_mse": 0.005709310609934273,
+          "raw_log_delta_cosine": 0.03945207602990761,
+          "probability_variance_ratio": 1.0534790037569455,
+          "pred_zero_fraction": 0.5173691707694861,
+          "real_zero_fraction": 0.5157351883609006,
+          "pred_median_depth": 54092.5,
+          "real_median_depth": 54939.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.026642293674568007,
+          "bulk_probability_l1": 0.025760927356689105,
+          "raw_log_mean_mse": 0.0038838828840097503,
+          "raw_log_delta_cosine": 0.16851331545849982,
+          "probability_variance_ratio": 0.2878366462165992,
+          "pred_zero_fraction": 0.46596628312219945,
+          "real_zero_fraction": 0.5157351883609006,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 54939.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.07841903798529917,
+          "bulk_probability_l1": 0.07800567795221577,
+          "raw_log_mean_mse": 0.008401346768363713,
+          "raw_log_delta_cosine": 0.02056033975820792,
+          "probability_variance_ratio": 1.1156974209878028,
+          "pred_zero_fraction": 0.5183373900536594,
+          "real_zero_fraction": 0.5157351883609006,
+          "pred_median_depth": 53889.0,
+          "real_median_depth": 54939.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.10732637325133747,
+          "bulk_probability_l1": 0.1095174954098502,
+          "raw_log_mean_mse": 0.009378038794876864,
+          "raw_log_delta_cosine": 0.022886257413136966,
+          "probability_variance_ratio": 1.2028420605778996,
+          "pred_zero_fraction": 0.5180028489240471,
+          "real_zero_fraction": 0.5157351883609006,
+          "pred_median_depth": 54671.0,
+          "real_median_depth": 54939.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.04323602387872914,
+          "bulk_probability_l1": 0.042731836660592416,
+          "raw_log_mean_mse": 0.005011860369958414,
+          "raw_log_delta_cosine": 0.027078223560743367,
+          "probability_variance_ratio": 1.0169415525478331,
+          "pred_zero_fraction": 0.5175872655861039,
+          "real_zero_fraction": 0.5157351883609006,
+          "pred_median_depth": 54574.5,
+          "real_median_depth": 54939.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.045503356396177516,
+          "bulk_probability_l1": 0.045294134678163435,
+          "raw_log_mean_mse": 0.005306515272752727,
+          "raw_log_delta_cosine": 0.025858573347153326,
+          "probability_variance_ratio": 1.0196275662392682,
+          "pred_zero_fraction": 0.5173942025778614,
+          "real_zero_fraction": 0.5157351883609006,
+          "pred_median_depth": 54412.5,
+          "real_median_depth": 54939.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.04869491489456846,
+          "bulk_probability_l1": 0.048737966651644135,
+          "raw_log_mean_mse": 0.00503541118006814,
+          "raw_log_delta_cosine": 0.025061659836339092,
+          "probability_variance_ratio": 1.0204481410253379,
+          "pred_zero_fraction": 0.5175071914587597,
+          "real_zero_fraction": 0.5157351883609006,
+          "pred_median_depth": 54560.0,
+          "real_median_depth": 54939.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015640618239192753,
+        "bulk_probability": 0.0001610567952453876
+      }
+    },
+    "HDAC8": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.026364074438486762,
+          "bulk_probability_l1": 0.02466251653320628,
+          "raw_log_mean_mse": 0.0011480148246443946,
+          "raw_log_delta_cosine": 0.4760509984355232,
+          "probability_variance_ratio": 1.0156765503848444,
+          "pred_zero_fraction": 0.517045831719865,
+          "real_zero_fraction": 0.512071969906511,
+          "pred_median_depth": 53320.0,
+          "real_median_depth": 55586.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04096182106759567,
+          "bulk_probability_l1": 0.04094093872635813,
+          "raw_log_mean_mse": 0.01001341373690031,
+          "raw_log_delta_cosine": -0.2011444122647789,
+          "probability_variance_ratio": 1.1846372551993456,
+          "pred_zero_fraction": 0.5196361398462135,
+          "real_zero_fraction": 0.512071969906511,
+          "pred_median_depth": 53188.5,
+          "real_median_depth": 55586.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.026478281024452967,
+          "bulk_probability_l1": 0.02466526557239004,
+          "raw_log_mean_mse": 0.002683646426729023,
+          "raw_log_delta_cosine": 0.6248540165228738,
+          "probability_variance_ratio": 0.3078969319945035,
+          "pred_zero_fraction": 0.4657603584665597,
+          "real_zero_fraction": 0.512071969906511,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 55586.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.09105497123101143,
+          "bulk_probability_l1": 0.09120572067785926,
+          "raw_log_mean_mse": 0.012429468313256555,
+          "raw_log_delta_cosine": -0.29125267205864835,
+          "probability_variance_ratio": 1.227588830673596,
+          "pred_zero_fraction": 0.5202681584333684,
+          "real_zero_fraction": 0.512071969906511,
+          "pred_median_depth": 53997.5,
+          "real_median_depth": 55586.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.10194867741917071,
+          "bulk_probability_l1": 0.09704909103220254,
+          "raw_log_mean_mse": 0.01673475184977605,
+          "raw_log_delta_cosine": -0.3280192395517811,
+          "probability_variance_ratio": 1.2063399974296896,
+          "pred_zero_fraction": 0.5225962549095535,
+          "real_zero_fraction": 0.512071969906511,
+          "pred_median_depth": 50573.0,
+          "real_median_depth": 55586.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.05214758216634908,
+          "bulk_probability_l1": 0.050787702114688804,
+          "raw_log_mean_mse": 0.01090914585574109,
+          "raw_log_delta_cosine": -0.3538662692537253,
+          "probability_variance_ratio": 1.0980793962710442,
+          "pred_zero_fraction": 0.5189320683741772,
+          "real_zero_fraction": 0.512071969906511,
+          "pred_median_depth": 52478.0,
+          "real_median_depth": 55586.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.05573838064479757,
+          "bulk_probability_l1": 0.05459530026797192,
+          "raw_log_mean_mse": 0.010769469772264364,
+          "raw_log_delta_cosine": -0.3477605761796666,
+          "probability_variance_ratio": 1.109764699977706,
+          "pred_zero_fraction": 0.5192227692648117,
+          "real_zero_fraction": 0.512071969906511,
+          "pred_median_depth": 52789.0,
+          "real_median_depth": 55586.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.05325267186943313,
+          "bulk_probability_l1": 0.05243620979732289,
+          "raw_log_mean_mse": 0.010017915818404327,
+          "raw_log_delta_cosine": -0.34510301174214686,
+          "probability_variance_ratio": 1.1034537659776305,
+          "pred_zero_fraction": 0.5189084195386402,
+          "real_zero_fraction": 0.512071969906511,
+          "pred_median_depth": 53763.0,
+          "real_median_depth": 55586.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015540742954575897,
+        "bulk_probability": 0.0001676633384682024
+      }
+    },
+    "HMGCR": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02772669563005046,
+          "bulk_probability_l1": 0.026506228298086666,
+          "raw_log_mean_mse": 0.0007258028703777874,
+          "raw_log_delta_cosine": 0.8314007941237649,
+          "probability_variance_ratio": 0.9954398576480051,
+          "pred_zero_fraction": 0.516838385794103,
+          "real_zero_fraction": 0.5173868728218178,
+          "pred_median_depth": 54968.0,
+          "real_median_depth": 55660.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.053153304080088996,
+          "bulk_probability_l1": 0.05250722216780602,
+          "raw_log_mean_mse": 0.004859456095065842,
+          "raw_log_delta_cosine": 0.5635978342846271,
+          "probability_variance_ratio": 4.955101479051309,
+          "pred_zero_fraction": 0.5144356087846434,
+          "real_zero_fraction": 0.5173868728218178,
+          "pred_median_depth": 54294.0,
+          "real_median_depth": 55660.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027845653438652813,
+          "bulk_probability_l1": 0.026510533161677733,
+          "raw_log_mean_mse": 0.004211521908234876,
+          "raw_log_delta_cosine": 0.4476801372592333,
+          "probability_variance_ratio": 0.28376068512965524,
+          "pred_zero_fraction": 0.46736184101344247,
+          "real_zero_fraction": 0.5173868728218178,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 55660.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.08534064341299788,
+          "bulk_probability_l1": 0.0858437930256968,
+          "raw_log_mean_mse": 0.005988275616649864,
+          "raw_log_delta_cosine": 0.27983280451948495,
+          "probability_variance_ratio": 3.188498321145729,
+          "pred_zero_fraction": 0.5136297505117,
+          "real_zero_fraction": 0.5173868728218178,
+          "pred_median_depth": 54653.0,
+          "real_median_depth": 55660.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.1556129088590964,
+          "bulk_probability_l1": 0.15750651118458592,
+          "raw_log_mean_mse": 0.015716983880914054,
+          "raw_log_delta_cosine": 0.2197121190497253,
+          "probability_variance_ratio": 2.8337331166794795,
+          "pred_zero_fraction": 0.5132846987885158,
+          "real_zero_fraction": 0.5173868728218178,
+          "pred_median_depth": 54427.0,
+          "real_median_depth": 55660.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.06116000857830718,
+          "bulk_probability_l1": 0.06086487095524804,
+          "raw_log_mean_mse": 0.00545472274509633,
+          "raw_log_delta_cosine": 0.2279186114354621,
+          "probability_variance_ratio": 1.0735887239129989,
+          "pred_zero_fraction": 0.5137091331526249,
+          "real_zero_fraction": 0.5173868728218178,
+          "pred_median_depth": 54302.5,
+          "real_median_depth": 55660.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.06282365450915817,
+          "bulk_probability_l1": 0.06255726516582245,
+          "raw_log_mean_mse": 0.00531692518113167,
+          "raw_log_delta_cosine": 0.2496941254810989,
+          "probability_variance_ratio": 1.169733134617427,
+          "pred_zero_fraction": 0.5138147922774796,
+          "real_zero_fraction": 0.5173868728218178,
+          "pred_median_depth": 54411.0,
+          "real_median_depth": 55660.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.06376449276729472,
+          "bulk_probability_l1": 0.06373382670428121,
+          "raw_log_mean_mse": 0.00510556167959968,
+          "raw_log_delta_cosine": 0.250100322874476,
+          "probability_variance_ratio": 1.1720527811827701,
+          "pred_zero_fraction": 0.5138750898932345,
+          "real_zero_fraction": 0.5173868728218178,
+          "pred_median_depth": 54546.5,
+          "real_median_depth": 55660.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015301329832404958,
+        "bulk_probability": 0.00015562655461467205
+      }
+    },
+    "HMGXB4": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027891345171271235,
+          "bulk_probability_l1": 0.026239808159952787,
+          "raw_log_mean_mse": 0.0008445225365756243,
+          "raw_log_delta_cosine": 0.45730445065442726,
+          "probability_variance_ratio": 1.0121504977678233,
+          "pred_zero_fraction": 0.5181148697239586,
+          "real_zero_fraction": 0.5154150301488079,
+          "pred_median_depth": 53801.5,
+          "real_median_depth": 56476.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04312471405121302,
+          "bulk_probability_l1": 0.042444999412154856,
+          "raw_log_mean_mse": 0.007639931742014336,
+          "raw_log_delta_cosine": -0.08926810525847134,
+          "probability_variance_ratio": 1.2310045210247609,
+          "pred_zero_fraction": 0.5183351772971179,
+          "real_zero_fraction": 0.5154150301488079,
+          "pred_median_depth": 54101.0,
+          "real_median_depth": 56476.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.028024155608313808,
+          "bulk_probability_l1": 0.026245674296486266,
+          "raw_log_mean_mse": 0.0032619017767984535,
+          "raw_log_delta_cosine": 0.3957237658720533,
+          "probability_variance_ratio": 0.30580805330107574,
+          "pred_zero_fraction": 0.46745809592299603,
+          "real_zero_fraction": 0.5154150301488079,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 56476.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.07547847840375248,
+          "bulk_probability_l1": 0.07605194567772526,
+          "raw_log_mean_mse": 0.008067881842464814,
+          "raw_log_delta_cosine": -0.13038612192963828,
+          "probability_variance_ratio": 1.3075899065757497,
+          "pred_zero_fraction": 0.5177534989212812,
+          "real_zero_fraction": 0.5154150301488079,
+          "pred_median_depth": 54544.5,
+          "real_median_depth": 56476.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.6774624300000844,
+          "bulk_probability_l1": 0.7033421083417457,
+          "raw_log_mean_mse": 0.2024327970878238,
+          "raw_log_delta_cosine": -0.18626611902705528,
+          "probability_variance_ratio": 1636.1451677836033,
+          "pred_zero_fraction": 0.6366386845162362,
+          "real_zero_fraction": 0.5154150301488079,
+          "pred_median_depth": 54302.0,
+          "real_median_depth": 56476.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.04315108777864812,
+          "bulk_probability_l1": 0.043122190202961985,
+          "raw_log_mean_mse": 0.006148635596134355,
+          "raw_log_delta_cosine": -0.14607864583562588,
+          "probability_variance_ratio": 1.102588200858965,
+          "pred_zero_fraction": 0.5176761907396139,
+          "real_zero_fraction": 0.5154150301488079,
+          "pred_median_depth": 54547.0,
+          "real_median_depth": 56476.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.046397466641243244,
+          "bulk_probability_l1": 0.04650411007684854,
+          "raw_log_mean_mse": 0.0062834129321968114,
+          "raw_log_delta_cosine": -0.14402898825203095,
+          "probability_variance_ratio": 1.1221883506298491,
+          "pred_zero_fraction": 0.5176803396581291,
+          "real_zero_fraction": 0.5154150301488079,
+          "pred_median_depth": 54516.5,
+          "real_median_depth": 56476.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.049601778120850294,
+          "bulk_probability_l1": 0.05005813426397434,
+          "raw_log_mean_mse": 0.00600116965232107,
+          "raw_log_delta_cosine": -0.1349167658892226,
+          "probability_variance_ratio": 1.123157773171755,
+          "pred_zero_fraction": 0.5179397853626155,
+          "real_zero_fraction": 0.5154150301488079,
+          "pred_median_depth": 54705.5,
+          "real_median_depth": 56476.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015469492235324351,
+        "bulk_probability": 0.00016695431750748317
+      }
+    },
+    "HTATSF1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.028403711124731792,
+          "bulk_probability_l1": 0.028072463332999877,
+          "raw_log_mean_mse": 0.0007313235723299633,
+          "raw_log_delta_cosine": 0.8891776192456672,
+          "probability_variance_ratio": 0.9806696496517908,
+          "pred_zero_fraction": 0.5238060795485977,
+          "real_zero_fraction": 0.5238835260275488,
+          "pred_median_depth": 53501.0,
+          "real_median_depth": 54638.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04662357030039091,
+          "bulk_probability_l1": 0.04550300403413223,
+          "raw_log_mean_mse": 0.005784921943655698,
+          "raw_log_delta_cosine": 0.74442387904931,
+          "probability_variance_ratio": 1.0949004600455998,
+          "pred_zero_fraction": 0.5240861315483765,
+          "real_zero_fraction": 0.5238835260275488,
+          "pred_median_depth": 52807.0,
+          "real_median_depth": 54638.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.028518961805246386,
+          "bulk_probability_l1": 0.0280780390232186,
+          "raw_log_mean_mse": 0.005946316659337779,
+          "raw_log_delta_cosine": 0.32107234068262536,
+          "probability_variance_ratio": 0.26812647067950385,
+          "pred_zero_fraction": 0.47079548597665544,
+          "real_zero_fraction": 0.5238835260275488,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 54638.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.09382888887979993,
+          "bulk_probability_l1": 0.09301894551401899,
+          "raw_log_mean_mse": 0.00637102714561725,
+          "raw_log_delta_cosine": 0.39749813945766377,
+          "probability_variance_ratio": 1.1356458307284147,
+          "pred_zero_fraction": 0.5186805056148698,
+          "real_zero_fraction": 0.5238835260275488,
+          "pred_median_depth": 54693.5,
+          "real_median_depth": 54638.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.1345840643304385,
+          "bulk_probability_l1": 0.13078137556960628,
+          "raw_log_mean_mse": 0.011677669335540061,
+          "raw_log_delta_cosine": 0.29353850784616664,
+          "probability_variance_ratio": 1.1160272516109575,
+          "pred_zero_fraction": 0.5203869558001881,
+          "real_zero_fraction": 0.5238835260275488,
+          "pred_median_depth": 54023.0,
+          "real_median_depth": 54638.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.07103884842086275,
+          "bulk_probability_l1": 0.0677892670113622,
+          "raw_log_mean_mse": 0.005562293285484081,
+          "raw_log_delta_cosine": 0.39711350462514666,
+          "probability_variance_ratio": 0.9728696881350565,
+          "pred_zero_fraction": 0.5186336228356475,
+          "real_zero_fraction": 0.5238835260275488,
+          "pred_median_depth": 54375.5,
+          "real_median_depth": 54638.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.07124162975873903,
+          "bulk_probability_l1": 0.0683854684809048,
+          "raw_log_mean_mse": 0.005465993770856673,
+          "raw_log_delta_cosine": 0.40530330433222805,
+          "probability_variance_ratio": 0.9888151941607624,
+          "pred_zero_fraction": 0.5188156220611827,
+          "real_zero_fraction": 0.5238835260275488,
+          "pred_median_depth": 54458.0,
+          "real_median_depth": 54638.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.07236629637425299,
+          "bulk_probability_l1": 0.06994505038557391,
+          "raw_log_mean_mse": 0.005238246155708211,
+          "raw_log_delta_cosine": 0.4092338928480452,
+          "probability_variance_ratio": 0.9953449797705659,
+          "pred_zero_fraction": 0.5186811971012889,
+          "real_zero_fraction": 0.5238835260275488,
+          "pred_median_depth": 54628.5,
+          "real_median_depth": 54638.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001533871425646904,
+        "bulk_probability": 0.00016937652094394358
+      }
+    },
+    "IGF1R": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02726959681963719,
+          "bulk_probability_l1": 0.025725232468498498,
+          "raw_log_mean_mse": 0.0010728950313533033,
+          "raw_log_delta_cosine": 0.622760510843021,
+          "probability_variance_ratio": 0.9955777397178358,
+          "pred_zero_fraction": 0.5149304364662278,
+          "real_zero_fraction": 0.5191786524312663,
+          "pred_median_depth": 55138.5,
+          "real_median_depth": 53443.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04165761907471078,
+          "bulk_probability_l1": 0.040844562717453785,
+          "raw_log_mean_mse": 0.0036267227318589976,
+          "raw_log_delta_cosine": 0.680860541208068,
+          "probability_variance_ratio": 1.0743940746343867,
+          "pred_zero_fraction": 0.5169611937821541,
+          "real_zero_fraction": 0.5191786524312663,
+          "pred_median_depth": 53626.0,
+          "real_median_depth": 53443.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027389184810545232,
+          "bulk_probability_l1": 0.025729408491247083,
+          "raw_log_mean_mse": 0.00624516107680602,
+          "raw_log_delta_cosine": 0.01716438148857301,
+          "probability_variance_ratio": 0.28729836586522933,
+          "pred_zero_fraction": 0.46550409359960165,
+          "real_zero_fraction": 0.5191786524312663,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53443.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.0760560577194139,
+          "bulk_probability_l1": 0.07445269971702796,
+          "raw_log_mean_mse": 0.005438442504800016,
+          "raw_log_delta_cosine": 0.4019050297887743,
+          "probability_variance_ratio": 1.2664587089990795,
+          "pred_zero_fraction": 0.5169945234275599,
+          "real_zero_fraction": 0.5191786524312663,
+          "pred_median_depth": 53836.0,
+          "real_median_depth": 53443.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.0838014572049384,
+          "bulk_probability_l1": 0.07957794918017788,
+          "raw_log_mean_mse": 0.007093678074162582,
+          "raw_log_delta_cosine": 0.4454238764825619,
+          "probability_variance_ratio": 1.127517650682153,
+          "pred_zero_fraction": 0.5178598495325553,
+          "real_zero_fraction": 0.5191786524312663,
+          "pred_median_depth": 52400.0,
+          "real_median_depth": 53443.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.05045288286904913,
+          "bulk_probability_l1": 0.04840380122556,
+          "raw_log_mean_mse": 0.004539312173975303,
+          "raw_log_delta_cosine": 0.45630496002122906,
+          "probability_variance_ratio": 1.0477759750717834,
+          "pred_zero_fraction": 0.5163359517619074,
+          "real_zero_fraction": 0.5191786524312663,
+          "pred_median_depth": 52864.5,
+          "real_median_depth": 53443.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.05269938790556696,
+          "bulk_probability_l1": 0.0505595457431695,
+          "raw_log_mean_mse": 0.004530539625981486,
+          "raw_log_delta_cosine": 0.4517784126027727,
+          "probability_variance_ratio": 1.0603089433684154,
+          "pred_zero_fraction": 0.5163449410853571,
+          "real_zero_fraction": 0.5191786524312663,
+          "pred_median_depth": 53138.0,
+          "real_median_depth": 53443.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.050922301905560324,
+          "bulk_probability_l1": 0.049150073254104684,
+          "raw_log_mean_mse": 0.004105174050578213,
+          "raw_log_delta_cosine": 0.45084450763132206,
+          "probability_variance_ratio": 1.0541650891284604,
+          "pred_zero_fraction": 0.5164432704541683,
+          "real_zero_fraction": 0.5191786524312663,
+          "pred_median_depth": 53685.0,
+          "real_median_depth": 53443.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015656304282813606,
+        "bulk_probability": 0.00015889363894825307
+      }
+    },
+    "ITGAV": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027074020405604797,
+          "bulk_probability_l1": 0.025675962329376727,
+          "raw_log_mean_mse": 0.0007587719375433994,
+          "raw_log_delta_cosine": 0.4636140122347705,
+          "probability_variance_ratio": 1.0255651562428296,
+          "pred_zero_fraction": 0.5153637218565028,
+          "real_zero_fraction": 0.5133308900813188,
+          "pred_median_depth": 55276.5,
+          "real_median_depth": 55864.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.03698364363198454,
+          "bulk_probability_l1": 0.03661074735671412,
+          "raw_log_mean_mse": 0.006023932514899762,
+          "raw_log_delta_cosine": -0.3244808211490149,
+          "probability_variance_ratio": 1.0122900730643198,
+          "pred_zero_fraction": 0.5145813741218123,
+          "real_zero_fraction": 0.5133308900813188,
+          "pred_median_depth": 54712.0,
+          "real_median_depth": 55864.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02717624723094535,
+          "bulk_probability_l1": 0.025680681585624383,
+          "raw_log_mean_mse": 0.0027614734286970583,
+          "raw_log_delta_cosine": 0.5671827242823468,
+          "probability_variance_ratio": 0.28875703033857936,
+          "pred_zero_fraction": 0.46620775017978644,
+          "real_zero_fraction": 0.5133308900813188,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 55864.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.08926379824366366,
+          "bulk_probability_l1": 0.08847336664002017,
+          "raw_log_mean_mse": 0.010444195174369652,
+          "raw_log_delta_cosine": -0.29338449319962634,
+          "probability_variance_ratio": 1.1390489017885448,
+          "pred_zero_fraction": 0.5162312607180395,
+          "real_zero_fraction": 0.5133308900813188,
+          "pred_median_depth": 54552.5,
+          "real_median_depth": 55864.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.10079966120175649,
+          "bulk_probability_l1": 0.10165074298128002,
+          "raw_log_mean_mse": 0.010343215779187955,
+          "raw_log_delta_cosine": -0.2504800891002111,
+          "probability_variance_ratio": 1.16596909581384,
+          "pred_zero_fraction": 0.5152608286773248,
+          "real_zero_fraction": 0.5133308900813188,
+          "pred_median_depth": 54690.5,
+          "real_median_depth": 55864.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.05026996655398456,
+          "bulk_probability_l1": 0.049765499725328115,
+          "raw_log_mean_mse": 0.007664021842006826,
+          "raw_log_delta_cosine": -0.34365016053788355,
+          "probability_variance_ratio": 1.0591724159579228,
+          "pred_zero_fraction": 0.5148063838026221,
+          "real_zero_fraction": 0.5133308900813188,
+          "pred_median_depth": 53988.0,
+          "real_median_depth": 55864.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.05433146455465365,
+          "bulk_probability_l1": 0.053854877965258584,
+          "raw_log_mean_mse": 0.007789265146436151,
+          "raw_log_delta_cosine": -0.33965952435151925,
+          "probability_variance_ratio": 1.0639654906513065,
+          "pred_zero_fraction": 0.5149814681639653,
+          "real_zero_fraction": 0.5133308900813188,
+          "pred_median_depth": 53988.0,
+          "real_median_depth": 55864.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.05117866218820478,
+          "bulk_probability_l1": 0.05119786305001501,
+          "raw_log_mean_mse": 0.007024268505434896,
+          "raw_log_delta_cosine": -0.33751721141999796,
+          "probability_variance_ratio": 1.0503003133588198,
+          "pred_zero_fraction": 0.514558140178127,
+          "real_zero_fraction": 0.5133308900813188,
+          "pred_median_depth": 54600.5,
+          "real_median_depth": 55864.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001556121292256655,
+        "bulk_probability": 0.00014757760569735203
+      }
+    },
+    "KLHDC2": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02716090845400094,
+          "bulk_probability_l1": 0.026333526962316722,
+          "raw_log_mean_mse": 0.0007189513791270281,
+          "raw_log_delta_cosine": 0.5443737845482942,
+          "probability_variance_ratio": 0.9958160168063425,
+          "pred_zero_fraction": 0.513425762018034,
+          "real_zero_fraction": 0.5153829451789567,
+          "pred_median_depth": 54686.0,
+          "real_median_depth": 54691.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.038240645067186003,
+          "bulk_probability_l1": 0.0383671782227206,
+          "raw_log_mean_mse": 0.005736720043566477,
+          "raw_log_delta_cosine": -0.07324117764892764,
+          "probability_variance_ratio": 1.0505438169254,
+          "pred_zero_fraction": 0.5182317309288045,
+          "real_zero_fraction": 0.5153829451789567,
+          "pred_median_depth": 54414.0,
+          "real_median_depth": 54691.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027270485967466875,
+          "bulk_probability_l1": 0.02634121923618133,
+          "raw_log_mean_mse": 0.0033112111621380804,
+          "raw_log_delta_cosine": 0.40971482747683957,
+          "probability_variance_ratio": 0.28851346776366704,
+          "pred_zero_fraction": 0.46639818553963597,
+          "real_zero_fraction": 0.5153829451789567,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 54691.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.0834976681330707,
+          "bulk_probability_l1": 0.08480892455719997,
+          "raw_log_mean_mse": 0.006995651187589249,
+          "raw_log_delta_cosine": -0.12899670240722944,
+          "probability_variance_ratio": 1.1847541065911966,
+          "pred_zero_fraction": 0.5185543784920064,
+          "real_zero_fraction": 0.5153829451789567,
+          "pred_median_depth": 54706.5,
+          "real_median_depth": 54691.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.06758332608289588,
+          "bulk_probability_l1": 0.06693653000708691,
+          "raw_log_mean_mse": 0.008014259347072079,
+          "raw_log_delta_cosine": -0.15444568496086764,
+          "probability_variance_ratio": 1.1376160523535588,
+          "pred_zero_fraction": 0.5182455606571887,
+          "real_zero_fraction": 0.5153829451789567,
+          "pred_median_depth": 53494.5,
+          "real_median_depth": 54691.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.044519681872861074,
+          "bulk_probability_l1": 0.04450426266942722,
+          "raw_log_mean_mse": 0.007078900481880659,
+          "raw_log_delta_cosine": -0.15446725320273302,
+          "probability_variance_ratio": 1.070542899672084,
+          "pred_zero_fraction": 0.517901891906843,
+          "real_zero_fraction": 0.5153829451789567,
+          "pred_median_depth": 53112.0,
+          "real_median_depth": 54691.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.046319507275188444,
+          "bulk_probability_l1": 0.046530193789986414,
+          "raw_log_mean_mse": 0.006612479109257291,
+          "raw_log_delta_cosine": -0.15330619813947757,
+          "probability_variance_ratio": 1.078300613785602,
+          "pred_zero_fraction": 0.5177327543287049,
+          "real_zero_fraction": 0.5153829451789567,
+          "pred_median_depth": 53869.5,
+          "real_median_depth": 54691.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.04893009904229334,
+          "bulk_probability_l1": 0.04925654055752125,
+          "raw_log_mean_mse": 0.00619128215554693,
+          "raw_log_delta_cosine": -0.15050747443621615,
+          "probability_variance_ratio": 1.0813384654307727,
+          "pred_zero_fraction": 0.5180538806217846,
+          "real_zero_fraction": 0.5153829451789567,
+          "pred_median_depth": 54382.5,
+          "real_median_depth": 54691.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001583799123932709,
+        "bulk_probability": 0.00016071066692749795
+      }
+    },
+    "KRT18": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027862490449792773,
+          "bulk_probability_l1": 0.02649446141172217,
+          "raw_log_mean_mse": 0.0007251310281743335,
+          "raw_log_delta_cosine": 0.7573182480049554,
+          "probability_variance_ratio": 1.0098184082110764,
+          "pred_zero_fraction": 0.5184538363666538,
+          "real_zero_fraction": 0.5193800132765393,
+          "pred_median_depth": 53097.5,
+          "real_median_depth": 52390.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04116402781061925,
+          "bulk_probability_l1": 0.04032515877268061,
+          "raw_log_mean_mse": 0.005812849341997848,
+          "raw_log_delta_cosine": 0.5916993145964813,
+          "probability_variance_ratio": 1.062718307244769,
+          "pred_zero_fraction": 0.5206531780715826,
+          "real_zero_fraction": 0.5193800132765393,
+          "pred_median_depth": 50659.0,
+          "real_median_depth": 52390.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027967081504058938,
+          "bulk_probability_l1": 0.02650059070749485,
+          "raw_log_mean_mse": 0.006231232825528347,
+          "raw_log_delta_cosine": -0.02838747008219953,
+          "probability_variance_ratio": 0.2908597926849025,
+          "pred_zero_fraction": 0.46599062344415554,
+          "real_zero_fraction": 0.5193800132765393,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 52390.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.07279791826403502,
+          "bulk_probability_l1": 0.07346502240773567,
+          "raw_log_mean_mse": 0.006661236158163934,
+          "raw_log_delta_cosine": 0.49284435074903016,
+          "probability_variance_ratio": 1.1518478932563394,
+          "pred_zero_fraction": 0.5203176688609836,
+          "real_zero_fraction": 0.5193800132765393,
+          "pred_median_depth": 52321.5,
+          "real_median_depth": 52390.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.11533909464777109,
+          "bulk_probability_l1": 0.11881339475489702,
+          "raw_log_mean_mse": 0.009644380490388339,
+          "raw_log_delta_cosine": 0.40198653759296304,
+          "probability_variance_ratio": 1.437857028540642,
+          "pred_zero_fraction": 0.5206228909664214,
+          "real_zero_fraction": 0.5193800132765393,
+          "pred_median_depth": 54256.0,
+          "real_median_depth": 52390.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.05183445945947099,
+          "bulk_probability_l1": 0.0520517553691877,
+          "raw_log_mean_mse": 0.0053240000148935766,
+          "raw_log_delta_cosine": 0.507068557947617,
+          "probability_variance_ratio": 1.0807371943042916,
+          "pred_zero_fraction": 0.5199435747081927,
+          "real_zero_fraction": 0.5193800132765393,
+          "pred_median_depth": 52787.0,
+          "real_median_depth": 52390.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.052331904638640764,
+          "bulk_probability_l1": 0.05256201966433944,
+          "raw_log_mean_mse": 0.005340455315488772,
+          "raw_log_delta_cosine": 0.5133371417504465,
+          "probability_variance_ratio": 1.0805786143386362,
+          "pred_zero_fraction": 0.5199746915970571,
+          "real_zero_fraction": 0.5193800132765393,
+          "pred_median_depth": 52502.5,
+          "real_median_depth": 52390.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.05402129774302591,
+          "bulk_probability_l1": 0.05460027953076739,
+          "raw_log_mean_mse": 0.0049790319605997075,
+          "raw_log_delta_cosine": 0.5154941308373208,
+          "probability_variance_ratio": 1.0791878635035717,
+          "pred_zero_fraction": 0.5202062012502074,
+          "real_zero_fraction": 0.5193800132765393,
+          "pred_median_depth": 53499.0,
+          "real_median_depth": 52390.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015561500430311087,
+        "bulk_probability": 0.00016992083465337525
+      }
+    },
+    "MAT2A": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027898426502441603,
+          "bulk_probability_l1": 0.025971779059765797,
+          "raw_log_mean_mse": 0.0010145694212512063,
+          "raw_log_delta_cosine": 0.525457577429604,
+          "probability_variance_ratio": 1.0109142331287022,
+          "pred_zero_fraction": 0.5214082812413564,
+          "real_zero_fraction": 0.5170268849919788,
+          "pred_median_depth": 53149.5,
+          "real_median_depth": 54072.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.03959649595692867,
+          "bulk_probability_l1": 0.03872747043295575,
+          "raw_log_mean_mse": 0.00688073763256712,
+          "raw_log_delta_cosine": 0.25703625162715465,
+          "probability_variance_ratio": 1.0541926320786512,
+          "pred_zero_fraction": 0.5177738286220059,
+          "real_zero_fraction": 0.5170268849919788,
+          "pred_median_depth": 53195.0,
+          "real_median_depth": 54072.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.028026819978481693,
+          "bulk_probability_l1": 0.025976987749209642,
+          "raw_log_mean_mse": 0.004381733119993277,
+          "raw_log_delta_cosine": 0.11793161520318189,
+          "probability_variance_ratio": 0.28937125787401696,
+          "pred_zero_fraction": 0.4667697903413177,
+          "real_zero_fraction": 0.5170268849919788,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 54072.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.14268711478361387,
+          "bulk_probability_l1": 0.14133325399591176,
+          "raw_log_mean_mse": 0.015301099965349311,
+          "raw_log_delta_cosine": 0.12568432805141194,
+          "probability_variance_ratio": 1.553902186969352,
+          "pred_zero_fraction": 0.5174568512474416,
+          "real_zero_fraction": 0.5170268849919788,
+          "pred_median_depth": 54535.0,
+          "real_median_depth": 54072.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.1782922354777739,
+          "bulk_probability_l1": 0.18276942216792028,
+          "raw_log_mean_mse": 0.017955510886282604,
+          "raw_log_delta_cosine": 0.10064884693388465,
+          "probability_variance_ratio": 2.552849220860895,
+          "pred_zero_fraction": 0.5112201969353323,
+          "real_zero_fraction": 0.5170268849919788,
+          "pred_median_depth": 54718.0,
+          "real_median_depth": 54072.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.08692831533300328,
+          "bulk_probability_l1": 0.08312875025845669,
+          "raw_log_mean_mse": 0.008342758318612253,
+          "raw_log_delta_cosine": 0.17387879095053319,
+          "probability_variance_ratio": 1.1248897317614461,
+          "pred_zero_fraction": 0.5175107871881397,
+          "real_zero_fraction": 0.5170268849919788,
+          "pred_median_depth": 53354.0,
+          "real_median_depth": 54072.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.09514082402728874,
+          "bulk_probability_l1": 0.09166535077189812,
+          "raw_log_mean_mse": 0.009041889094477288,
+          "raw_log_delta_cosine": 0.16527608956249254,
+          "probability_variance_ratio": 1.150528918886308,
+          "pred_zero_fraction": 0.5173816175250319,
+          "real_zero_fraction": 0.5170268849919788,
+          "pred_median_depth": 53795.5,
+          "real_median_depth": 54072.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.09084482999015134,
+          "bulk_probability_l1": 0.08846664886114135,
+          "raw_log_mean_mse": 0.008105293537082874,
+          "raw_log_delta_cosine": 0.1685735673256358,
+          "probability_variance_ratio": 1.1285712505825296,
+          "pred_zero_fraction": 0.5167793328539028,
+          "real_zero_fraction": 0.5170268849919788,
+          "pred_median_depth": 54227.5,
+          "real_median_depth": 54072.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015439819864772632,
+        "bulk_probability": 0.00017652959499498503
+      }
+    },
+    "MGST1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02688945723279086,
+          "bulk_probability_l1": 0.025506204598598186,
+          "raw_log_mean_mse": 0.0007094677141458415,
+          "raw_log_delta_cosine": 0.7498269917616756,
+          "probability_variance_ratio": 0.982519112742541,
+          "pred_zero_fraction": 0.5170390551529568,
+          "real_zero_fraction": 0.5163315262488244,
+          "pred_median_depth": 53819.5,
+          "real_median_depth": 55205.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.040021297482704256,
+          "bulk_probability_l1": 0.03932062101474925,
+          "raw_log_mean_mse": 0.007444508423740496,
+          "raw_log_delta_cosine": 0.27425349552165545,
+          "probability_variance_ratio": 1.049305989214812,
+          "pred_zero_fraction": 0.5205328594346408,
+          "real_zero_fraction": 0.5163315262488244,
+          "pred_median_depth": 52230.5,
+          "real_median_depth": 55205.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02699105689788329,
+          "bulk_probability_l1": 0.02551462259200784,
+          "raw_log_mean_mse": 0.004227253074011959,
+          "raw_log_delta_cosine": 0.37609729743841974,
+          "probability_variance_ratio": 0.2826488675079912,
+          "pred_zero_fraction": 0.465755794656193,
+          "real_zero_fraction": 0.5163315262488244,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 55205.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.07352976764976164,
+          "bulk_probability_l1": 0.07288651088239641,
+          "raw_log_mean_mse": 0.008696870795590166,
+          "raw_log_delta_cosine": 0.13363561222885165,
+          "probability_variance_ratio": 1.1445142010581841,
+          "pred_zero_fraction": 0.5202125629252641,
+          "real_zero_fraction": 0.5163315262488244,
+          "pred_median_depth": 53945.5,
+          "real_median_depth": 55205.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.22970118518857355,
+          "bulk_probability_l1": 0.20906041953347843,
+          "raw_log_mean_mse": 0.04551998650386301,
+          "raw_log_delta_cosine": 0.06454239714503653,
+          "probability_variance_ratio": 1.8432936804438391,
+          "pred_zero_fraction": 0.5408147092991094,
+          "real_zero_fraction": 0.5163315262488244,
+          "pred_median_depth": 46299.0,
+          "real_median_depth": 55205.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.04964630219703641,
+          "bulk_probability_l1": 0.049203352518955926,
+          "raw_log_mean_mse": 0.007527236305943469,
+          "raw_log_delta_cosine": 0.12278065506595061,
+          "probability_variance_ratio": 1.0582409220486408,
+          "pred_zero_fraction": 0.5196585440061957,
+          "real_zero_fraction": 0.5163315262488244,
+          "pred_median_depth": 53912.0,
+          "real_median_depth": 55205.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.0521513360996234,
+          "bulk_probability_l1": 0.05160134861922176,
+          "raw_log_mean_mse": 0.0075646505449444785,
+          "raw_log_delta_cosine": 0.12948678963975635,
+          "probability_variance_ratio": 1.0641281159180656,
+          "pred_zero_fraction": 0.5197135863251645,
+          "real_zero_fraction": 0.5163315262488244,
+          "pred_median_depth": 53885.5,
+          "real_median_depth": 55205.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.05306449325644236,
+          "bulk_probability_l1": 0.05280898899645796,
+          "raw_log_mean_mse": 0.007058498895539231,
+          "raw_log_delta_cosine": 0.1355821594396642,
+          "probability_variance_ratio": 1.0629730617019226,
+          "pred_zero_fraction": 0.5195238424517343,
+          "real_zero_fraction": 0.5163315262488244,
+          "pred_median_depth": 54232.0,
+          "real_median_depth": 55205.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015601242761550196,
+        "bulk_probability": 0.0001705651354653541
+      }
+    },
+    "MTFR1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02876156598313381,
+          "bulk_probability_l1": 0.02713206791466878,
+          "raw_log_mean_mse": 0.0007806412473167134,
+          "raw_log_delta_cosine": 0.44784701358791773,
+          "probability_variance_ratio": 1.0052544275994477,
+          "pred_zero_fraction": 0.5171010123361177,
+          "real_zero_fraction": 0.5187538031753056,
+          "pred_median_depth": 52336.5,
+          "real_median_depth": 52416.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.03811790049245684,
+          "bulk_probability_l1": 0.03712884283614501,
+          "raw_log_mean_mse": 0.0036479859182249,
+          "raw_log_delta_cosine": 0.5560174803274024,
+          "probability_variance_ratio": 1.0052112987500263,
+          "pred_zero_fraction": 0.5147928306688057,
+          "real_zero_fraction": 0.5187538031753056,
+          "pred_median_depth": 53850.0,
+          "real_median_depth": 52416.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.028864792137553472,
+          "bulk_probability_l1": 0.02713593703000395,
+          "raw_log_mean_mse": 0.005979369714317205,
+          "raw_log_delta_cosine": -0.29980428757608674,
+          "probability_variance_ratio": 0.2880859610180898,
+          "pred_zero_fraction": 0.465497731924545,
+          "real_zero_fraction": 0.5187538031753056,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 52416.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.06947250998591589,
+          "bulk_probability_l1": 0.06918585625800493,
+          "raw_log_mean_mse": 0.004552109280903041,
+          "raw_log_delta_cosine": 0.4722086545633305,
+          "probability_variance_ratio": 1.107073914486178,
+          "pred_zero_fraction": 0.5156986778779664,
+          "real_zero_fraction": 0.5187538031753056,
+          "pred_median_depth": 54423.5,
+          "real_median_depth": 52416.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.10747043439841525,
+          "bulk_probability_l1": 0.10839863161762116,
+          "raw_log_mean_mse": 0.008626241686914289,
+          "raw_log_delta_cosine": 0.39719698911378293,
+          "probability_variance_ratio": 1.1882110119298857,
+          "pred_zero_fraction": 0.5168024285003043,
+          "real_zero_fraction": 0.5187538031753056,
+          "pred_median_depth": 54431.0,
+          "real_median_depth": 52416.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.03857272651583053,
+          "bulk_probability_l1": 0.03746163387502922,
+          "raw_log_mean_mse": 0.0032602280246504267,
+          "raw_log_delta_cosine": 0.5422118902733768,
+          "probability_variance_ratio": 1.0040487204218391,
+          "pred_zero_fraction": 0.5148397134480278,
+          "real_zero_fraction": 0.5187538031753056,
+          "pred_median_depth": 54219.5,
+          "real_median_depth": 52416.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.04194800728496899,
+          "bulk_probability_l1": 0.040776140104104866,
+          "raw_log_mean_mse": 0.0033201536963162266,
+          "raw_log_delta_cosine": 0.5370152522188603,
+          "probability_variance_ratio": 1.0131796726653666,
+          "pred_zero_fraction": 0.5148546495546827,
+          "real_zero_fraction": 0.5187538031753056,
+          "pred_median_depth": 54332.5,
+          "real_median_depth": 52416.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.043550488170963735,
+          "bulk_probability_l1": 0.04244871366093175,
+          "raw_log_mean_mse": 0.003138094524025536,
+          "raw_log_delta_cosine": 0.5314632662343021,
+          "probability_variance_ratio": 1.0094272447753698,
+          "pred_zero_fraction": 0.5154273386070698,
+          "real_zero_fraction": 0.5187538031753056,
+          "pred_median_depth": 54377.0,
+          "real_median_depth": 52416.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015748716093050646,
+        "bulk_probability": 0.0001686434101622097
+      }
+    },
+    "NFE2L1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02720082746303376,
+          "bulk_probability_l1": 0.0252955953229317,
+          "raw_log_mean_mse": 0.0010503440903914662,
+          "raw_log_delta_cosine": 0.5631818820969837,
+          "probability_variance_ratio": 0.9976182010053648,
+          "pred_zero_fraction": 0.5174322343309177,
+          "real_zero_fraction": 0.5221389057918903,
+          "pred_median_depth": 54471.5,
+          "real_median_depth": 52498.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04365169221570563,
+          "bulk_probability_l1": 0.04449076351174422,
+          "raw_log_mean_mse": 0.0023919035865129544,
+          "raw_log_delta_cosine": 0.7572186341395115,
+          "probability_variance_ratio": 1.0654389308257075,
+          "pred_zero_fraction": 0.5136977927753499,
+          "real_zero_fraction": 0.5221389057918903,
+          "pred_median_depth": 54060.5,
+          "real_median_depth": 52498.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027293218452075215,
+          "bulk_probability_l1": 0.02530086760517691,
+          "raw_log_mean_mse": 0.007130308850628473,
+          "raw_log_delta_cosine": -0.335286688091217,
+          "probability_variance_ratio": 0.2839483646550806,
+          "pred_zero_fraction": 0.46662029097748525,
+          "real_zero_fraction": 0.5221389057918903,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 52498.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.11167561950000533,
+          "bulk_probability_l1": 0.11008757183767928,
+          "raw_log_mean_mse": 0.007585279890253348,
+          "raw_log_delta_cosine": 0.47769478045269265,
+          "probability_variance_ratio": 1.3519470775672702,
+          "pred_zero_fraction": 0.5157232947944903,
+          "real_zero_fraction": 0.5221389057918903,
+          "pred_median_depth": 53656.0,
+          "real_median_depth": 52498.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.1282605526846334,
+          "bulk_probability_l1": 0.1222823809911916,
+          "raw_log_mean_mse": 0.010271507538897943,
+          "raw_log_delta_cosine": 0.5276294004018096,
+          "probability_variance_ratio": 1.3157910262696082,
+          "pred_zero_fraction": 0.5180473806494441,
+          "real_zero_fraction": 0.5221389057918903,
+          "pred_median_depth": 51076.0,
+          "real_median_depth": 52498.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.06560072700302207,
+          "bulk_probability_l1": 0.06287498790590583,
+          "raw_log_mean_mse": 0.003985422053897056,
+          "raw_log_delta_cosine": 0.6179434750065671,
+          "probability_variance_ratio": 1.0893229132263316,
+          "pred_zero_fraction": 0.5139734192620458,
+          "real_zero_fraction": 0.5221389057918903,
+          "pred_median_depth": 52574.0,
+          "real_median_depth": 52498.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.07104072131217079,
+          "bulk_probability_l1": 0.06816331671282003,
+          "raw_log_mean_mse": 0.004204159744666156,
+          "raw_log_delta_cosine": 0.6018585390777486,
+          "probability_variance_ratio": 1.1149030460564977,
+          "pred_zero_fraction": 0.51413882281352,
+          "real_zero_fraction": 0.5221389057918903,
+          "pred_median_depth": 52778.5,
+          "real_median_depth": 52498.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.06621615632098342,
+          "bulk_probability_l1": 0.06396127759817476,
+          "raw_log_mean_mse": 0.003571388010931736,
+          "raw_log_delta_cosine": 0.6060662788528984,
+          "probability_variance_ratio": 1.0951178193129025,
+          "pred_zero_fraction": 0.513724760745699,
+          "real_zero_fraction": 0.5221389057918903,
+          "pred_median_depth": 53517.5,
+          "real_median_depth": 52498.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015401955526177975,
+        "bulk_probability": 0.00016979793479441696
+      }
+    },
+    "PACSIN3": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027810292034093236,
+          "bulk_probability_l1": 0.027159010595789727,
+          "raw_log_mean_mse": 0.0008339765087061507,
+          "raw_log_delta_cosine": 0.44948640637134424,
+          "probability_variance_ratio": 0.9816091547013642,
+          "pred_zero_fraction": 0.5149615533550921,
+          "real_zero_fraction": 0.5177729988383029,
+          "pred_median_depth": 55371.5,
+          "real_median_depth": 54478.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.03656098553230151,
+          "bulk_probability_l1": 0.03572447759221301,
+          "raw_log_mean_mse": 0.0035165649410391466,
+          "raw_log_delta_cosine": 0.47193889383524035,
+          "probability_variance_ratio": 0.9832037064831975,
+          "pred_zero_fraction": 0.5140929081152846,
+          "real_zero_fraction": 0.5177729988383029,
+          "pred_median_depth": 54493.5,
+          "real_median_depth": 54478.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02792775210695483,
+          "bulk_probability_l1": 0.02716720981343512,
+          "raw_log_mean_mse": 0.005298145713264603,
+          "raw_log_delta_cosine": -0.090093420372612,
+          "probability_variance_ratio": 0.27825648139265774,
+          "pred_zero_fraction": 0.4654406151463185,
+          "real_zero_fraction": 0.5177729988383029,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 54478.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.06768887900118983,
+          "bulk_probability_l1": 0.06811911767551018,
+          "raw_log_mean_mse": 0.004858536574037636,
+          "raw_log_delta_cosine": 0.3449319555777941,
+          "probability_variance_ratio": 1.0144978210479694,
+          "pred_zero_fraction": 0.5141803119986723,
+          "real_zero_fraction": 0.5177729988383029,
+          "pred_median_depth": 54498.0,
+          "real_median_depth": 54478.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.09462833846978268,
+          "bulk_probability_l1": 0.09619221307250564,
+          "raw_log_mean_mse": 0.006592975733294437,
+          "raw_log_delta_cosine": 0.3027047757069178,
+          "probability_variance_ratio": 1.0817793381508722,
+          "pred_zero_fraction": 0.5132736350058085,
+          "real_zero_fraction": 0.5177729988383029,
+          "pred_median_depth": 54630.5,
+          "real_median_depth": 54478.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.04531916740690299,
+          "bulk_probability_l1": 0.04410761253802138,
+          "raw_log_mean_mse": 0.003768657391458389,
+          "raw_log_delta_cosine": 0.38547051895085055,
+          "probability_variance_ratio": 0.9876987588809516,
+          "pred_zero_fraction": 0.5139226641588759,
+          "real_zero_fraction": 0.5177729988383029,
+          "pred_median_depth": 54457.0,
+          "real_median_depth": 54478.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.04643108295973653,
+          "bulk_probability_l1": 0.045445163759857625,
+          "raw_log_mean_mse": 0.003811732266657993,
+          "raw_log_delta_cosine": 0.383294261351952,
+          "probability_variance_ratio": 0.9854338878944747,
+          "pred_zero_fraction": 0.5139351109144217,
+          "real_zero_fraction": 0.5177729988383029,
+          "pred_median_depth": 54479.5,
+          "real_median_depth": 54478.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.0451726324242594,
+          "bulk_probability_l1": 0.04430629916554708,
+          "raw_log_mean_mse": 0.0035907016163194356,
+          "raw_log_delta_cosine": 0.38542905454739956,
+          "probability_variance_ratio": 0.9840624768911597,
+          "pred_zero_fraction": 0.5138880898379156,
+          "real_zero_fraction": 0.5177729988383029,
+          "pred_median_depth": 54556.5,
+          "real_median_depth": 54478.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001554833506749686,
+        "bulk_probability": 0.0001569816369700461
+      }
+    },
+    "PAXIP1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027917935026704133,
+          "bulk_probability_l1": 0.026824244584013193,
+          "raw_log_mean_mse": 0.0008335952235242882,
+          "raw_log_delta_cosine": 0.9480542038943941,
+          "probability_variance_ratio": 0.9789442040317697,
+          "pred_zero_fraction": 0.5193292581733695,
+          "real_zero_fraction": 0.5224713724622448,
+          "pred_median_depth": 51977.5,
+          "real_median_depth": 49413.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.061084668163560195,
+          "bulk_probability_l1": 0.05968326161084672,
+          "raw_log_mean_mse": 0.0037883180565988907,
+          "raw_log_delta_cosine": 0.8991704540481255,
+          "probability_variance_ratio": 2.9129754832575205,
+          "pred_zero_fraction": 0.5191628865409084,
+          "real_zero_fraction": 0.5224713724622448,
+          "pred_median_depth": 51817.5,
+          "real_median_depth": 49413.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.028012849316173042,
+          "bulk_probability_l1": 0.02683221688381223,
+          "raw_log_mean_mse": 0.010806261430479734,
+          "raw_log_delta_cosine": 0.43352228936202425,
+          "probability_variance_ratio": 0.2692386022201048,
+          "pred_zero_fraction": 0.46365851634673894,
+          "real_zero_fraction": 0.5224713724622448,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 49413.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.14294683473717323,
+          "bulk_probability_l1": 0.14507665997627703,
+          "raw_log_mean_mse": 0.010892284469624937,
+          "raw_log_delta_cosine": 0.3345316894830876,
+          "probability_variance_ratio": 1.7299615778605348,
+          "pred_zero_fraction": 0.516339824085855,
+          "real_zero_fraction": 0.5224713724622448,
+          "pred_median_depth": 54745.0,
+          "real_median_depth": 49413.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.14128298466466765,
+          "bulk_probability_l1": 0.1417534639393104,
+          "raw_log_mean_mse": 0.011226790389666579,
+          "raw_log_delta_cosine": 0.35601904783800825,
+          "probability_variance_ratio": 1.149224098492883,
+          "pred_zero_fraction": 0.5170656082314543,
+          "real_zero_fraction": 0.5224713724622448,
+          "pred_median_depth": 53876.0,
+          "real_median_depth": 49413.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.1026660403639274,
+          "bulk_probability_l1": 0.10193893904852268,
+          "raw_log_mean_mse": 0.007740301011575347,
+          "raw_log_delta_cosine": 0.44586218896601926,
+          "probability_variance_ratio": 0.9841234214117419,
+          "pred_zero_fraction": 0.515852464457598,
+          "real_zero_fraction": 0.5224713724622448,
+          "pred_median_depth": 53557.0,
+          "real_median_depth": 49413.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.1054335110255475,
+          "bulk_probability_l1": 0.10480584405387362,
+          "raw_log_mean_mse": 0.007823191099562405,
+          "raw_log_delta_cosine": 0.435672329071481,
+          "probability_variance_ratio": 0.9963582526708036,
+          "pred_zero_fraction": 0.5160781656248271,
+          "real_zero_fraction": 0.5224713724622448,
+          "pred_median_depth": 53948.0,
+          "real_median_depth": 49413.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.10542586456999921,
+          "bulk_probability_l1": 0.10485023787497105,
+          "raw_log_mean_mse": 0.007669182983471558,
+          "raw_log_delta_cosine": 0.4326674153624372,
+          "probability_variance_ratio": 0.9916059271440774,
+          "pred_zero_fraction": 0.5160072191182166,
+          "real_zero_fraction": 0.5224713724622448,
+          "pred_median_depth": 54500.0,
+          "real_median_depth": 49413.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015467858570077956,
+        "bulk_probability": 0.00017531289029267598
+      }
+    },
+    "SLIRP": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.027501504912438253,
+          "bulk_probability_l1": 0.0261955570619137,
+          "raw_log_mean_mse": 0.0007306917391446703,
+          "raw_log_delta_cosine": 0.7617096691149645,
+          "probability_variance_ratio": 0.9794908047107255,
+          "pred_zero_fraction": 0.5183658792941306,
+          "real_zero_fraction": 0.5182356032527522,
+          "pred_median_depth": 54354.0,
+          "real_median_depth": 53465.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.038990735803798734,
+          "bulk_probability_l1": 0.03832801014022467,
+          "raw_log_mean_mse": 0.004637410290853528,
+          "raw_log_delta_cosine": 0.5622395563227416,
+          "probability_variance_ratio": 1.080186497633738,
+          "pred_zero_fraction": 0.5176665099297451,
+          "real_zero_fraction": 0.5182356032527522,
+          "pred_median_depth": 53965.5,
+          "real_median_depth": 53465.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027607473391336276,
+          "bulk_probability_l1": 0.026199734041598553,
+          "raw_log_mean_mse": 0.005049267204018179,
+          "raw_log_delta_cosine": 0.18533562047768634,
+          "probability_variance_ratio": 0.27660387433337646,
+          "pred_zero_fraction": 0.467638573878409,
+          "real_zero_fraction": 0.5182356032527522,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53465.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.141689949272672,
+          "bulk_probability_l1": 0.13525209636660823,
+          "raw_log_mean_mse": 0.015828831263065866,
+          "raw_log_delta_cosine": 0.2803111476084846,
+          "probability_variance_ratio": 1.4560334619968203,
+          "pred_zero_fraction": 0.5238294517895669,
+          "real_zero_fraction": 0.5182356032527522,
+          "pred_median_depth": 52457.0,
+          "real_median_depth": 53465.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.12637184772979668,
+          "bulk_probability_l1": 0.12593107724296315,
+          "raw_log_mean_mse": 0.011340716191472403,
+          "raw_log_delta_cosine": 0.2714392189155438,
+          "probability_variance_ratio": 1.2807627594283233,
+          "pred_zero_fraction": 0.5192101842119821,
+          "real_zero_fraction": 0.5182356032527522,
+          "pred_median_depth": 54150.0,
+          "real_median_depth": 53465.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.0842460814156082,
+          "bulk_probability_l1": 0.08064992571498544,
+          "raw_log_mean_mse": 0.008742819532762479,
+          "raw_log_delta_cosine": 0.3388410968672834,
+          "probability_variance_ratio": 1.0660622122024246,
+          "pred_zero_fraction": 0.5199784256237208,
+          "real_zero_fraction": 0.5182356032527522,
+          "pred_median_depth": 52156.5,
+          "real_median_depth": 53465.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.09020180977375097,
+          "bulk_probability_l1": 0.08613737507881904,
+          "raw_log_mean_mse": 0.00931787446682172,
+          "raw_log_delta_cosine": 0.33402093887293205,
+          "probability_variance_ratio": 1.0867865823973806,
+          "pred_zero_fraction": 0.520337307075289,
+          "real_zero_fraction": 0.5182356032527522,
+          "pred_median_depth": 52093.5,
+          "real_median_depth": 53465.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.08529378137496689,
+          "bulk_probability_l1": 0.08231623250030054,
+          "raw_log_mean_mse": 0.00828479325090243,
+          "raw_log_delta_cosine": 0.3385540190037574,
+          "probability_variance_ratio": 1.0689900910728531,
+          "pred_zero_fraction": 0.5193360347402777,
+          "real_zero_fraction": 0.5182356032527522,
+          "pred_median_depth": 52757.5,
+          "real_median_depth": 53465.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001539755578008096,
+        "bulk_probability": 0.00016446594931406259
+      }
+    },
+    "SMARCB1": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.029810065722762322,
+          "bulk_probability_l1": 0.029700601678614134,
+          "raw_log_mean_mse": 0.0009727019003086808,
+          "raw_log_delta_cosine": 0.9342460586316824,
+          "probability_variance_ratio": 0.9963726640778177,
+          "pred_zero_fraction": 0.5116732588371964,
+          "real_zero_fraction": 0.5140619295237041,
+          "pred_median_depth": 54288.0,
+          "real_median_depth": 53851.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.06265286631597163,
+          "bulk_probability_l1": 0.06390091558007269,
+          "raw_log_mean_mse": 0.00694074584139941,
+          "raw_log_delta_cosine": 0.7634098182194369,
+          "probability_variance_ratio": 14.886077220971087,
+          "pred_zero_fraction": 0.5200460529955191,
+          "real_zero_fraction": 0.5140619295237041,
+          "pred_median_depth": 54522.5,
+          "real_median_depth": 53851.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02992713353816788,
+          "bulk_probability_l1": 0.029704675609769186,
+          "raw_log_mean_mse": 0.004848855920084228,
+          "raw_log_delta_cosine": 0.7250171910110385,
+          "probability_variance_ratio": 0.2550684937242262,
+          "pred_zero_fraction": 0.46271159484427726,
+          "real_zero_fraction": 0.5140619295237041,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53851.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.11621464101158566,
+          "bulk_probability_l1": 0.1171118999059368,
+          "raw_log_mean_mse": 0.013540778874313845,
+          "raw_log_delta_cosine": 0.10741735661855663,
+          "probability_variance_ratio": 26.976124939442396,
+          "pred_zero_fraction": 0.5195332466670355,
+          "real_zero_fraction": 0.5140619295237041,
+          "pred_median_depth": 54578.0,
+          "real_median_depth": 53851.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.11076657682082673,
+          "bulk_probability_l1": 0.11056993926943035,
+          "raw_log_mean_mse": 0.013687527026866738,
+          "raw_log_delta_cosine": 0.0959565186210105,
+          "probability_variance_ratio": 0.9614837021413267,
+          "pred_zero_fraction": 0.5203487857498479,
+          "real_zero_fraction": 0.5140619295237041,
+          "pred_median_depth": 54329.0,
+          "real_median_depth": 53851.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.0958648493428219,
+          "bulk_probability_l1": 0.09570309147219834,
+          "raw_log_mean_mse": 0.012878602503543416,
+          "raw_log_delta_cosine": 0.10711790731183522,
+          "probability_variance_ratio": 0.9250410490811258,
+          "pred_zero_fraction": 0.5197029374343087,
+          "real_zero_fraction": 0.5140619295237041,
+          "pred_median_depth": 53942.0,
+          "real_median_depth": 53851.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.09663942832324929,
+          "bulk_probability_l1": 0.09636577588568707,
+          "raw_log_mean_mse": 0.012608574731118715,
+          "raw_log_delta_cosine": 0.10931853605429777,
+          "probability_variance_ratio": 0.933936908229678,
+          "pred_zero_fraction": 0.5196505227637329,
+          "real_zero_fraction": 0.5140619295237041,
+          "pred_median_depth": 54323.5,
+          "real_median_depth": 53851.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.09690510819913734,
+          "bulk_probability_l1": 0.0968410932238503,
+          "raw_log_mean_mse": 0.01221497924674246,
+          "raw_log_delta_cosine": 0.10745485862303215,
+          "probability_variance_ratio": 0.9325791662046194,
+          "pred_zero_fraction": 0.5197996072357138,
+          "real_zero_fraction": 0.5140619295237041,
+          "pred_median_depth": 54329.0,
+          "real_median_depth": 53851.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001544704354256131,
+        "bulk_probability": 0.00016664603736968867
+      }
+    },
+    "TUSC3": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02794258363053153,
+          "bulk_probability_l1": 0.026820252751700555,
+          "raw_log_mean_mse": 0.0007356613992084342,
+          "raw_log_delta_cosine": 0.5102602190446671,
+          "probability_variance_ratio": 0.955535860986277,
+          "pred_zero_fraction": 0.5151287547712563,
+          "real_zero_fraction": 0.5147394479172429,
+          "pred_median_depth": 55477.0,
+          "real_median_depth": 55633.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.035105401921263754,
+          "bulk_probability_l1": 0.03495178008970402,
+          "raw_log_mean_mse": 0.007274306241484697,
+          "raw_log_delta_cosine": -0.05084618838070716,
+          "probability_variance_ratio": 1.10729200432971,
+          "pred_zero_fraction": 0.5189164407811031,
+          "real_zero_fraction": 0.5147394479172429,
+          "pred_median_depth": 53605.0,
+          "real_median_depth": 55633.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.02803902746971073,
+          "bulk_probability_l1": 0.02682152202661478,
+          "raw_log_mean_mse": 0.0034789287198337933,
+          "raw_log_delta_cosine": 0.38086607705750025,
+          "probability_variance_ratio": 0.28381824058992244,
+          "pred_zero_fraction": 0.4662923881174974,
+          "real_zero_fraction": 0.5147394479172429,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 55633.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.061590441082714865,
+          "bulk_probability_l1": 0.06071979852419706,
+          "raw_log_mean_mse": 0.00824714940639539,
+          "raw_log_delta_cosine": -0.08899055091228551,
+          "probability_variance_ratio": 1.1098530655227148,
+          "pred_zero_fraction": 0.5189890468551197,
+          "real_zero_fraction": 0.5147394479172429,
+          "pred_median_depth": 53724.5,
+          "real_median_depth": 55633.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.08187690081129141,
+          "bulk_probability_l1": 0.08167880201296139,
+          "raw_log_mean_mse": 0.00864253489017961,
+          "raw_log_delta_cosine": -0.09159826049258608,
+          "probability_variance_ratio": 1.1322355284672532,
+          "pred_zero_fraction": 0.518829313492283,
+          "real_zero_fraction": 0.5147394479172429,
+          "pred_median_depth": 54325.5,
+          "real_median_depth": 55633.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.04235477169837815,
+          "bulk_probability_l1": 0.040882720283832094,
+          "raw_log_mean_mse": 0.007678287345757331,
+          "raw_log_delta_cosine": -0.11005585106111751,
+          "probability_variance_ratio": 1.0584050510334566,
+          "pred_zero_fraction": 0.5187139735575593,
+          "real_zero_fraction": 0.5147394479172429,
+          "pred_median_depth": 53427.5,
+          "real_median_depth": 55633.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.04393569912674451,
+          "bulk_probability_l1": 0.0426192021262153,
+          "raw_log_mean_mse": 0.007648642105851197,
+          "raw_log_delta_cosine": -0.10536756646121608,
+          "probability_variance_ratio": 1.064470778483267,
+          "pred_zero_fraction": 0.5187222713945898,
+          "real_zero_fraction": 0.5147394479172429,
+          "pred_median_depth": 53445.0,
+          "real_median_depth": 55633.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.043087945093519965,
+          "bulk_probability_l1": 0.04195464880882518,
+          "raw_log_mean_mse": 0.007219263389458947,
+          "raw_log_delta_cosine": -0.10451765099309793,
+          "probability_variance_ratio": 1.0597850112571896,
+          "pred_zero_fraction": 0.51887204735299,
+          "real_zero_fraction": 0.5147394479172429,
+          "pred_median_depth": 53732.5,
+          "real_median_depth": 55633.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.0015781004972826424,
+        "bulk_probability": 0.0001614592655657969
+      }
+    },
+    "UQCRB": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.0275344384964483,
+          "bulk_probability_l1": 0.02667678317962785,
+          "raw_log_mean_mse": 0.0010614515862043456,
+          "raw_log_delta_cosine": 0.7741543908679843,
+          "probability_variance_ratio": 1.0221203606696707,
+          "pred_zero_fraction": 0.5142725562869945,
+          "real_zero_fraction": 0.5097191182165182,
+          "pred_median_depth": 55548.5,
+          "real_median_depth": 57262.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.04307873339945258,
+          "bulk_probability_l1": 0.04343125722565707,
+          "raw_log_mean_mse": 0.008945193999412748,
+          "raw_log_delta_cosine": -0.05243907614784135,
+          "probability_variance_ratio": 1.222688366171326,
+          "pred_zero_fraction": 0.5165732699009791,
+          "real_zero_fraction": 0.5097191182165182,
+          "pred_median_depth": 54542.0,
+          "real_median_depth": 57262.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027660009783093593,
+          "bulk_probability_l1": 0.026682448204500317,
+          "raw_log_mean_mse": 0.0017975605243292741,
+          "raw_log_delta_cosine": 0.7983010864697219,
+          "probability_variance_ratio": 0.29421692181524345,
+          "pred_zero_fraction": 0.46678237539414724,
+          "real_zero_fraction": 0.5097191182165182,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 57262.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.1253625444232828,
+          "bulk_probability_l1": 0.1160976065016978,
+          "raw_log_mean_mse": 0.01952156528551801,
+          "raw_log_delta_cosine": -0.31793241881923195,
+          "probability_variance_ratio": 1.4954248728900166,
+          "pred_zero_fraction": 0.5201955523593517,
+          "real_zero_fraction": 0.5097191182165182,
+          "pred_median_depth": 50839.5,
+          "real_median_depth": 57262.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.10711195839542434,
+          "bulk_probability_l1": 0.1054801951225873,
+          "raw_log_mean_mse": 0.013672907925585459,
+          "raw_log_delta_cosine": -0.2713443351813747,
+          "probability_variance_ratio": 1.2200824799397831,
+          "pred_zero_fraction": 0.516875864358024,
+          "real_zero_fraction": 0.5097191182165182,
+          "pred_median_depth": 54342.0,
+          "real_median_depth": 57262.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.07751411490757883,
+          "bulk_probability_l1": 0.07342206140579799,
+          "raw_log_mean_mse": 0.013751936817687164,
+          "raw_log_delta_cosine": -0.36974421059053375,
+          "probability_variance_ratio": 1.087633434779218,
+          "pred_zero_fraction": 0.5174675001382973,
+          "real_zero_fraction": 0.5097191182165182,
+          "pred_median_depth": 52138.0,
+          "real_median_depth": 57262.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.0836064429218763,
+          "bulk_probability_l1": 0.0787783711307652,
+          "raw_log_mean_mse": 0.01437302076949761,
+          "raw_log_delta_cosine": -0.3631713023306382,
+          "probability_variance_ratio": 1.1083586357702664,
+          "pred_zero_fraction": 0.5177800519997787,
+          "real_zero_fraction": 0.5097191182165182,
+          "pred_median_depth": 51838.0,
+          "real_median_depth": 57262.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.07867556724369748,
+          "bulk_probability_l1": 0.07502822520588073,
+          "raw_log_mean_mse": 0.0129546373807074,
+          "raw_log_delta_cosine": -0.35553611082129305,
+          "probability_variance_ratio": 1.0896512951372406,
+          "pred_zero_fraction": 0.5170324168833325,
+          "real_zero_fraction": 0.5097191182165182,
+          "pred_median_depth": 52700.5,
+          "real_median_depth": 57262.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.00153321649485824,
+        "bulk_probability": 0.00015833673285037833
+      }
+    },
+    "USF2": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.033540072598385214,
+          "bulk_probability_l1": 0.03059383067671015,
+          "raw_log_mean_mse": 0.0015937290230612776,
+          "raw_log_delta_cosine": 0.9421642187226617,
+          "probability_variance_ratio": 1.0810387189218746,
+          "pred_zero_fraction": 0.5219791724290535,
+          "real_zero_fraction": 0.514974691597057,
+          "pred_median_depth": 48667.5,
+          "real_median_depth": 50278.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.080993926410668,
+          "bulk_probability_l1": 0.06864894312231365,
+          "raw_log_mean_mse": 0.011775491712529099,
+          "raw_log_delta_cosine": 0.8296605276621505,
+          "probability_variance_ratio": 10.30315729518468,
+          "pred_zero_fraction": 0.5276600099574045,
+          "real_zero_fraction": 0.514974691597057,
+          "pred_median_depth": 46683.5,
+          "real_median_depth": 50278.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.03364715072434441,
+          "bulk_probability_l1": 0.030607300961534793,
+          "raw_log_mean_mse": 0.010234025722484592,
+          "raw_log_delta_cosine": 0.6515750807484776,
+          "probability_variance_ratio": 0.20683025726735024,
+          "pred_zero_fraction": 0.4564114620788847,
+          "real_zero_fraction": 0.514974691597057,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 50278.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.14169893611308612,
+          "bulk_probability_l1": 0.13870169469383112,
+          "raw_log_mean_mse": 0.012123881222199234,
+          "raw_log_delta_cosine": 0.2900622538251064,
+          "probability_variance_ratio": 0.7569542494091941,
+          "pred_zero_fraction": 0.5187524202024671,
+          "real_zero_fraction": 0.514974691597057,
+          "pred_median_depth": 53848.0,
+          "real_median_depth": 50278.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.16471501637868013,
+          "bulk_probability_l1": 0.15503193484139088,
+          "raw_log_mean_mse": 0.020037218454419845,
+          "raw_log_delta_cosine": 0.3424379888183844,
+          "probability_variance_ratio": 0.918793935112629,
+          "pred_zero_fraction": 0.5269249598937877,
+          "real_zero_fraction": 0.514974691597057,
+          "pred_median_depth": 48133.0,
+          "real_median_depth": 50278.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.12860037180881154,
+          "bulk_probability_l1": 0.12553070214707904,
+          "raw_log_mean_mse": 0.01153693131247798,
+          "raw_log_delta_cosine": 0.3347064635542527,
+          "probability_variance_ratio": 0.7166888436985752,
+          "pred_zero_fraction": 0.5182003374453725,
+          "real_zero_fraction": 0.514974691597057,
+          "pred_median_depth": 52024.0,
+          "real_median_depth": 50278.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.13101374541353802,
+          "bulk_probability_l1": 0.12788194185466661,
+          "raw_log_mean_mse": 0.01158960602061045,
+          "raw_log_delta_cosine": 0.326350167402549,
+          "probability_variance_ratio": 0.7224304612476582,
+          "pred_zero_fraction": 0.5182046246611717,
+          "real_zero_fraction": 0.514974691597057,
+          "pred_median_depth": 52625.5,
+          "real_median_depth": 50278.0,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.13351446844855003,
+          "bulk_probability_l1": 0.1303656130725154,
+          "raw_log_mean_mse": 0.011480639553948978,
+          "raw_log_delta_cosine": 0.3114748590692631,
+          "probability_variance_ratio": 0.7197995189594276,
+          "pred_zero_fraction": 0.5183299220003319,
+          "real_zero_fraction": 0.514974691597057,
+          "pred_median_depth": 53480.5,
+          "real_median_depth": 50278.0,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001551961555808433,
+        "bulk_probability": 0.0001909845357409518
+      }
+    },
+    "VCL": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.028431615083095246,
+          "bulk_probability_l1": 0.027150779253336067,
+          "raw_log_mean_mse": 0.0007034937012341572,
+          "raw_log_delta_cosine": 0.6974167576449694,
+          "probability_variance_ratio": 1.0028786167712889,
+          "pred_zero_fraction": 0.5193368645239808,
+          "real_zero_fraction": 0.5193436410908889,
+          "pred_median_depth": 53390.0,
+          "real_median_depth": 52079.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.042774148205572904,
+          "bulk_probability_l1": 0.04284478710581929,
+          "raw_log_mean_mse": 0.0050980036077131865,
+          "raw_log_delta_cosine": 0.5674768769913818,
+          "probability_variance_ratio": 1.1142352295580327,
+          "pred_zero_fraction": 0.5185940698124689,
+          "real_zero_fraction": 0.5193436410908889,
+          "pred_median_depth": 51793.0,
+          "real_median_depth": 52079.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.028536929160698273,
+          "bulk_probability_l1": 0.027156098736119363,
+          "raw_log_mean_mse": 0.005549165208772358,
+          "raw_log_delta_cosine": -0.052286909268990746,
+          "probability_variance_ratio": 0.29757727546882057,
+          "pred_zero_fraction": 0.4666650992974498,
+          "real_zero_fraction": 0.5193436410908889,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 52079.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.07402498185044695,
+          "bulk_probability_l1": 0.07405863733503805,
+          "raw_log_mean_mse": 0.005034276444677004,
+          "raw_log_delta_cosine": 0.4193103434507563,
+          "probability_variance_ratio": 1.161260950728859,
+          "pred_zero_fraction": 0.5178077114565469,
+          "real_zero_fraction": 0.5193436410908889,
+          "pred_median_depth": 54048.5,
+          "real_median_depth": 52079.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.09920105004601076,
+          "bulk_probability_l1": 0.09931933262343977,
+          "raw_log_mean_mse": 0.007732203702640542,
+          "raw_log_delta_cosine": 0.3776821630253785,
+          "probability_variance_ratio": 1.2789994784717462,
+          "pred_zero_fraction": 0.5189381534546662,
+          "real_zero_fraction": 0.5193436410908889,
+          "pred_median_depth": 53785.5,
+          "real_median_depth": 52079.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.04683315987871903,
+          "bulk_probability_l1": 0.0464420148050897,
+          "raw_log_mean_mse": 0.004470453310949196,
+          "raw_log_delta_cosine": 0.45631894908613146,
+          "probability_variance_ratio": 1.0917532629339137,
+          "pred_zero_fraction": 0.5173120539912597,
+          "real_zero_fraction": 0.5193436410908889,
+          "pred_median_depth": 52101.5,
+          "real_median_depth": 52079.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.048983663269137834,
+          "bulk_probability_l1": 0.048541974488536865,
+          "raw_log_mean_mse": 0.004376652658173113,
+          "raw_log_delta_cosine": 0.4571991385076088,
+          "probability_variance_ratio": 1.0978140165282744,
+          "pred_zero_fraction": 0.5173149582342202,
+          "real_zero_fraction": 0.5193436410908889,
+          "pred_median_depth": 52538.0,
+          "real_median_depth": 52079.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.04725083132732329,
+          "bulk_probability_l1": 0.047205804556995495,
+          "raw_log_mean_mse": 0.0038452583736336386,
+          "raw_log_delta_cosine": 0.46369903964535053,
+          "probability_variance_ratio": 1.0925324830142085,
+          "pred_zero_fraction": 0.5171982353266582,
+          "real_zero_fraction": 0.5193436410908889,
+          "pred_median_depth": 53902.5,
+          "real_median_depth": 52079.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001557561228619626,
+        "bulk_probability": 0.00016976801386118544
+      }
+    },
+    "ZNF581": {
+      "arms": {
+        "observed_fit_split": {
+          "mean_probability_l1": 0.02778682079886001,
+          "bulk_probability_l1": 0.026926611373207825,
+          "raw_log_mean_mse": 0.0007137302422370321,
+          "raw_log_delta_cosine": 0.46296445960568333,
+          "probability_variance_ratio": 0.9807397301442108,
+          "pred_zero_fraction": 0.5179238811749738,
+          "real_zero_fraction": 0.5174984787298778,
+          "pred_median_depth": 53645.0,
+          "real_median_depth": 53611.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_transport": {
+          "mean_probability_l1": 0.03758636953202841,
+          "bulk_probability_l1": 0.03773674050352985,
+          "raw_log_mean_mse": 0.0049484648836314775,
+          "raw_log_delta_cosine": 0.3372789563559893,
+          "probability_variance_ratio": 1.050030854018459,
+          "pred_zero_fraction": 0.5169791724290536,
+          "real_zero_fraction": 0.5174984787298778,
+          "pred_median_depth": 52849.5,
+          "real_median_depth": 53611.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "measured_direct_moments": {
+          "mean_probability_l1": 0.027871056413124047,
+          "bulk_probability_l1": 0.026933474045629985,
+          "raw_log_mean_mse": 0.004565135282677398,
+          "raw_log_delta_cosine": -0.04377194909114552,
+          "probability_variance_ratio": 0.2839796176865072,
+          "pred_zero_fraction": 0.4669562150799358,
+          "real_zero_fraction": 0.5174984787298778,
+          "pred_median_depth": 54693.0,
+          "real_median_depth": 53611.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__k562": {
+          "mean_probability_l1": 0.07057678489505059,
+          "bulk_probability_l1": 0.07093891477151121,
+          "raw_log_mean_mse": 0.00568794838951411,
+          "raw_log_delta_cosine": 0.25673491674796206,
+          "probability_variance_ratio": 1.0928995869544271,
+          "pred_zero_fraction": 0.5170716933119434,
+          "real_zero_fraction": 0.5174984787298778,
+          "pred_median_depth": 54124.5,
+          "real_median_depth": 53611.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__hct116_batch": {
+          "mean_probability_l1": 0.12707814595447373,
+          "bulk_probability_l1": 0.12615898212339013,
+          "raw_log_mean_mse": 0.012566407815735793,
+          "raw_log_delta_cosine": 0.20306497025886183,
+          "probability_variance_ratio": 1.276003963285137,
+          "pred_zero_fraction": 0.5195480444764065,
+          "real_zero_fraction": 0.5174984787298778,
+          "pred_median_depth": 52638.0,
+          "real_median_depth": 53611.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_mean": {
+          "mean_probability_l1": 0.04234887614007528,
+          "bulk_probability_l1": 0.04195308060568099,
+          "raw_log_mean_mse": 0.004758000373843281,
+          "raw_log_delta_cosine": 0.2842069916466996,
+          "probability_variance_ratio": 1.0363596951227572,
+          "pred_zero_fraction": 0.5162716435249212,
+          "real_zero_fraction": 0.5174984787298778,
+          "pred_median_depth": 52953.0,
+          "real_median_depth": 53611.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w": {
+          "mean_probability_l1": 0.04491211536685303,
+          "bulk_probability_l1": 0.04441580493082486,
+          "raw_log_mean_mse": 0.004760001660569112,
+          "raw_log_delta_cosine": 0.2837101359490018,
+          "probability_variance_ratio": 1.0401123402199979,
+          "pred_zero_fraction": 0.5165227913923771,
+          "real_zero_fraction": 0.5174984787298778,
+          "pred_median_depth": 53183.5,
+          "real_median_depth": 53611.5,
+          "n_pred": 400,
+          "n_real": 400
+        },
+        "borrowed_transport_ds1p7__consensus_w_ctr": {
+          "mean_probability_l1": 0.043426935497564864,
+          "bulk_probability_l1": 0.04319678311632637,
+          "raw_log_mean_mse": 0.004281981230749512,
+          "raw_log_delta_cosine": 0.28689942943108215,
+          "probability_variance_ratio": 1.0359266684492097,
+          "pred_zero_fraction": 0.5166292803009349,
+          "real_zero_fraction": 0.5174984787298778,
+          "pred_median_depth": 53971.0,
+          "real_median_depth": 53611.5,
+          "n_pred": 400,
+          "n_real": 400
+        }
+      },
+      "moment_constraint_error": {
+        "mean_probability": 0.001556308333746452,
+        "bulk_probability": 0.00016765106797062742
+      }
+    }
+  },
+  "null": {
+    "champion_transport": {
+      "mean_probability_l1": 0.024798723255354246,
+      "bulk_probability_l1": 0.024604872104717047,
+      "raw_log_mean_mse": 0.004517864853831569,
+      "raw_log_delta_cosine": null,
+      "probability_variance_ratio": 1.0469705770257647,
+      "pred_zero_fraction": 0.5161362504840405,
+      "real_zero_fraction": 0.5162837099629363,
+      "pred_median_depth": 54393.5,
+      "real_median_depth": 54543.0,
+      "n_pred": 400,
+      "n_real": 1600
+    },
+    "direct_moments": {
+      "mean_probability_l1": 0.013916301465879685,
+      "bulk_probability_l1": 0.013161640904125414,
+      "raw_log_mean_mse": 0.003689380851198935,
+      "raw_log_delta_cosine": null,
+      "probability_variance_ratio": 0.2892564465107491,
+      "pred_zero_fraction": 0.4646910438678984,
+      "real_zero_fraction": 0.5162837099629363,
+      "pred_median_depth": 54693.0,
+      "real_median_depth": 54543.0,
+      "n_pred": 400,
+      "n_real": 1600
+    }
+  },
+  "code_hashes": {
+    "tools/run_k022_pipeline_audit.py": "899b5833097d6ba4f1b5a847eac89b6ea1ce4e75d4834fa39793038e9648879b",
+    "tools/run_k007_neighbor_prior.py": "1f74a369b41592e1100acc69e6c40501636d2a84cb73ed52d8ecede3f77295ff",
+    "src/kytos/models/dual_moment.py": "a87dc7ce956cabf24e46b227eb55d3bb78ee464d9920a92503c73c24bbe80682",
+    "src/kytos/models/layer_b.py": "1eba27fa1189d947b705809541967589c52971e5da141c8a80b84f00605ea69f"
+  },
+  "split_sha256": "8223699209551330a471f93cc7246c670fb74790bf3d8ca2fb3ac56829c53828",
+  "versions": {
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "anndata": "0.11.4",
+    "pandas": "2.2.3"
+  },
+  "synthetic": false,
+  "axis_resolution": {
+    "rule": "drop_from_diagnostic_axis",
+    "dropped_labels": [
+      "HSPA14-1",
+      "TBCE-1",
+      "TMSB15B-1"
+    ],
+    "n_consumer_labels": 18080,
+    "n_aligned_labels": 18077,
+    "aligned_axis_sha256": "9e985eba098b1e972c2fa1a488d3774332bd65760b5949b8fbf3857329ac0561",
+    "audit_report": "experiments/k022-pipeline-audit/axis-20260921-01/axis_report.json"
+  },
+  "input_hashes": {
+    "/kytos-vol/atlas/adata_Validation.h5ad": "376f0bab27d9f22e00dfd888668d3602006d035edc182721c378f4802c77bfe1",
+    "/kytos-vol/k023-consensus/extract-20260921-02-honest/variants/variant_k562.npz": "a6f3dc5182fcfe8699e5191a4d5e84c6a9b0dd29df4ab2389dd222dc0d50ce8d",
+    "/kytos-vol/k023-consensus/extract-20260921-02-honest/variants/variant_hct116_batch.npz": "a62db7091aa22512291af7be9af525ef3133bfc6030f7202b1f35f64444612c0",
+    "/kytos-vol/k023-consensus/extract-20260921-02-honest/variants/variant_consensus_mean.npz": "8b00203c45b93a8710c3211c6134509cb5feebe51a6db229dbde393b7ee494dd",
+    "/kytos-vol/k023-consensus/extract-20260921-02-honest/variants/variant_consensus_w.npz": "c0fff9dd28da822dcca7d4c6e962a0adfcbec154b53d5bbd96b4d42cb3174720",
+    "/kytos-vol/k023-consensus/extract-20260921-02-honest/variants/variant_consensus_w_ctr.npz": "336f2cbc1d0125af9c4024e41b62c9639c24f15f8c38f7724e6dcf4da09f7eea"
+  }
+}

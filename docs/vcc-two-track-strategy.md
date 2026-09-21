@@ -57,13 +57,20 @@ checking their validity caveats.
   **Leak found & fixed:** `delta_matrix_src.npz` rows for the 47 eval targets
   are in-context hESC deltas (atlas-preferred merge), so the first
   consensus5 audit's "k562" arm (0.604) was a leaked pseudo-ceiling, not a
-  borrowed source. The honest re-run (`consensus5-20260921-02`) uses
-  Replogle-K562 for paired targets. Receipts:
+  borrowed source. The honest re-run (`consensus5-20260921-03`, Replogle-K562
+  for paired targets) gives: k562 baseline **0.268** (exact replication of
+  paired47), consensus_w **0.267**, consensus_w_ctr **0.269**,
+  consensus_mean 0.256, hct116_batch 0.211. Consensus wins 22/32 targets
+  pairwise (median +0.026) but does not move the aggregate median —
+  near-orthogonal lineages suppress noise without adding shared signal.
+  **Consensus ensembling is a marginal proxy improvement, not a fix for the
+  signature-content gap.** Receipts:
   `experiments/k023-consensus/extract-20260921-01/`,
   `experiments/k022-pipeline-audit/consensus5-20260921-01/` (leaked-baseline
-  record), `consensus5-20260921-02` (honest).
-- **Next action:** read the honest consensus5 result vs the true K562
-  baseline (0.268); submit only if an offline gate clears k011.
+  record), `consensus5-20260921-03` (honest result).
+- **Next action:** decide between documenting the signature-content impasse
+  or a Track-2 trained-model attempt; consensus deltas do not clear the
+  offline gate over k011.
 
 ## What the history establishes—and does not
 

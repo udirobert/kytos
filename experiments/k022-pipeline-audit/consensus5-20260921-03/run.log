@@ -1,0 +1,773 @@
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 null
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ACLY
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ACLY
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ACLY
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ACLY
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ACLY
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ACLY
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ANXA6
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ANXA6
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ANXA6
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ANXA6
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ANXA6
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ANXA6
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ARPC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ARPC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ARPC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ARPC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ARPC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ARPC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CENPB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CENPB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CENPB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CENPB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CENPB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CENPB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX4I1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX4I1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX4I1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX4I1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX4I1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX4I1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX6C
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX6C
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX6C
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX6C
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX6C
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 COX6C
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CSK
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CSK
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CSK
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CSK
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CSK
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CSK
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CTSV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CTSV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CTSV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CTSV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CTSV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 CTSV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 DOT1L
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 DOT1L
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 DOT1L
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 DOT1L
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 DOT1L
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 DOT1L
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 EHMT1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 EHMT1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 EHMT1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 EHMT1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 EHMT1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 EHMT1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 GSTZ1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 GSTZ1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 GSTZ1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 GSTZ1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 GSTZ1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 GSTZ1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HDAC8
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HDAC8
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HDAC8
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HDAC8
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HDAC8
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HDAC8
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGCR
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGCR
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGCR
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGCR
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGCR
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGCR
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGXB4
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGXB4
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGXB4
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGXB4
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGXB4
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HMGXB4
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HTATSF1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HTATSF1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HTATSF1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HTATSF1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HTATSF1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 HTATSF1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 IGF1R
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 IGF1R
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 IGF1R
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 IGF1R
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 IGF1R
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 IGF1R
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ITGAV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ITGAV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ITGAV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ITGAV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ITGAV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ITGAV
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KLHDC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KLHDC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KLHDC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KLHDC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KLHDC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KLHDC2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KRT18
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KRT18
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KRT18
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KRT18
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KRT18
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 KRT18
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MAT2A
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MAT2A
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MAT2A
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MAT2A
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MAT2A
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MAT2A
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MGST1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MGST1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MGST1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MGST1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MGST1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MGST1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MTFR1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MTFR1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MTFR1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MTFR1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MTFR1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 MTFR1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 NFE2L1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 NFE2L1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 NFE2L1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 NFE2L1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 NFE2L1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 NFE2L1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PACSIN3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PACSIN3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PACSIN3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PACSIN3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PACSIN3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PACSIN3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PAXIP1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PAXIP1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PAXIP1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PAXIP1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PAXIP1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 PAXIP1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SLIRP
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SLIRP
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SLIRP
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SLIRP
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SLIRP
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SLIRP
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SMARCB1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SMARCB1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SMARCB1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SMARCB1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SMARCB1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 SMARCB1
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 TUSC3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 TUSC3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 TUSC3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 TUSC3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 TUSC3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 TUSC3
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 UQCRB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 UQCRB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 UQCRB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 UQCRB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 UQCRB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 UQCRB
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 USF2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 USF2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 USF2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 USF2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 USF2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 USF2
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 VCL
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 VCL
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 VCL
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 VCL
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 VCL
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 VCL
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ZNF581
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ZNF581
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ZNF581
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ZNF581
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ZNF581
+[audit] loading controls.h5ad ...
+  library_cap=median -> 54709
+  basal: 1600 cells, mean nnz/cell 8760.1
+  [audit] 0/1 ZNF581
+{"summary": "/kytos-vol/k022-pipeline-audit/consensus5-20260921-03/diagnostics/summary.json", "targets": 32, "diagnostics_only": true}

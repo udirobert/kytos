@@ -1,0 +1,38 @@
+{
+  "run_id": "consensus5-20260921-03",
+  "date": "2026-09-21",
+  "status": "completed",
+  "function_call": "fc-01M32F9BC5QEAXJSW2ZKKQJ4M0",
+  "supersedes": "consensus5-20260921-02 (container killed mid-diagnostic; preflight+partial run retained on volume) and consensus5-20260921-01 (leaked baseline — 'k562' arm was in-context hESC deltas)",
+  "sources": {
+    "k562": "honest Replogle (paired_transfer.delta_k562 for paired targets) — extract-20260921-02-honest",
+    "hct116_batch": "X-Atlas HCT116 sample-paired deltas",
+    "consensus_mean": "uniform mean of unit-normalized sources",
+    "consensus_w": "weighted mean 2:1:1:1 k562:hct116:hek293t:cd4",
+    "consensus_w_ctr": "consensus_w + per-gene median centering"
+  },
+  "eval": "32/47 paired targets, seed-0 identical splits to paired47-20260921-01",
+  "median_raw_log_delta_cosine": {
+    "observed_fit_split": 0.7012,
+    "measured_transport": 0.5140,
+    "measured_direct_moments": 0.3486,
+    "k562": 0.2683,
+    "consensus_w_ctr": 0.2685,
+    "consensus_w": 0.2667,
+    "consensus_mean": 0.2561,
+    "hct116_batch": 0.2114
+  },
+  "paired_delta_vs_k562": {
+    "consensus_w_ctr": {"median": 0.0263, "mean": 0.0212, "wins": "22/32"},
+    "consensus_w": {"median": 0.0269, "mean": 0.0186, "wins": "21/32"},
+    "consensus_mean": {"median": 0.0275, "mean": 0.0189, "wins": "19/32"},
+    "hct116_batch": {"median": -0.0195, "mean": -0.0148, "wins": "11/32"}
+  },
+  "sanity_checks": [
+    "honest k562 arm replicated paired47 median exactly: 0.2683 vs 0.2683",
+    "shared arms (observed/measured) identical to paired47 — same eval cells",
+    "no arm exceeds the measured-transport bar (0.514)"
+  ],
+  "interpretation": "Consensus is a marginal per-target improvement (22/32 wins, +0.026 median cosine) but does not move the aggregate median. Cross-lineage delta agreement is near-orthogonal (0.02-0.05), so averaging suppresses noise without creating shared signal. The honest K562 transfer gap to the measured-delta bar (0.51) remains the bottleneck.",
+  "official_score_computed": false
+}
