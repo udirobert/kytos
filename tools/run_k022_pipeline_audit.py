@@ -287,7 +287,12 @@ def run_audit(
     if not splits:
         raise ValueError("No targets have enough independent fit/evaluation cells")
     out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=False)
+    # Resume-safe: a completed run (summary.json) refuses re-entry; an
+    # interrupted attempt's partial directory is reused. Matches the
+    # run_pilot wrapper's marker semantics for Modal retries.
+    if (out_dir / "summary.json").is_file():
+        raise FileExistsError(f"{out_dir} already holds a completed summary")
+    out_dir.mkdir(parents=True, exist_ok=True)
     control_fit = real[ctrl_fit, vidx].to_memory() if real.isbacked else real[ctrl_fit, vidx].copy()
     control_eval = real[ctrl_eval, vidx].X
     control_moments = moments(control_fit.X)
