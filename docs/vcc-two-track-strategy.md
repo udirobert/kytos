@@ -68,9 +68,19 @@ checking their validity caveats.
   `experiments/k023-consensus/extract-20260921-01/`,
   `experiments/k022-pipeline-audit/consensus5-20260921-01/` (leaked-baseline
   record), `consensus5-20260921-03` (honest result).
-- **Next action:** decide between documenting the signature-content impasse
-  or a Track-2 trained-model attempt; consensus deltas do not clear the
-  offline gate over k011.
+- **k024 promoter-neighbor prior (2026-09-21, in flight):** ported the
+  kaipengm2 CRISPRi local-silencing prior into the k022 diagnostic.
+  Coordinates from UCSC `wgEncodeGencodeCompV47` (gencode v47; EBI refused
+  at build time — provenance noted). 85 pairs over 343 targets; 14/47 eval
+  targets covered (7/32 powered) — thin coverage bounds the expected gain.
+  Arms: `promoter_neighbor_only`, `borrowed_transport_ds1p7_pncap__<src>`.
+  Run: `pn2-20260921-01`. Receipts:
+  `experiments/k024-promoter-prior/pairs-20260921-01/`.
+- **Signature-content impasse — formally recorded:**
+  `docs/signature-content-impasse.md`. Uniform tuning exhausted, the
+  transferability gate is falsified, and consensus denoising is marginal.
+  No submission is justified by current evidence; remaining routes are the
+  promoter-neighbor prior (k024) and a Track-2 learned transfer model.
 
 ## What the history establishes—and does not
 
