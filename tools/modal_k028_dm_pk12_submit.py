@@ -155,12 +155,27 @@ def build_and_prep(max_targets: int = 0, cells_per_pert: int = 400, seed: int = 
 
 @app.function(
     image=modal.Image.debian_slim().apt_install("git", "curl", "unzip").pip_install("vcc-cli"),
-    timeout=60 * 60 * 2,
+    timeout=60 * 60 * 4,
     volumes={"/kytos-vol": vol},
     secrets=[modal.Secret.from_name("kytos-vcc")],
 )
-def submit_from_volume() -> dict:
-    """Submit the persisted .vcc from the Modal Volume."""
+def submit_from_volume(wait_until_utc: str = "") -> dict:
+    """Submit the persisted .vcc from the Modal Volume.
+
+    ``wait_until_utc`` (ISO-8601, e.g. "2026-09-23T00:05:00") optionally delays
+    submission until after the daily allowance reset — server-side, so it does
+    not depend on the local session staying alive.
+    """
+    if wait_until_utc:
+        import datetime
+
+        target = datetime.datetime.fromisoformat(wait_until_utc).replace(
+            tzinfo=datetime.timezone.utc
+        )
+        delay = max(0.0, target.timestamp() - time.time())
+        print(f"sleeping {delay:.0f}s until {wait_until_utc}", flush=True)
+        time.sleep(delay)
+
     vcc_path = f"/kytos-vol/{TAG}/prediction.prep.vcc"
     print(f"submitting {vcc_path}", flush=True)
     result = subprocess.run(
