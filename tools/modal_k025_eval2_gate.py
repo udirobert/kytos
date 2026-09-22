@@ -86,6 +86,19 @@ for filename in (
     )
 
 
+def _clean(o):
+    """NaN -> None so payloads serialize (json allow_nan=False)."""
+    import math
+
+    if isinstance(o, float) and math.isnan(o):
+        return None
+    if isinstance(o, dict):
+        return {k: _clean(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [_clean(v) for v in o]
+    return o
+
+
 def _load_variant_deltas(npz_path, axis_symbols):
     """Return {target: delta} reindexed onto ``axis_symbols`` (0-fill miss)."""
     import numpy as np
@@ -135,7 +148,7 @@ def _oracle_deltas(paired_path, axis_symbols):
     max_containers=1,
     volumes={str(VOLUME_ROOT): volume},
 )
-def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0) -> dict:
+def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: str = "") -> dict:
     import json
     import subprocess
     import sys
@@ -151,6 +164,7 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0) -> dict:
     sys.path.insert(0, str(REMOTE_ROOT / "src"))
     import promoter_neighbor as pn
     import run_k007_neighbor_prior as k007
+    from kytos.models.dual_moment import build_prediction_dual_moment
     from kytos.models.layer_a import ContextConditionedTransfer
     from kytos.models.layer_b import HeterogeneousTransportSampler
 
@@ -188,9 +202,9 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0) -> dict:
     gene_index = {g: i for i, g in enumerate(axis_symbols)}
     pairs = pd.read_csv(PAIRS_PATH)
 
-    k562 = _load_variant_deltas(VARIANTS_DIR / "variant_k562.npz", axis_symbols)
     cons = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_w_ctr.npz", axis_symbols)
-    oracle = _oracle_deltas(PAIRED_PATH, axis_symbols)
+    cons_w = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_w.npz", axis_symbols)
+    cons_mean = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_mean.npz", axis_symbols)
 
     def capped(src, scale):
         out_d = {}
@@ -199,35 +213,68 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0) -> dict:
             out_d[t] = pn.apply_promoter_cap(src[t].astype(np.float64) * scale, pn_delta)
         return out_d
 
+    # arm spec: deltas -> gen "transport" (kd_std, delta_scale) or "dm"
+    # (dual_moment amplitude, bulk_amplitude). gate-20260921-01 covered
+    # null/k562_ds1p{0,7}/consensus_w_ctr/*_pncap/oracle at kd_std=2.0.
     variants = {
-        "null": ({t: np.zeros(len(axis_symbols), np.float32) for t in eval_targets}, 1.0),
-        "k562_ds1p7": (k562, 1.7),
-        "k562_ds1p0": (k562, 1.0),
-        "consensus_w_ctr": (cons, 1.7),
-        "k562_ds1p7_pncap": (capped(k562, 1.7), 1.0),
-        "cons_w_ctr_pncap": (capped(cons, 1.7), 1.0),
-        "oracle_hesc": (oracle, 1.0),
+        "cons_kd0p7": {"deltas": cons, "scale": 1.7, "kd_std": 0.7},
+        "cons_kd1p0": {"deltas": cons, "scale": 1.7, "kd_std": 1.0},
+        "cons_kd1p3": {"deltas": cons, "scale": 1.7, "kd_std": 1.3},
+        "cons_kd1p0_ds1p0": {"deltas": cons, "scale": 1.0, "kd_std": 1.0},
+        "cons_dm_a0p6": {
+            "deltas": cons,
+            "gen": "dm",
+            "dm_amp": 0.6,
+            "dm_bulk_amp": 0.3,
+        },
+        "cons_dm_a1p0": {
+            "deltas": cons,
+            "gen": "dm",
+            "dm_amp": 1.0,
+            "dm_bulk_amp": 0.5,
+        },
+        "consensus_w": {"deltas": cons_w, "scale": 1.7, "kd_std": 2.0},
+        "consensus_mean": {"deltas": cons_mean, "scale": 1.7, "kd_std": 2.0},
     }
 
     rng = np.random.default_rng(seed)
     pred_paths = {}
-    for name, (deltas, scale) in variants.items():
+    for name, spec in variants.items():
         pred_path = out / f"pred_{name}.h5ad"
         if not pred_path.exists():
-            x, obs, used = k007.build_context_predictions(
-                "eval",
-                ctrl_path,
-                eval_targets,
-                axis_symbols,
-                cells_per_pert,
-                rng,
-                deltas,
-                {},
-                ContextConditionedTransfer(),
-                HeterogeneousTransportSampler(noise_scale=0.05, kd_std=2.0),
-                library_cap="median",
-                delta_scale=scale,
-            )
+            if spec.get("gen") == "dm":
+                x = build_prediction_dual_moment(
+                    controls,
+                    spec["deltas"],
+                    eval_targets,
+                    axis_symbols,
+                    cells_per_pert,
+                    amplitude=spec["dm_amp"],
+                    bulk_amplitude=spec["dm_bulk_amp"],
+                    seed=seed,
+                )
+                obs = pd.DataFrame(
+                    {
+                        "target_gene": np.repeat(eval_targets, cells_per_pert),
+                        "context": "eval",
+                    }
+                )
+                used = {"real": len(eval_targets)}
+            else:
+                x, obs, used = k007.build_context_predictions(
+                    "eval",
+                    ctrl_path,
+                    eval_targets,
+                    axis_symbols,
+                    cells_per_pert,
+                    rng,
+                    spec["deltas"],
+                    {},
+                    ContextConditionedTransfer(),
+                    HeterogeneousTransportSampler(noise_scale=0.05, kd_std=spec["kd_std"]),
+                    library_cap="median",
+                    delta_scale=spec["scale"],
+                )
             # append unperturbed control cells so the pred file carries the
             # non-targeting reference the scorer expects
             n_ctrl = min(800, controls.n_obs)
@@ -261,57 +308,68 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0) -> dict:
 
     baseline_dir = out / "baseline"
     bundle_dir = out / "bundle"
-    if not (baseline_dir / "baseline_pred.h5ad").exists():
-        cell_eval2(
-            "baseline",
-            "-ar",
-            real_path,
-            "--save-pred",
-            baseline_dir / "baseline_pred.h5ad",
-            "--preset",
-            "vcc2026",
-            "--pert-col",
-            "target_gene",
-            "-o",
-            baseline_dir,
-        )
-        volume.commit()
-    if not bundle_dir.exists() or not list(bundle_dir.glob("*")):
-        cell_eval2(
-            "prep-real-bundle",
-            "--real",
-            real_path,
-            "--baseline",
-            baseline_dir / "baseline_pred.h5ad",
-            "--preset",
-            "vcc2026",
-            "--pert-col",
-            "target_gene",
-            "--anchor-splits",
-            "5",
-            "-o",
-            bundle_dir,
-        )
-        volume.commit()
-
-    # Real-data anchors: disjoint self-split ceiling + split-half LFC-NMAE
-    # reference. Real-only mode (no -ap) so these are computed once.
     anchor_dir = out / "anchors"
-    if not (anchor_dir / "ceiling_agg.csv").exists():
-        cell_eval2(
-            "run",
-            "-ar",
-            real_path,
-            "--preset",
-            "vcc2026",
-            "--pert-col",
-            "target_gene",
-            "--ceiling",
-            "--lfc-nmae-ref",
-            "-o",
-            anchor_dir,
-        )
-        volume.commit()
+    if bundle_src:
+        # Reuse a previously built real bundle (same real subset
+        # construction is deterministic). Skips the ~3h prep-real-bundle.
+        bundle_dir = Path(bundle_src)
+        print(f"[bundle] reusing {bundle_dir}", flush=True)
+        src_anchors = bundle_dir.parent / "anchors"
+        if not anchor_dir.exists() and src_anchors.exists():
+            anchor_dir.mkdir(parents=True, exist_ok=True)
+            for f in src_anchors.glob("*_agg.csv"):
+                (anchor_dir / f.name).write_bytes(f.read_bytes())
+    else:
+        if not (baseline_dir / "baseline_pred.h5ad").exists():
+            cell_eval2(
+                "baseline",
+                "-ar",
+                real_path,
+                "--save-pred",
+                baseline_dir / "baseline_pred.h5ad",
+                "--preset",
+                "vcc2026",
+                "--pert-col",
+                "target_gene",
+                "-o",
+                baseline_dir,
+            )
+            volume.commit()
+        if not bundle_dir.exists() or not list(bundle_dir.glob("*")):
+            cell_eval2(
+                "prep-real-bundle",
+                "--real",
+                real_path,
+                "--baseline",
+                baseline_dir / "baseline_pred.h5ad",
+                "--preset",
+                "vcc2026",
+                "--pert-col",
+                "target_gene",
+                "--anchor-splits",
+                "5",
+                "-o",
+                bundle_dir,
+            )
+            volume.commit()
+
+        # Real-data anchors: disjoint self-split ceiling + split-half
+        # LFC-NMAE reference. Real-only mode (no -ap), computed once.
+        if not (anchor_dir / "ceiling_agg.csv").exists():
+            cell_eval2(
+                "run",
+                "-ar",
+                real_path,
+                "--preset",
+                "vcc2026",
+                "--pert-col",
+                "target_gene",
+                "--ceiling",
+                "--lfc-nmae-ref",
+                "-o",
+                anchor_dir,
+            )
+            volume.commit()
 
     results = {}
     for name in variants:
@@ -346,8 +404,8 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0) -> dict:
         agg = pd.read_csv(run_dir / "agg_results.csv")
         score_df = pd.read_csv(scored)
         results[name] = {
-            "agg": agg.to_dict("records"),
-            "scored": score_df.to_dict("records"),
+            "agg": _clean(agg.to_dict("records")),
+            "scored": _clean(score_df.to_dict("records")),
         }
         print(f"[{name}] scored", flush=True)
 
@@ -358,23 +416,32 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0) -> dict:
         "eval_targets": len(eval_targets),
         "cells_per_pert": cells_per_pert,
         "seed": seed,
+        "bundle_src": bundle_src or None,
         "real_cells": int(real_sub.n_obs),
         "control_cells": int(controls.n_obs),
         "variants": list(variants),
         "oracle_note": "oracle_hesc uses in-context measured deltas -- leaked "
         "by construction, interpretation anchor only",
         "real_data_anchors": {
-            f.name: pd.read_csv(f).to_dict("records") for f in sorted(anchor_dir.glob("*_agg.csv"))
+            f.name: _clean(pd.read_csv(f).to_dict("records"))
+            for f in sorted(anchor_dir.glob("*_agg.csv"))
         },
         "results": results,
     }
+    payload = _clean(payload)
     done.write_text(json.dumps(payload, indent=2, allow_nan=False, default=str) + "\n")
     volume.commit()
     return payload
 
 
 @app.local_entrypoint()
-def main(run_id: str, cells_per_pert: int = 400):
+def main(run_id: str, cells_per_pert: int = 400, bundle_src: str = ""):
     import json
 
-    print(json.dumps(run_gate.remote(run_id, cells_per_pert), indent=2, default=str))
+    print(
+        json.dumps(
+            run_gate.remote(run_id, cells_per_pert, bundle_src=bundle_src),
+            indent=2,
+            default=str,
+        )
+    )
