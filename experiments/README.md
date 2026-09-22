@@ -215,6 +215,18 @@ enrichment path.
   essential-screen blocker does not apply — a 4-lineage consensus ensemble
   is data-feasible. Report:
   [`k023-source-coverage/coverage_report.json`](k023-source-coverage/coverage_report.json).
+- `k025-eval2-gate` — production-equivalent `cell-eval2` 0.16.0 evaluation
+  harness (`tools/modal_k025_eval2_gate.py`): prediction generation →
+  `run` → `baseline` → `prep-real-bundle` → `score --real-bundle`, 47
+  paired hESC targets, 400 cells/pert. **All metric outputs embargoed
+  until Oct 22** — receipts in `experiments/_embargoed/k025-eval2-gate/`
+  (local-only, gitignored).
+- `k026-consensus-w-ctr` — submitted 2026-09-22: consensus deltas through
+  the k011 transport generator. Official **+0.0670**, rank 512/1086.
+  Receipts: [`k026-consensus-w-ctr/`](k026-consensus-w-ctr/).
+- `k027-consensus-dm` — submitted 2026-09-22: same consensus deltas
+  through `build_prediction_dual_moment`. Official **+0.1262**, rank
+  308/1088 — **champion**. Receipts: [`k027-consensus-dm/`](k027-consensus-dm/).
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /

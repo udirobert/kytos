@@ -2,9 +2,9 @@
 
 Same pipeline shape as k026 (vcc download controls -> build -> vcc prep ->
 persist) with the same delta source (variant_consensus_w_ctr.npz from the
-k023 honest extraction), but generation is build_prediction_dual_moment —
-the winning arm from Gate B sweep gate-20260922-02. Exact arm metrics are
-embargoed (experiments/_embargoed/k025-eval2-gate/).
+k023 honest extraction), but generation is build_prediction_dual_moment,
+selected via Gate B sweep gate-20260922-02. Arm metrics are embargoed
+(experiments/_embargoed/k025-eval2-gate/).
 
 Run:
   modal run -d tools/modal_k027_dual_moment_submit.py::build_and_prep

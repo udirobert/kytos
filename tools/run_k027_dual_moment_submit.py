@@ -3,9 +3,9 @@
 Same delta source as k026 (variant_consensus_w_ctr.npz — weighted
 K562 2 : HCT116 1 : HEK293T 1 : CD4 1, common-response centered; NPZ is on
 the panel axis in gene_names.csv order, all 300 panel targets covered) but
-replaces HeterogeneousTransportSampler with build_prediction_dual_moment —
-the winning generation arm from Gate B sweep gate-20260922-02. Exact arm
-metrics are embargoed (experiments/_embargoed/k025-eval2-gate/).
+replaces HeterogeneousTransportSampler with build_prediction_dual_moment,
+selected via Gate B sweep gate-20260922-02. Arm metrics are embargoed
+(experiments/_embargoed/k025-eval2-gate/).
 
 Dual-moment generation preserves per-cell library depth exactly and matches
 both the per-cell mean-CPM moment and the pseudobulk moment under the
@@ -137,7 +137,7 @@ def main(argv: list[str] | None = None) -> int:
         "run_id": RUN_ID,
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "mode": "consensus_w_ctr deltas + dual-moment count generation",
-        "evidence": "Gate B gate-20260922-02 winning arm; exact metrics "
+        "evidence": "selected via Gate B gate-20260922-02; metrics "
         "embargoed (experiments/_embargoed/k025-eval2-gate/)",
         "contexts": contexts,
         "n_targets": len(targets),

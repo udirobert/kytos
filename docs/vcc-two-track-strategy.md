@@ -9,10 +9,11 @@ checking their validity caveats.
 
 ## Current state
 
-- **Best recorded submission:** `kytos-k026-consensus-w-ctr`, overall
-  **+0.0670**, rank **512 of 1086** (entry `E6fr2Xe4zkBxx7RaAD1X`,
-  2026-09-22) — first Gate-B-backed submission; multi-lineage consensus
-  deltas through the unchanged k011 generator. Supersedes
+- **Best recorded submission:** `kytos-k027-consensus-dm`, overall
+  **+0.1262**, rank **308 of 1088** (entry `fN4wjAp9BUEvHtGWk0az`,
+  2026-09-22) — consensus deltas + dual-moment count generation.
+  Supersedes
+  `kytos-k026-consensus-w-ctr` (+0.0670, rank 512) and
   `kytos-k011-ds-x1p7` (+0.059575, rank 486 at its snapshot, entry
   `dZk0Sca5UtJluzzfUdMf`). Treat all ranks and thresholds as dated
   snapshots; refresh them before using them for planning.
@@ -93,15 +94,13 @@ checking their validity caveats.
   kd_std=2.0, `library_cap="median"`, 400 cells/pert, int32 counts) for 7
   arms and scored each through pinned `cell-eval2` 0.16.0 on the 47 paired
   hESC eval targets (93,697-cell real subset, 5 anchor splits). Result:
-  **`consensus_w_ctr` beats champion-equivalent k562_ds1p7 on avg_score** —
-  driven by `pds_cosine` and `lfc_nmae`; it *loses* fidelity and jaccard.
-  The cosine proxy understated consensus: PDS measures perturbation
-  discrimination, which denoising sharpens even where median direction
-  barely moves. Promoter cap is a small positive on k562 alone, ~0 on
-  consensus. Caveats: local bundle ≠ live competition anchors; 47 hESC
-  targets only; `expr_mse` saturated at 0 for all non-oracle arms.
-  **Exact metric values embargoed until Oct 22 — receipts moved to
-  `experiments/_embargoed/k025-eval2-gate/` (local-only).**
+  **`consensus_w_ctr` beats champion-equivalent k562_ds1p7 on avg_score**;
+  the metric-level breakdown and promoter-cap interaction are embargoed.
+  Caveats: local bundle ≠ live competition anchors; 47 hESC targets only;
+  `expr_mse` saturated at 0 for all non-oracle arms.
+  **Exact metric values and per-metric findings embargoed until Oct 22 —
+  receipts moved to `experiments/_embargoed/k025-eval2-gate/`
+  (local-only).**
 
 ## What the history establishes—and does not
 
@@ -216,15 +215,23 @@ three-target result, or unverified scorer output is not sufficient.
 submitted — **score_avg +0.0670, rank 512/1086** — the first Gate-B-backed
 submission and the **new champion by score** (+0.0074 over k011 +0.0596;
 rank nominally dropped 486→512 because the leaderboard densified). Gate B
-predicted a clear local win; the official delta is positive but ~4×
-attenuated — direction correct, consistent with the declared caveats
-(47/300 targets, local bundle ≠ live anchors, hESC-only eval context).
+predicted the direction correctly; the local→official transfer calibration
+is embargoed analysis (`experiments/_embargoed/`).
 **cell-eval2 Gate B is now a validated directional promotion gate — the
 first proxy whose sign survived to the leaderboard.** Component scores
-were not displayed at capture; declared fidelity/jaccard regressions
-unconfirmed on the leaderboard. Receipts:
+were not displayed at capture; declared component regressions unconfirmed
+on the leaderboard (details embargoed). Receipts:
 `experiments/k026-consensus-w-ctr/` (leaderboard score is public;
 Gate-B internals are embargoed).
+
+**Gate E update (2026-09-22, EXECUTED):** `kytos-k027-consensus-dm`
+submitted — **score_avg +0.1262, rank 308/1088, new champion** (+0.059
+over k026). Same consensus deltas, generation via
+`build_prediction_dual_moment` (parameters in
+`tools/run_k027_dual_moment_submit.py`), selected by the second Gate B
+sweep (`gate-20260922-02`). Receipts: `experiments/k027-consensus-dm/`;
+sweep metrics and transfer analysis embargoed
+(`experiments/_embargoed/`).
 
 ## Paused work
 

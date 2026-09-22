@@ -8,10 +8,9 @@ common-response centered) instead of the Replogle-K562 source. The NPZ
 is on the panel axis in gene_names.csv order (verified); all 300 panel
 targets are covered, so dispatch is expected to be all 'real'.
 
-Evidence: Gate B gate-20260921-01 -- consensus_w_ctr avg_score 0.1417 vs
-champion-equivalent k562_ds1p7 0.1085 (+0.033) through pinned cell-eval2
-0.16.0. Declared trade: pds_cosine/lfc_nmae improve, direction fidelity
-and sig-jaccard regress. See experiments/k025-eval2-gate/.
+Evidence: Gate B gate-20260921-01 -- consensus_w_ctr beat
+champion-equivalent k562_ds1p7 on avg_score through pinned cell-eval2
+0.16.0. Exact metrics embargoed (experiments/_embargoed/k025-eval2-gate/).
 """
 
 from __future__ import annotations
@@ -147,8 +146,8 @@ def main(argv: list[str] | None = None) -> int:
         "run_id": RUN_ID,
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "mode": "consensus_w_ctr deltas + heterogeneous_kd + delta_scale",
-        "evidence": "Gate B gate-20260921-01: avg_score 0.1417 vs k562_ds1p7 "
-        "0.1085 (experiments/k025-eval2-gate/)",
+        "evidence": "Gate B gate-20260921-01: beat champion-equivalent on "
+        "avg_score; metrics embargoed (experiments/_embargoed/k025-eval2-gate/)",
         "contexts": contexts,
         "n_targets": len(targets),
         "cells_per_pert": args.cells_per_pert,

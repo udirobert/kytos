@@ -9,8 +9,8 @@ Evidence base: k022 pipeline audit (`paired47-20260921-01`,
 > cosine proxy. The k025 Gate B run (§6) scored the same arms through the
 > pinned `cell-eval2` six-metric path and found the consensus verdict was
 > understated: `consensus_w_ctr` is a clear positive over
-> champion-equivalent on the real scorer — driven by `pds_cosine` and
-> `lfc_nmae`, metrics the direction-cosine diagnostic does not capture.
+> champion-equivalent on the real scorer — driven by metrics the
+> direction-cosine diagnostic does not capture (breakdown embargoed).
 > The "impasse" framing stands for *direction cosine* specifically; it does
 > not stand for overall score. (Exact numbers embargoed — see
 > `experiments/_embargoed/`.)
@@ -172,22 +172,15 @@ eval targets:
 What this revises:
 
 - **Consensus is a real official-metric gain, not marginal.** A clear
-  positive avg_score margin over the champion-equivalent path. The cosine
-  proxy measured *direction* and found ~+0.001; the official score rewards
-  *discrimination* (`pds_cosine` — consensus suppresses shared noise that
-  blurs target ranking) and *amplitude honesty* (`lfc_nmae` — consensus
-  norm-shrinkage is informative shrinkage, unlike delta_scale inflation
-  which buys direction at nmae cost).
-- **The trade is explicit:** consensus_w_ctr *loses* direction fidelity
-  and sig-gene jaccard while winning pds/nmae. Net is positive in Gate B,
-  but a leaderboard submission should be declared with those component
-  regressions on the record.
+  positive avg_score margin over the champion-equivalent path — the
+  median-cosine proxy understated it because direction is only part of
+  what the official score rewards.
 - **The impasse narrows, it does not lift.** Direction content is still
-  the gap (0.268 vs 0.514). What changed: *that* gap is not the binding
-  constraint on the official score at current operating points —
-  discrimination and calibrated magnitude carry more weight.
-- **Promoter prior:** small positive avg effect on k562 (worth keeping),
-  ~0 on consensus.
+  the gap (0.268 vs 0.514); the official score weights other components
+  heavily enough that consensus nets positive anyway.
+- **Per-metric mechanism, component regressions, and the promoter-prior
+  interaction are embargoed** — `experiments/_embargoed/k025-eval2-gate/`
+  and `experiments/_embargoed/k027-consensus-dm/analysis.md`.
 
 Standing caveats (unchanged): local real bundle is not the live competition
 anchor bundle; 47 hESC targets only — no Jurkat/RPE1-like context and no

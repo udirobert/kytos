@@ -3,8 +3,7 @@
 Same production path as k011 (vcc download controls -> build -> vcc prep ->
 persist), but the delta source is variant_consensus_w_ctr.npz from the
 k023 honest extraction on the volume. Gate B evidence:
-experiments/k025-eval2-gate/gate-20260921-01/ (avg_score 0.1417 vs
-champion-equivalent 0.1085).
+experiments/_embargoed/k025-eval2-gate/gate-20260921-01/ (metrics embargoed).
 
 Run:
   modal run -d tools/modal_k026_consensus_submit.py::build_and_prep

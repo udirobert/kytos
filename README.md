@@ -46,10 +46,12 @@ Start here:
 | `k004-real-resampling` | Real control-cell resampling baseline | submitted; score -0.304 |
 | `k004-layer-a-b` | Context-conditioned transfer + additive transport | submitted; score -0.149 |
 | `k006` | Replogle K562 + Atlas prior | submitted; score -0.021 |
-| `k011-x1p7` | Champion delta-scale transport | submitted; score +0.0596 |
+| `k011-x1p7` | Delta-scale transport | submitted; score +0.0596 |
 | `k018` | H1 transfer + dual-moment counts for context C | submitted; score +0.0424 |
 | `k020` / `k020b` | GEARS-style GNN, raw then norm-matched | submitted; scores -0.114 / -0.098 |
 | `k022` | Pipeline audit | synthetic smoke passed; real pilot blocked at preflight |
+| `k026` | Multi-lineage consensus deltas | submitted; score +0.0670 |
+| `k027` | Consensus deltas + dual-moment generation — **champion** | submitted; score +0.1262, rank 308 |
 
 See [`experiments/README.md`](experiments/README.md) for the full registry,
 including proxy labels and interpretation caveats.

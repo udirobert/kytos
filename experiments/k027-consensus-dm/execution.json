@@ -1,0 +1,11 @@
+{
+  "run_id": "k027-consensus-dm",
+  "modal_app": "kytos-k027-consensus-dm",
+  "build_call": "ap-cGuWUDeXICgNQlnKqaJds0",
+  "submit_call": "ap-pfnLSAYxrNwF4iFGYMQlQk",
+  "deltas": "/kytos-vol/k023-consensus/extract-20260921-02-honest/variants/variant_consensus_w_ctr.npz",
+  "deltas_sha256": "336f2cbc1d0125af9c4024e41b62c9639c24f15f8c38f7724e6dcf4da09f7eea",
+  "generator": "build_prediction_dual_moment(amplitude=1.0, bulk_amplitude=0.5, pool_k=4, space=bulk_delta)",
+  "artifact": "/kytos-vol/k027-consensus-dm/prediction.prep.vcc",
+  "gate_b_evidence": "experiments/_embargoed/k025-eval2-gate/gate-20260922-02/ (embargoed)"
+}
