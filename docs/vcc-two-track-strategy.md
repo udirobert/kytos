@@ -80,12 +80,26 @@ checking their validity caveats.
   not a gap-closer.** Receipts:
   `experiments/k024-promoter-prior/` and
   `experiments/k022-pipeline-audit/pn2-20260921-02/`.
-- **Signature-content impasse — formally recorded:**
+- **Signature-content impasse — formally recorded, then partially revised:**
   `docs/signature-content-impasse.md`. Uniform tuning exhausted, the
-  transferability gate is falsified, consensus denoising is marginal, and
-  the promoter-neighbor prior is coverage-bound. No submission is
-  justified by current evidence; the only remaining route with headroom
-  is a Track-2 learned transfer model.
+  transferability gate is falsified, and the promoter-neighbor prior is
+  coverage-bound. The consensus "marginal" verdict was based on a median
+  cosine proxy — the k025 Gate B run revised it (below).
+- **k025 Gate B first real-data run (2026-09-22):** `gate-20260921-01`
+  generated production-shaped predictions (HeterogeneousTransportSampler
+  kd_std=2.0, `library_cap="median"`, 400 cells/pert, int32 counts) for 7
+  arms and scored each through pinned `cell-eval2` 0.16.0 on the 47 paired
+  hESC eval targets (93,697-cell real subset, 5 anchor splits). Result:
+  **`consensus_w_ctr` avg_score 0.1417 vs champion-equivalent k562_ds1p7
+  0.1085 (+0.033)** — driven by `pds_cosine` 0.642 vs 0.488 and
+  `lfc_nmae` -0.148 vs -0.432; it *loses* fidelity (0.204 vs 0.343) and
+  jaccard (0.159 vs 0.302). The cosine proxy understated consensus: PDS
+  measures perturbation discrimination, which denoising sharpens even
+  where median direction barely moves. Promoter cap adds +0.006 to k562
+  alone, ~0 on consensus. Caveats: local bundle ≠ live competition
+  anchors; 47 hESC targets only; `expr_mse` saturated at 0 for all
+  non-oracle arms. Receipts:
+  `experiments/k025-eval2-gate/gate-20260921-01/`.
 
 ## What the history establishes—and does not
 
@@ -130,9 +144,14 @@ uses `target_gene`; fractional predictions are refused under
 Important implication: `pds_cosine` excludes all panel target genes. Direct
 self-knockdown is not PDS signal, and PDS rank values are panel-dependent.
 
-**Remaining before production-equivalence claims:** anchor-bundle rule
-compatibility, DE-engine parity vs production, and `pert_col`/`target_gene`
-naming on real data.
+**First real-data run DONE 2026-09-22** (`gate-20260921-01`, k025): the
+chain ran end-to-end on the 47-target hESC eval subset with
+`--pert-col target_gene` on real data, `--anchor-splits 5` bundle, and
+per-variant `score --real-bundle` for 7 arms. `pert_col`/`target_gene`
+naming on real data is resolved (scores computed, digests recorded).
+Still open before full production-equivalence claims: anchor-bundle rule
+parity vs the live competition bundle and DE-engine parity. Receipts:
+`experiments/k025-eval2-gate/gate-20260921-01/`.
 
 ### Gate C — controlled baseline diagnosis — **DONE 2026-09-21**
 
@@ -178,11 +197,30 @@ signature-content options, in expected-value order:
 **Pass criterion:** improvement survives count generation, target-grouped or
 context-held-out validation, and does not depend on a few targets.
 
+**Gate D update (k025, 2026-09-22):** `consensus_w_ctr` is the first arm to
+clear the pass criterion on the production-equivalent scorer — +0.033
+avg_score over champion-equivalent through `cell-eval2` on real data, not
+a proxy. The remaining open question is panel breadth: Gate B covered the
+47 paired hESC targets only. A deployable decision needs the same arm
+generated for the 300-target 2026 panel (consensus coverage: K562 315/343,
+HCT116/HEK293T 343/343, CD4 282/343 source targets — panel coverage to be
+verified) and, ideally, a second eval context.
+
 ### Gate E — submission
 
 A submission needs a frozen artifact, the recorded k011 comparison, declared
 expected component changes, and explicit approval. A favorable proxy cosine,
 three-target result, or unverified scorer output is not sufficient.
+
+**Gate E update (2026-09-22):** `consensus_w_ctr` now has official-metric
+evidence (Gate B +0.033 on the eval-equivalent path). Before submission:
+(1) verify panel coverage and generate the full 300-target artifact;
+(2) declare expected component changes (pds/nmae up, fidelity/jaccard may
+regress — net avg positive in Gate B); (3) record that fidelity and
+jaccard regress in Gate B so the submission is not oversold if the
+leaderboard disagrees; (4) explicit approval. The k025 margin is real but
+modest — expected leaderboard movement is improvement-over-champion, not
+necessarily top-100.
 
 ## Paused work
 
