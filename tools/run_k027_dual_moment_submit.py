@@ -40,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--amplitude", type=float, default=1.0)
     ap.add_argument("--bulk-amplitude", type=float, default=0.5)
     ap.add_argument("--pool-k", type=int, default=4)
+    ap.add_argument("--run-id", default=RUN_ID)
     args = ap.parse_args(argv)
 
     import hashlib
@@ -134,7 +135,7 @@ def main(argv: list[str] | None = None) -> int:
     adata.write_h5ad(str(pred_path), compression="gzip")
 
     meta = {
-        "run_id": RUN_ID,
+        "run_id": args.run_id,
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "mode": "consensus_w_ctr deltas + dual-moment count generation",
         "evidence": "selected via Gate B gate-20260922-02; metrics "
