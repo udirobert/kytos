@@ -93,16 +93,15 @@ checking their validity caveats.
   kd_std=2.0, `library_cap="median"`, 400 cells/pert, int32 counts) for 7
   arms and scored each through pinned `cell-eval2` 0.16.0 on the 47 paired
   hESC eval targets (93,697-cell real subset, 5 anchor splits). Result:
-  **`consensus_w_ctr` avg_score 0.1417 vs champion-equivalent k562_ds1p7
-  0.1085 (+0.033)** — driven by `pds_cosine` 0.642 vs 0.488 and
-  `lfc_nmae` -0.148 vs -0.432; it *loses* fidelity (0.204 vs 0.343) and
-  jaccard (0.159 vs 0.302). The cosine proxy understated consensus: PDS
-  measures perturbation discrimination, which denoising sharpens even
-  where median direction barely moves. Promoter cap adds +0.006 to k562
-  alone, ~0 on consensus. Caveats: local bundle ≠ live competition
-  anchors; 47 hESC targets only; `expr_mse` saturated at 0 for all
-  non-oracle arms. Receipts:
-  `experiments/k025-eval2-gate/gate-20260921-01/`.
+  **`consensus_w_ctr` beats champion-equivalent k562_ds1p7 on avg_score** —
+  driven by `pds_cosine` and `lfc_nmae`; it *loses* fidelity and jaccard.
+  The cosine proxy understated consensus: PDS measures perturbation
+  discrimination, which denoising sharpens even where median direction
+  barely moves. Promoter cap is a small positive on k562 alone, ~0 on
+  consensus. Caveats: local bundle ≠ live competition anchors; 47 hESC
+  targets only; `expr_mse` saturated at 0 for all non-oracle arms.
+  **Exact metric values embargoed until Oct 22 — receipts moved to
+  `experiments/_embargoed/k025-eval2-gate/` (local-only).**
 
 ## What the history establishes—and does not
 
@@ -201,13 +200,11 @@ signature-content options, in expected-value order:
 context-held-out validation, and does not depend on a few targets.
 
 **Gate D update (k025, 2026-09-22):** `consensus_w_ctr` is the first arm to
-clear the pass criterion on the production-equivalent scorer — +0.033
-avg_score over champion-equivalent through `cell-eval2` on real data, not
-a proxy. The remaining open question is panel breadth: Gate B covered the
-47 paired hESC targets only. A deployable decision needs the same arm
-generated for the 300-target 2026 panel (consensus coverage: K562 315/343,
-HCT116/HEK293T 343/343, CD4 282/343 source targets — panel coverage to be
-verified) and, ideally, a second eval context.
+clear the pass criterion on the production-equivalent scorer — a real
+positive avg_score margin over champion-equivalent through `cell-eval2`
+on real data, not a proxy (exact values embargoed in
+`experiments/_embargoed/`). The remaining open question is panel breadth:
+Gate B covered the 47 paired hESC targets only.
 
 ### Gate E — submission
 
@@ -219,13 +216,15 @@ three-target result, or unverified scorer output is not sufficient.
 submitted — **score_avg +0.0670, rank 512/1086** — the first Gate-B-backed
 submission and the **new champion by score** (+0.0074 over k011 +0.0596;
 rank nominally dropped 486→512 because the leaderboard densified). Gate B
-predicted +0.033 local; official delta +0.0074 — direction correct, ~4×
-attenuation (47/300 targets, local bundle ≠ live anchors, hESC-only eval
-context). **cell-eval2 Gate B is now a validated directional promotion
-gate — the first proxy whose sign survived to the leaderboard.**
-Component scores were not displayed at capture; declared
-fidelity/jaccard regressions unconfirmed on the leaderboard. Receipts:
-`experiments/k026-consensus-w-ctr/`.
+predicted a clear local win; the official delta is positive but ~4×
+attenuated — direction correct, consistent with the declared caveats
+(47/300 targets, local bundle ≠ live anchors, hESC-only eval context).
+**cell-eval2 Gate B is now a validated directional promotion gate — the
+first proxy whose sign survived to the leaderboard.** Component scores
+were not displayed at capture; declared fidelity/jaccard regressions
+unconfirmed on the leaderboard. Receipts:
+`experiments/k026-consensus-w-ctr/` (leaderboard score is public;
+Gate-B internals are embargoed).
 
 ## Paused work
 

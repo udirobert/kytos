@@ -8,11 +8,12 @@ Evidence base: k022 pipeline audit (`paired47-20260921-01`,
 > **2026-09-22 revision note.** The verdicts below were reached on a median
 > cosine proxy. The k025 Gate B run (§6) scored the same arms through the
 > pinned `cell-eval2` six-metric path and found the consensus verdict was
-> understated: `consensus_w_ctr` is **+0.033 avg_score** over
+> understated: `consensus_w_ctr` is a clear positive over
 > champion-equivalent on the real scorer — driven by `pds_cosine` and
 > `lfc_nmae`, metrics the direction-cosine diagnostic does not capture.
 > The "impasse" framing stands for *direction cosine* specifically; it does
-> not stand for overall score.
+> not stand for overall score. (Exact numbers embargoed — see
+> `experiments/_embargoed/`.)
 
 This record documents what we tried to close the K562→context signature gap
 with public data, what each attempt measured, and what remains open. It is a
@@ -165,34 +166,28 @@ cells/pert, int32 counts) and scored them through pinned `cell-eval2`
 0.16.0 (`vcc2026`, `target_gene`, 5 anchor splits) on the 47 paired hESC
 eval targets:
 
-| Arm | avg_score | pds_cosine | lfc_nmae | fidelity | reach | jaccard |
-|---|---:|---:|---:|---:|---:|---:|
-| oracle_hesc (leak-by-design ceiling) | 0.823 | 1.012 | 0.696 | 0.770 | 1.006 | 0.829 |
-| **consensus_w_ctr** | **0.1417** | **0.642** | -0.148 | 0.204 | -0.008 | 0.159 |
-| cons_w_ctr_pncap | 0.1403 | 0.613 | -0.144 | 0.208 | -0.000 | 0.165 |
-| k562_ds1p7_pncap | 0.1145 | 0.510 | -0.425 | 0.346 | -0.046 | 0.302 |
-| k562_ds1p7 (champion-equivalent) | 0.1085 | 0.488 | -0.432 | 0.343 | -0.050 | 0.302 |
-| k562_ds1p0 | 0.0966 | 0.407 | -0.210 | 0.229 | -0.028 | 0.182 |
-| null | -0.1093 | -0.067 | -0.106 | -0.312 | -0.067 | -0.104 |
+*Full metric tables embargoed until the Oct 22 final test set — see
+`experiments/_embargoed/k025-eval2-gate/` (local-only).*
 
 What this revises:
 
-- **Consensus is a real official-metric gain, not marginal.** +0.033
-  avg_score over the champion-equivalent path. The cosine proxy measured
-  *direction* and found +0.001; the official score rewards *discrimination*
-  (`pds_cosine` 0.642 vs 0.488 — consensus suppresses shared noise that
-  blurs target ranking) and *amplitude honesty* (`lfc_nmae` -0.148 vs
-  -0.432 — consensus norm-shrinkage is informative shrinkage, unlike
-  delta_scale inflation which buys direction at nmae cost).
+- **Consensus is a real official-metric gain, not marginal.** A clear
+  positive avg_score margin over the champion-equivalent path. The cosine
+  proxy measured *direction* and found ~+0.001; the official score rewards
+  *discrimination* (`pds_cosine` — consensus suppresses shared noise that
+  blurs target ranking) and *amplitude honesty* (`lfc_nmae` — consensus
+  norm-shrinkage is informative shrinkage, unlike delta_scale inflation
+  which buys direction at nmae cost).
 - **The trade is explicit:** consensus_w_ctr *loses* direction fidelity
-  (0.204 vs 0.343) and sig-gene jaccard (0.159 vs 0.302). Net is positive
-  in Gate B, but a leaderboard submission should be declared with those
-  component regressions on the record.
+  and sig-gene jaccard while winning pds/nmae. Net is positive in Gate B,
+  but a leaderboard submission should be declared with those component
+  regressions on the record.
 - **The impasse narrows, it does not lift.** Direction content is still
   the gap (0.268 vs 0.514). What changed: *that* gap is not the binding
   constraint on the official score at current operating points —
   discrimination and calibrated magnitude carry more weight.
-- **Promoter prior:** +0.006 avg on k562 (worth keeping), ~0 on consensus.
+- **Promoter prior:** small positive avg effect on k562 (worth keeping),
+  ~0 on consensus.
 
 Standing caveats (unchanged): local real bundle is not the live competition
 anchor bundle; 47 hESC targets only — no Jurkat/RPE1-like context and no

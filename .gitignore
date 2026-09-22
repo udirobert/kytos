@@ -69,3 +69,7 @@ chronicle/*/assets/vo-full.mp3
 chronicle/*/.thumbnails/
 chronicle/*/.waveform-cache/
 data/raw/refs/
+# Competition embargo (until the Oct 22 final test set): experiment results,
+# score tables, and findings stay local. Code and infra still push.
+experiments/_embargoed/
+experiments/k020-gnn-crosslineage/gnn.pt

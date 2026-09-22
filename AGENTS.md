@@ -9,6 +9,18 @@ Enterprise Challenge (GQAI 2026) workstream. Do not mix their stacks or
 run-ID prefixes (`kNNN-*` vs `cNNN-*`). It overrides generic assumptions about
 "local dev" because the primary dev machine is **memory- and disk-constrained**.
 
+## Publication embargo (active until the Oct 22 final test set)
+
+The repo is public and competitors read it. **Code, tools, and
+infrastructure still push to `main`. Experiment findings do not:** score
+tables, per-metric results, winning-variant internals, and analysis files
+go to `experiments/_embargoed/` (gitignored, local-only) — never to
+`experiments/<kNNN-*>/` tracked dirs, never into public docs. Public docs
+may state qualitative outcomes ("Gate B validated", "variant X won") and
+leaderboard-public facts (scores/ranks are on the public leaderboard), but
+no exact metric values or arm internals. Publish `experiments/_embargoed/`
+after Oct 22 with history intact. When in doubt, keep it local.
+
 ---
 
 ## 0. Cleveland Clinic / GQAI (quantum allostery)
@@ -375,15 +387,11 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   (kd_std=2.0, delta_scale=1.7, library_cap=median, 400 cells/pert,
   360k cells, all-real dispatch). **New champion by score** (+0.0074 over
   k011's +0.0596) though rank nominally dropped 486→512 — the leaderboard
-  densified; more submissions sit above 0.067 now than above 0.0596 at the
-  k011 snapshot. Gate B predicted +0.033 local avg_score; official delta
-  +0.0074 — direction correct, ~4× attenuation, consistent with the
-  declared caveats (47/300 eval targets, local bundle ≠ live anchors,
-  hESC context only). **cell-eval2 Gate B is validated as a directional
-  promotion gate — the first proxy whose sign survived to the
-  leaderboard.** Component scores were not displayed at capture time;
-  declared regressions (fidelity/jaccard) not yet confirmed on the
-  leaderboard. Receipts: `experiments/k026-consensus-w-ctr/`.
+  densified. **cell-eval2 Gate B is validated as a directional promotion
+  gate — the first proxy whose sign survived to the leaderboard.** Local
+  gate internals and exact arm metrics are embargoed until Oct 22
+  (`experiments/_embargoed/`, local-only). Receipts:
+  `experiments/k026-consensus-w-ctr/`.
 
 ---
 
