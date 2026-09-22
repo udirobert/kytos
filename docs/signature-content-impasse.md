@@ -209,3 +209,15 @@ improvement, not a signature-content solution.
 
 Receipts: `experiments/k025-eval2-gate/gate-20260921-01/` (execution.json,
 results.json, per-arm agg + scored CSVs, anchors).
+
+### 6.1 Leaderboard outcome (2026-09-22)
+
+`kytos-k026-consensus-w-ctr` submitted: **score_avg +0.0670, rank
+512/1086** — new champion by score (+0.0074 over k011 +0.0596). Gate B
+predicted +0.033 local; the official delta is ~4× smaller, consistent
+with the declared caveats (47/300 eval targets, local bundle ≠ live
+anchors, single eval context). The sign survived — Gate B is validated
+as a directional promotion gate. The improvement is real but small:
+the signature-content impasse stands for top-100 ambitions, and
+Track-2 (or a genuinely new signal source) remains the only route with
+that much headroom.

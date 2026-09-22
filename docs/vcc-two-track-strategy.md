@@ -1,6 +1,6 @@
 # VCC strategy — validation first
 
-Status: **ACTIVE** · Updated **2026-09-21** · Owner: udingethe
+Status: **ACTIVE** · Updated **2026-09-22** · Owner: udingethe
 
 This file is the single active research strategy. Historical scores and run
 notes stay in `experiments/README.md`; older strategy/runbook documents are
@@ -9,10 +9,13 @@ checking their validity caveats.
 
 ## Current state
 
-- **Best recorded submission:** `kytos-k011-ds-x1p7`, overall
-  **+0.059575**, observed rank **486** at publication (entry
-  `dZk0Sca5UtJluzzfUdMf`). Treat all ranks and thresholds as dated snapshots;
-  refresh them before using them for planning.
+- **Best recorded submission:** `kytos-k026-consensus-w-ctr`, overall
+  **+0.0670**, rank **512 of 1086** (entry `E6fr2Xe4zkBxx7RaAD1X`,
+  2026-09-22) — first Gate-B-backed submission; multi-lineage consensus
+  deltas through the unchanged k011 generator. Supersedes
+  `kytos-k011-ds-x1p7` (+0.059575, rank 486 at its snapshot, entry
+  `dZk0Sca5UtJluzzfUdMf`). Treat all ranks and thresholds as dated
+  snapshots; refresh them before using them for planning.
 - **Objective:** make comparisons trustworthy before choosing the next model
   change. We are not assuming that more architecture complexity is the missing
   ingredient.
@@ -212,15 +215,17 @@ A submission needs a frozen artifact, the recorded k011 comparison, declared
 expected component changes, and explicit approval. A favorable proxy cosine,
 three-target result, or unverified scorer output is not sufficient.
 
-**Gate E update (2026-09-22):** `consensus_w_ctr` now has official-metric
-evidence (Gate B +0.033 on the eval-equivalent path). Before submission:
-(1) verify panel coverage and generate the full 300-target artifact;
-(2) declare expected component changes (pds/nmae up, fidelity/jaccard may
-regress — net avg positive in Gate B); (3) record that fidelity and
-jaccard regress in Gate B so the submission is not oversold if the
-leaderboard disagrees; (4) explicit approval. The k025 margin is real but
-modest — expected leaderboard movement is improvement-over-champion, not
-necessarily top-100.
+**Gate E update (2026-09-22, EXECUTED):** `kytos-k026-consensus-w-ctr`
+submitted — **score_avg +0.0670, rank 512/1086** — the first Gate-B-backed
+submission and the **new champion by score** (+0.0074 over k011 +0.0596;
+rank nominally dropped 486→512 because the leaderboard densified). Gate B
+predicted +0.033 local; official delta +0.0074 — direction correct, ~4×
+attenuation (47/300 targets, local bundle ≠ live anchors, hESC-only eval
+context). **cell-eval2 Gate B is now a validated directional promotion
+gate — the first proxy whose sign survived to the leaderboard.**
+Component scores were not displayed at capture; declared
+fidelity/jaccard regressions unconfirmed on the leaderboard. Receipts:
+`experiments/k026-consensus-w-ctr/`.
 
 ## Paused work
 

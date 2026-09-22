@@ -1,0 +1,14 @@
+{
+  "model": "kytos-k026-consensus-w-ctr",
+  "submission_entry": "E6fr2Xe4zkBxx7RaAD1X",
+  "submitted_utc": "2026-09-22T08:46:46Z",
+  "overall_score": 0.0670,
+  "rank": 512,
+  "leaderboard_size": 1086,
+  "champion_baseline": {"model": "kytos-k011-ds-x1p7", "overall_score": 0.0596, "rank_at_submission": 486},
+  "delta_vs_champion": 0.0074,
+  "component_scores": "not displayed on the leaderboard page at capture time (dashes)",
+  "gate_b_prediction": "consensus_w_ctr beat champion-equivalent k562_ds1p7 by +0.033 avg_score on the local cell-eval2 bundle; the official delta is +0.0074 -- direction correct, magnitude ~4x attenuated (47/300 eval targets, local bundle != live anchors, hESC context only)",
+  "rank_note": "rank 512 at score 0.0670 vs champion's rank 486 at score 0.0596: the score improved but the leaderboard densified -- more submissions sit above 0.067 now than above 0.0596 at the k011 snapshot",
+  "verdict": "first Gate-B-backed submission and a real improvement over the champion; modest, not top-100. Validates the cell-eval2 gate as directionally informative for promotion decisions."
+}

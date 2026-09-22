@@ -367,6 +367,23 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
     used a different generator/effect representation, and did not establish
     transferability. Nebius deleted (no residual spend). Champion still
     `kytos-k011-ds-x1p7`.
+- **kytos-k026-consensus-w-ctr — SUBMITTED 2026-09-22 (entry
+  `E6fr2Xe4zkBxx7RaAD1X`): score_avg +0.0670, rank 512 of 1086.** First
+  Gate-B-backed submission: `variant_consensus_w_ctr` deltas (weighted
+  K562 2 : HCT116 1 : HEK293T 1 : CD4 1, common-response centered,
+  extract-20260921-02-honest) through the unchanged champion generator
+  (kd_std=2.0, delta_scale=1.7, library_cap=median, 400 cells/pert,
+  360k cells, all-real dispatch). **New champion by score** (+0.0074 over
+  k011's +0.0596) though rank nominally dropped 486→512 — the leaderboard
+  densified; more submissions sit above 0.067 now than above 0.0596 at the
+  k011 snapshot. Gate B predicted +0.033 local avg_score; official delta
+  +0.0074 — direction correct, ~4× attenuation, consistent with the
+  declared caveats (47/300 eval targets, local bundle ≠ live anchors,
+  hESC context only). **cell-eval2 Gate B is validated as a directional
+  promotion gate — the first proxy whose sign survived to the
+  leaderboard.** Component scores were not displayed at capture time;
+  declared regressions (fidelity/jaccard) not yet confirmed on the
+  leaderboard. Receipts: `experiments/k026-consensus-w-ctr/`.
 
 ---
 

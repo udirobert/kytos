@@ -1,7 +1,7 @@
 {
   "run_id": "k026-consensus-w-ctr",
   "date": "2026-09-22",
-  "status": "built_not_submitted",
+  "status": "submitted",
   "function_call": "fc-01M342NX4FCVVHSNPDG5NDG1YC",
   "purpose": "submission build of consensus_w_ctr -- first arm to clear Gate B (avg_score 0.1417 vs champion-equivalent 0.1085, +0.033, experiments/k025-eval2-gate/gate-20260921-01/)",
   "artifact": "/kytos-vol/k026-consensus-w-ctr/prediction.prep.vcc",
@@ -9,6 +9,11 @@
   "generation": "build_context_predictions + HeterogeneousTransportSampler(kd_std=2.0, noise_scale=0.05), delta_scale=1.7, library_cap=median, 400 cells/pert, seed 0 -- identical to champion k011 path and the Gate B-evaluated arm",
   "shape": "360000 cells x 18533 genes, 300 targets x 3 contexts, dispatch {'real': 900} (zero fallback)",
   "declared_component_expectations": "pds_cosine and lfc_nmae expected up vs k011; direction fidelity and sig-jaccard may regress (Gate B: 0.204 vs 0.343, 0.159 vs 0.302); net avg positive in Gate B",
-  "pending": "vcc submit --model-name kytos-k026-consensus-w-ctr (explicit approval required per Gate E)",
-  "official_score_computed": false
+  "official_score_computed": true,
+  "leaderboard": {
+    "overall_score": 0.067,
+    "rank": "512 of 1086",
+    "delta_vs_champion": 0.0074,
+    "entry": "E6fr2Xe4zkBxx7RaAD1X"
+  }
 }
