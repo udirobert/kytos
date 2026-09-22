@@ -203,6 +203,15 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
     pairs = pd.read_csv(PAIRS_PATH)
 
     cons = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_w_ctr.npz", axis_symbols)
+    cons_reg3 = _load_variant_deltas(
+        VARIANTS_DIR / "variant_consensus_w_ctr_reg3.npz", axis_symbols
+    )
+    cons_reg8 = _load_variant_deltas(
+        VARIANTS_DIR / "variant_consensus_w_ctr_reg8.npz", axis_symbols
+    )
+    cons_regonly = _load_variant_deltas(
+        VARIANTS_DIR / "variant_consensus_w_ctr_regonly.npz", axis_symbols
+    )
 
     def capped(src, scale):
         out_d = {}
@@ -216,35 +225,16 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
     # gate-20260921-01 covered null/k562_ds1p{0,7}/consensus_w_ctr/*_pncap/
     # oracle at kd_std=2.0. gate-20260922-02 swept kd_std, dual-moment
     # amplitude {0.6,1.0}, and the consensus recipe axis.
-    # Round 3: dual-moment micro-sweep (generation transfers ~1:1 to the
-    # leaderboard, so local gains here are the highest-EV axis).
+    # Round 4 (Track 2b stage 0): CollecTRI signed regulon overlay on
+    # consensus deltas, through dual-moment a1.0/b0.5. reg3/reg8 add the
+    # regulon row scaled to w*||delta_cons||; regonly replaces the delta on
+    # TF targets entirely. Only TF targets with CollecTRI edges change.
     variants = {
-        "dm_a0p8_b0p5": {"deltas": cons, "gen": "dm", "dm_amp": 0.8, "dm_bulk_amp": 0.5},
-        "dm_a1p3_b0p5": {"deltas": cons, "gen": "dm", "dm_amp": 1.3, "dm_bulk_amp": 0.5},
-        "dm_a1p5_b0p5": {"deltas": cons, "gen": "dm", "dm_amp": 1.5, "dm_bulk_amp": 0.5},
-        "dm_a1p0_b0p3": {"deltas": cons, "gen": "dm", "dm_amp": 1.0, "dm_bulk_amp": 0.3},
-        "dm_a1p0_b0p7": {"deltas": cons, "gen": "dm", "dm_amp": 1.0, "dm_bulk_amp": 0.7},
-        "dm_a1p0_pk2": {
-            "deltas": cons,
-            "gen": "dm",
-            "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_pool_k": 2,
-        },
-        "dm_a1p0_pk8": {
-            "deltas": cons,
-            "gen": "dm",
-            "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_pool_k": 8,
-        },
-        "dm_a1p0_log2fc": {
-            "deltas": cons,
-            "gen": "dm",
-            "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_space": "log2fc",
-        },
+        "reg_w03": {"deltas": cons_reg3, "gen": "dm", "dm_amp": 1.0, "dm_bulk_amp": 0.5},
+        "reg_w08": {"deltas": cons_reg8, "gen": "dm", "dm_amp": 1.0, "dm_bulk_amp": 0.5},
+        "reg_only": {"deltas": cons_regonly, "gen": "dm", "dm_amp": 1.0, "dm_bulk_amp": 0.5},
+        # reference re-score of the current best config on this run's seed
+        "dm_a1p0_ref": {"deltas": cons, "gen": "dm", "dm_amp": 1.0, "dm_bulk_amp": 0.5},
     }
 
     rng = np.random.default_rng(seed)
