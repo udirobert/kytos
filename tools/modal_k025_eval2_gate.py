@@ -198,7 +198,6 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
     del real
 
     cons_eb2 = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_eb2_ctr.npz", axis_symbols)
-    cons_eb4 = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_eb4_ctr.npz", axis_symbols)
 
     # arm spec: deltas -> gen "transport" (kd_std, delta_scale) or "dm"
     # (dual_moment amplitude, bulk_amplitude, pool_k, space).
@@ -213,17 +212,14 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
     # Round 7: LOLO showed harder shrinkage monotone-better through gamma=4;
     # gate eb2 and eb4 at the same dm config.
     variants = {
-        "cons_eb2_dm": {
+        # round 8: compose the two independent winners — eb2 deltas with
+        # the pk12/b0.3 generation config (round-5 best arm).
+        "cons_eb2_dm_pk12": {
             "deltas": cons_eb2,
             "gen": "dm",
             "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-        },
-        "cons_eb4_dm": {
-            "deltas": cons_eb4,
-            "gen": "dm",
-            "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
+            "dm_bulk_amp": 0.3,
+            "dm_pool_k": 12,
         },
     }
 
