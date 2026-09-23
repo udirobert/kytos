@@ -52,6 +52,7 @@ Start here:
 | `k022` | Pipeline audit | synthetic smoke passed; real pilot blocked at preflight |
 | `k026` | Multi-lineage consensus deltas | submitted; score +0.0670 |
 | `k027` | Consensus deltas + dual-moment generation — **champion** | submitted; score +0.1262, rank 308 |
+| `k028` | Consensus + dual-moment (wider pooling variant) | submitted; score +0.1239, rank 352 — k027 remains champion |
 
 See [`experiments/README.md`](experiments/README.md) for the full registry,
 including proxy labels and interpretation caveats.

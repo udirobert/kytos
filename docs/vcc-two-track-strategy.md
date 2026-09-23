@@ -233,6 +233,13 @@ sweep (`gate-20260922-02`). Receipts: `experiments/k027-consensus-dm/`;
 sweep metrics and transfer analysis embargoed
 (`experiments/_embargoed/`).
 
+**Gate E update (2026-09-23, EXECUTED):** `kytos-k028-consensus-dm-pk12`
+submitted — **score_avg +0.1239, rank 352/1115**. A wider-pooling
+dual-moment variant built via `tools/modal_k028_dm_pk12_submit.py` did
+not improve on k027; the generation-parameter sweep has plateaued and
+k027 remains the champion. Detailed analysis embargoed
+(`experiments/_embargoed/`).
+
 ## Paused work
 
 - GPU training and new architectures remain paused pending Gates A–C.
