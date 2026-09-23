@@ -33,7 +33,7 @@ import consensus_deltas as cd
 from build_consensus_deltas import load_source_npz
 
 
-def build_eb_variants(sources):
+def build_eb_variants(sources, gamma=1.0):
     """sources: {name: load_source_npz dict}. Returns {variant: deltas[T,G]}."""
     ref = next(iter(sources.values()))
     genes, targets = ref["genes"], ref["targets"]
@@ -67,13 +67,15 @@ def build_eb_variants(sources):
         if stack.shape[0] >= 2:
             var = stack.var(0, ddof=0)
             snr = (mu * mu) / (var + 1e-12)
-            mu = mu * (snr / (snr + 1.0))
+            sg = snr**gamma
+            mu = mu * (sg / (sg + 1.0))
         norm = k562_norm[i] if k562_norm[i] > 0 else median_norm
         eb[i] = mu * norm
 
+    tag = "eb" if gamma == 1.0 else f"eb{gamma:g}"
     variants = {
-        "consensus_eb": eb.astype(np.float32),
-        "consensus_eb_ctr": cd.center_common_response(eb).astype(np.float32),
+        f"consensus_{tag}": eb.astype(np.float32),
+        f"consensus_{tag}_ctr": cd.center_common_response(eb).astype(np.float32),
     }
     return variants
 
@@ -82,6 +84,7 @@ def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--src-dir", type=Path, required=True)
     p.add_argument("--out-dir", type=Path, required=True)
+    p.add_argument("--gamma", type=float, default=1.0)
     args = p.parse_args(argv)
 
     sources = {}
@@ -91,7 +94,7 @@ def main(argv=None):
         raise ValueError("deltas_k562.npz is required as the reference source")
 
     args.out_dir.mkdir(parents=True, exist_ok=False)
-    variants = build_eb_variants(sources)
+    variants = build_eb_variants(sources, gamma=args.gamma)
     ref = sources["k562"]
     for name, matrix in variants.items():
         np.savez_compressed(
@@ -112,8 +115,8 @@ def main(argv=None):
         "variants": sorted(variants),
         "semantics": [
             "source deltas unit-normalized before mixing",
-            "per-gene reliability shrinkage lam = snr/(snr+1), "
-            "snr = mean^2/var over present sources",
+            f"per-gene reliability shrinkage lam = snr^g/(snr^g+1), "
+            f"g={args.gamma}, snr = mean^2/var over present sources",
             "amplitude restored to the target's K562 delta norm",
             "*_ctr subtracts the per-gene median across targets",
         ],
