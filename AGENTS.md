@@ -469,6 +469,10 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
 - Official scorer located via the VCC CLI guide: public
   `https://github.com/ArcInstitute/cell-eval2`, inspected revision
   `5e64833518a6603a0301cbe28185d49c30f4a986` (package version 0.16.0).
+  (Local `.venv-eval2` deleted 2026-09-23 to save disk — rebuild with
+  `python3.12 -m venv .venv-eval2 && .venv-eval2/bin/pip install
+  "cell-eval2 @ git+https://github.com/ArcInstitute/cell-eval2@5e64833518a6603a0301cbe28185d49c30f4a986" "pdex==0.3.0"`;
+  all real scoring runs on Modal, which pins the same revision.)
   Its `vcc2026` PRESET includes the six 2026 metrics and supports CPU execution.
   PDS excludes ALL panel target genes; DE uses real controls, arithmetic CPM
   means, a control-expression filter of 5 CPM, per-perturbation BH and epsilon
