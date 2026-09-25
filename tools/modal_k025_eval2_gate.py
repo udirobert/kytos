@@ -259,6 +259,15 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
     #    official jaccard/reach.
     # de_proxy in results.json measures DE over-call directly per arm.
     # dm_ref re-scores the champion config as a same-run drift control.
+    # Round 9 RESULT: all three mechanisms measured as designed. NB resampling
+    # calibrates the DE over-call ~20x -> ~1x of real yet REGRESSES the
+    # official avg (per-cell variance costs pds/fid more than DE-count
+    # calibration buys) — mechanism confirmed, monetarity refuted. Mass-
+    # centering is exactly neutral. Soft-threshold 0.02 is the only arm above
+    # the drift-control reference, via pds/reach, without touching the DE
+    # over-call — knob-class, below transfer confidence (k028/k029 lesson).
+    # No promotion candidate; generator-structure NB search falsified.
+    # Exact tables: experiments/_embargoed/k025-eval2-gate/gate-20260924-02/.
     variants = {
         "dm_ref": {
             "deltas": cons_w,
