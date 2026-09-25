@@ -86,6 +86,40 @@ for filename in (
     )
 
 
+def _logcpm_moments(mat):
+    """Streaming per-gene mean/var of log1p(CPM) over a count block."""
+    import numpy as np
+    from scipy import sparse
+
+    mat = sparse.csr_matrix(mat, dtype=np.float64)
+    lib = np.maximum(np.asarray(mat.sum(axis=1)).ravel(), 1.0)
+    n, g = mat.shape
+    m = np.zeros(g)
+    s2 = np.zeros(g)
+    for left in range(0, n, 256):
+        dense = np.log1p(mat[left : left + 256].toarray() / lib[left : left + 256, None] * 1e6)
+        m += dense.sum(axis=0)
+        s2 += (dense * dense).sum(axis=0)
+    var = np.maximum(s2 / n - (m / n) ** 2, 0.0)
+    return m / n, var, n
+
+
+def _de_proxy(mat, ctrl_moments, expressed, t_cut: float = 4.5) -> int:
+    """Count genes called 'DE' vs control by a Welch |t| cutoff on log1p CPM.
+
+    Same fixed statistic for predicted and real blocks, so the predicted /
+    real ratio measures emission-induced DE over- or under-calling even
+    though it is not the scorer's exact Wilcoxon+BH pipeline.
+    """
+    import numpy as np
+
+    m1, v1, n1 = _logcpm_moments(mat)
+    m0, v0, n0 = ctrl_moments
+    denom = np.sqrt(v1 / n1 + v0 / n0 + 1e-18)
+    t = np.abs((m1 - m0) / denom)
+    return int(np.count_nonzero((t > t_cut) & expressed))
+
+
 def _clean(o):
     """NaN -> None so payloads serialize (json allow_nan=False)."""
     import math
@@ -197,7 +231,7 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
     real.file.close()
     del real
 
-    cons_eb2 = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_eb2_ctr.npz", axis_symbols)
+    cons_w = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_w_ctr.npz", axis_symbols)
 
     # arm spec: deltas -> gen "transport" (kd_std, delta_scale) or "dm"
     # (dual_moment amplitude, bulk_amplitude, pool_k, space).
@@ -211,15 +245,78 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
     # Round 6: consensus_eb (gamma=1) scored 0.1969 vs ref 0.1913.
     # Round 7: LOLO showed harder shrinkage monotone-better through gamma=4;
     # gate eb2 and eb4 at the same dm config.
+    # Round 9: generation-STRUCTURE arms on the k027 champion recipe
+    # (consensus_w_ctr deltas, a1.0/b0.5). Prior rounds showed the knob
+    # surface (amplitude/bulk/pool_k) plateaus. Three untested mechanisms:
+    #  - dm_nb: per-cell negative-binomial resampling (dispersion fit from
+    #    control counts) — deterministic emission removes the biological
+    #    variance that keeps DE calls honest (k021 DE over-call finding).
+    #  - dm_soft: delta soft-thresholding — the consensus delta is nonzero
+    #    on ~94% of genes at noise scale.
+    #  - dm_mass: mass-preserving delta (subtract control-mass-weighted
+    #    mean) — probability renormalization after adding a net-mass delta
+    #    shifts EVERY gene's CPM; candidate mechanism for the near-zero
+    #    official jaccard/reach.
+    # de_proxy in results.json measures DE over-call directly per arm.
+    # dm_ref re-scores the champion config as a same-run drift control.
     variants = {
-        # round 8: compose the two independent winners — eb2 deltas with
-        # the pk12/b0.3 generation config (round-5 best arm).
-        "cons_eb2_dm_pk12": {
-            "deltas": cons_eb2,
+        "dm_ref": {
+            "deltas": cons_w,
             "gen": "dm",
             "dm_amp": 1.0,
-            "dm_bulk_amp": 0.3,
-            "dm_pool_k": 12,
+            "dm_bulk_amp": 0.5,
+        },
+        "dm_nb_pk4": {
+            "deltas": cons_w,
+            "gen": "dm",
+            "dm_amp": 1.0,
+            "dm_bulk_amp": 0.5,
+            "dm_nb": True,
+        },
+        "dm_nb_pk1": {
+            "deltas": cons_w,
+            "gen": "dm",
+            "dm_amp": 1.0,
+            "dm_bulk_amp": 0.5,
+            "dm_pool_k": 1,
+            "dm_nb": True,
+        },
+        "dm_soft0p02": {
+            "deltas": cons_w,
+            "gen": "dm",
+            "dm_amp": 1.0,
+            "dm_bulk_amp": 0.5,
+            "dm_soft": 0.02,
+        },
+        "dm_soft0p05": {
+            "deltas": cons_w,
+            "gen": "dm",
+            "dm_amp": 1.0,
+            "dm_bulk_amp": 0.5,
+            "dm_soft": 0.05,
+        },
+        "dm_mass": {
+            "deltas": cons_w,
+            "gen": "dm",
+            "dm_amp": 1.0,
+            "dm_bulk_amp": 0.5,
+            "dm_mass": True,
+        },
+        "dm_mass_soft0p05": {
+            "deltas": cons_w,
+            "gen": "dm",
+            "dm_amp": 1.0,
+            "dm_bulk_amp": 0.5,
+            "dm_mass": True,
+            "dm_soft": 0.05,
+        },
+        "dm_nb_pk4_soft0p05": {
+            "deltas": cons_w,
+            "gen": "dm",
+            "dm_amp": 1.0,
+            "dm_bulk_amp": 0.5,
+            "dm_nb": True,
+            "dm_soft": 0.05,
         },
     }
 
@@ -240,6 +337,9 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
                     pool_k=spec.get("dm_pool_k", 4),
                     seed=seed,
                     space=spec.get("dm_space", "bulk_delta"),
+                    nb_dispersion=spec.get("dm_nb", False),
+                    delta_soft_threshold=spec.get("dm_soft", 0.0),
+                    delta_mass_center=spec.get("dm_mass", False),
                 )
                 obs = pd.DataFrame(
                     {
@@ -285,6 +385,37 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
             print(f"[{name}] pred written: {x.shape}, dispatch {used}", flush=True)
         pred_paths[name] = pred_path
         volume.commit()
+
+    # Mechanism diagnostic: per-target DE-call count proxy vs real control
+    # cells (scorer-style >=5 CPM expression filter). DE over-calling is the
+    # candidate jaccard/reach killer identified in k021.
+    ctrl_moments = _logcpm_moments(controls.X)
+    expressed = ctrl_moments[0] >= np.log1p(5.0)
+    labels_all = real_sub.obs["target_gene"].astype(str).to_numpy()
+    real_de = {
+        t: _de_proxy(real_sub[labels_all == t].X, ctrl_moments, expressed) for t in eval_targets
+    }
+    median_real = float(np.median(list(real_de.values())))
+    de_proxy = {"real": {"per_target": real_de, "median": median_real}}
+    for name in variants:
+        pred_sub = ad.read_h5ad(pred_paths[name], backed="r")
+        counts = {
+            t: _de_proxy(
+                pred_sub.X[ti * cells_per_pert : (ti + 1) * cells_per_pert],
+                ctrl_moments,
+                expressed,
+            )
+            for ti, t in enumerate(eval_targets)
+        }
+        pred_sub.file.close()
+        med = float(np.median(list(counts.values())))
+        de_proxy[name] = {
+            "per_target": counts,
+            "median": med,
+            "ratio_vs_real": med / max(median_real, 1.0),
+        }
+        print(f"[{name}] de_proxy median {med:.0f} vs real {median_real:.0f}", flush=True)
+    volume.commit()
 
     def cell_eval2(*args):
         cmd = ["cell-eval2", *[str(a) for a in args]]
@@ -408,6 +539,7 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
         "real_cells": int(real_sub.n_obs),
         "control_cells": int(controls.n_obs),
         "variants": list(variants),
+        "de_proxy": de_proxy,
         "oracle_note": "oracle_hesc uses in-context measured deltas -- leaked "
         "by construction, interpretation anchor only",
         "real_data_anchors": {

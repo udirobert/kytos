@@ -132,6 +132,42 @@ def repair_bulk_totals(
     return integer
 
 
+def fit_nb_size(counts) -> np.ndarray:
+    """Per-gene negative-binomial size ``r`` from a raw count matrix.
+
+    Fits Var = mu + mu**2 / r per gene across cells. Underdispersed or
+    Poisson-like genes get a large r (approaching Poisson emission).
+    """
+    mu = np.asarray(counts.mean(axis=0), dtype=np.float64).ravel()
+    sq = np.asarray(counts.multiply(counts).mean(axis=0), dtype=np.float64).ravel()
+    var = np.maximum(sq - mu * mu, 0.0)
+    over = var - mu
+    size = np.full_like(mu, 1e8)
+    ok = (mu > 0) & (over > 1e-9)
+    size[ok] = mu[ok] ** 2 / over[ok]
+    return np.clip(size, 1e-3, 1e8)
+
+
+def emit_nb_counts(
+    profile: np.ndarray,
+    depths: np.ndarray,
+    size: np.ndarray,
+    *,
+    seed: int = 0,
+) -> np.ndarray:
+    """Sample per-cell integer counts from NB(mean = profile * depth, size).
+
+    Restores per-cell overdispersion that deterministic moment emission
+    removes; pseudobulk totals hold only in expectation (as in real data).
+    """
+    expected = profile * depths[:, None]
+    rng = np.random.default_rng(seed)
+    scale = np.divide(expected, size[None, :], out=np.zeros_like(expected), where=size[None, :] > 0)
+    lam = rng.gamma(size[None, :], scale)
+    lam = np.maximum(lam, 0.0)
+    return rng.poisson(lam).astype(np.int32)
+
+
 def dual_moment_counts(
     template: np.ndarray,
     probability: np.ndarray,
@@ -141,6 +177,7 @@ def dual_moment_counts(
     seed: int = 0,
     iterations: int = 100,
     tolerance: float = 2e-4,
+    nb_size: np.ndarray | None = None,
 ) -> np.ndarray:
     """Generate integer counts matching both per-cell and bulk moments.
 
@@ -152,9 +189,13 @@ def dual_moment_counts(
         seed: RNG seed
         iterations: max moment-matching iterations
         tolerance: convergence threshold for L1 error
+        nb_size: optional (n_genes,) NB dispersion sizes; when given, cells
+            are gamma-Poisson sampled around the fitted profile instead of
+            deterministically rounded and column-repaired.
 
     Returns:
         (n_cells, n_genes) int32 count matrix with exact row sums = depths
+        (Poisson-repair mode) or NB-sampled counts (nb_size mode)
     """
     template = np.asarray(template, dtype=np.float64)
     probability = np.asarray(probability, dtype=np.float64)
@@ -256,6 +297,8 @@ def dual_moment_counts(
                 break
 
     # Convert to integer counts
+    if nb_size is not None:
+        return emit_nb_counts(x, depths, np.asarray(nb_size, dtype=np.float64), seed=seed)
     expected = x * depths[:, None]
     integer = np.floor(expected).astype(np.int32)
     fractions = expected - integer
@@ -292,6 +335,9 @@ def build_prediction_dual_moment(
     pool_k: int = 4,
     seed: int = 0,
     space: str = "bulk_delta",
+    nb_dispersion: bool = False,
+    delta_soft_threshold: float = 0.0,
+    delta_mass_center: bool = False,
 ) -> sparse.csr_matrix:
     """Build full prediction matrix using dual-moment count generation.
 
@@ -306,6 +352,14 @@ def build_prediction_dual_moment(
         pool_k: number of control cells to pool for template
         seed: base RNG seed
         space: 'bulk_delta' or 'log2fc'
+        nb_dispersion: sample cells from a negative binomial fit on the
+            control counts instead of deterministic moment emission
+        delta_soft_threshold: zero delta entries with |delta| below this
+            value before generation (0 disables)
+        delta_mass_center: subtract the control-mass-weighted mean delta so
+            the perturbed profile is (first-order) mass-preserving; without
+            it, probability renormalization shifts every expressed gene's
+            CPM and the scorer's DE test calls the whole transcriptome
 
     Returns:
         sparse.csr_matrix of shape (n_targets * cells_per_target, n_genes)
@@ -318,6 +372,7 @@ def build_prediction_dual_moment(
         raise ValueError("Not enough control cells for template pooling")
 
     n_genes = len(gene_order)
+    nb_size = fit_nb_size(raw) if nb_dispersion else None
 
     # Control mean CPM and bulk probability
     mean_cpm = np.zeros(n_genes)
@@ -333,6 +388,11 @@ def build_prediction_dual_moment(
         delta = deltas.get(target)
         if delta is None:
             delta = np.zeros(n_genes, dtype=np.float32)
+        if delta_soft_threshold > 0:
+            delta = np.where(np.abs(delta) < delta_soft_threshold, 0.0, delta)
+        if delta_mass_center:
+            c = float(np.dot(mean_cpm, delta) / mean_cpm.sum())
+            delta = delta - c
 
         # Select control cells for template
         rng = np.random.default_rng(seed + ti)
@@ -358,6 +418,7 @@ def build_prediction_dual_moment(
             prob_bulk,
             depths=depths,
             seed=seed + ti,
+            nb_size=nb_size,
         )
         all_blocks.append(sparse.csr_matrix(counts))
 
