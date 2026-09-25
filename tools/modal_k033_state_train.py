@@ -44,6 +44,7 @@ DELTA_ROOT = K033_ROOT / "deltas"
 
 REPLOGLE_URL = "https://ndownloader.figshare.com/files/35775507"
 PANEL_COUNTS = LOCAL_ROOT / "data/raw/vcc2026/pert_counts.csv"
+PAIRED_PATH = VOLUME_ROOT / "paired-transfer/paired_transfer_train.npz"
 
 N_HVG = 6000
 ROW_CHUNK = 100_000  # cells per output part file
@@ -275,6 +276,7 @@ def prepare() -> dict:
         "n_cells": int(n_cells),
         "n_genes": int(n_genes),
         "n_perts": int(len(gene_cats)),
+        "all_perts": sorted(str(t) for t in counts.index),
         "n_hvg": len(hvg_genes),
         "panel_covered": covered,
         "panel_uncovered": uncovered,
@@ -459,10 +461,25 @@ def infer_deltas(run_name: str = TRAIN_NAME, checkpoint: str = "best") -> dict:
     meta = json.loads((META_DIR / "meta.json").read_text())
     covered = meta["panel_covered"]
 
+    # Gate B round 10 needs ST deltas for the paired-hESC eval targets as
+    # well as the 2026 panel; simulate both in the same pass.
+    with np.load(PAIRED_PATH, allow_pickle=False) as paired:
+        eval_targets = paired["paired_targets"].astype(str).tolist()
+    vocab = set(meta.get("all_perts") or [])
+    if not vocab:
+        # meta.json written by the pre-all_perts prepare snapshot; rebuild
+        # the vocabulary from the dataset parts' categorical obs.
+        import h5py
+
+        for part in sorted(DATASET_DIR.glob("part_*.h5ad")):
+            with h5py.File(part, "r") as fh:
+                vocab |= {s.decode() for s in fh["obs/gene/categories"][:]}
+    sim_targets = [t for t in dict.fromkeys(covered + eval_targets) if t in vocab]
+
     tsv = local / "panel.tsv"
-    pd.DataFrame({"perturbation": covered, "num_cells": [CELLS_PER_PERT] * len(covered)}).to_csv(
-        tsv, sep="\t", index=False
-    )
+    pd.DataFrame(
+        {"perturbation": sim_targets, "num_cells": [CELLS_PER_PERT] * len(sim_targets)}
+    ).to_csv(tsv, sep="\t", index=False)
 
     sim_local = local / "sim.h5ad"
     _run_argv(
@@ -494,7 +511,7 @@ def infer_deltas(run_name: str = TRAIN_NAME, checkpoint: str = "best") -> dict:
     # infer overwrites obsm['X_hvg'] with predictions; X keeps real controls.
     preds = np.asarray(out.obsm["X_hvg"], dtype=np.float32)
     labels = out.obs["gene"].astype(str).to_numpy()
-    n_orig = out.shape[0] - (len(covered) * CELLS_PER_PERT)
+    n_orig = out.shape[0] - (len(sim_targets) * CELLS_PER_PERT)
     ctrl_pred_mean = preds[:n_orig].mean(axis=0)  # real control rows simulated as NTC
 
     hvg_genes = json.loads((META_DIR / "hvgs.json").read_text())["genes"]
@@ -507,7 +524,7 @@ def infer_deltas(run_name: str = TRAIN_NAME, checkpoint: str = "best") -> dict:
     ).mean(axis=0)
 
     rows, deltas = [], []
-    for tgt in covered:
+    for tgt in sim_targets:
         m = labels == tgt
         if not m.any():
             continue

@@ -45,6 +45,7 @@ VOLUME_ROOT = Path("/kytos-vol")
 ATLAS_PATH = VOLUME_ROOT / "atlas/adata_Validation.h5ad"
 PAIRED_PATH = VOLUME_ROOT / "paired-transfer/paired_transfer_train.npz"
 VARIANTS_DIR = VOLUME_ROOT / "k023-consensus/extract-20260921-02-honest/variants"
+ST_CALIB_DIR = VOLUME_ROOT / "k033-state/calib-k033-st-gwps-k562-v1-best"
 PAIRS_PATH = VOLUME_ROOT / "k024-promoter-prior/pairs-20260921-01/promoter_pairs.csv"
 OUT_ROOT = VOLUME_ROOT / "k025-eval2-gate"
 
@@ -233,6 +234,25 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
 
     cons_w = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_w_ctr.npz", axis_symbols)
 
+    # Round 10: k033 State-ST genome-wide K562 deltas (learned across-gene
+    # signature, first non-heuristic signature class in the gate). Arms
+    # replace consensus ONLY on targets the ST model emitted; uncovered
+    # eval targets keep cons_w so deltas-vs-dm_ref isolate the ST effect.
+    # st_norm = per-target L2 matched to consensus norm (k020 calibration
+    # lesson); st_raw = uncalibrated model magnitude (diagnostic arm);
+    # st_mix = 50/50 blend of the two sources.
+    st_norm = st_raw = {}
+    if (ST_CALIB_DIR / "variant_k033_st_norm.npz").exists():
+        st_norm = _load_variant_deltas(ST_CALIB_DIR / "variant_k033_st_norm.npz", axis_symbols)
+        st_raw = _load_variant_deltas(ST_CALIB_DIR / "variant_k033_st_raw.npz", axis_symbols)
+    st_norm_full = {**cons_w, **st_norm} if st_norm else None
+    st_raw_full = {**cons_w, **st_raw} if st_raw else None
+    st_mix_full = (
+        {**cons_w, **{t: 0.5 * (cons_w[t] + st_norm[t]) for t in st_norm if t in cons_w}}
+        if st_norm
+        else None
+    )
+
     # arm spec: deltas -> gen "transport" (kd_std, delta_scale) or "dm"
     # (dual_moment amplitude, bulk_amplitude, pool_k, space).
     # gate-20260921-01 covered null/k562_ds1p{0,7}/consensus_w_ctr/*_pncap/
@@ -328,6 +348,33 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
             "dm_soft": 0.05,
         },
     }
+    # Round 10 arms activate only once the k033 calibrator output exists on
+    # the volume (modal_k033_delta_calibrate.py). dm_ref stays as the
+    # same-run drift control; ST arms differ from it ONLY on eval targets
+    # the genome-wide ST model covered.
+    if st_norm_full:
+        variants.update(
+            {
+                "st_norm_dm": {
+                    "deltas": st_norm_full,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                },
+                "st_raw_dm": {
+                    "deltas": st_raw_full,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                },
+                "st_mix_dm": {
+                    "deltas": st_mix_full,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                },
+            }
+        )
 
     rng = np.random.default_rng(seed)
     pred_paths = {}
