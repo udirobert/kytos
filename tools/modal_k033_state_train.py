@@ -444,7 +444,6 @@ def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
         "data.kwargs.cell_type_key=cell_line",
         f"data.kwargs.control_pert={NTC_LABEL}",
         "data.kwargs.num_workers=6",
-        "data.kwargs.use_consecutive_loading=true",
         "data.kwargs.val_subsample_fraction=0.1",
         "model=state",
         "model.kwargs.cell_set_len=64",
