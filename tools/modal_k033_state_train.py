@@ -358,8 +358,15 @@ def fix_indices() -> dict:
     Rewrite the part files on the volume in place as string-array datasets."""
     import h5py
 
+    def _s(v: object) -> str:
+        return v.decode() if isinstance(v, bytes) else str(v)
+
     def _decode(group: "h5py.Group") -> list[str]:
-        cats = [c.decode() if isinstance(c, bytes) else str(c) for c in group["__categories"][:]]
+        if group.attrs.get("encoding-type") == "nullable-string-array":
+            vals = group["values"][:]
+            mask = group["mask"][:] if "mask" in group else None
+            return [_s(v) if mask is None or not mask[i] else f"na{i}" for i, v in enumerate(vals)]
+        cats = [_s(c) for c in group["__categories"][:]]
         return [cats[code] for code in group["codes"][:]]
 
     fixed = 0
@@ -604,6 +611,8 @@ def main(
 ) -> None:
     if stage in ("all", "prepare"):
         print(prepare.remote(), flush=True)
+    if stage == "fix":
+        print(fix_indices.remote(), flush=True)
     if stage in ("all", "train"):
         print(train.remote(run_name=run_name, max_steps=max_steps), flush=True)
     if stage in ("all", "infer"):
