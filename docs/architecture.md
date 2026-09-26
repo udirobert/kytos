@@ -1,15 +1,18 @@
 # Kytos — architecture and decision record
 
-Status: **ACTIVE** · Updated **2026-09-20** · Owner: udingethe
+Status: **ACTIVE** · Updated **2026-09-23** · Owner: udingethe
 
 This document separates the architecture that currently exists from research
 proposals. It should not be read as a claim that every model family discussed
 below has been implemented or cleanly evaluated.
 
-## 1. Current champion — k011 frozen control
+## 1. Frozen comparison control — k011
 
-The best recorded submission is `kytos-k011-ds-x1p7`, produced by
-`tools/run_k011_delta_scale.py`:
+`kytos-k011-ds-x1p7`, produced by `tools/run_k011_delta_scale.py`, is the
+frozen comparison control. It is no longer the best recorded submission — the
+current champion is `kytos-k027-consensus-dm` (+0.1262, rank 308 at its dated
+snapshot; see `docs/vcc-two-track-strategy.md` for the live record). k011's
+configuration:
 
 - overall score **+0.059575**, observed rank **486** at publication;
 - source priors: 2025 Atlas effects where available, Replogle K562 effects,
@@ -103,10 +106,15 @@ The preset contains six metrics:
 Contract notes are in
 `experiments/k022-pipeline-audit/scorer_contract.json`.
 
-Important: this scorer is **identified, not installed or integrated**. CPU DE
-backend behavior and reference-anchor compatibility remain unverified. The
-older local `cell-eval 0.8.2` `vcc` profile is a legacy three-metric suite and
-is not equivalent to the 2026 leaderboard scorer.
+Status: **pinned and contract smoke-tested** (2026-09-21; Gate B in
+`docs/vcc-two-track-strategy.md`), and used for the k025 real-data Gate B run
+(2026-09-22). The local `.venv-eval2` was deleted 2026-09-23 to save disk —
+rebuild with `python3.12 -m venv .venv-eval2 && .venv-eval2/bin/pip install
+"cell-eval2 @ git+https://github.com/ArcInstitute/cell-eval2@5e64833518a6603a0301cbe28185d49c30f4a986"
+"pdex==0.3.0"`; real scoring runs on Modal with the same pin. Still unverified
+for production-equivalence claims: live-competition anchor-bundle parity and
+DE-engine parity. The older local `cell-eval 0.8.2` `vcc` profile is a legacy
+three-metric suite and is not equivalent to the 2026 leaderboard scorer.
 
 ## 4. Effect representations are not interchangeable
 

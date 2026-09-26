@@ -140,15 +140,15 @@ The .npz is small (~22 MB per context at float32) — scp or Modal volume
 
 ### k014-run-1: Conditional MLP baseline (2026-09-18) — NEGATIVE
 
-- **Setup**: L40S VM (Nebius, eu-north1, project-e00sz92bpr005x5c3r80zr),
-  CUDA 12.4, torch 2.6.0. Data: `paired_transfer_train.npz` (47 paired
+- **Setup**: L40S VM (Nebius, eu-north1), CUDA 12.4, torch 2.6.0. Data:
+  `paired_transfer_train.npz` (47 paired
   targets) + `delta_matrix_src.npz` (9,869 targets, mostly K562-only).
 - **Config**: 200 epochs (early-stopped at ~90), lr=1e-3, batch=256,
   emb_dim=128, ctx_dim=256, hidden=1024, bottleneck=64.
-- **Results**: best eval cosine = 0.0425 (10 held-out hESC targets).
-  Identity baseline (raw K562 transplant) cosine = 0.1406.
-  **Improvement over identity: −0.098** (model is worse than doing nothing).
-  Magnitude ratio collapsed to 0.35 (model predicts near-zero deltas).
+- **Results**: best eval cosine was well below the identity baseline
+  (raw K562 transplant) — **the model is worse than doing nothing**.
+  Magnitude ratio collapsed (model predicts near-zero deltas). Exact
+  values embargoed: `experiments/_embargoed/diagnostic-numbers.md`.
 - **Diagnosis**: With only 47 paired examples and 9,822 K562-only targets,
   the model has no cross-context signal to learn. It converges to predicting
   small-magnitude noise. The architecture is sound but the data is
@@ -164,13 +164,16 @@ The .npz is small (~22 MB per context at float32) — scp or Modal volume
 
 - **Profile**: `nebius profile create kytos --auth-method federation`
   → opens browser OAuth → select account → picks tenant/project.
-- **Current tenant**: tenant-e00znds1hwpckd5vna (NOT the old suspended one)
-- **Current project**: project-e00sz92bpr005x5c3r80zr
-- **Subnet**: vpcsubnet-e00pbj53wtjbf7c6e9 (default-subnet-od2iiilq)
-- **SSH security group**: vpcsecuritygroup-e00ac0vv3g60xcp6h7
-  (name: kytos-ssh-sg, allows TCP/22 from 0.0.0.0/0)
+- **Tenant / project / subnet / security-group / image IDs**: not recorded
+  here — retrieve live values from the Nebius console or `nebius` CLI
+  (`nebius profile create kytos --auth-method federation` → browser OAuth →
+  select tenant/project). (IDs removed 2026-09-23: no reason to publish
+  them.) Note the current tenant is *not* the old suspended one.
+- **SSH security group**: name `kytos-ssh-sg`. When recreating, restrict
+  TCP/22 to your current IP or an approved access path — do **not** leave
+  it open on `0.0.0.0/0`.
 - **Instance spec**: gpu-l40s-a / 1gpu-16vcpu-64gb / 500GB network_ssd /
-  image computeimage-e00q003g5k851wjgpn (Ubuntu 24.04 + CUDA 12)
+  Ubuntu 24.04 + CUDA 12 marketplace image
 - **SSH user**: `ubuntu` (NOT root — cloud-init root key injection is
   unreliable on this image; use top-level `ssh_authorized_keys` or
   `users: [{name: ubuntu, ...}]`)
@@ -187,16 +190,16 @@ The .npz is small (~22 MB per context at float32) — scp or Modal volume
 - **To recreate** (instance was deleted after k014-run-1 to save cost):
   ```bash
   nebius compute instance create \
-    --parent-id project-e00sz92bpr005x5c3r80zr \
+    --parent-id <project-id> \
     --name kytos-track2-gpu \
     --resources-platform gpu-l40s-a \
     --resources-preset 1gpu-16vcpu-64gb \
     --boot-disk-attach-mode read_write \
     --boot-disk-managed-disk-name kytos-track2-disk \
-    --boot-disk-managed-disk-source-image-id computeimage-e00q003g5k851wjgpn \
+    --boot-disk-managed-disk-source-image-id <image-id> \
     --boot-disk-managed-disk-size-gibibytes 500 \
     --boot-disk-managed-disk-type network_ssd \
-    --network-interfaces '[{"name":"eth0","subnet_id":"vpcsubnet-e00pbj53wtjbf7c6e9","ip_address":{},"public_ip_address":{},"security_groups":[{"id":"vpcsecuritygroup-e00jth18f0j9zbct6g"},{"id":"vpcsecuritygroup-e00ac0vv3g60xcp6h7"}]}]' \
+    --network-interfaces '[{"name":"eth0","subnet_id":"<subnet-id>","ip_address":{},"public_ip_address":{},"security_groups":[{"id":"<default-sg-id>"},{"id":"<kytos-ssh-sg-id>"}]}]' \
     --cloud-init-user-data "$(cat <<'EOF'
   #cloud-config
   users:

@@ -31,8 +31,8 @@ enrichment path.
 - `k001-mean-shift-baseline` — Observatory Milestone 0 demo (2026-08-22); probe data.
 - `k002-vcc2025-validation-mean-shift` — first **real** legacy `cell-eval`
   0.8.2 run (2026-08-22): VCC 2025 validation (H1 hESC, 98,927 cells, 50
-  targets), mean-shift floor. DE sig-genes recall 0.0 vs ceiling 0.494;
-  `pearson_delta` undefined (constant prediction) vs ceiling 0.667; audit
+  targets), mean-shift floor. DE sig-genes recall zero against a clearly
+  positive ceiling; `pearson_delta` undefined (constant prediction); audit
   clean. Scoring matrix subsampled (200 cells/pert + 3,000 controls, seed 0).
   Process notes: [`docs/k002-retro.md`](../docs/k002-retro.md).
 - `k003-mean-shift-validation` — first **VCC 2026** submission (2026-09-05):
@@ -94,20 +94,22 @@ enrichment path.
   **+0.0559** (rank 502). Meta:
   [`k011-delta-scale-x1p3-validation/meta.json`](k011-delta-scale-x1p3-validation/meta.json).
 - `k011-delta-scale-x1p7-validation` — `delta_scale=1.7` (2026-09-17):
-  **+0.0596** (rank 486), best recorded submission. `pds` 0.339, `fid`
+  **+0.0596** (rank 486); champion until superseded by k027 (2026-09-22).
+  `pds` 0.339, `fid`
   -0.006, `nmae` -0.076, `reach` 0.104. Frozen comparison control. Meta:
   [`k011-delta-scale-x1p7-validation/meta.json`](k011-delta-scale-x1p7-validation/meta.json).
 - `k011-delta-scale-x2p0-validation` — `delta_scale=2.0` (2026-09-18):
   **+0.0566** (rank 515). Meta:
   [`k011-delta-scale-x2p0-validation/meta.json`](k011-delta-scale-x2p0-validation/meta.json).
-- `k012-lineage-score` — context identity screen (2026-09-17): A Jurkat-like
-  (0.649), B weakly RPE1-leaning (0.369), C unresolved/hESC-leaning (0.379)
+- `k012-lineage-score` — context identity screen (2026-09-17): A clearly
+  Jurkat-like, B weakly RPE1-leaning, C unresolved/hESC-leaning (exact
+  scores embargoed: `_embargoed/diagnostic-numbers.md`)
   on top-2000 discriminative genes. Proxy evidence only; lineage labels are
   not established identities. Report:
   [`k012-lineage-score/lineage_report.json`](k012-lineage-score/lineage_report.json).
 - `k012-transfer-loo` — paired-signature LOO eval (2026-09-17): five transfer
-  classes on 47 K562/hESC pairs. Raw transfer cosine ~0.13; no class cleared
-  the +0.05 acceptance bar. Proxy-only negative. Reports:
+  classes on 47 K562/hESC pairs. Raw transfer cosine was low (exact value
+  embargoed); no class cleared the +0.05 acceptance bar. Proxy-only negative. Reports:
   [`k012-transfer-loo/loo_report.json`](k012-transfer-loo/loo_report.json),
   [`k012-transfer-loo/facts.json`](k012-transfer-loo/facts.json).
 - `k013-lineage-ratios` — magnitude-ratio measurement (2026-09-18): RPE1
@@ -120,8 +122,9 @@ enrichment path.
   uniform ×1.7. Meta:
   [`k013-context-scale-validation/meta.json`](k013-context-scale-validation/meta.json).
 - `k014-conditional-mlp` — Track-2 conditional MLP (2026-09-18), **execution
-  completed; not submitted**. Best held-out cosine 0.0425 vs identity 0.1406;
-  magnitude ratio 0.35. Implementation-specific negative; it does not falsify
+  completed; not submitted**. Held-out cosine well below the identity
+  baseline; magnitude collapsed (exact values embargoed:
+  `_embargoed/diagnostic-numbers.md`). Implementation-specific negative; it does not falsify
   all learned transfer. Record: [`docs/track2-nebius-setup.md`](../docs/track2-nebius-setup.md).
 - `k015-lowrank-r256` — essential-screen low-rank transfer submission
   (2026-09-19): **-0.02797** (rank 683). Essential-screen data had 0/300
@@ -186,20 +189,22 @@ enrichment path.
   `pilot-20260921-02` then **completed** the 3-target diagnostic
   (ACLY/ANXA6/ARPC2, 400 cells + 1600/1600 controls) on the aligned
   18,077-label axis. Proxy findings: transport null is calibrated on
-  controls (variance ratio 1.05); measured-delta transport preserves
-  direction moderately (cosines 0.33–0.87); borrowed K562 signatures are
-  strongly target-dependent (cosines -0.01 to 0.76); direct-moment arms
-  under-disperse (~0.28 variance ratio). Diagnostics only — not a
+  controls; measured-delta transport preserves
+  direction moderately; borrowed K562 signatures are
+  strongly target-dependent; direct-moment arms
+  under-disperse (exact values embargoed:
+  `_embargoed/diagnostic-numbers.md`). Diagnostics only — not a
   six-metric leaderboard surrogate:
   [`pilot-20260921-02/summary.json`](k022-pipeline-audit/pilot-20260921-02/summary.json),
   [`pilot-20260921-02/execution.json`](k022-pipeline-audit/pilot-20260921-02/execution.json).
   The full paired-panel run `paired47-20260921-01` evaluated 32/47 paired
   targets (15 dropped for <800 cells). Findings: borrowed K562 deltas
-  reach median cosine 0.268 vs 0.514 for measured in-context deltas —
+  reach roughly half of measured in-context transfer —
   signature content is the quantified bottleneck — and a precomputable
   transferability gate is **falsified**: `cos(delta_k562, delta_hesc)`
-  predicts borrowed-signature success at r≈0.22 (0.32 among high-ceiling
-  targets). Uniform levers and gate-based selection are exhausted;
+  predicts borrowed-signature success only weakly (exact values embargoed:
+  `_embargoed/diagnostic-numbers.md`). Uniform levers and gate-based
+  selection are exhausted;
   remaining routes are context-matched signatures or a learned transfer
   model. Receipts:
   [`paired47-20260921-01/summary.json`](k022-pipeline-audit/paired47-20260921-01/summary.json),
@@ -227,6 +232,32 @@ enrichment path.
 - `k027-consensus-dm` — submitted 2026-09-22: same consensus deltas
   through `build_prediction_dual_moment`. Official **+0.1262**, rank
   308/1088 — **champion**. Receipts: [`k027-consensus-dm/`](k027-consensus-dm/).
+- `k028-consensus-dm-pk12` — submitted 2026-09-23: same deltas,
+  pool_k=12. Official **+0.1239** — regression; pk12 did not transfer.
+- `k029-consensus-eb2-dm-pk12` — submitted 2026-09-23 (entry
+  `qI6vc1sBVpE4P1llPfhu`): eb2 agreement-shrunk deltas + dual-moment.
+  Official **+0.1115**, rank 416/1129 — regression.
+- `k030-consensus-meanj-dm` — submitted 2026-09-24 (entry
+  `A1N2nYKZ07jKewReEUMp`): uniform 5-source consensus mean adding
+  Jurkat stim CRISPRi deltas, champion generator config. Official
+  **+0.1088**, rank ~435 — regression. k027 remains champion.
+  Receipts: [`k030-consensus-meanj-dm/`](k030-consensus-meanj-dm/).
+- `k031-jurkat-extract` — data run 2026-09-22, **no submission**.
+  `tools/modal_k031_jurkat_extract.py` extracted Jurkat CRISPRi deltas
+  (GSE249595) that fed the k030 consensus mean. Internals embargoed.
+- `k032-replogle-reliability` — data run 2026-09-25, **no submission**.
+  `tools/modal_k032_replogle_reliability.py` established access to the
+  figshare genome-wide Perturb-seq K562 bundle and ranked per-target
+  signature reliability — the input screen for what to train on in k033.
+  Exact reliability tables embargoed.
+- `k033-state-st` — **IN FLIGHT 2026-09-26** (no submission yet). Trained
+  signature source: Arc State ST model on the Replogle GWPS K562 bundle
+  (272/300 panel coverage), `tools/modal_k033_state_{probe,train}.py`,
+  Modal GPU, server-side chained stages (`prepare → fix → recompress →
+  train → infer`) on the `kytos-vcc` Volume. Outputs HVG-space log1p deltas
+  for calibration (`tools/modal_k033_delta_calibrate.py`) and Gate B round
+  10 arms. Loss curves, step rates and arm metrics embargoed; receipts land
+  here once a checkpoint is promoted.
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /

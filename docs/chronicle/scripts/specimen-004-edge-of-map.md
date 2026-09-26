@@ -24,11 +24,11 @@ Companion to `chronicle/specimen-004-edge-of-map/BRIEF.md`.
 3. **8.2–13.2s — the twist.** Anchor shrinks to PiP. Dot field fades in lit
    on the left / dark on the right — the literal edge of the map, labelled
    "K562 TERRITORY ──── UNKNOWN". Three context cards land (A / B / C).
-   Labels stamp: A ≈ JURKAT-LIKE 0.65 · B ≈ RPE1-LIKE? 0.37 · C = UNRESOLVED.
+   Labels stamp: A ≈ JURKAT-LIKE · B ≈ RPE1-LIKE? · C = UNRESOLVED.
    Subline: "these are not the cells we borrowed for". Silence — visuals carry.
 4. **13.2–19.2s — the wall.** Anchor slides off. Three hard-cut result cards,
    ~1.8s each, muted-warn accent, click SFX per cut: "paired transfer ·
-   cosine 0.13" → "per-context scale · +0.031" → "matched corpora · 0/300
+   near-zero cosine" → "per-context scale · +0.031" → "matched corpora · 0/300
    targets". A progress strip (transfer / scaling / corpora) lights each
    step as it lands. VO-2 over the first cut only.
 5. **19.2–30.5s — lesson → pivot (merged).** Anchor punches back to hero.
@@ -44,7 +44,7 @@ Companion to `chronicle/specimen-004-edge-of-map/BRIEF.md`.
 ## Fact sources (committed)
 
 - +0.0596 / rank 486 — experiments/k011-delta-scale-x1p7-validation
-- 0.649 / 0.369 / 0.379 — experiments/k012-lineage-score
-- cosine 0.13 — experiments/k012-transfer-loo
+- A Jurkat-like / B RPE1-leaning / C unresolved — experiments/k012-lineage-score
+- paired transfer fails LOO — experiments/k012-transfer-loo
 - +0.0312 — experiments/k013-context-scale-validation
 - 0/300 — experiments/k013-lineage-ratios

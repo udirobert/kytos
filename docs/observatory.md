@@ -119,40 +119,6 @@ briefing #1 — come back and watch the vessel fill, crack, or heal."*
 
 ---
 
-## 3b. Holo auditor — independent render verification (Computer-use Agents)
-
-Our entire thesis is "show when a model is biologically wrong." But who verifies
-that what the Observatory renders matches the committed `facts.json`? Right now,
-nobody. **H's Computer-use Agents** fill that gap.
-
-**What it does:** `tools/holo_audit.py` uses Playwright to screenshot the deployed Observatory run page and sends it to Holo's VLM (`holo3-1-35b-a3b`) which reads visible values (vessel fill %, audit flag counts, run ID, headline) and diffs its reading against the committed `facts.json`. Any mismatch means the rendered page does not match the data contract — the audit catches a render bug.
-
-**How it works:**
-
-```
-https://kytosapp.netlify.app/runs/k001/  (live deployed site)
-  → Playwright screenshots the rendered page
-  → VLM (holo3-1-35b-a3b via OpenAI-compatible API) reads visible values
-  → answer_schema (Pydantic) → validated typed JSON
-  → diff against facts.json
-  → PASS / FAIL report (same pattern as planted_signal.py)
-```
-
-**Why Holo specifically:** Holo's vision (March 2026) states "models have
-learned to think, but the next era of AI belongs to the systems that learn to
-act." The Holo3.1 vision model (holo3-1-35b-a3b) is their flagship VLM — capable of reading complex UI layouts and returning structured, schema-validated answers. This is deeper than passive screen-reading: the VLM doesn't just see a
-screenshot — it reads structured values from it, validated against a Pydantic schema (`answer_schema`). Non-conforming
-answers are rejected and retried automatically.
-
-**Fallback:** if the VLM API is unavailable (no `HAI_API_KEY` or API failure), the tool falls back to a deterministic digest check: compares committed `facts.json` against the rendered page text. This is the original approach — no vision model, just text comparison.
-
-**Hard rule:** Holo audits the render, never the science. It checks that the
-site shows what the data says — not whether the data is biologically correct
-(that's the audit layer's job). It degrades to a skip if `HAI_API_KEY` is unset
-or the API is unreachable; it never blocks the build.
-
----
-
 ## 3. Experience design — visual first
 
 Quality bar: full-bleed 3D vessel hero, editorial typography, glassmorphism
@@ -230,6 +196,40 @@ UMAP / distribution strip when Layer B emits them (post-Milestone 0).
 
 Every visual and sentence traces to a committed artifact. Pre-render enrichment
 at build time — static site works without API keys at view time.
+
+---
+
+## 3b. Holo auditor — independent render verification (Computer-use Agents)
+
+Our entire thesis is "show when a model is biologically wrong." But who verifies
+that what the Observatory renders matches the committed `facts.json`? Right now,
+nobody. **H's Computer-use Agents** fill that gap.
+
+**What it does:** `tools/holo_audit.py` uses Playwright to screenshot the deployed Observatory run page and sends it to Holo's VLM (`holo3-1-35b-a3b`) which reads visible values (vessel fill %, audit flag counts, run ID, headline) and diffs its reading against the committed `facts.json`. Any mismatch means the rendered page does not match the data contract — the audit catches a render bug.
+
+**How it works:**
+
+```
+https://kytosapp.netlify.app/runs/k001/  (live deployed site)
+  → Playwright screenshots the rendered page
+  → VLM (holo3-1-35b-a3b via OpenAI-compatible API) reads visible values
+  → answer_schema (Pydantic) → validated typed JSON
+  → diff against facts.json
+  → PASS / FAIL report (same pattern as planted_signal.py)
+```
+
+**Why Holo specifically:** Holo's vision (March 2026) states "models have
+learned to think, but the next era of AI belongs to the systems that learn to
+act." The Holo3.1 vision model (holo3-1-35b-a3b) is their flagship VLM — capable of reading complex UI layouts and returning structured, schema-validated answers. This is deeper than passive screen-reading: the VLM doesn't just see a
+screenshot — it reads structured values from it, validated against a Pydantic schema (`answer_schema`). Non-conforming
+answers are rejected and retried automatically.
+
+**Fallback:** if the VLM API is unavailable (no `HAI_API_KEY` or API failure), the tool falls back to a deterministic digest check: compares committed `facts.json` against the rendered page text. This is the original approach — no vision model, just text comparison.
+
+**Hard rule:** Holo audits the render, never the science. It checks that the
+site shows what the data says — not whether the data is biologically correct
+(that's the audit layer's job). It degrades to a skip if `HAI_API_KEY` is unset
+or the API is unreachable; it never blocks the build.
 
 ---
 
@@ -353,8 +353,8 @@ labels from base GLiNER2 + regex fallback → upload JSONL → synthetic `/gener
   98,927 cells, 50 targets; public Arc bucket, sha256-checked) through the
   actual submission harness → mean-shift prediction → `ceiling/targets` +
   `de/targets` → adapter import. Floor results: DE sig-genes recall 0.0 vs
-  ceiling 0.494; pearson_delta mathematically undefined (constant prediction)
-  vs ceiling 0.667; audit clean. The mirror image of k001: invisible to the
+  ceiling; pearson_delta mathematically undefined (constant prediction)
+  against a clearly positive ceiling; audit clean. The mirror image of k001: invisible to the
   audit, legible to the metric. Both preregistered hypotheses confirmed.
   Scoring matrix subsampled (200 cells/pert + 3,000 controls, seed 0) —
   disclosed in meta.json and on the page; a full-depth eval run was queued
@@ -425,7 +425,7 @@ Presentation talking points: [`competitive-landscape.md §6`](competitive-landsc
 
 ---
 
-## 9. Frontier UI & Agentic Architecture (Shipped 2026-08-22)
+## 8. Frontier UI & Agentic Architecture (Shipped 2026-08-22)
 
 The Observatory is built with a modular, template-driven design system optimized for scientific scrutiny and agentic transparency:
 
@@ -458,7 +458,7 @@ The Observatory is built with a modular, template-driven design system optimized
 
 ---
 
-## 10. Open questions
+## 9. Open questions
 
 1. ~~Deploy target for `frontend/dist/`~~ → **Netlify** (`netlify.toml`) — decided 2026-08-22
 2. ~~Jinja2 template migration~~ → Completed across all 4 page types (`home`, `about`, `runs`, `run_detail`).

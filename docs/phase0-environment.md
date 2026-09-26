@@ -1,8 +1,13 @@
 # Kytos — Phase 0 Environment
 
-Status: **UPDATED 2026-09-20** — local `cell-eval 0.8.2` is the legacy harness
-used by early runs; the identified official 2026 scorer is `cell-eval2`
-(`vcc2026`) and is not yet installed or integrated.
+Status: **UPDATED 2026-09-23** — local `cell-eval 0.8.2` is the legacy harness
+used by early runs; the official 2026 scorer `cell-eval2` (`vcc2026`) is pinned
+at `5e64833518a6603a0301cbe28185d49c30f4a986` (v0.16.0), contract smoke-tested
+(2026-09-21), and used for the k025 Gate B real-data run (2026-09-22). The
+local `.venv-eval2` was deleted 2026-09-23 to save disk — rebuild with:
+`python3.12 -m venv .venv-eval2 && .venv-eval2/bin/pip install "cell-eval2 @
+git+https://github.com/ArcInstitute/cell-eval2@5e64833518a6603a0301cbe28185d49c30f4a986"
+"pdex==0.3.0"`. Real scoring runs on Modal with the same pin.
 
 Declared for the 2026 Virtual Cell Challenge. Install via `uv`. Python 3.14.5
 is present here; `uv` 0.5.9 is available.
@@ -49,7 +54,7 @@ persistent cron is needed). See `docs/release-infrastructure.md §4` and
 | Package | Why |
 |---|---|
 | `cell-eval 0.8.2` | legacy local scoring suite used by early runs; not the identified official 2026 scorer |
-| `cell-eval2` | identified official 2026 scorer (`vcc2026`); install and integration are still pending |
+| `cell-eval2` | official 2026 scorer (`vcc2026`), pinned @`5e64833` v0.16.0 + `pdex==0.3.0`; contract smoke-tested; real scoring on Modal; local `.venv-eval2` rebuildable per header |
 | `pdex` | DE computation used by legacy cell-eval (referenced in `_evaluator.py`) |
 
 ## Iteration
@@ -93,6 +98,11 @@ uv pip install -r requirements.txt   # once declared, see src release hygiene
 `uv python install 3.12`), with legacy `cell-eval 0.8.2` + `anndata` + `scanpy` +
 `numba`/`llvmlite` installed and verified. This is the local eval env; it does
 not contain the official 2026 `cell-eval2` scorer.
+
+**`.venv-eval2`** — the pinned official-scorer env (`cell-eval2` @`5e64833`
+v0.16.0 + `pdex==0.3.0`, Python 3.12), used for the Gate B contract smoke and
+the k025 real-data run. Deleted 2026-09-23 to save disk; rebuild with the
+command in the status header. Real scoring runs on Modal with the same pin.
 
 **Gotcha that cost a cycle:** the machine is arm64, but the locally installed
 Homebrew Python 3.12 is **x86_64 (Rosetta)** — so legacy `cell-eval`'s `llvmlite`

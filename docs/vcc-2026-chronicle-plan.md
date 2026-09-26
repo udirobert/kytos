@@ -163,7 +163,7 @@ scripts; it's a **scholarly layer separate from Tavily** (web).
   Ideas, 2005)* — we are in the race and needed the notebook; that's the
   canonical self-located problem. He'd push to **start small**: digest the
   2025 data *our* teams as the first customer, count engagement, then scale
-  (Do Things that Man's Own Gas — "Do, then talk", 2013).
+  (*Do Things that Don't Scale*, 2013).
 - **Thiel**: "what important truth do you believe that few agree with?" —
   the one that says **the field's story-teller position is vacant and cheap
   to occupy until someone claims it**. But also idly: "competition is for
@@ -230,7 +230,7 @@ Gate is not "did it ship" — it's "did it *do anything*".
    claim to know others' scores; if a chart includes our own runs it says
    "ours".
 2. **The cast is not the content**: a character without data gets no
-   episode. The vessel "testifies", the character "interprets** — never*
+   episode. The vessel "testifies", the character "interprets" — never
    vice versa.
 3. **PD hygiene**: own renders only (no film costumes/logos); hold the
    *canon* (Kytos identity, CT0 release) as the actual asset.
@@ -323,7 +323,7 @@ existing facts contract.
 - Arc Virtual Cell Atlas — 2025 dataset with held-out test, public download.
 - Dahlstrom 2014, *PNAS* — narrative effects on memory/engagement vs
   credibility trade.
-- Bauer, Allum & Miller 2007; Scheufele & Nssbet 2009 — deficit-model critique
+- Bauer, Allum & Miller 2007; Scheufele & Nisbet 2009 — deficit-model critique
 - Priem et al. 2012; Thelwall et al. 2013 — attention ≠ citations.
 - 2023–25 "AI-generated" label-trust studies — synthetic-content discount.
 - Graham, "How to Get Startup Ideas" (2005); "Do Things that Work" (2013).

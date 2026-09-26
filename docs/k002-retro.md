@@ -28,7 +28,8 @@ which renders the same philosophy on the Trust panel.
 - **Undefined-metric honesty end to end.** `NaN → empty CSV cell → JSON null
   → "undefined"/"not reported"` was fiddly, but it's now permanent
   capability: any future undefined metric renders correctly with zero new
-  work. ceiling/floor asymmetries (0.0 vs 0.494; undefined vs 0.667) are more
+  work. ceiling/floor asymmetries (zero recall vs a positive ceiling;
+  undefined vs defined) are more
   legible, not less.
 - **The story landed.** Floor-zero with a clean audit is a *better* narrative
   than a mediocre mid-score: k001 fails the audit loudly while passing the

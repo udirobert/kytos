@@ -37,15 +37,20 @@ Drawn from `NOTES.md §4` and the existing repo:
 kytos/
 ├── README.md              # concise entry point → docs/  (no deep detail here)
 ├── docs/                  # ALL prose lives here (this repo's "knowledge base")
+│   ├── vcc-two-track-strategy.md # ACTIVE strategy: validation-first gates (filename is historical)
 │   ├── observatory.md         # build-in-public surface: visual UX, partner tech
 │   ├── competitive-landscape.md  # problem, evidence, wedge, adjacent projects
-│   ├── milestone-0-worksplit.md  # three-dev parallel split (hackathon day)
 │   ├── architecture.md        # model-stack ADR (Layer A/B, gates)
 │   ├── code-organization.md   # THIS FILE
 │   ├── release-infrastructure.md # GitHub / HF / Kaggle / VPS artifact map
 │   ├── phase0-environment.md  # declared packages + install
 │   ├── run-protocol.md        # run-IDs, meta.json, facts.json, provenance
-│   └── security.md            # secrets policy + caveats
+│   ├── security.md            # secrets policy + caveats
+│   ├── signature-content-impasse.md # dated decision record (revised 2026-09-22)
+│   ├── kNNN-*.md              # dated design/retro docs — read their status banners
+│   ├── milestone-0-worksplit.md, demo-script.md, build-in-public.md, venice-dev.md, vcc-2026-chronicle-plan.md
+│   ├── cleveland/             # GQAI docs (separate workstream — cNNN-* runs)
+│   └── chronicle/             # short-pack scripts, context layer, glossary, manifest
 │
 ├── src/kytos/             # the backend — one importable package
 │   ├── data/            # corpus loaders + the gene-space alignment layer
@@ -55,6 +60,8 @@ kytos/
 │   ├── audit/           # biological sanity layer (deterministic rules)
 │   └── serve/           # (deferred) thin API — elcaro pattern, post-challenge
 │
+├── src/cleveland/        # GQAI workstream (separate namespace — docs/cleveland/)
+│
 ├── frontend/             # Observatory — static site generator & design system
 │   ├── build.py          # static generator → dist/
 │   ├── observatory/      # Python engine, data loaders, Plotly charts, Jinja renderer
@@ -63,7 +70,7 @@ kytos/
 │   ├── static/           # CSS (glassmorphism), site.js, vessel3d.js (Three.js WebGL)
 │   └── dist/             # committed or CI-built deploy artifact
 │
-├── tools/                # dev + enrichment tooling (16 Python scripts + 1 shell)
+├── tools/                # dev + enrichment tooling + Modal runners (~90 Python scripts)
 │   ├── scan_secrets.py   # pre-commit secrets scanner (~120 lines, pattern-based)
 │   ├── render_narrative.py   # OpenAI (prod) or Venice (dev): facts → narrative/report.md
 │   ├── check_narrative.py    # deterministic: digest grounding check → verification/
@@ -78,6 +85,9 @@ kytos/
 │   ├── prep_vcc2025_validation.py  # VCC 2025 validation data preparation
 │   ├── build_audit_context.py      # Build audit context from prediction h5ad
 │   ├── run_enrichment.sh     # one-shot: audit → facts → all enrichers → refresh
+│   ├── modal_*.py            # Modal jobs: build/submit/score runners (~45, one per run-ID)
+│   ├── run_kNNN_*.py         # full-panel builders/submitters (run-ID prefixed)
+│   └── track2/               # Track-2 training scripts (conditional MLP, Nebius bootstrap/stage)
 │
 │   (partner keys: `.env.example` → `.env` at repo root — gitignored;
 │    local narration: Venice — see docs/venice-dev.md)
@@ -87,10 +97,15 @@ kytos/
 │   └── fixtures/         # smoke-test inputs + committed outputs
 │
 ├── experiments/          # run outputs — artifacts + meta.json per run
+│   ├── cleveland/        # GQAI run outputs (cNNN-* IDs)
+│   ├── _embargoed/       # gitignored — local-only findings until Oct 22
 │   └── README.md         # → points at docs/run-protocol.md
 ├── data/                 # corpora manifest/staging; raw/ is gitignored
-├── tests/                # pytest suite
-└── .pre-commit-config.yaml, .ruff.toml, .gitignore
+├── chronicle/            # HyperFrames specimen video projects (heavy renders gitignored)
+├── broadcast-desk/       # HyperFrames composition project (local scratch, gitignored)
+├── notebooks/            # Kaggle smoke notebooks (k004)
+├── tests/                # pytest suite (+ tests/cleveland/)
+└── AGENTS.md, NOTES.md, netlify.toml, uv.lock, .pre-commit-config.yaml, .ruff.toml, .gitignore
 ```
 
 **What lives where:** `submission/`, `tools/`, `experiments/`, `data/` stay
@@ -108,11 +123,11 @@ frozen submission model. **One language, one env manager, one test runner.**
 
 | Layer | Stack | Phase |
 |---|---|---|
-| Runtime / env | Python 3.14 + `uv` | now |
+| Runtime / env | Python 3.12 + `uv` (3.14 lacks torch wheels) | now |
 | Data & arrays | `numpy`, `scipy`, `pandas`, `polars`, `anndata`, `h5py/hdf5plugin` | now |
 | Single-cell | `scanpy`, `scvi-tools` | now |
 | Modeling | `torch` (Layer A + B) | now → Phase 2 |
-| Eval | `cell-eval2`/`vcc2026` (pending integration); legacy `cell-eval`/`pdex` for historical checks | now |
+| Eval | `cell-eval2`/`vcc2026` pinned @`5e64833` v0.16.0 (contract smoke-tested; real scoring on Modal); legacy `cell-eval` 0.8.2/`pdex` for historical checks | now |
 | Tests | `pytest` | now |
 | Lint/format/secrets | `ruff` + `tools/scan_secrets.py` via pre-commit | now |
 | **API serving** | **FastAPI + uvicorn + pydantic** | **deferred to post-challenge** |

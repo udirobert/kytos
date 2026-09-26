@@ -8,6 +8,7 @@ __pycache__/
 .venv-eval2/
 venv/
 
+
 # Cell-eval / anndata intermediates
 *.h5ad.lock
 
@@ -34,8 +35,9 @@ data/cleveland/raw/
 .env.local
 .env.*.local
 
-# Kilo agent config (local)
+# Agent config (local)
 .kilo/
+.qoder/
 
 # Observatory build output (generated locally; Netlify builds on push)
 frontend/dist/

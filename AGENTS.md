@@ -1,7 +1,9 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-09-20** — VCC validation reset recorded in §4b;
-> Cleveland Clinic / GQAI remains a separate workstream (`docs/cleveland/`).
+> Last updated **2026-09-26** — k033 trained-signature track (Modal GPU)
+> recorded in §4 as in-flight; §4b's GPU-training pause is lifted **only** for
+> that approved run. Validation reset still recorded in §4b; Cleveland Clinic /
+> GQAI remains a separate workstream (`docs/cleveland/`).
 
 This file is the ground truth for any agent working on this repo. It covers
 the **2026 Virtual Cell Challenge** and a **separate** Cleveland Clinic
@@ -12,14 +14,25 @@ run-ID prefixes (`kNNN-*` vs `cNNN-*`). It overrides generic assumptions about
 ## Publication embargo (active until the Oct 22 final test set)
 
 The repo is public and competitors read it. **Code, tools, and
-infrastructure still push to `main`. Experiment findings do not:** score
-tables, per-metric results, winning-variant internals, and analysis files
-go to `experiments/_embargoed/` (gitignored, local-only) — never to
+infrastructure still push to `main`.** Because the method is already public
+via that code, docs may describe variant internals (weights, samplers,
+configs). **The embargoed unit is exact non-leaderboard metric values and
+analysis not derivable from code or the public leaderboard:** score tables,
+per-metric results, diagnostic cosines/correlations, and harness numbers go
+to `experiments/_embargoed/` (gitignored, local-only; consolidated at
+`experiments/_embargoed/diagnostic-numbers.md`) — never to
 `experiments/<kNNN-*>/` tracked dirs, never into public docs. Public docs
-may state qualitative outcomes ("Gate B validated", "variant X won") and
-leaderboard-public facts (scores/ranks are on the public leaderboard), but
-no exact metric values or arm internals. Publish `experiments/_embargoed/`
-after Oct 22 with history intact. When in doubt, keep it local.
+state qualitative outcomes ("Gate B validated", "variant X won", "borrowed
+signatures reach roughly half of measured transfer") plus
+leaderboard-public facts (scores/ranks/component scores are on the public
+leaderboard). Publish `experiments/_embargoed/` after Oct 22 with history
+intact. When in doubt, keep it local.
+
+**Dated facts live in exactly one place.** Current-state facts (champion,
+scorer env, gate status) are recorded here (run log) and in
+`docs/vcc-two-track-strategy.md` / `experiments/README.md`; other docs link
+to those rather than restating them, and status headers get updated in the
+same commit as the fact.
 
 ---
 
@@ -194,8 +207,9 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   **negative result**. Conditional MLP (emb 128d + ctx random-proj 256d →
   1024 → 1024 → rank-64 → 18,533 genes) trained on 9,906 samples
   (9,869 targets from `delta_matrix_src.npz`, 47 paired K562/hESC).
-  Best held-out cosine = 0.0425 vs identity baseline 0.1406 — model is
-  worse than raw K562 transplant. Magnitude ratio collapsed to 0.35.
+  Held-out cosine was well below the raw-transplant identity baseline —
+  the model is worse than doing nothing; magnitude collapsed
+  (exact values embargoed: `experiments/_embargoed/diagnostic-numbers.md`).
   Diagnosis recorded at the time: insufficient paired cross-context signal
   (only 47 pairs). Then-proposed next steps: GEARS-style GNN leveraging
   gene-gene graph, or foundation model fine-tune with per-cell Atlas data.
@@ -229,7 +243,8 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   the essential-gene low-rank map was OOD for the 2026 panel (0/300 overlap);
   rank-256 projection onto the essential-response subspace discarded target-
   specific signal, collapsing PDS and fidelity. Norm ratios on paired
-  essential data were ~0.53–0.59 pred/dst; amplitude was roughly OK with
+  essential data were sub-unity (exact values embargoed); amplitude was
+  roughly OK with
   delta_scale=1.7 but direction was wrong for panel targets. **Conclusion:
   implementation-specific negative for direct panel prediction, not a
   class-wide falsification.** Saved:
@@ -239,29 +254,29 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   (15.5 GB). Overlap with 2026 panel: 13/300. H1 validation set: 50 targets,
   0 overlap with H1 training targets (clean train/val split). Offline delta-level
   harness (`tools/modal_k017_h1_eval.py`) on 136 H1-train pairs → 47 H1-val
-  targets: raw K562 identity top-200 cosine 0.403. After fixing the sweep
-  self-gene/scaling bug, rank-64 low-rank + training self-median reset reaches
-  top-200 cosine ~0.61 and Pearson ~0.39–0.46. Best composite is
-  `h1lr64_ds2p0_selfTrainScaled` (top200 0.610, Pearson 0.435, norm ratio
-  0.874); `h1lr64_ds1p3_selfTrain` has the highest top200 (0.614) but low norm
-  ratio (0.532). Then-planned next step: count-level offline validation with
+  targets: raw K562 identity top-200 cosine was moderate; after fixing the
+  sweep self-gene/scaling bug, rank-64 low-rank + training self-median reset
+  improved it substantially. Best composite is
+  `h1lr64_ds2p0_selfTrainScaled`; `h1lr64_ds1p3_selfTrain` has the highest
+  top-200 but low norm ratio. Exact values embargoed:
+  `experiments/_embargoed/diagnostic-numbers.md`. Then-planned next step: count-level offline validation with
   legacy `cell-eval` on 2025 validation before any submission.
 - **k017 offline legacy `cell-eval` (count-level, 47 H1-val targets, 400 cells/target,
   4000 controls, minimal profile):** dual-moment count generation showed the
   delta-level gains surviving to count space in that legacy proxy harness.
-  `h1lr64_ds2p0_selfTrainScaled` is the best overall (discrimination 0.613,
-  overlap 0.233, Pearson-delta 0.246); `h1lr64_ds1p7_selfTrain` has the lowest
-  MSE (0.00779) and MAE (0.0554). Identity baseline at ds1.7: discrimination
-  0.530, overlap 0.205, Pearson-delta 0.076. H1 transfer was a clear proxy
+  `h1lr64_ds2p0_selfTrainScaled` is the best overall; `h1lr64_ds1p7_selfTrain`
+  has the lowest MSE/MAE; both clearly beat the identity ds1.7 baseline on
+  every reported metric (exact values embargoed:
+  `experiments/_embargoed/diagnostic-numbers.md`). H1 transfer was a clear proxy
   improvement on every reported metric. Saved:
   `experiments/k017-offline-cell-eval/full_minimal/`.
 - **Lineage score** (`experiments/k012-lineage-score/`): on top-2000
-  discriminative genes, context **A is Jurkat-like (0.649)**, B weakly
-  RPE1-leaning (0.369), C unresolved (hESC 0.379). Reference controls
+  discriminative genes, context **A is clearly Jurkat-like**, B weakly
+  RPE1-leaning, C unresolved (exact scores embargoed). Reference controls
   cached on `/kytos-vol/refs/` (K562/RPE1 bulks, Nadig Jurkat+HepG2
   single-cell, 2393-target essential design). LOO transfer eval
-  (`experiments/k012-transfer-loo/`): raw K562→hESC cosine ~0.13 — naive
-  paired transfer did not ship; lineage-matched corpora was the then-proposed
+  (`experiments/k012-transfer-loo/`): raw K562→hESC cosine was low (exact
+  value embargoed) — naive paired transfer did not ship; lineage-matched corpora was the then-proposed
   Track-1 priority (k013 = per-context prior dispatch).
 - **No RPE1/Jurkat/HepG2 GWPS arm exists** (`experiments/k013-lineage-ratios/`):
   only K562 has a genome-wide arm; the other public Replogle/Nadig files are
@@ -284,12 +299,13 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   essential K562↔lineage deltas (train on cross-lineage-conserved targets,
   test on lineage-specific ones — the closest stand-in for the non-essential
   panel). Held-out cosine on the **OOD-proxy tail**: identity transplant
-  (what k011/k018 ship on A/B) is **negative** — Jurkat −0.090, RPE1
-  −0.077 — i.e. wrong *sign* of effect on panel-like targets; this was a
+  (what k011/k018 ship on A/B) is **negative** on both lineage tails —
+  i.e. wrong *sign* of effect on panel-like targets; this was a
   candidate mechanical explanation for `pds`~0.34.
   `global_scalar`/`gene_scale` = identity (scaling / per-gene cannot fix
-  direction). **Across-gene maps flip OOD positive**: low_rank Jurkat +0.099
-  / RPE1 +0.296; kernel_rbf +0.138 / +0.268. This suggested k015's rank-256
+  direction). **Across-gene maps flip OOD positive** (low_rank, kernel_rbf;
+  exact values embargoed: `experiments/_embargoed/diagnostic-numbers.md`).
+  This suggested k015's rank-256
   map direction could be viable, but the OOD proxy did not represent the real
   panel and a controlled comparison would still be required. Tool:
   `tools/run_k019_crosslineage.py` (Modal CPU). Builder + submission (k019 =
@@ -306,15 +322,17 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   **Path B blocked 2026-09-19**: router DNS returns "No answer" for
   `*.api.nebius.cloud` (public 1.1.1.1/8.8.8.8 resolve it); Nebius OAuth token
   expired → needs `networksetup -setdnsservers Wi-Fi 1.1.1.1 8.8.8.8` +
-  interactive browser sign-in (user action). CLI at `~/.nebius/bin/nebius`,
-  project-e00sz92bpr005x5c3r80zr.
+  interactive browser sign-in (user action). CLI at `~/.nebius/bin/nebius`;
+  project ID via `nebius` CLI / console (IDs removed from tracked docs
+  2026-09-23).
 - **k020 GNN RUN ON NEBIUS + SUBMITTED (2026-09-20, `entry
   iKItvQOyDdOzw4gv4zDJ`)**: DNS fixed, VM booted (L40S), trained on the real
   2,661-sample K562→{Jurkat,RPE1} essential set (HepG2 absent from
   `essential_transfer_data.npz`, so only contexts A/B get GNN deltas; C stays
-  on the k011 prior). **Offline OOD gate PASSED at scale**: identity cos_ood
-  −0.088 → GNN cos_ood **+0.199**, cos_all 0.249→0.374, in-dist parity
-  (0.604→0.585). Panel predict: 300 targets × 272 K562-covered, scattered to
+  on the k011 prior). **Offline OOD gate PASSED at scale**: GNN cos_ood
+  flipped from clearly negative (identity) to clearly positive, cos_all
+  improved substantially, in-dist parity held (exact values embargoed:
+  `experiments/_embargoed/diagnostic-numbers.md`). Panel predict: 300 targets × 272 K562-covered, scattered to
   full 18,533-gene space (`coverage_mask` set to the covered flag; 28
   no-signature targets → neighbour/fallback). Submitted A/B=GNN, C=champion,
   `delta_scale=1.7`, `kd_std=2.0`.
@@ -336,14 +354,14 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   `gnn.pt` (no retrain, Modal CPU predict via
   `modal_k020_gnn_model.py::predict_and_stage`) but rescaled every GNN delta
   to the L2 norm of its own borrowed K562 signature (`--norm-match`), so
-  *direction* was the intended change vs the k011 champion (raw GNN median
-  magnitude ratio had been A 0.50 / B 0.37). Result: rank 802, score_avg
+  *direction* was the intended change vs the k011 champion (raw GNN deltas
+  had been severely under-magnitude on A/B; exact ratios embargoed). Result: rank 802, score_avg
   **−0.098** (still a big regression vs k011 +0.0596). Norm-matching reduced
   the expression damage (`expr_mse` 23.7→13.0, `score_nmae` −0.745→−0.601),
   consistent with a magnitude bug, **but `pds_cosine` did NOT improve
   (0.528→0.521)**. The kill criterion (pds meaningfully above champion)
   failed. Observed direction in that implementation was no better than the
-  K562 prior, and the OOD-proxy gate (cos_ood −0.088→+0.199) was again
+  K562 prior, and the OOD-proxy gate (cos_ood negative→positive) was again
   non-predictive. **Spending on that implementation is paused; this is not a
   class-wide falsification.** Then-proposed alternatives were
   `fidelity`/off-direction covariance (Layer B) or a per-cell Atlas-trained
@@ -355,20 +373,19 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   `true_ds1p0` (the *true* per-target log1p delta pushed through the identical
   dual-moment generator), and the real-vs-real legacy `cell-eval` `ceiling`.
   Direction-robust `frac = (arm−identity)/(ceiling−identity)`. Within that
-  exploratory harness, the observed split by metric family was:
-  - **Direction metrics appeared signature-bound.** discrimination_l1
-    0.53→**0.96** (ceiling 0.99, sig_frac 0.93); pearson_delta 0.08→0.67
-    (ceiling 0.86, sig_frac 0.75). A perfect delta nearly reached the ceiling,
+  exploratory harness, the observed split by metric family was (exact values
+  embargoed: `experiments/_embargoed/diagnostic-numbers.md`):
+  - **Direction metrics appeared signature-bound.** A perfect delta nearly
+    reached the ceiling on both discrimination and Pearson-delta metrics,
     consistent with signature limitation in that harness; leaderboard `pds`
-    (~0.34) may be capped by our inability to *recover* the true delta (mean
-    cos(identity,true)=0.11). Audited public corpora had coverage limits
+    (~0.34) may be capped by our inability to *recover* the true delta
+    (mean cos(identity,true) was low). Audited public corpora had coverage limits
     (K562-only; k020 transfer left direction flat), but exhaustion was not
     established.
   - **DE-count metrics appeared modeling-bound even with a perfect delta.**
-    overlap_at_N 0.21→0.38 (ceiling 0.65, mod_frac 0.61); precision_at_N
-    0.21→0.32 (ceiling 0.65, mod_frac 0.75). Candidate mechanism:
-    `de_nsig_counts_pred` = 6704 (identity) / 5462 (true@1.0) vs **real
-    3436** — the generator **over-called DE genes ~1.6–2×**, plausibly because
+    A perfect delta still missed the overlap/precision ceilings.
+    Candidate mechanism: `de_nsig_counts_pred` was ~1.6–2× the real
+    DE-gene count on both identity and true-delta arms — plausibly because
     the dual-moment per-cell dispersion (kd_std=2.0) inflated apparent DE.
     This suggested a low-cost calibration hypothesis — tune generator
     dispersion so predicted DE-gene-count ≈ real — testable offline on the
@@ -399,6 +416,49 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   Component scores not displayed at capture. Receipts:
   `experiments/k027-consensus-dm/`; Gate B arm metrics and transfer
   analysis embargoed (`experiments/_embargoed/`).
+- **kytos-k028-consensus-dm-pk12** (entry on leaderboard): score_avg
+  +0.1239 — slight regression vs k027; pool_k=12 did not transfer.
+- **kytos-k029-consensus-eb2-dm-pk12** (entry `qI6vc1sBVpE4P1llPfhu`):
+  score_avg +0.1115, rank 416 — eb2 agreement shrinkage regressed
+  officially. k027 remains champion.
+- **kytos-k030-consensus-meanj-dm — SUBMITTED 2026-09-24 (entry
+  `A1N2nYKZ07jKewReEUMp`): score_avg +0.1088, rank 442 — regression
+  vs k027; k027 remains champion.** Uniform 5-source consensus mean adding
+  Jurkat CRISPRi deltas (GSE249595, stim arm) to the k026 source set,
+  with the champion k027 dual-moment generator config unchanged.
+  Rationale: context-matched source self-evaluation showed no existing
+  source predicts Jurkat-lineage responses, so the new source is the
+  only real signal for the T-cell-like context. Receipts:
+  `experiments/k030-consensus-meanj-dm/`; arm metrics and analysis
+  embargoed (`experiments/_embargoed/`).
+- **k031/k032 — data-extraction runs (2026-09-22/25), no submissions.**
+  `tools/modal_k031_jurkat_extract.py` produced the Jurkat CRISPRi delta
+  source consumed by k030. `tools/modal_k032_replogle_reliability.py`
+  established the figshare GWPS K562 bundle (URL `35775507`) access pattern
+  and per-target reliability ranking used to decide what was worth training
+  on. Qualitative outcome only; exact reliability tables embargoed.
+- **k033 — trained-signature track (IN FLIGHT 2026-09-26).** First attempt at
+  a *learned* signature source rather than transplanted mean shifts.
+  `tools/modal_k033_state_probe.py` established that every published Arc
+  State checkpoint carries the 2,024-target essential onehot vocab and
+  therefore cannot emit panel-target deltas (panel coverage 0/300 on all 24
+  checkpoints), while the Replogle genome-wide Perturb-seq K562 single-cell
+  bundle covers **272/300** panel targets. `tools/modal_k033_state_train.py`
+  prepares that bundle as a cell-load dataset and trains a state24m-class
+  model (hidden 768, `cell_set_len` 64, batch encoder) with the ~9.8k-target
+  genome-wide vocab on Modal GPU; `state tx infer` then emits per-target log1p
+  deltas. Stages are idempotent and resumable on the `kytos-vcc` Modal Volume
+  (`prepare` / `fix` / `recompress` / `train` / `infer`), and the run chains
+  itself server-side (`wait_and_train` → `train` → `infer_deltas`) so no live
+  client is required. Two infrastructure blockers found and fixed, both worth
+  remembering: cell-load 0.10.4 needs `obs/_index`/`var/_index` as h5py
+  **datasets** (anndata writes groups), and **gzip-compressed** `.h5ad` parts
+  starve the dataloader badly enough that the GPU idles — parts are stored
+  uncompressed. Gate protocol unchanged: nothing gets a submission slot
+  without beating the pinned cell-eval2 Gate B (`tools/modal_k025_eval2_gate.py`
+  round 10 arms: ST-only, ST-raw, ST×consensus blend, plus a drift control).
+  Exact step-rate, loss and arm numbers embargoed
+  (`experiments/_embargoed/`).
 
 ---
 
@@ -459,11 +519,12 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   `(obs, var)` index); `pilot-20260921-02` then COMPLETED the 3-target
   proxy diagnostic. The full paired-panel run `paired47-20260921-01`
   evaluated 32/47 targets (15 under-powered). Key findings: transport
-  null calibrated on controls (variance ratio 1.05); borrowed K562
-  signatures reach median cosine 0.268 vs 0.514 for measured in-context
-  deltas — **signature content is the quantified bottleneck**; and the
-  precomputable transferability gate is **falsified**
-  (cos(delta_k562, delta_hesc) predicts borrowed success at r≈0.22).
+  null calibrated on controls; borrowed K562 signatures reach roughly
+  half of measured in-context transfer — **signature content is the
+  quantified bottleneck**; and the precomputable transferability gate is
+  **falsified** (cos(delta_k562, delta_hesc) predicts borrowed success
+  only weakly). Exact diagnostic values embargoed:
+  `experiments/_embargoed/diagnostic-numbers.md`.
   Diagnostics only — proxy evidence class, not a promotion gate.
   Receipts: `experiments/k022-pipeline-audit/paired47-20260921-01/`.
 - Official scorer located via the VCC CLI guide: public

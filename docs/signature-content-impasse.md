@@ -22,21 +22,24 @@ not conjectured.
 
 ## 1. Position
 
-- Champion: `kytos-k011-ds-x1p7`, official score **+0.0596**, observed rank
-  ~486 at submission time.
+- Champion at time of writing: `kytos-k011-ds-x1p7`, official score
+  **+0.0596**, observed rank ~486 at submission time. Superseded as champion
+  by `k026` then `k027` (§6.1, `docs/vcc-two-track-strategy.md`).
 - Ambition: top 100 (~+0.15 at the snapshot).
 - Diagnosed bottleneck (k022 `paired47-20260921-01`, 32 powered eval targets,
   hESC context): the generator/transport stack is calibrated; the *borrowed
   signature content* is not.
 
 | Arm (identical splits, seed 0) | Median cosine |
-|---|---:|
-| observed-fit ceiling (fit cells vs eval cells) | 0.701 |
-| measured transport (in-context delta, ds=1.0) | 0.514 |
-| **borrowed K562 delta (ds=1.7)** | **0.268** |
+|---|---|
+| observed-fit ceiling (fit cells vs eval cells) | reference ceiling |
+| measured transport (in-context delta, ds=1.0) | ~2× borrowed |
+| **borrowed K562 delta (ds=1.7)** | **well below measured** |
 
-The entire post-k011 program has been: close the 0.268 → ~0.5 gap without
-using evaluation data.
+Exact values embargoed: `experiments/_embargoed/diagnostic-numbers.md`.
+
+The entire post-k011 program has been: close the borrowed → measured gap
+without using evaluation data.
 
 ## 2. What was tried and measured
 
@@ -51,8 +54,9 @@ exhausted; the gap is directional content, not amplitude.
 
 Hypothesis: predict, per target, whether the K562 signature transfers, and
 borrow only where it does. Measured: `cos(delta_k562, delta_hesc)` predicts
-the transported-borrowed diagnostic score at **r ≈ 0.22** — far too weak to
-function as an oracle gate. Receipts in `paired47-20260921-01`.
+the transported-borrowed diagnostic score only weakly — far too weak to
+function as an oracle gate (exact r embargoed). Receipts in
+`paired47-20260921-01`.
 
 ### 2.3 Multi-source consensus denoising — marginal, not a fix
 
@@ -70,42 +74,36 @@ Variants: unit-normalized weighted mean (2:1:1:1), optional common-response
 centering, optional `min(1, n_cells/100)` cell-count weighting, amplitude
 restored to the K562 norm.
 
-Honest result (`consensus5-20260921-03`):
+Honest result (`consensus5-20260921-03`; exact arm values embargoed in
+`experiments/_embargoed/diagnostic-numbers.md`): the consensus variants land
+within noise of the honest k562 baseline, and the single-source
+`hct116_batch` arm is clearly worse.
 
-| Arm | Median cos | Pairwise wins vs k562 |
-|---|---:|---:|
-| k562 (honest) | 0.268 | ref |
-| consensus_w_ctr | 0.269 | 22/32 |
-| consensus_w | 0.267 | 21/32 |
-| consensus_mean | 0.256 | 19/32 |
-| hct116_batch (single) | 0.211 | 11/32 |
-
-Consensus wins most targets pairwise (borderline significant) but moves the
-aggregate median by ≤ +0.001 — a ~0% relative improvement on a 0.268 base.
-The mechanism is structural: **cross-lineage deltas are near-orthogonal**
-(median pairwise cos 0.02–0.05, up to ~0.10), so averaging suppresses noise
+Consensus wins most targets pairwise (borderline significant) but does not
+move the aggregate median — a ~0% relative improvement.
+The mechanism is structural: **cross-lineage deltas are near-orthogonal**,
+so averaging suppresses noise
 without recovering shared signal. There is little shared signal to recover.
 
 ### 2.4 The evaluation-context leak (recorded for honesty)
 
 `delta_matrix_src.npz` is atlas-preferred: for the 47 eval targets its rows
-are in-context hESC deltas from the same file the audit evaluates
-(verified: `cos(src_row, delta_hesc) = 1.0000`). The first consensus run
-(`consensus5-20260921-01`) therefore scored a "k562" arm at 0.604 — a
+are in-context hESC deltas from the same file the audit evaluates (verified
+numerically identical). The first consensus run (`consensus5-20260921-01`)
+therefore scored a "k562" arm far above any real borrowed arm — a
 **leaked pseudo-ceiling, not borrowed transfer**. `extract_k562` was fixed to
 prefer Replogle `delta_k562` for paired targets; `consensus5-20260921-03` is
-the honest record and reproduces paired47's baseline exactly (0.2683).
+the honest record and reproduces paired47's baseline exactly.
 
-Consequence: any earlier artifact reporting ~0.6 for a "K562" borrowed arm
-on this eval set must be re-read against this finding.
+Consequence: any earlier artifact reporting a high score for a "K562"
+borrowed arm on this eval set must be re-read against this finding.
 
 ## 3. What the evidence supports — and does not
 
 Supported:
 
-- Borrowed cross-lineage signatures, single or consensus-averaged, sit at
-  ~0.21–0.27 median cosine on hESC eval — roughly half of measured
-  in-context transport (0.514).
+- Borrowed cross-lineage signatures, single or consensus-averaged, reach
+  roughly half of measured in-context transport on hESC eval.
 - Neither per-target selection nor multi-source averaging closes the gap.
 - The gap is therefore not estimation noise; it is missing context-specific
   biology.
@@ -126,13 +124,15 @@ Not supported (do not overclaim):
   to delta space (`pn2-20260921-02`): neighbor genes within 5kb of the
   target TSS get a deterministic repression ceiling `log1p(r·M) − log1p(M)`.
   Coverage: 85 pairs, 7/32 powered eval targets. Result: the standalone
-  prior alone reaches median cosine **0.270 on covered targets** — slightly
-  *above* borrowed K562 on those same targets (0.257), confirming local
-  silencing is real signal — and the post-scale cap improves borrowed arms
-  on 6/7 covered targets. But per-target gains are +0.002–0.009 and 25/32
-  targets have no pair at all, so the aggregate median does not move
-  (~0.268). **Verdict: a correctness prior worth keeping in production
-  generation (it only tightens, except DOT1L −0.003), not a gap-closer.**
+  prior alone performs comparably to borrowed K562 on covered targets —
+  slightly *above* it, confirming local
+  silencing is real signal — and the post-scale cap improves most covered
+  borrowed arms. But per-target gains are small and 25/32
+  targets have no pair at all, so the aggregate median does not move.
+  **Verdict: a correctness prior worth keeping in production
+  generation (it only tightens, with one recorded exception), not a
+  gap-closer.** Exact values embargoed:
+  `experiments/_embargoed/diagnostic-numbers.md`.
   Receipts: `experiments/k024-promoter-prior/pn2-20260921-02-analysis.json`.
 2. **Track-2 learned context transfer.** The only remaining route that could
   *learn* the K562→context map rather than borrow it. Prior attempts
@@ -148,8 +148,8 @@ Not supported (do not overclaim):
 ## 5. Decision
 
 - Record the impasse. Do **not** submit a consensus, reweighted, or
-  promoter-capped variant: measured aggregate gains (+0.001–0.003 median
-  cosine proxy) are far below any plausible leaderboard signal.
+  promoter-capped variant: measured aggregate gains on the median-cosine
+  proxy are far below any plausible leaderboard signal.
 - The honest recommendation is: keep k011 as the standing submission, fold
   the promoter-neighbor cap into the production generator as a
   correctness prior (costless, only tightens), and treat Track-2 (learned
@@ -176,7 +176,7 @@ What this revises:
   median-cosine proxy understated it because direction is only part of
   what the official score rewards.
 - **The impasse narrows, it does not lift.** Direction content is still
-  the gap (0.268 vs 0.514); the official score weights other components
+  the gap (borrowed ≈ half of measured); the official score weights other components
   heavily enough that consensus nets positive anyway.
 - **Per-metric mechanism, component regressions, and the promoter-prior
   interaction are embargoed** — `experiments/_embargoed/k025-eval2-gate/`
@@ -202,7 +202,8 @@ results.json, per-arm agg + scored CSVs, anchors).
 
 `kytos-k026-consensus-w-ctr` submitted: **score_avg +0.0670, rank
 512/1086** — new champion by score (+0.0074 over k011 +0.0596). Gate B
-predicted +0.033 local; the official delta is ~4× smaller, consistent
+predicted a local margin roughly 4× larger than the official delta,
+consistent
 with the declared caveats (47/300 eval targets, local bundle ≠ live
 anchors, single eval context). The sign survived — Gate B is validated
 as a directional promotion gate. The improvement is real but small:

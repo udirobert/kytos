@@ -49,7 +49,7 @@ Glossary tooltip on a key term (limited one per card).
 > **In plain words:** In 2025, 1,200 teams scored to predict what happens
 > when you switch off one stored gene in a single human cell type. They were
 > graded on a score called PDS — "can you tell switching gene A apart from
-> switching gene B?" And here's the kick thesis  I think, the **3rd-place
+> switching gene B?" And here's the kicker: the **3rd-place
 > team's analysis** showed that PDS has a **volume knob**: a louder guess —
 > even a wrong one — scored higher than a quieter correct one. The
 > scoreboard was measuring confidence, not truth. That's why the 2026
@@ -89,7 +89,7 @@ single-fact spine. Reject edits that break the "no ungrounded claim" rule.
 ## 6. Craft notes
 
 - The metaphor is the glue that lets the card stay short: if there isn't a
-  metaphor that survives r1→r2, the clip is bad, not the soft.
+  metaphor that survives r1→r2, the clip is bad, not the card.
 - Body "science nerd labels" out of r2 entirely: no P-value jargon, no
   workflow; ALL of it lives in r3.
 - Every r2 starts with the SHARED skeleton: "In 2025, [number] teams …"

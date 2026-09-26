@@ -126,8 +126,8 @@ in context transfer (scGPT fine-tune).
 
 ## Decision criteria
 
-- Submit k016 result only if held-out cosine > 0.20 (beats identity 0.14
-  by a meaningful margin) AND magnitude ratio is in [0.7, 1.5].
+- Submit k016 result only if held-out cosine > 0.20 (beats the identity
+  baseline by a meaningful margin) AND magnitude ratio is in [0.7, 1.5].
 - Submit k015 (per-target scaling) if it improves nmae without hurting pds.
 - If GEARS cosine < 0.20 after reasonable tuning, pivot to scGPT fine-tune.
 

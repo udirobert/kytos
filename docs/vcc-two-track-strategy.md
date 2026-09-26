@@ -1,8 +1,10 @@
 # VCC strategy — validation first
 
-Status: **ACTIVE** · Updated **2026-09-22** · Owner: udingethe
+Status: **ACTIVE** · Updated **2026-09-26** · Owner: udingethe
 
-This file is the single active research strategy. Historical scores and run
+This file is the single active research strategy. (The filename is historical
+— it predates the validation-first pivot; the two-track plan survives only as
+the appendix below.) Historical scores and run
 notes stay in `experiments/README.md`; older strategy/runbook documents are
 appendices only and must not be used to select the next experiment without
 checking their validity caveats.
@@ -10,8 +12,10 @@ checking their validity caveats.
 ## Current state
 
 - **Best recorded submission:** `kytos-k027-consensus-dm`, overall
-  **+0.1262**, rank **308 of 1088** (entry `fN4wjAp9BUEvHtGWk0az`,
-  2026-09-22) — consensus deltas + dual-moment count generation.
+  **+0.1262**, rank **308 of 1088** at capture (entry `fN4wjAp9BUEvHtGWk0az`,
+  2026-09-22; the board has since grown past 1,130 — rank drifts) —
+  consensus deltas + dual-moment count generation. Still champion after
+  the k028/k029/k030 probes all regressed (details below).
   Supersedes
   `kytos-k026-consensus-w-ctr` (+0.0670, rank 512) and
   `kytos-k011-ds-x1p7` (+0.059575, rank 486 at its snapshot, entry
@@ -20,6 +24,17 @@ checking their validity caveats.
 - **Objective:** make comparisons trustworthy before choosing the next model
   change. We are not assuming that more architecture complexity is the missing
   ingredient.
+- **In-flight lever (2026-09-26): k033 trained-signature track.** A State
+  Transition model trained on the Replogle genome-wide K562 Perturb-seq
+  bundle (272/300 panel-target coverage) is the first *learned* signature
+  source; all prior submissions, including k027, ship transplanted
+  mean-shift signatures, which the k022 paired-panel audit showed reach
+  roughly half of measured in-context transfer — signature content is the
+  quantified bottleneck. Deltas feed the existing generator via
+  `tools/modal_k033_delta_calibrate.py` and must pass cell-eval2 Gate B
+  round 10 (ST-only / ST-raw / ST×consensus-blend arms + drift control)
+  before any submission slot is spent. Status and infra notes: `AGENTS.md`
+  §4 (`k033`).
 - **Implementation progress:** strict prediction-artifact metadata, baseline
   backfill for uncovered targets/contexts, no-op parity and A-only context
   isolation are verified on synthetic fixtures. Full-panel parity is not yet
@@ -40,11 +55,12 @@ checking their validity caveats.
   `experiments/k022-pipeline-audit/eval2_contract_smoke.json`.
 - **Gate C (controlled diagnosis): DONE 2026-09-21.** `paired47-20260921-01`
   evaluated 32/47 paired targets on the aligned axis. **Signature content is
-  the bottleneck:** borrowed K562 deltas reach median cosine 0.268 vs 0.514
-  for measured in-context deltas; the transport generator is calibrated
-  (null variance ratio 1.05). A precomputable transferability gate is
+  the bottleneck:** borrowed K562 deltas reach roughly half the
+  measured-in-context transfer quality; the transport generator is
+  calibrated on real controls. A precomputable transferability gate is
   **falsified**: `cos(delta_k562, delta_hesc)` predicts borrowed-signature
-  success at only r≈0.22. Receipts:
+  success only weakly. Exact diagnostic values are embargoed:
+  `experiments/_embargoed/diagnostic-numbers.md`. Receipts:
   `experiments/k022-pipeline-audit/paired47-20260921-01/`.
 - **Gate D consequence:** uniform levers (delta_scale, kd_std, per-context
   amplitude) and gate-based signature selection are exhausted. Remaining
@@ -54,21 +70,21 @@ checking their validity caveats.
   per-target deltas from X-Atlas HCT116 (343/343 covered) and HEK293T
   (343/343) via streaming `expression.lance` scans (46.5B rows total), CD4
   Marson 2025 `log_fc` (282/343, sha256-pinned), and a K562 repack. Cross-
-  lineage delta agreement is near-orthogonal (median cos 0.02–0.05 on the
-  panel axis). A consensus-weighted variant set (`consensus_mean`,
+  lineage delta agreement is near-orthogonal on the panel axis. A consensus-
+  weighted variant set (`consensus_mean`,
   `consensus_w` 2:1:1:1, `*_ctr` common-response-centered, `*_ncell`
   cell-count-weighted) was built by `tools/build_consensus_deltas.py`.
   **Leak found & fixed:** `delta_matrix_src.npz` rows for the 47 eval targets
   are in-context hESC deltas (atlas-preferred merge), so the first
-  consensus5 audit's "k562" arm (0.604) was a leaked pseudo-ceiling, not a
+  consensus5 audit's "k562" arm was a leaked pseudo-ceiling, not a
   borrowed source. The honest re-run (`consensus5-20260921-03`, Replogle-K562
-  for paired targets) gives: k562 baseline **0.268** (exact replication of
-  paired47), consensus_w **0.267**, consensus_w_ctr **0.269**,
-  consensus_mean 0.256, hct116_batch 0.211. Consensus wins 22/32 targets
-  pairwise (median +0.026) but does not move the aggregate median —
+  for paired targets) reproduces the paired47 baseline exactly; consensus
+  variants land within noise of it, winning most targets pairwise
+  without moving the aggregate median —
   near-orthogonal lineages suppress noise without adding shared signal.
   **Consensus ensembling is a marginal proxy improvement, not a fix for the
-  signature-content gap.** Receipts:
+  signature-content gap.** Exact arm values are embargoed:
+  `experiments/_embargoed/diagnostic-numbers.md`. Receipts:
   `experiments/k023-consensus/extract-20260921-01/`,
   `experiments/k022-pipeline-audit/consensus5-20260921-01/` (leaked-baseline
   record), `consensus5-20260921-03` (honest result).
@@ -77,11 +93,11 @@ checking their validity caveats.
   (`pn2-20260921-02`). Coordinates from UCSC `wgEncodeGencodeCompV47`
   (gencode v47; EBI refused at build time — provenance noted). 85 pairs
   over 343 targets; 7/32 powered eval targets covered. Result: the
-  standalone prior reaches median cosine 0.270 on covered targets (vs
-  k562 0.257 on the same) and the post-scale cap improves borrowed arms
-  on 6/7 covered targets, but per-target gains are +0.002–0.009 — the
-  aggregate median does not move. **A correctness prior worth keeping,
-  not a gap-closer.** Receipts:
+  standalone prior is comparable to borrowed K562 on covered targets and
+  the post-scale cap improves most covered borrowed arms, but per-target
+  gains are small and the aggregate median does not move. Exact values
+  embargoed: `experiments/_embargoed/diagnostic-numbers.md`. **A
+  correctness prior worth keeping, not a gap-closer.** Receipts:
   `experiments/k024-promoter-prior/` and
   `experiments/k022-pipeline-audit/pn2-20260921-02/`.
 - **Signature-content impasse — formally recorded, then partially revised:**
@@ -97,10 +113,45 @@ checking their validity caveats.
   **`consensus_w_ctr` beats champion-equivalent k562_ds1p7 on avg_score**;
   the metric-level breakdown and promoter-cap interaction are embargoed.
   Caveats: local bundle ≠ live competition anchors; 47 hESC targets only;
-  `expr_mse` saturated at 0 for all non-oracle arms.
+  one component metric saturated for all non-oracle arms (details
+  embargoed).
   **Exact metric values and per-metric findings embargoed until Oct 22 —
   receipts moved to `experiments/_embargoed/k025-eval2-gate/`
   (local-only).**
+- **k028–k030 submissions (2026-09-23/24, all leaderboard-public):**
+  `kytos-k028-consensus-dm-pk12` +0.1239 (rank 369) and
+  `kytos-k029-consensus-eb2-dm-pk12` +0.1115 (rank 416) both regressed
+  vs k027 — pool_k and agreement-shrinkage departures did not transfer.
+  `kytos-k030-consensus-meanj-dm` +0.1088 (rank ~435) added Jurkat
+  CRISPRi deltas (GSE249595 stim arm) to a uniform 5-source mean —
+  also a regression. **k027 (+0.1262) remains champion.** Receipts:
+  `experiments/k030-consensus-meanj-dm/`.
+- **k030 campaign findings (qualitative; details embargoed
+  `experiments/_embargoed/k030-ctxlineage.md`):**
+  - *Gate B has a context blind spot.* Its eval subset is hESC-only,
+    while the official test spans three different contexts. Recipe
+    ordering on Gate B demonstrably inverted vs official for
+    source-mixing decisions — Gate B remains valid for generation
+    mechanics and catastrophic-failure screens, but cannot arbitrate
+    which source mix wins.
+  - *Context-matched source self-eval* (`tools/source_selfeval.py`):
+    predicting each source's held-out measured deltas from the other
+    sources shows real cross-lineage transfer exists only between
+    closely related lineages; T-cell-like context responses are
+    unserved by every existing source, and within-source pooled
+    reliability is high — deltas are reliable, *transfer* is what
+    fails.
+  - *New data extracted:* Jurkat E6 genome-wide CRISPRi Perturb-seq
+    (stim arm, near-complete panel coverage) and HIPSCI iPSC CRISPRi
+    LFCs are now staged as delta sources
+    (`experiments/k030-ctxlineage/`, `tools/modal_k031_jurkat_extract.py`).
+  - *Within-source reliability gating falsified:* scaling consensus
+    deltas by Replogle replicate consistency removed signal in Gate B.
+  - *Net read:* three consecutive official regressions on
+    recipe-level changes; the `consensus_w_ctr` + dual-moment recipe
+    is robustly the best measured configuration. Further gains likely
+    require context-matched sources or new information rather than
+    mixing-recipe tuning.
 
 ## What the history establishes—and does not
 
@@ -112,8 +163,10 @@ checking their validity caveats.
 | `fid` indicates missing covariance | The leaderboard `fid` is DE direction fidelity, not a distribution distance. It does not diagnose covariance by itself. |
 | Public corpora are exhausted | Audited sources have real coverage limits, but a targeted complementary-source audit has not been completed. |
 | k022 was a negative experiment | Preflight blocked on gene alignment. It was not a model result. |
-| A per-target transferability gate can pick good K562 signatures | **Falsified 2026-09-21 (paired47):** `cos(delta_k562, delta_hesc)` predicts borrowed-signature success at r≈0.22 (0.32 among high-ceiling targets). No cheap gate exists in the paired source data. |
-| The generator/dispersion is a main defect | **Refuted 2026-09-21:** transport null on real controls has variance ratio 1.05; borrowed-signature direction is the quantified gap (median cosine 0.27 vs 0.51 measured). |
+| A per-target transferability gate can pick good K562 signatures | **Falsified 2026-09-21 (paired47):** `cos(delta_k562, delta_hesc)` predicts borrowed-signature success only weakly (exact r values embargoed). No cheap gate exists in the paired source data. |
+| The generator/dispersion is a main defect | **Refuted 2026-09-21:** transport null on real controls is calibrated; borrowed-signature direction is the quantified gap — roughly half the measured in-context transfer (exact values embargoed). |
+| Gate B arm ordering predicts official ordering | **Inverted for source-mixing recipes (2026-09-24):** the hESC-only eval subset rewards unweighted/no-shrinkage recipes that lost officially; the champion recipe ranks near the bottom locally. Gate B still validates generation mechanics and catches catastrophic variants. |
+| Adding a matched-lineage delta source helps | **Unproven officially (2026-09-24):** Jurkat stim deltas are the only real T-cell-context signal and are net-neutral locally, but the mixed-recipe submission regressed — confounded with dropping the champion mixing recipe. |
 
 ## Decision sequence
 
@@ -159,14 +212,15 @@ parity vs the live competition bundle and DE-engine parity. Receipts:
 `paired47-20260921-01` evaluated 32/47 paired targets (15 under-powered) on
 the aligned axis with disjoint fit/eval cells. The diagnosis is specific:
 
-- **Signature content is the bottleneck.** Borrowed K562 deltas reach median
-  cosine 0.268 vs 0.514 for measured in-context deltas and 0.701 for the
-  observed split ceiling; borrowed beats measured in only 1/32 targets.
-- **The generator is calibrated.** Transport null variance ratio 1.05 on
-  real controls; direct-moment arms under-disperse (~0.28) but are not the
-  shipped path.
+- **Signature content is the bottleneck.** Borrowed K562 deltas reach
+  roughly half the measured in-context transfer quality, and well below
+  the observed split ceiling; borrowed almost never beats measured per
+  target.
+- **The generator is calibrated.** Transport null dispersion matches real
+  controls; direct-moment arms under-disperse but are not the shipped path.
 - **No cheap gate exists.** `cos(delta_k562, delta_hesc)` predicts borrowed
-  success at r≈0.22 — a per-target transferability filter is falsified.
+  success only weakly — a per-target transferability filter is falsified.
+  (Exact diagnostic values: `experiments/_embargoed/diagnostic-numbers.md`.)
 - Scope caveat: only 4/47 paired targets are in the 2026 panel; this
   measures the transfer problem class, not per-target submission calls.
 
@@ -301,13 +355,16 @@ expected value per engineering hour:
    signature content, not amplitude.
 2. ~~Learned Layer A — paired-signature transfer~~ — **LOO done
    2026-09-17** (`experiments/k012-transfer-loo/`): raw K562→hESC
-   transfer cosine ~0.13; no transfer class cleared the +0.05 acceptance
-   bar (fitted scalar s≈0.44; low-rank map sign acc 0.60 vs 0.32 raw —
-   coarse pathway structure transfers, fine detail doesn't). Naive
+   transfer cosine was low; no transfer class cleared the +0.05 acceptance
+   bar (a fitted global scalar compresses strongly; a low-rank map
+   recovered sign structure better than raw — coarse pathway structure
+   transfers, fine detail doesn't; exact values embargoed:
+   `experiments/_embargoed/diagnostic-numbers.md`). Naive
    paired transfer does not ship.
 3. **Lineage-matched corpora** — lineage score done 2026-09-18
    (`experiments/k012-lineage-score/`): on discriminative genes, **A is
-   Jurkat-like (0.649)**, B weakly RPE1-leaning (0.369), C unresolved.
+   clearly Jurkat-like**, B weakly RPE1-leaning, C unresolved (exact
+   scores embargoed).
    **But** the Nadig Jurkat essential screen covers **0/300 panel
    targets** — essential screens can't supply panel deltas directly.
    Two live options: (a) the 4-lineage × 2,393-target essential set
@@ -366,8 +423,9 @@ results.
   arm exists** (only K562 has a genome-wide arm; rpe1/jurkat/hepg2 public files
   are the 2,393-target essential screen, overlapping **0/300** panel targets).
   The specific context-B lineage-swap variant failed that coverage check.
-- **Done (negative)**: k014 conditional MLP baseline (2026-09-18). Model cosine
-  0.0425 vs identity 0.1406 — worse than raw transplant. Root cause recorded at
+- **Done (negative)**: k014 conditional MLP baseline (2026-09-18). Held-out
+  cosine was well below the raw-transplant identity baseline — worse than
+  doing nothing (exact values embargoed). Root cause recorded at
   the time: only 47 paired examples; no cross-context signal to learn. See
   `docs/track2-nebius-setup.md` §8 for full details.
 - **Then-current**: 4-lineage essential-screen transfer learning (item 3a) —
@@ -421,17 +479,20 @@ structural priors about gene-gene relationships to generalize.
 
 ```bash
 # Re-create instance (after deletion to save cost)
+# IDs retrieved live from the Nebius CLI/console — not recorded in this repo
+# (removed 2026-09-23). Restrict the SSH security group to your current IP,
+# not 0.0.0.0/0.
 nebius compute instance create \
-  --parent-id project-e00sz92bpr005x5c3r80zr \
+  --parent-id <project-id> \
   --name kytos-track2-gpu \
   --resources-platform gpu-l40s-a \
   --resources-preset 1gpu-16vcpu-64gb \
   --boot-disk-attach-mode read_write \
   --boot-disk-managed-disk-name kytos-track2-disk \
-  --boot-disk-managed-disk-source-image-id computeimage-e00q003g5k851wjgpn \
+  --boot-disk-managed-disk-source-image-id <image-id> \
   --boot-disk-managed-disk-size-gibibytes 500 \
   --boot-disk-managed-disk-type network_ssd \
-  --network-interfaces '[{"name":"eth0","subnet_id":"vpcsubnet-e00pbj53wtjbf7c6e9","ip_address":{},"public_ip_address":{},"security_groups":[{"id":"vpcsecuritygroup-e00jth18f0j9zbct6g"},{"id":"vpcsecuritygroup-e00ac0vv3g60xcp6h7"}]}]' \
+  --network-interfaces '[{"name":"eth0","subnet_id":"<subnet-id>","ip_address":{},"public_ip_address":{},"security_groups":[{"id":"<default-sg-id>"},{"id":"<kytos-ssh-sg-id>"}]}]' \
   --cloud-init-user-data "$(cat <<'EOF'
 #cloud-config
 users:
@@ -534,11 +595,10 @@ Prompted by user question "are we using all the resources available to us?"
 
 ### k015 low-rank eval results (Modal job ap-uEt7lCW8KFzAvNAoA53JrK, 495 s)
 
-| Pair | n pairs | identity | rank 128 | rank 256 (best) |
-|---|---:|---:|---:|---:|
-| K562→Jurkat (ctx A) | 2,334 | 0.439 | 0.537 | 0.549 |
-| K562→RPE1 (ctx B) | 2,390 | 0.330 | 0.607 | 0.614 |
-| K562→HepG2 (ctx C proxy) | 2,327 | 0.355 | 0.541 | 0.548 |
+Rank-128/256 low-rank maps improved held-out cosine over the identity
+baseline on all three lineage pairs (K562→Jurkat / →RPE1 / →HepG2, ~2.3k
+pairs each; rank-256 best). Exact values embargoed:
+`experiments/_embargoed/diagnostic-numbers.md`.
 
 Full-rank-256 refits persisted to `/kytos-vol/k015-essential-transfer/lowrank_models.npz`
 (60 MB). Per-gene shrinkage remains worse than identity — drop it.

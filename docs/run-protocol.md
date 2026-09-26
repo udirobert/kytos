@@ -165,6 +165,10 @@ file.
 }
 ```
 
+The metric names in the example above (`DESigGenesRecall`, `pearson_delta`)
+are from the legacy `cell-eval` suite; `vcc2026` runs record the six official
+metric names from the scorer contract (see `docs/architecture.md` §3).
+
 Numeric values in `headline_metrics` and `ceiling_headroom` must match
 committed metric files — never edited by hand after assembly. If a metric is
 proxy-only or from a legacy scorer, say so in both `facts.json` and the
