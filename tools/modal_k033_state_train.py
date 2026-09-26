@@ -61,7 +61,7 @@ SEED = 42
 
 TRAIN_NAME = "k033-st-gwps-k562-v1"
 MAX_STEPS = 40_000
-BATCH_SIZE = 8  # cell-sets per step (x cell_set_len 64)
+BATCH_SIZE = 16  # cell-sets per step (x cell_set_len 64)
 VAL_FREQ = 2_500
 
 app = modal.App("kytos-k033-state")
@@ -444,6 +444,7 @@ def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
         "data.kwargs.cell_type_key=cell_line",
         f"data.kwargs.control_pert={NTC_LABEL}",
         "data.kwargs.num_workers=6",
+        "data.kwargs.use_consecutive_loading=true",
         "data.kwargs.val_subsample_fraction=0.1",
         "model=state",
         "model.kwargs.cell_set_len=64",
