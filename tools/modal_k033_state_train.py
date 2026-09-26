@@ -359,17 +359,10 @@ def _start_run_sync(local_run: Path, vol_run: Path, stop: threading.Event):
     return t
 
 
-@app.function(
-    image=_prep_image,
-    volumes={str(VOLUME_ROOT): volume},
-    cpu=4,
-    memory=8 * 1024,
-    timeout=3600,
-)
-def fix_indices() -> dict:
+def _fix_part_indices(path: Path) -> None:
     """cell-load 0.10.4 reads obs/_index and var/_index as h5py datasets,
-    but the anndata writer stored our string indexes as categorical groups.
-    Rewrite the part files on the volume in place as string-array datasets."""
+    but the anndata writer stored our string indexes as nullable-string-array
+    groups. Rewrite those keys in place as string-array datasets."""
     import h5py
 
     def _s(v: object) -> str:
@@ -383,22 +376,67 @@ def fix_indices() -> dict:
         cats = [_s(c) for c in group["__categories"][:]]
         return [cats[code] for code in group["codes"][:]]
 
+    with h5py.File(path, "a") as fh:
+        for key in ("obs/_index", "var/_index"):
+            node = fh.get(key)
+            if node is None or isinstance(node, h5py.Dataset):
+                continue
+            values = _decode(node)
+            del fh[key]
+            ds = fh.create_dataset(key, data=values, dtype=h5py.string_dtype("utf-8"))
+            ds.attrs["encoding-type"] = "string-array"
+            ds.attrs["encoding-version"] = "0.1.0"
+
+
+@app.function(
+    image=_prep_image,
+    volumes={str(VOLUME_ROOT): volume},
+    cpu=4,
+    memory=8 * 1024,
+    timeout=3600,
+)
+def fix_indices() -> dict:
     fixed = 0
     for part in sorted(DATASET_DIR.glob("part_*.h5ad")):
-        with h5py.File(part, "a") as fh:
-            for key in ("obs/_index", "var/_index"):
-                node = fh.get(key)
-                if node is None or isinstance(node, h5py.Dataset):
-                    continue
-                values = _decode(node)
-                del fh[key]
-                ds = fh.create_dataset(key, data=values, dtype=h5py.string_dtype("utf-8"))
-                ds.attrs["encoding-type"] = "string-array"
-                ds.attrs["encoding-version"] = "0.1.0"
+        _fix_part_indices(part)
         fixed += 1
         print(f"[fix] {part.name}", flush=True)
     volume.commit()
     return {"parts_fixed": fixed}
+
+
+@app.function(
+    image=_prep_image,
+    volumes={str(VOLUME_ROOT): volume},
+    cpu=8,
+    memory=64 * 1024,
+    timeout=8 * 3600,
+    retries=0,
+)
+def recompress() -> dict:
+    """Rewrite dataset parts uncompressed. The gzip'd parts starve the GPU:
+    every random cell read decompresses a whole block (~0.1 steps/s wall)."""
+    import anndata as ad
+
+    done_path = META_DIR / "recompress_done.json"
+    done = set(json.loads(done_path.read_text())) if done_path.exists() else set()
+    n = 0
+    for part in sorted(DATASET_DIR.glob("part_*.h5ad")):
+        if part.name in done:
+            continue
+        tmp = Path("/tmp") / part.name
+        t0 = time.time()
+        a = ad.read_h5ad(part)
+        a.write_h5ad(tmp, compression=None)
+        _fix_part_indices(tmp)
+        _copy_to_volume(tmp, part)
+        tmp.unlink()
+        done.add(part.name)
+        done_path.write_text(json.dumps(sorted(done)))
+        volume.commit()
+        n += 1
+        print(f"[recompress] {part.name} ok ({time.time() - t0:.0f}s)", flush=True)
+    return {"parts_rewritten": n}
 
 
 @app.function(
@@ -644,6 +682,8 @@ def main(
         print(prepare.remote(), flush=True)
     if stage == "fix":
         print(fix_indices.remote(), flush=True)
+    if stage == "recompress":
+        print(recompress.remote(), flush=True)
     if stage in ("all", "train"):
         print(train.remote(run_name=run_name, max_steps=max_steps), flush=True)
     if stage in ("all", "infer"):
