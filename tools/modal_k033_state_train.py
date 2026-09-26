@@ -12,8 +12,10 @@ Stages (idempotent, resume via existing artifacts):
   prepare  stream figshare -> cell-load dataset dir of log1p(normalize 1e4)
            h5ad parts with global 6k-HVG obsm['X_hvg'] + control adata + splits
   train    `state tx train` mirroring the published st-x-replogle-full
-           backbone (hidden 328, cell_set_len 64, energy loss, batch encoder)
-           with genome-wide vocab; periodic checkpoint sync to the volume
+           backbone (hidden 768 = 12 heads x 64 — published 328 fails the
+           current transformers head-divisibility check; cell_set_len 64,
+           energy loss, batch encoder) with genome-wide vocab; periodic
+           checkpoint sync to the volume
   infer    `state tx infer --tsv` clones controls onto the covered panel
            targets and writes st_deltas_hvg.npz for tasks k033-#7/#8
 
@@ -445,7 +447,7 @@ def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
         "data.kwargs.val_subsample_fraction=0.1",
         "model=state",
         "model.kwargs.cell_set_len=64",
-        "model.kwargs.hidden_dim=328",
+        "model.kwargs.hidden_dim=768",
         "model.kwargs.batch_encoder=true",
         f"training.batch_size={BATCH_SIZE}",
         f"training.max_steps={max_steps}",
