@@ -405,8 +405,8 @@ def fix_indices() -> dict:
     image=_train_image,
     volumes={str(VOLUME_ROOT): volume},
     gpu="L4",
-    cpu=8,
-    memory=32 * 1024,
+    cpu=16,
+    memory=64 * 1024,
     ephemeral_disk=524288,  # Modal GPU floor (512 GiB)
     timeout=22 * 3600,
     retries=0,
@@ -414,6 +414,15 @@ def fix_indices() -> dict:
 def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
     import shutil
     import time as _t
+
+    import torch
+
+    print(
+        f"[gpu] available={torch.cuda.is_available()} "
+        f"name={torch.cuda.get_device_name(0) if torch.cuda.is_available() else None} "
+        f"torch={torch.__version__}",
+        flush=True,
+    )
 
     local = Path("/root/work")
     local.mkdir(parents=True, exist_ok=True)
@@ -455,7 +464,7 @@ def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
         "data.kwargs.batch_col=gem_group",
         "data.kwargs.cell_type_key=cell_line",
         f"data.kwargs.control_pert={NTC_LABEL}",
-        "data.kwargs.num_workers=6",
+        "data.kwargs.num_workers=14",
         "data.kwargs.val_subsample_fraction=0.1",
         "model=state",
         "model.kwargs.cell_set_len=64",
@@ -483,6 +492,11 @@ def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
             if f.is_file() and (f.suffix == ".ckpt" or f.stat().st_size <= 200 * 2**20):
                 _copy_to_volume(f, run_vol / f.relative_to(run_local))
     print("train complete", flush=True)
+    try:
+        fc = infer_deltas.spawn(run_name=run_name, checkpoint="best")
+        print(f"[chain] infer_deltas spawned: {fc.object_id}", flush=True)
+    except Exception as exc:  # noqa: BLE001 — keep the run result even if chaining fails
+        print(f"[chain] spawn failed: {exc} — run --stage infer manually", flush=True)
     return str(run_vol)
 
 
