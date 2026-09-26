@@ -414,9 +414,12 @@ def fix_indices() -> dict:
     retries=0,
 )
 def recompress() -> dict:
-    """Rewrite dataset parts uncompressed. The gzip'd parts starve the GPU:
-    every random cell read decompresses a whole block (~0.1 steps/s wall)."""
-    import anndata as ad
+    """Strip gzip from every dataset in the part files. The compressed parts
+    starve the GPU: each random cell read decompresses a whole block
+    (~0.1 steps/s wall). Pure-h5py (layout-preserving) because the current
+    anndata cannot read our patched string-array _index datasets."""
+    import h5py
+    import shutil
 
     done_path = META_DIR / "recompress_done.json"
     done = set(json.loads(done_path.read_text())) if done_path.exists() else set()
@@ -426,9 +429,31 @@ def recompress() -> dict:
             continue
         tmp = Path("/tmp") / part.name
         t0 = time.time()
-        a = ad.read_h5ad(part)
-        a.write_h5ad(tmp, compression=None)
-        _fix_part_indices(tmp)
+        shutil.copy2(part, tmp)
+        with h5py.File(tmp, "r") as fh:
+            names = [
+                name for name, obj in _walk(fh) if isinstance(obj, h5py.Dataset) and obj.compression
+            ]
+        with h5py.File(tmp, "a") as fh:
+            for name in names:
+                ds = fh[name]
+                vals = ds[...]
+                attrs = dict(ds.attrs)
+                shape, dtype, chunks = ds.shape, ds.dtype, ds.chunks
+                del fh[name]
+                new = fh.create_dataset(
+                    name, data=vals, shape=shape, dtype=dtype, chunks=chunks, compression=None
+                )
+                for k, v in attrs.items():
+                    new.attrs[k] = v
+                del vals
+                print(f"  [recompress] {part.name}:{name} {shape}", flush=True)
+        del names
+        with h5py.File(tmp, "r") as fh:
+            leftover = [
+                name for name, obj in _walk(fh) if isinstance(obj, h5py.Dataset) and obj.compression
+            ]
+        assert not leftover, f"still compressed: {leftover}"
         _copy_to_volume(tmp, part)
         tmp.unlink()
         done.add(part.name)
@@ -437,6 +462,12 @@ def recompress() -> dict:
         n += 1
         print(f"[recompress] {part.name} ok ({time.time() - t0:.0f}s)", flush=True)
     return {"parts_rewritten": n}
+
+
+def _walk(group):
+    out: list = []
+    group.visititems(lambda name, obj: out.append((name, obj)))
+    return out
 
 
 @app.function(
@@ -536,6 +567,34 @@ def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
     except Exception as exc:  # noqa: BLE001 — keep the run result even if chaining fails
         print(f"[chain] spawn failed: {exc} — run --stage infer manually", flush=True)
     return str(run_vol)
+
+
+@app.function(
+    image=_prep_image,
+    volumes={str(VOLUME_ROOT): volume},
+    cpu=0.125,
+    memory=512,
+    timeout=8 * 3600,
+    retries=0,
+)
+def wait_and_train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
+    """Block until recompress() has rewritten all parts, then spawn train()."""
+    n_parts = len(list(DATASET_DIR.glob("part_*.h5ad")))
+    done_path = META_DIR / "recompress_done.json"
+    while True:
+        if done_path.exists():
+            try:
+                done = set(json.loads(done_path.read_text()))
+            except json.JSONDecodeError:
+                done = set()
+            if len(done) >= n_parts:
+                break
+        print(f"[wait] {len(done) if done_path.exists() else 0}/{n_parts} parts", flush=True)
+        time.sleep(120)
+    time.sleep(60)
+    fc = train.spawn(run_name=run_name, max_steps=max_steps)
+    print(f"[chain] train spawned: {fc.object_id}", flush=True)
+    return str(fc.object_id)
 
 
 @app.function(
