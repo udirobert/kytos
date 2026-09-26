@@ -299,15 +299,27 @@ def _copy_to_volume(src: Path, dst: Path) -> None:
     volume.commit()
 
 
-def _run_argv(argv: list[str]) -> None:
+def _run_argv(argv: list[str], log_path: Path | None = None) -> None:
     proc = subprocess.Popen(
         argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
     )
+    sink = open(log_path, "w") if log_path else None
+    tail: list[str] = []
     for line in proc.stdout:  # type: ignore[union-attr]
-        print(line.rstrip(), flush=True)
+        line = line.rstrip()
+        print(line, flush=True)
+        if sink:
+            sink.write(line + "\n")
+        tail.append(line)
+        if len(tail) > 60:
+            tail.pop(0)
     rc = proc.wait()
+    if sink:
+        sink.close()
     if rc != 0:
-        raise RuntimeError(f"command failed ({rc}): {' '.join(argv[:4])} ...")
+        detail = "\n".join(tail[-40:])
+        extra = f"; log: {log_path}" if log_path else ""
+        raise RuntimeError(f"command failed ({rc}): {' '.join(argv[:4])}{extra}\n{detail}")
 
 
 def _start_run_sync(local_run: Path, vol_run: Path, stop: threading.Event):
@@ -459,7 +471,10 @@ def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
     stop = threading.Event()
     sync_thread = _start_run_sync(run_local, run_vol, stop)
     try:
-        _run_argv(["state", "tx", "train", *overrides])
+        _run_argv(
+            ["state", "tx", "train", *overrides],
+            log_path=run_local / "train_stdout.log",
+        )
     finally:
         stop.set()
         sync_thread.join(timeout=3600)
