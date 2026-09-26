@@ -1,0 +1,14 @@
+{
+  "run_id": "k030-consensus-meanj-dm",
+  "entry_id": "A1N2nYKZ07jKewReEUMp",
+  "model_name": "kytos-k030-consensus-meanj-dm",
+  "submitted_utc": "2026-09-24T20:30Z",
+  "build_app": "ap-9PK9PqY55LS9O2mooda7O5",
+  "submit_app": "ap-RPISSm3ZMjGwZBc6pyShgi",
+  "deltas": "/kytos-vol/k030-ctxlineage/newsrc-5j/variant_consensus_mean.npz",
+  "deltas_recipe": "uniform mean of unit-normalized deltas over {k562, hct116, hek293t, cd4, jurkat_stim}, rescaled to per-target K562 norm",
+  "generator": "dual_moment amp=1.0 bulk_amp=0.5 pool_k=4 (champion k027 config)",
+  "vcc_volume": "/kytos-vol/k030-consensus-meanj-dm/prediction.prep.vcc",
+  "hypothesis": "context-A is unserved by all 4 legacy sources (self-eval cosine ~0); jurkat_stim is the only real A-context signal; orthogonal additive signal has bounded downside",
+  "gate_b_local": "cons_mean_j 0.2578 vs cons_eb2_ref 0.2545 (hESC-only eval; ordering known inverted vs official)"
+}

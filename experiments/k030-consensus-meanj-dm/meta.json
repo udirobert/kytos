@@ -1,0 +1,30 @@
+{
+  "run_id": "k030-consensus-meanj-dm",
+  "created_at": "2026-09-24T20:25:18Z",
+  "mode": "consensus_mean (5-src incl jurkat_stim) deltas + dual-moment count generation",
+  "evidence": "Gate B gates 20260924-01..03 + 20260925-01..03; context-matched source self-eval (experiments/_embargoed/k030-ctxlineage.md, k030-selfeval/)",
+  "contexts": [
+    "A",
+    "B",
+    "C"
+  ],
+  "n_targets": 300,
+  "cells_per_pert": 400,
+  "total_cells": 360000,
+  "n_genes": 18533,
+  "nnz": 2433937592,
+  "seed": 0,
+  "deltas_npz": "/root/variant_consensus_mean.npz",
+  "deltas_npz_sha256": "d26c8318e3d263ae107c7bad9d325900a5bae6f190d0f84baa8935d14ff13c37",
+  "generator": {
+    "type": "dual_moment",
+    "amplitude": 1.0,
+    "bulk_amplitude": 0.5,
+    "pool_k": 4,
+    "space": "bulk_delta"
+  },
+  "dispatch": {
+    "real": 900
+  },
+  "uncovered_targets": []
+}

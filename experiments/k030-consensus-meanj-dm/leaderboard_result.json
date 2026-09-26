@@ -1,0 +1,18 @@
+{
+  "entry": "A1N2nYKZ07jKewReEUMp",
+  "model": "kytos-k030-consensus-meanj-dm",
+  "status": "published",
+  "submitted": "2026-09-24T20:30:42.486449Z",
+  "rank": 442,
+  "overall": 0.10883872474352498,
+  "pds": 0.5570496083875701,
+  "mse": 0.0017584032515975216,
+  "nmae": 0.07354079285844246,
+  "fid": -0.019731747829760223,
+  "reach": 0.03925005354948154,
+  "jac": 0.0011652382438185071,
+  "partition": "val",
+  "panel": "vcc2026-val-1",
+  "anchor_set": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+  "vs_k027": -0.0174
+}
