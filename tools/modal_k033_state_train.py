@@ -299,6 +299,29 @@ def _copy_to_volume(src: Path, dst: Path) -> None:
     volume.commit()
 
 
+def _ensure_pert_onehot_map(run_local: Path, run_vol: Path) -> None:
+    """state tx train saves a dense ~390 MB pert_onehot_map.pt before fitting;
+    the volume sync's non-ckpt size guard dropped it from the run dir copy.
+    var_dims['pert_names'] is list(pert_onehot_map.keys()) at save time
+    (cell-load get_var_dims), so rebuilding from it reproduces the exact
+    training ordering."""
+    import pickle
+
+    path = run_local / "pert_onehot_map.pt"
+    if path.exists():
+        return
+    import torch
+
+    with open(run_local / "var_dims.pkl", "rb") as fh:
+        vd = pickle.load(fh)
+    names = [str(n) for n in vd["pert_names"]]
+    assert len(names) == vd["pert_dim"] == len(set(names)), "pert vocab mismatch"
+    pmat = torch.eye(len(names), dtype=torch.float32)
+    torch.save({n: pmat[i].clone() for i, n in enumerate(names)}, path)
+    _copy_to_volume(path, run_vol / "pert_onehot_map.pt")
+    print(f"[map] rebuilt pert_onehot_map.pt ({len(names)} perts)", flush=True)
+
+
 def _run_argv(argv: list[str], log_path: Path | None = None) -> None:
     proc = subprocess.Popen(
         argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
@@ -334,7 +357,7 @@ def _start_run_sync(local_run: Path, vol_run: Path, stop: threading.Event):
                     if not f.is_file():
                         continue
                     size = f.stat().st_size
-                    if f.suffix != ".ckpt" and size > 50 * 2**20:
+                    if f.suffix != ".ckpt" and f.name != "pert_onehot_map.pt" and size > 50 * 2**20:
                         continue
                     key = str(f.relative_to(local_run))
                     # require two consecutive identical sizes before copying:
@@ -558,7 +581,11 @@ def train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> str:
         sync_thread.join(timeout=3600)
         run_vol.mkdir(parents=True, exist_ok=True)
         for f in sorted(run_local.rglob("*")):
-            if f.is_file() and (f.suffix == ".ckpt" or f.stat().st_size <= 200 * 2**20):
+            if f.is_file() and (
+                f.suffix == ".ckpt"
+                or f.name == "pert_onehot_map.pt"
+                or f.stat().st_size <= 200 * 2**20
+            ):
                 _copy_to_volume(f, run_vol / f.relative_to(run_local))
     print("train complete", flush=True)
     try:
@@ -624,6 +651,8 @@ def infer_deltas(run_name: str = TRAIN_NAME, checkpoint: str = "best") -> dict:
     if not ckpt.exists():
         ckpt = run_local / "checkpoints" / "final.ckpt"
     assert ckpt.exists(), f"no checkpoint '{checkpoint}' under {run_vol}/checkpoints"
+
+    _ensure_pert_onehot_map(run_local, run_vol)
 
     ctrl_local = local / "controls.h5ad"
     if not ctrl_local.exists():
