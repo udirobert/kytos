@@ -1,6 +1,6 @@
 # VCC strategy — validation first
 
-Status: **ACTIVE** · Updated **2026-09-26** · Owner: udingethe
+Status: **ACTIVE** · Updated **2026-09-28** · Owner: udingethe
 
 This file is the single active research strategy. (The filename is historical
 — it predates the validation-first pivot; the two-track plan survives only as
