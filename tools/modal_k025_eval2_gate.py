@@ -183,7 +183,13 @@ def _oracle_deltas(paired_path, axis_symbols):
     max_containers=1,
     volumes={str(VOLUME_ROOT): volume},
 )
-def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: str = "") -> dict:
+def run_gate(
+    run_id: str,
+    cells_per_pert: int = 400,
+    seed: int = 0,
+    bundle_src: str = "",
+    arms: str = "",
+) -> dict:
     import json
     import subprocess
     import sys
@@ -375,6 +381,14 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
                 },
             }
         )
+
+    if arms:
+        keep = [a for a in arms.split(",") if a.strip()]
+        keep = [a.strip() for a in keep]
+        missing = [a for a in keep if a not in variants]
+        assert not missing, f"unknown arms requested: {missing}"
+        variants = {k: v for k, v in variants.items() if k in keep}
+        print(f"[arms] scoring {list(variants)}", flush=True)
 
     rng = np.random.default_rng(seed)
     pred_paths = {}
@@ -611,12 +625,12 @@ def run_gate(run_id: str, cells_per_pert: int = 400, seed: int = 0, bundle_src: 
 
 
 @app.local_entrypoint()
-def main(run_id: str, cells_per_pert: int = 400, bundle_src: str = ""):
+def main(run_id: str, cells_per_pert: int = 400, bundle_src: str = "", arms: str = ""):
     import json
 
     print(
         json.dumps(
-            run_gate.remote(run_id, cells_per_pert, bundle_src=bundle_src),
+            run_gate.remote(run_id, cells_per_pert, bundle_src=bundle_src, arms=arms),
             indent=2,
             default=str,
         )
