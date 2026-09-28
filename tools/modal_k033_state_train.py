@@ -54,7 +54,7 @@ HVG_CHUNK = 20_000  # contiguous read size for the HVG sample pass
 HVG_STRIDE = 10  # sample every 10th chunk (~200k cells)
 N_CTRLS = 40_000  # control cells stored for inference
 CTRLS_PER_PART = 3_000  # reservoir budget of NTC rows kept per part
-CELLS_PER_PERT = 400  # virtual clone budget at infer time
+CELLS_PER_PERT = 128  # virtual clone budget at infer time (400 overshot 6h wall)
 NTC_LABEL = "non-targeting"
 CELL_LINE = "K562"
 SEED = 42
@@ -631,7 +631,7 @@ def wait_and_train(run_name: str = TRAIN_NAME, max_steps: int = MAX_STEPS) -> st
     cpu=8,
     memory=32 * 1024,
     ephemeral_disk=524288,  # Modal GPU floor (512 GiB)
-    timeout=6 * 3600,
+    timeout=12 * 3600,
     retries=0,
 )
 def infer_deltas(run_name: str = TRAIN_NAME, checkpoint: str = "best") -> dict:
