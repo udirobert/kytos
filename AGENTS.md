@@ -431,6 +431,28 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   only real signal for the T-cell-like context. Receipts:
   `experiments/k030-consensus-meanj-dm/`; arm metrics and analysis
   embargoed (`experiments/_embargoed/`).
+- **k034 final-phase readiness (2026-09-28, no submission).** Genome-wide
+  delta stores for all five sources staged under `/kytos-vol/k034-final-prep/`
+  (K562 9.9k, HCT116 18.3k, HEK293T 18.3k, CD4 7.3k, Jurkat 18k targets;
+  QA vs panel extracts exact). Extractors now take `--targets-file` /
+  `--all-source-targets` (so the Oct-22 panel is a subset, not a rescan)
+  and the X-Atlas scan checkpoints/resumes after preemption. Mock D/E/F
+  rehearsal passed `vcc prep` dry-run; Oct-22 checklist in
+  `docs/final-phase-runbook.md`. Tools: `tools/subset_deltas_npz.py`,
+  `tools/modal_k034_final_submit.py`. Receipts:
+  `experiments/k034-final-rehearsal/`, `experiments/k034-genomewide-extract/`.
+- **Gate B rounds 11–12 (2026-09-28, no promotion candidate).**
+  `gate-20260928-02` swept `bulk_amplitude` 0.5–3.0 plus eb2/uncentered
+  probes; `gate-20260928-03` tested their composition. Raw
+  `expr_mse` tracks `bulk_amplitude` alone and is U-shaped with a shallow
+  optimum near ~0.7–1.0 — the mse channel is direction-bound (bulk-shift
+  direction vs real is near-orthogonal on eval targets), same wall as
+  `pds`, not a separate lever. The small positives (uncentered consensus,
+  eb2) did not compose and none cleared the +0.02 local promotion bar;
+  no submission spent. Champion remains `kytos-k027-consensus-dm`. Exact
+  arm values: `experiments/_embargoed/k025-eval2-gate/gate-20260928-{02,03}/`.
+  Infra note: pred writes are now atomic (write-then-rename) — a
+  preemption-truncated h5ad previously passed the `exists()` resume check.
 - **k031/k032 — data-extraction runs (2026-09-22/25), no submissions.**
   `tools/modal_k031_jurkat_extract.py` produced the Jurkat CRISPRi delta
   source consumed by k030. `tools/modal_k032_replogle_reliability.py`

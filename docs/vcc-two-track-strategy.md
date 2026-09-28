@@ -128,6 +128,25 @@ checking their validity caveats.
   CRISPRi deltas (GSE249595 stim arm) to a uniform 5-source mean —
   also a regression. **k027 (+0.1262) remains champion.** Receipts:
   `experiments/k030-consensus-meanj-dm/`.
+- **Gate B rounds 11–12 (2026-09-28):** bulk-amplitude sweep +
+  eb2/uncentered/composition probes all landed within noise of the drift
+  control — no promotion candidate, no slot spent. New diagnostic fact:
+  raw `expr_mse` is set by `bulk_amplitude` alone and is direction-bound
+  (bulk-shift direction vs real near-orthogonal), the same constraint as
+  `pds`/`reach` rather than an independent channel. `nctr` (uncentered
+  consensus) was the only signature-side gain this round — a candidate
+  recipe switch for the blind final phase, hESC-evaluated only.
+  Arm-level detail: `experiments/_embargoed/k025-eval2-gate/gate-20260928-{02,03}/`.
+- **Final-phase readiness (k034, 2026-09-28):** the final test set
+  releases Oct 22 as contexts D/E/F with a NEW perturbation panel;
+  winners are decided by a blind submission due Nov 5 — the validation
+  leaderboard rank itself does not determine the outcome. Genome-wide
+  deltas for all five sources are pre-extracted (`/kytos-vol/k034-final-prep/`),
+  the submit path is rehearsed end-to-end on a mock D/E/F panel
+  (`vcc prep --contexts D,E,F` dry-run PASS), and
+  `docs/final-phase-runbook.md` has the Oct-22 checklist. Remaining open
+  decision: which recipe ships blind — k027 champion vs the uncentered
+  variant.
 - **k030 campaign findings (qualitative; details embargoed
   `experiments/_embargoed/k030-ctxlineage.md`):**
   - *Gate B has a context blind spot.* Its eval subset is hESC-only,
