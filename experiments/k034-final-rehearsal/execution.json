@@ -1,0 +1,41 @@
+{
+  "run_id": "k034-final-rehearsal",
+  "date": "2026-09-28",
+  "status": "completed",
+  "produced_predictions": true,
+  "computed_official_scores": false,
+  "submitted": false,
+  "steps": [
+    {
+      "step": "consensus build",
+      "cmd": "python tools/build_consensus_deltas.py --src-dir experiments/k034-final-rehearsal/src-deltas --out-dir experiments/k034-final-rehearsal/consensus",
+      "elapsed_s": 75,
+      "outputs": "13 variant_*.npz (gitignored) incl. variant_consensus_w_ctr.npz",
+      "note": "jurkat_stim source mixes at default weight 1.0 (not in WEIGHTED map); axes verified identical (343 targets x 18533 genes) across all 5 sources"
+    },
+    {
+      "step": "dual-moment generation",
+      "cmd": "python tools/run_k027_dual_moment_submit.py --raw-dir data/raw/vcc2026-mock-final --deltas-npz .../variant_consensus_w_ctr.npz --out-dir experiments/k034-final-rehearsal/gen --contexts D,E,F --cells-per-pert 400 --seed 0 --run-id k034-final-rehearsal",
+      "elapsed_s": 189.1,
+      "outputs": "gen/prediction.h5ad 60000 x 18533 (405.8M nnz, int32 counts), gen/meta.json",
+      "note": "0/50 mock targets uncovered by consensus deltas"
+    },
+    {
+      "step": "vcc prep dry-run",
+      "cmd": "vcc prep -g data/raw/vcc2026-mock-final/gene_names.csv --perts data/raw/vcc2026-mock-final/pert_counts.csv --contexts D,E,F --dry-run gen/prediction.h5ad",
+      "elapsed_s": 60,
+      "result": "PASS -- contexts column 'context' reads D=20000 E=20000 F=20000; targets verified against official list; counts-preserved",
+      "receipt": "prep_dry_run.txt",
+      "note": "vcc prep warns a real (non-dry-run) package of this density needs ~9 GiB RAM -- the real 360k-cell final build must stay on Modal"
+    }
+  ],
+  "observed": "End-to-end path works on relabeled D/E/F contexts. --contexts D,E,F is REQUIRED for prep (default is A,B,C) and the generator's --contexts flag must match the context_<X>.h5ad filenames in --raw-dir.",
+  "decision": "Final-phase checklist captured in docs/final-phase-runbook.md",
+  "artifacts": {
+    "mock_raw_dir": "data/raw/vcc2026-mock-final/ (gitignored: data/raw/)",
+    "prediction": "experiments/k034-final-rehearsal/gen/prediction.h5ad (gitignored: experiments/**/*.h5ad)",
+    "consensus_npz": "experiments/k034-final-rehearsal/consensus/*.npz (gitignored: *.npz)",
+    "prep_receipt": "experiments/k034-final-rehearsal/prep_dry_run.txt"
+  },
+  "actual_cost": null
+}

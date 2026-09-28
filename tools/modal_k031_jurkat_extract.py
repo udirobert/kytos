@@ -32,15 +32,26 @@ Per channel, per condition (rest / stim):
 Combine step: delta[target] = mean_log1p(target) - mean_log1p(NTC) per
 condition; basal = NTC mean.
 
-Outputs (on the Modal volume under ``k031-jurkat/<run_id>/``)
+Outputs (on the Modal volume under ``k031-jurkat/<run_id>/`` by default;
+``--out-subdir`` redirects, e.g. ``k034-final-prep``)
 ------------------------------------------------------------
 ``deltas_jurkat_rest.npz`` / ``deltas_jurkat_stim.npz`` -- genes, targets,
   deltas, covered, n_cells (same schema as k023 source deltas).
 ``basal_jurkat.npz`` -- genes, basal (resting NTC mean log1p).
 ``manifest_jurkat.json`` -- provenance, coverage, hashes.
 
+Target selection (default behavior unchanged):
+  - no flags        -> union of the 300-target 2026 panel + 47 Atlas-eval
+                       targets (``_load_request_targets``)
+  - --targets-file  -> newline/CSV list of symbols, first column used
+  - --all-source-targets -> every non-NTC single-gene guide stem in the
+                       screen (``~`` bicistronic pairs excluded, matching
+                       the default-mode filter)
+
 Run:
   modal run -d tools/modal_k031_jurkat_extract.py --run-id jurkat-YYYYMMDD-NN
+  modal run -d tools/modal_k031_jurkat_extract.py --run-id k034-jurkat-all \
+      --all-source-targets --out-subdir k034-final-prep
 """
 
 from __future__ import annotations
@@ -120,6 +131,36 @@ def _load_request_targets():
     return sorted(set(panel) | set(eval_targets))
 
 
+def _resolve_out_dir(out_subdir, run_id):
+    out = (VOLUME_ROOT / out_subdir if out_subdir else OUT_DIR) / run_id
+    out.mkdir(parents=True, exist_ok=True)
+    return out
+
+
+def _read_targets_file(path: str) -> list[str]:
+    """Local-side targets list: one symbol per line or CSV first column."""
+    targets = []
+    for line in Path(path).read_text().splitlines():
+        sym = line.split(",")[0].strip()
+        if sym and sym != "target_gene":
+            targets.append(sym)
+    return sorted(set(targets))
+
+
+def _all_source_targets(guide_names) -> list[str]:
+    """Every non-NTC single-gene guide stem in the screen.
+
+    ``~`` bicistronic pairs and ``non-targeting_*`` guides are excluded --
+    the same names the default-mode request filter effectively drops.
+    """
+    stems = set()
+    for name in guide_names:
+        stem = str(name).rsplit("_", 1)[0]
+        if stem and "~" not in stem and not stem.startswith("non-targeting"):
+            stems.add(stem)
+    return sorted(stems)
+
+
 def _geo_url(gsm_suffix: int, ch: int, part: str) -> str:
     return GEO_BASE.format(gsm=gsm_suffix, ch=ch, part=part)
 
@@ -127,7 +168,9 @@ def _geo_url(gsm_suffix: int, ch: int, part: str) -> str:
 @app.function(
     image=image,
     cpu=(4.0, 4.0),
-    memory=(49152, 49152),
+    # 64 GB headroom for --all-source-targets: every guided cell is kept,
+    # so the per-channel transcriptome slice grows ~40x vs the panel run.
+    memory=(65536, 65536),
     timeout=10800,
     startup_timeout=300,
     retries=0,
@@ -135,7 +178,13 @@ def _geo_url(gsm_suffix: int, ch: int, part: str) -> str:
     scaledown_window=2,
     volumes={str(VOLUME_ROOT): volume},
 )
-def channel_accumulate(ch: int, run_id: str) -> dict:
+def channel_accumulate(
+    ch: int,
+    run_id: str,
+    targets: list | None = None,
+    all_source_targets: bool = False,
+    out_subdir: str = "",
+) -> dict:
     """Accumulate per-(condition, target) log1p sums for one channel."""
     import gzip
     import io
@@ -155,8 +204,7 @@ def channel_accumulate(ch: int, run_id: str) -> dict:
 
     _check_run_id(run_id)
     gsm = CHANNEL_GSMS[ch]
-    out = OUT_DIR / run_id
-    out.mkdir(parents=True, exist_ok=True)
+    out = _resolve_out_dir(out_subdir, run_id)
     part_path = out / f"part_ch{ch:02d}.npz"
     if part_path.exists():
         return {"status": "exists", "channel": ch}
@@ -164,10 +212,15 @@ def channel_accumulate(ch: int, run_id: str) -> dict:
     t0 = time.time()
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
     n_genes = len(panel_genes)
-    request_targets = _load_request_targets()
-    n_targets = len(request_targets)
-    target_pos = {t: i for i, t in enumerate(request_targets)}
-    request_set = set(request_targets)
+    if all_source_targets:
+        request_targets = None  # resolved from guide_names below
+        target_selection = "all_source_targets"
+    elif targets is not None:
+        request_targets = sorted({str(t) for t in targets})
+        target_selection = "targets_file"
+    else:
+        request_targets = _load_request_targets()
+        target_selection = "panel_plus_eval"
 
     def fetch(part: str) -> bytes:
         url = _geo_url(gsm, ch, part)
@@ -211,6 +264,11 @@ def channel_accumulate(ch: int, run_id: str) -> dict:
     for i, name in enumerate(guide_names):
         stem = name.rsplit("_", 1)[0]
         guide_target[i] = stem
+    if request_targets is None:
+        request_targets = _all_source_targets(guide_names)
+    n_targets = len(request_targets)
+    target_pos = {t: i for i, t in enumerate(request_targets)}
+    request_set = set(request_targets)
     is_ntc = np.array([g.startswith("non-targeting") for g in guide_target])
     is_request = np.array([g in request_set for g in guide_target])
 
@@ -304,6 +362,8 @@ def channel_accumulate(ch: int, run_id: str) -> dict:
             {
                 "channel": ch,
                 "gsm": f"GSM795{gsm}",
+                "target_selection": target_selection,
+                "n_request_targets": int(n_targets),
                 "rest_cells": int(len(rest_cells)),
                 "stim_cells": int(len(stim_cells)),
                 "labeled_cells": int(labeled.sum()),
@@ -330,10 +390,18 @@ def channel_accumulate(ch: int, run_id: str) -> dict:
     scaledown_window=2,
     volumes={str(VOLUME_ROOT): volume},
 )
-def combine(run_id: str) -> dict:
+def combine(
+    run_id: str,
+    targets: list | None = None,
+    all_source_targets: bool = False,
+    out_subdir: str = "",
+) -> dict:
     """Combine channel partials into deltas + basal NPZs."""
+    import gzip
+    import io
     import sys
     import time
+    from urllib.request import urlopen
 
     import numpy as np
     import pandas as pd
@@ -343,10 +411,25 @@ def combine(run_id: str) -> dict:
 
     _check_run_id(run_id)
     t0 = time.time()
-    out = OUT_DIR / run_id
+    out = _resolve_out_dir(out_subdir, run_id)
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
     n_genes = len(panel_genes)
-    request_targets = _load_request_targets()
+    if all_source_targets:
+        # Re-derive the target list the channels used: channel guide axes
+        # are shared and asserted identical, so channel 1's table suffices.
+        url = _geo_url(CHANNEL_GSMS[1], 1, "guides_features.tsv")
+        with urlopen(url, timeout=300) as r:
+            raw = r.read()
+        with gzip.GzipFile(fileobj=io.BytesIO(raw)) as gz:
+            guide_names = [line.decode().rstrip("\n").split("\t")[0] for line in gz]
+        request_targets = _all_source_targets(guide_names)
+        target_selection = "all_source_targets"
+    elif targets is not None:
+        request_targets = sorted({str(t) for t in targets})
+        target_selection = "targets_file"
+    else:
+        request_targets = _load_request_targets()
+        target_selection = "panel_plus_eval"
     n_targets = len(request_targets)
     n_buckets = n_targets + 1
 
@@ -433,6 +516,7 @@ def combine(run_id: str) -> dict:
         "min_cells_per_target": MIN_CELLS_PER_TARGET,
         "guide_min_count": GUIDE_MIN_COUNT,
         "label_min_count": LABEL_MIN_COUNT,
+        "target_selection": target_selection,
         "units": "mean log1p(raw counts) target cells - resting/stim NTC mean",
         "coverage": outputs,
         "elapsed_s": round(time.time() - t0, 1),
@@ -442,10 +526,63 @@ def combine(run_id: str) -> dict:
     return manifest
 
 
-@app.local_entrypoint()
-def main(run_id: str):
+@app.function(
+    image=image,
+    cpu=(1.0, 1.0),
+    memory=(4096, 4096),
+    timeout=14400,
+    startup_timeout=300,
+    retries=0,
+    max_containers=1,
+    volumes={str(VOLUME_ROOT): volume},
+)
+def run_all(
+    run_id: str,
+    targets: list | None = None,
+    all_source_targets: bool = False,
+    out_subdir: str = "",
+) -> dict:
+    """Server-side orchestrator: spawn all channels + combine in-container.
+
+    Same work as the local entrypoint, but survivable: spawn via
+    ``modal.Function.from_name("kytos-k031-jurkat", "run_all").spawn(...)``
+    so a local client disconnect cannot cancel the channels.
+    """
     _check_run_id(run_id)
-    handles = [channel_accumulate.spawn(ch, run_id) for ch in range(1, 17)]
+    handles = [
+        channel_accumulate.spawn(ch, run_id, targets, all_source_targets, out_subdir)
+        for ch in range(1, 17)
+    ]
+    results = [h.get() for h in handles]
+    manifest = combine.remote(run_id, targets, all_source_targets, out_subdir)
+    return {"channels": results, "manifest": manifest}
+
+
+@app.local_entrypoint()
+def main(
+    run_id: str,
+    targets_file: str = "",
+    all_source_targets: bool = False,
+    out_subdir: str = "",
+    server_side: bool = False,
+):
+    _check_run_id(run_id)
+    targets = _read_targets_file(targets_file) if targets_file else None
+    if server_side:
+        # Fully server-side fan-out; safe to close the laptop after launch.
+        h = run_all.spawn(run_id, targets, all_source_targets, out_subdir)
+        print(json.dumps({"spawned": h.object_id}, indent=2))
+        return
+    handles = [
+        channel_accumulate.spawn(ch, run_id, targets, all_source_targets, out_subdir)
+        for ch in range(1, 17)
+    ]
     for h in handles:
         print(json.dumps(h.get(), indent=2, default=str))
-    print(json.dumps(combine.remote(run_id), indent=2, default=str))
+    print(
+        json.dumps(
+            combine.remote(run_id, targets, all_source_targets, out_subdir),
+            indent=2,
+            default=str,
+        )
+    )

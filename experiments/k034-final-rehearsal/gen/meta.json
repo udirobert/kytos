@@ -1,0 +1,30 @@
+{
+  "run_id": "k034-final-rehearsal",
+  "created_at": "2026-09-28T10:40:47Z",
+  "mode": "consensus_w_ctr deltas + dual-moment count generation",
+  "evidence": "selected via Gate B gate-20260922-02; metrics embargoed (experiments/_embargoed/k025-eval2-gate/)",
+  "contexts": [
+    "D",
+    "E",
+    "F"
+  ],
+  "n_targets": 50,
+  "cells_per_pert": 400,
+  "total_cells": 60000,
+  "n_genes": 18533,
+  "nnz": 405817526,
+  "seed": 0,
+  "deltas_npz": "experiments/k034-final-rehearsal/consensus/variant_consensus_w_ctr.npz",
+  "deltas_npz_sha256": "74d4737239f6f4b1e43553661f6fc4ec7eb2a046a44c93c4f8a50ef8ba1865b4",
+  "generator": {
+    "type": "dual_moment",
+    "amplitude": 1.0,
+    "bulk_amplitude": 0.5,
+    "pool_k": 4,
+    "space": "bulk_delta"
+  },
+  "dispatch": {
+    "real": 150
+  },
+  "uncovered_targets": []
+}

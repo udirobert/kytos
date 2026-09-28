@@ -1,0 +1,12 @@
+This prediction has 405,817,526 stored entries (6,764 per cell); packaging it may need about 9 GiB of RAM, more than the ~8 GiB total on this machine.
+`vcc prep` may be killed by the OS with no error message. Run prep on a machine with more RAM, or reduce the prediction's density (fewer expressed genes per cell).
+This is an estimate — with swap, or if more RAM frees up, it may still complete.
+✓ dry run — no .vcc written
+  input:         experiments/k034-final-rehearsal/gen/prediction.h5ad
+  output:        (dry run)
+  cells:         60000
+  genes:         18533  (encoding: float32)
+  perturbations: column 'target_gene' → 'target_gene'
+  contexts:      column 'context' → D=20000, E=20000, F=20000
+  targets:       verified against the official list
+  normalization: counts-preserved

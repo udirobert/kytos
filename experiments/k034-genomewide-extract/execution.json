@@ -1,0 +1,64 @@
+{
+  "run_id": "k034-genomewide-extract",
+  "date": "2026-09-28",
+  "phase": "final-phase readiness",
+  "status": "completed",
+  "question": "Can per-target delta coverage be extended to every target in each source before the Oct-22 panel drops, so any new pert_counts.csv is covered without re-scanning corpora?",
+  "outputs_volume_dir": "/kytos-vol/k034-final-prep/",
+  "target_selection": "all_source_targets (new --all-source-targets mode in tools/modal_k023_xatlas_extract.py / modal_k031_jurkat_extract.py)",
+  "sources": {
+    "k562": {
+      "path": "/kytos-vol/k034-final-prep/k034-k562-all/deltas_k562.npz",
+      "targets_requested": 9869,
+      "targets_covered": 9869,
+      "elapsed_seconds": 32.3,
+      "status": "completed"
+    },
+    "cd4": {
+      "path": "/kytos-vol/k034-final-prep/k034-cd4-all/deltas_cd4.npz",
+      "targets_requested": 11526,
+      "targets_covered": 7281,
+      "elapsed_seconds": 628.8,
+      "status": "completed"
+    },
+    "jurkat": {
+      "path": "/kytos-vol/k034-final-prep/k034-jurkat-all/deltas_jurkat_stim.npz",
+      "targets_requested": 18465,
+      "stim_targets_covered": 18032,
+      "rest_targets_covered": 217,
+      "median_cells_per_target_stim": 59,
+      "status": "completed"
+    },
+    "hct116": {
+      "path": "/kytos-vol/k034-final-prep/k034-hct116-all/deltas_hct116.npz",
+      "targets_requested": 18293,
+      "targets_covered": 18293,
+      "expression_rows_scanned": 17395402897,
+      "expression_rows_kept": 14757146402,
+      "elapsed_seconds": 1401.3,
+      "status": "completed",
+      "qa": "pooled deltas bit-identical to the 343-target extract on all 343 overlapping targets (max abs diff 0.0)"
+    },
+    "hek293t": {
+      "path": "/kytos-vol/k034-final-prep/k034-hek293t-all/deltas_hek293t.npz",
+      "targets_requested": 18311,
+      "targets_covered": 18311,
+      "expression_rows_scanned": 29136391388,
+      "expression_rows_kept": 24581252319,
+      "selected_cells": 4348773,
+      "elapsed_seconds": 3144.3,
+      "status": "completed",
+      "qa": "pooled deltas match the 343-target extract on all 343 overlapping targets (median cosine 1.0, max abs diff 3.7e-9); 300/300 val-panel targets covered",
+      "note": "first attempt SIGTERM-preempted at ~19.7B/29.1B rows; respawned server-side and completed clean on attempt two"
+    }
+  },
+  "engineering_notes": [
+    "X-Atlas all-targets mode accumulates per-target pooled log1p sums in a CSR matrix flushed every 256M kept values (SEGMENT_FLUSH_NNZ); buffering all kept triplets would need ~300+ GB and a dense (sample,target) matrix ~1.5M x 18.5k",
+    "delta_batch (per-sample paired) is omitted in all-source mode; pooled deltas verified bit-identical to the paired-path pooled column",
+    "detached `modal run -d` local entrypoints were cancelled when the local client exited (hct116 first attempt cancelled at ~13.6B/17.4B rows; cd4 completed before its client died); relaunches use the DEPLOYED app + Function.spawn, which is fully server-side",
+    "Modal preempted the first hek293t attempt with SIGTERM at ~68%; the scan now checkpoints (scanned offset + CSR accumulator) to the volume every 4B rows (CKPT_SCAN_ROWS) so a restarted input resumes instead of restarting",
+    "channel_accumulate memory raised 48->64 GB for genome-wide jurkat channels; combine stays 48 GB"
+  ],
+  "official_score_computed": false,
+  "actual_cost": "est ~9 Modal CPU-h total: k562 ~0.1 (1cpu), cd4 ~0.7 (4cpu x 629s), jurkat ~0.5, hct116 ~1.6 (4cpu x 1401s), hek293t ~3.5 successful + ~2.3 preempted attempt (4cpu)"
+}

@@ -191,6 +191,7 @@ def run_gate(
     arms: str = "",
 ) -> dict:
     import json
+    import os
     import subprocess
     import sys
     import tempfile
@@ -239,6 +240,13 @@ def run_gate(
     del real
 
     cons_w = _load_variant_deltas(VARIANTS_DIR / "variant_consensus_w_ctr.npz", axis_symbols)
+    eb2_path = VARIANTS_DIR / "variant_consensus_eb2_ctr.npz"
+    nctr_path = VARIANTS_DIR / "variant_consensus_w.npz"
+    for _p in (eb2_path, nctr_path):
+        if not _p.exists():
+            raise FileNotFoundError(f"missing variant deltas on volume: {_p}")
+    cons_eb2 = _load_variant_deltas(eb2_path, axis_symbols)
+    cons_w_nctr = _load_variant_deltas(nctr_path, axis_symbols)
 
     # Round 10: k033 State-ST genome-wide K562 deltas (learned across-gene
     # signature, first non-heuristic signature class in the gate). Arms
@@ -294,6 +302,14 @@ def run_gate(
     # over-call — knob-class, below transfer confidence (k028/k029 lesson).
     # No promotion candidate; generator-structure NB search falsified.
     # Exact tables: experiments/_embargoed/k025-eval2-gate/gate-20260924-02/.
+    # Round 11: bulk-amplitude (MSE-channel) sweep + reach probes.
+    # expr_mse_unbiased_capped_norm is set by bulk_amplitude alone (the
+    # amplitude knob is invariant to it) and improved monotonically through
+    # the round-3 bulk sweep, so the bulk moment looks under-amplified:
+    # sweep dm_bulk_amp 1.0-3.0 at amp 1.0, plus one amp=bulk=1.5 point.
+    # eb2_b1p0 and nctr_b1p0 probe reach/centering: harder-shrinked eb2
+    # deltas and the uncentered consensus at the same bulk amplitude.
+    # dm_ref re-scores the champion config as a same-run drift control.
     variants = {
         "dm_ref": {
             "deltas": cons_w,
@@ -301,57 +317,63 @@ def run_gate(
             "dm_amp": 1.0,
             "dm_bulk_amp": 0.5,
         },
-        "dm_nb_pk4": {
+        "dm_b1p0": {
             "deltas": cons_w,
             "gen": "dm",
             "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_nb": True,
+            "dm_bulk_amp": 1.0,
         },
-        "dm_nb_pk1": {
+        "dm_b1p5": {
             "deltas": cons_w,
             "gen": "dm",
             "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_pool_k": 1,
-            "dm_nb": True,
+            "dm_bulk_amp": 1.5,
         },
-        "dm_soft0p02": {
+        "dm_b2p0": {
             "deltas": cons_w,
             "gen": "dm",
             "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_soft": 0.02,
+            "dm_bulk_amp": 2.0,
         },
-        "dm_soft0p05": {
+        "dm_b3p0": {
             "deltas": cons_w,
             "gen": "dm",
             "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_soft": 0.05,
+            "dm_bulk_amp": 3.0,
         },
-        "dm_mass": {
+        "dm_a1p5_b1p5": {
             "deltas": cons_w,
             "gen": "dm",
-            "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_mass": True,
+            "dm_amp": 1.5,
+            "dm_bulk_amp": 1.5,
         },
-        "dm_mass_soft0p05": {
-            "deltas": cons_w,
+        "eb2_b1p0": {
+            "deltas": cons_eb2,
             "gen": "dm",
             "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_mass": True,
-            "dm_soft": 0.05,
+            "dm_bulk_amp": 1.0,
         },
-        "dm_nb_pk4_soft0p05": {
-            "deltas": cons_w,
+        "nctr_b1p0": {
+            "deltas": cons_w_nctr,
             "gen": "dm",
             "dm_amp": 1.0,
-            "dm_bulk_amp": 0.5,
-            "dm_nb": True,
-            "dm_soft": 0.05,
+            "dm_bulk_amp": 1.0,
+        },
+        # Round 12 composition probes: the round-11 independent positives
+        # (eb2 deltas, uncentered deltas, a1.5/b1.5 generation) each gained
+        # ~+0.01 but cleared no promotion bar alone; test pairwise
+        # composition on the axis where they should stack.
+        "eb2_a1p5_b1p5": {
+            "deltas": cons_eb2,
+            "gen": "dm",
+            "dm_amp": 1.5,
+            "dm_bulk_amp": 1.5,
+        },
+        "nctr_a1p5_b1p5": {
+            "deltas": cons_w_nctr,
+            "gen": "dm",
+            "dm_amp": 1.5,
+            "dm_bulk_amp": 1.5,
         },
     }
     # Round 10 arms activate only once the k033 calibrator output exists on
@@ -451,7 +473,11 @@ def run_gate(
                 ignore_index=True,
             )
             pred = ad.AnnData(x, obs=obs, var=real_sub.var)
-            pred.write_h5ad(pred_path, compression="gzip")
+            # Preemption mid-write leaves a truncated file that the
+            # exists() check would mistake for complete; write-then-rename.
+            tmp_path = pred_path.with_suffix(".tmp.h5ad")
+            pred.write_h5ad(tmp_path, compression="gzip")
+            os.replace(tmp_path, pred_path)
             print(f"[{name}] pred written: {x.shape}, dispatch {used}", flush=True)
         pred_paths[name] = pred_path
         volume.commit()
@@ -485,6 +511,48 @@ def run_gate(
             "ratio_vs_real": med / max(median_real, 1.0),
         }
         print(f"[{name}] de_proxy median {med:.0f} vs real {median_real:.0f}", flush=True)
+    volume.commit()
+
+    # bulk_shift diagnostic: per-target pseudobulk log-probability shift
+    # s_t = log1p(1e4 * P_t) - log1p(1e4 * P_ctrl), self-gene zeroed.
+    # Reports median ||s_t||_2 (bulk amplitude) and median cosine to the
+    # real shift (bulk direction) per arm.
+    ctrl_colsum = np.asarray(controls.X.sum(axis=0)).ravel()
+    log_p_ctrl = np.log1p(1e4 * ctrl_colsum / max(ctrl_colsum.sum(), 1.0))
+    gene_pos = {g: i for i, g in enumerate(axis_symbols)}
+
+    def _shift_vec(block, t):
+        colsum = np.asarray(block.sum(axis=0)).ravel()
+        s = np.log1p(1e4 * colsum / max(colsum.sum(), 1.0)) - log_p_ctrl
+        gi = gene_pos.get(t)
+        if gi is not None:
+            s[gi] = 0.0
+        return s
+
+    real_shift = {t: _shift_vec(real_sub.X[labels_all == t], t) for t in eval_targets}
+    bulk_shift = {
+        "real": {"median_norm": float(np.median([np.linalg.norm(s) for s in real_shift.values()]))}
+    }
+    for name in variants:
+        pred_sub = ad.read_h5ad(pred_paths[name], backed="r")
+        norms = []
+        cosines = []
+        for ti, t in enumerate(eval_targets):
+            s = _shift_vec(pred_sub.X[ti * cells_per_pert : (ti + 1) * cells_per_pert], t)
+            norms.append(float(np.linalg.norm(s)))
+            r = real_shift[t]
+            denom = np.linalg.norm(s) * np.linalg.norm(r)
+            cosines.append(float(s @ r / denom) if denom > 0 else 0.0)
+        pred_sub.file.close()
+        bulk_shift[name] = {
+            "median_norm": float(np.median(norms)),
+            "median_cosine_vs_real": float(np.median(cosines)),
+        }
+        print(
+            f"[{name}] bulk_shift median_norm {bulk_shift[name]['median_norm']:.3f} "
+            f"cos {bulk_shift[name]['median_cosine_vs_real']:.3f}",
+            flush=True,
+        )
     volume.commit()
 
     def cell_eval2(*args):
@@ -610,6 +678,7 @@ def run_gate(
         "control_cells": int(controls.n_obs),
         "variants": list(variants),
         "de_proxy": de_proxy,
+        "bulk_shift": bulk_shift,
         "oracle_note": "oracle_hesc uses in-context measured deltas -- leaked "
         "by construction, interpretation anchor only",
         "real_data_anchors": {

@@ -1,0 +1,31 @@
+{
+  "run_id": "k034-final-rehearsal",
+  "date": "2026-09-28",
+  "phase": "final-phase readiness",
+  "question": "Does the champion submit path (consensus_w_ctr deltas + dual-moment generation + vcc prep) work end-to-end on a relabeled D/E/F context panel before Oct 22?",
+  "baseline_and_intervention": "Same code path as k027-consensus-dm; only the contexts flag, context filenames, and a mock 50-target pert_counts.csv differ. No leaderboard submission (plumbing test).",
+  "inputs": {
+    "control_contexts": "vcc_2026_controls.zip context_A/B/C.h5ad copied to context_D/E/F.h5ad in data/raw/vcc2026-mock-final/ (throwaway, gitignored)",
+    "mock_panel": "first 50 targets of data/raw/vcc2026/pert_counts.csv (panel-order prefix; plumbing only)",
+    "delta_sources": {
+      "k562": "/kytos-vol/k023-consensus/extract-20260921-02-honest/deltas_k562.npz",
+      "hct116": "/kytos-vol/k023-consensus/extract-20260921-01/deltas_hct116.npz",
+      "hek293t": "/kytos-vol/k023-consensus/extract-20260921-01/deltas_hek293t.npz",
+      "cd4": "/kytos-vol/k023-consensus/extract-20260921-01/deltas_cd4.npz",
+      "jurkat_stim": "/kytos-vol/k031-jurkat/jurkat-20260924-02/deltas_jurkat_stim.npz"
+    },
+    "consensus_variant": "consensus_w_ctr (local build via tools/build_consensus_deltas.py; jurkat_stim included at default weight 1.0)"
+  },
+  "axes_and_units": {
+    "gene_axis": "data/raw/vcc2026/gene_names.csv order (18533)",
+    "delta_units": "mean log1p(raw) perturbed minus control; cd4 source is publisher log2fc, unit-normalized by consensus builder",
+    "generation": "build_prediction_dual_moment, integer counts, amplitude=1.0, bulk_amplitude=0.5, pool_k=4, cells_per_target=400, seed=0"
+  },
+  "code": {
+    "generator": "tools/run_k027_dual_moment_submit.py",
+    "consensus": "tools/build_consensus_deltas.py + tools/consensus_deltas.py",
+    "prep": "vcc 0.2.0 (.venv-science)"
+  },
+  "scorer_contract": "none -- dry-run only; no metrics computed, none recorded here",
+  "cost_estimate": "local only; ~3 min generation + ~1 min prep dry-run"
+}

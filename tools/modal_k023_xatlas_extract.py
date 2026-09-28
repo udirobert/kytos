@@ -22,21 +22,35 @@ Sources
   per-target ``log_fc`` is a log2 fold-change, NOT a mean-log1p shift --
   units differ and are recorded in the manifest.
 
-Outputs (per source, on the Modal volume under ``k023-consensus/``)
+Outputs (per source, on the Modal volume under ``k023-consensus/`` by
+default; ``--out-subdir`` redirects, e.g. ``k034-final-prep``)
 ------------------------------------------------------------------
 ``deltas_<source>.npz`` with:
   ``genes``         (18533,) panel axis symbols
   ``targets``       (T,) requested target symbols
   ``delta``         (T, 18533) float32 pooled delta
-  ``delta_batch``   (T, 18533) float32 batch-paired delta (X-Atlas only)
+  ``delta_batch``   (T, 18533) float32 batch-paired delta (X-Atlas only;
+                    omitted in ``--all-source-targets`` mode -- a
+                    (target, sample) pairing at genome scale is ~1.5M
+                    sparse group rows, so only pooled deltas are kept)
   ``covered``       (T,) bool -- target present in source
   ``n_cells``       (T,) int64 perturbed cells (CD4: summed n_cells_target)
 plus ``manifest_<source>.json`` with coverage, units, hashes, versions.
+
+Target selection (default behavior unchanged):
+  - no flags        -> union of the 300-target 2026 panel + 47 Atlas-eval
+                       targets (``_load_request_targets``)
+  - --targets-file  -> newline/CSV list of symbols, first column used
+  - --all-source-targets -> every target present in the source (genome-wide)
 
 Run:
   modal run tools/modal_k023_xatlas_extract.py --source hct116 \
       --run-id extract-YYYYMMDD-NN
   modal run tools/modal_k023_xatlas_extract.py --source cd4 ...
+  modal run tools/modal_k023_xatlas_extract.py --source hct116 \
+      --run-id k034-hct116-all --all-source-targets \
+      --out-subdir k034-final-prep
+  modal run tools/modal_k023_xatlas_extract.py --source hct116 --probe
 """
 
 from __future__ import annotations
@@ -61,6 +75,17 @@ XATLAS_CONTROL = "Non-Targeting"
 CONTROL_CAP_PER_SAMPLE = 150
 SCAN_BATCH_ROWS = 2_000_000
 SCAN_MAX_RETRIES = 20
+# In --all-source-targets mode kept rows are ~half the 17-29B-row scan, so
+# they cannot be buffered: triplets are flushed into a sparse accumulator
+# every SEGMENT_FLUSH_NNZ kept values.
+SEGMENT_FLUSH_NNZ = 256_000_000
+# Checkpoint the accumulator to the volume every CKPT_SCAN_ROWS scanned
+# rows: Modal preempted a hek293t runner at ~68% (SIGTERM) and the input
+# restarted from zero -- a checkpointed resume loses only the tail segment.
+CKPT_SCAN_ROWS = 4_000_000_000
+# Dense (groups x panel_genes) accumulation is only safe for panel-scale
+# target lists; beyond this product callers must use --all-source-targets.
+MAX_DENSE_GROUP_CELLS = 500_000_000
 
 CD4_URL = (
     "https://genome-scale-tcell-perturb-seq.s3.amazonaws.com/marson2025_data/GWCD4i.DE_stats.h5ad"
@@ -131,6 +156,61 @@ def _load_request_targets():
     return sorted(set(panel) | set(eval_targets)), panel, eval_targets
 
 
+def _resolve_out_dir(out_subdir, run_id):
+    out = (VOLUME_ROOT / out_subdir if out_subdir else OUT_DIR) / run_id
+    out.mkdir(parents=True, exist_ok=True)
+    return out
+
+
+def _read_targets_file(path: str) -> list[str]:
+    """Local-side targets list: one symbol per line or CSV first column."""
+    targets = []
+    for line in Path(path).read_text().splitlines():
+        sym = line.split(",")[0].strip()
+        if sym and sym != "target_gene":
+            targets.append(sym)
+    return sorted(set(targets))
+
+
+@app.function(
+    image=image,
+    cpu=(2.0, 2.0),
+    memory=(8192, 8192),
+    timeout=1800,
+    startup_timeout=300,
+    retries=0,
+    max_containers=1,
+    scaledown_window=2,
+    volumes={str(VOLUME_ROOT): volume},
+    secrets=_hf_secret(),
+)
+def probe_xatlas(source: str) -> dict:
+    """Cardinality probe: distinct gene_target / sample counts per line.
+
+    Cheap (scans only the small ``cells.lance`` table) -- run before an
+    ``--all-source-targets`` extract to size the job.
+    """
+    if source not in XATLAS_ARMS:
+        raise ValueError(f"source must be one of {sorted(XATLAS_ARMS)}")
+    import lance
+
+    base = HF_XATLAS.format(XATLAS_ARMS[source])
+    cells = (
+        lance.dataset(f"{base}/cells.lance")
+        .scanner(columns=["cell_integer_id", "sample", "gene_target"])
+        .to_table()
+        .to_pandas()
+    )
+    targets = sorted(set(cells["gene_target"].astype(str)) - {XATLAS_CONTROL})
+    return {
+        "source": source,
+        "n_cells": int(len(cells)),
+        "n_samples": int(cells["sample"].nunique()),
+        "n_gene_targets": len(targets),
+        "expression_table": f"{base}/expression.lance",
+    }
+
+
 @app.function(
     image=image,
     cpu=(4.0, 4.0),
@@ -145,7 +225,13 @@ def _load_request_targets():
     # rate limits (HTTP 429) do not stall the 17B-row expression scan.
     secrets=_hf_secret(),
 )
-def extract_xatlas(source: str, run_id: str) -> dict:
+def extract_xatlas(
+    source: str,
+    run_id: str,
+    targets: list | None = None,
+    all_source_targets: bool = False,
+    out_subdir: str = "",
+) -> dict:
     import sys
     import time
 
@@ -159,13 +245,11 @@ def extract_xatlas(source: str, run_id: str) -> dict:
     _check_run_id(run_id)
     if source not in XATLAS_ARMS:
         raise ValueError(f"source must be one of {sorted(XATLAS_ARMS)}")
-    out = OUT_DIR / run_id
-    out.mkdir(parents=True, exist_ok=True)
+    out = _resolve_out_dir(out_subdir, run_id)
     stem = out / f"deltas_{source}"
     if (stem.parent / (stem.name + ".npz")).exists():
         raise FileExistsError(f"{stem}.npz already exists -- use a new run ID")
 
-    targets_requested, panel_targets, eval_targets = _load_request_targets()
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
 
     import lance
@@ -196,23 +280,119 @@ def extract_xatlas(source: str, run_id: str) -> dict:
         .to_table()
         .to_pandas()
     )
+
+    if all_source_targets:
+        targets_requested = sorted(set(all_cells["gene_target"].astype(str)) - {XATLAS_CONTROL})
+        target_selection = "all_source_targets"
+    elif targets is not None:
+        targets_requested = sorted({str(t) for t in targets})
+        target_selection = "targets_file"
+    else:
+        targets_requested, _, _ = _load_request_targets()
+        target_selection = "panel_plus_eval"
+
     wanted = all_cells["gene_target"].isin(set(targets_requested))
     ctrl = all_cells[all_cells["gene_target"] == XATLAS_CONTROL]
     ctrl = ctrl.groupby("sample", sort=False).head(CONTROL_CAP_PER_SAMPLE)
     cells = pd.concat([all_cells[wanted], ctrl])
 
-    group_keys = sorted(set(zip(cells["sample"], cells["gene_target"])))
-    group_index = {key: i for i, key in enumerate(group_keys)}
-    cell_group = np.full(int(all_cells["cell_integer_id"].max()) + 1, -1, dtype=np.int64)
-    for cid, sample, label in zip(cells["cell_integer_id"], cells["sample"], cells["gene_target"]):
-        cell_group[int(cid)] = group_index[(sample, label)]
-    group_cells = np.zeros(len(group_keys), dtype=np.int64)
-    for g in cell_group[cell_group >= 0]:
-        group_cells[g] += 1
-
     rows_buf, cols_buf, vals_buf = [], [], []
     scanned = kept = 0
     retries = 0
+    buf_nnz = 0
+
+    if all_source_targets:
+        # ---- pooled-only streaming accumulation ------------------------
+        # Genome-scale: ~all cells are kept, so triplet buffering would
+        # need ~100s of GB and a dense (sample, target) group matrix would
+        # need ~1.5M x 18.5k rows. Instead accumulate per-target pooled
+        # log1p sums into a CSR matrix flushed every SEGMENT_FLUSH_NNZ kept
+        # values. Bucket index = target position; last bucket = pooled
+        # controls (equivalent to the pooled control mean used by
+        # deltas_from_group_sums). delta_batch is intentionally not
+        # produced in this mode.
+        target_pos = {t: i for i, t in enumerate(targets_requested)}
+        n_buckets = len(targets_requested) + 1
+        cell_bucket = np.full(int(all_cells["cell_integer_id"].max()) + 1, -1, dtype=np.int64)
+        labels = cells["gene_target"].to_numpy()
+        buckets = np.array([target_pos.get(t, n_buckets - 1) for t in labels], dtype=np.int64)
+        cell_bucket[cells["cell_integer_id"].to_numpy()] = buckets
+        group_cells = np.bincount(buckets, minlength=n_buckets).astype(np.int64)
+        accum = sparse.csr_matrix((n_buckets, len(panel_genes)), dtype=np.float64)
+
+        # Resume from a checkpointed scan if a previous attempt was killed
+        # mid-run (SIGTERM preemption observed in k034).
+        ckpt_path = out / "checkpoint_scan.npz"
+        ckpt_next = CKPT_SCAN_ROWS
+        if ckpt_path.exists():
+            with np.load(ckpt_path) as ck:
+                if not np.array_equal(ck["group_cells"], group_cells):
+                    raise ValueError("checkpoint does not match this cell set")
+                accum = sparse.csr_matrix(
+                    (ck["accum_data"], ck["accum_indices"], ck["accum_indptr"]),
+                    shape=(n_buckets, len(panel_genes)),
+                )
+                scanned = int(ck["scanned"])
+                kept = int(ck["kept"])
+                ckpt_next = scanned + CKPT_SCAN_ROWS
+                print(
+                    f"[{source}] resuming from checkpoint at {scanned} rows "
+                    f"(accum nnz={accum.nnz})",
+                    flush=True,
+                )
+
+        def _flush():
+            nonlocal accum, buf_nnz, ckpt_next
+            if not rows_buf:
+                return
+            r = np.concatenate(rows_buf)
+            c = np.concatenate(cols_buf)
+            v = np.concatenate(vals_buf)
+            accum = accum + sparse.coo_matrix((v, (r, c)), shape=accum.shape).tocsr()
+            rows_buf.clear()
+            cols_buf.clear()
+            vals_buf.clear()
+            buf_nnz = 0
+            if scanned >= ckpt_next:
+                np.savez(
+                    str(out / "checkpoint_scan.npz.tmp"),
+                    scanned=np.int64(scanned),
+                    kept=np.int64(kept),
+                    group_cells=group_cells,
+                    accum_data=accum.data,
+                    accum_indices=accum.indices,
+                    accum_indptr=accum.indptr,
+                )
+                (out / "checkpoint_scan.npz.tmp").rename(ckpt_path)
+                volume.commit()
+                ckpt_next = scanned + CKPT_SCAN_ROWS
+                print(f"[{source}] checkpoint at {scanned}", flush=True)
+            print(f"[{source}] flush: accum nnz={accum.nnz}", flush=True)
+    else:
+        # ---- (sample, target) group accumulation, original path --------
+        group_keys = sorted(set(zip(cells["sample"], cells["gene_target"])))
+        if len(group_keys) * len(panel_genes) > MAX_DENSE_GROUP_CELLS:
+            raise ValueError(
+                f"{len(group_keys)} (sample, target) groups x {len(panel_genes)} "
+                "genes exceeds the dense accumulation bound; rerun with "
+                "--all-source-targets (pooled deltas) or a smaller "
+                "--targets-file"
+            )
+        group_index = {key: i for i, key in enumerate(group_keys)}
+        cell_group = np.full(int(all_cells["cell_integer_id"].max()) + 1, -1, dtype=np.int64)
+        for cid, sample, label in zip(
+            cells["cell_integer_id"], cells["sample"], cells["gene_target"]
+        ):
+            cell_group[int(cid)] = group_index[(sample, label)]
+        group_cells = np.zeros(len(group_keys), dtype=np.int64)
+        for g in cell_group[cell_group >= 0]:
+            group_cells[g] += 1
+        accum = None
+
+        def _flush():
+            return
+
+    cell_map = cell_bucket if all_source_targets else cell_group
     while True:
         # Recreate the scanner at `scanned` so transient HF read errors resume
         # rather than restarting the 17B-row scan from zero.
@@ -224,8 +404,8 @@ def extract_xatlas(source: str, run_id: str) -> dict:
                 cid = batch.column("cell_integer_id").to_numpy()
                 gid = batch.column("gene_integer_id").to_numpy()
                 val = batch.column("value").to_numpy()
-                in_range = cid < len(cell_group)
-                grp = np.where(in_range, cell_group[np.clip(cid, 0, len(cell_group) - 1)], -1)
+                in_range = cid < len(cell_map)
+                grp = np.where(in_range, cell_map[np.clip(cid, 0, len(cell_map) - 1)], -1)
                 pos = np.where(
                     gid < len(gene_to_panel),
                     gene_to_panel[np.clip(gid, 0, len(gene_to_panel) - 1)],
@@ -236,8 +416,14 @@ def extract_xatlas(source: str, run_id: str) -> dict:
                     rows_buf.append(grp[keep])
                     cols_buf.append(pos[keep].astype(np.int64))
                     vals_buf.append(np.log1p(val[keep].astype(np.float64)))
+                    buf_nnz += int(keep.sum())
                 kept += int(keep.sum())
                 scanned += batch.num_rows
+                # Flush AFTER scanned/kept advance so a checkpoint's
+                # (scanned, accum) pair is consistent -- resuming must not
+                # re-scan rows the accumulator already contains.
+                if buf_nnz >= SEGMENT_FLUSH_NNZ:
+                    _flush()
                 if scanned % (SCAN_BATCH_ROWS * 50) < SCAN_BATCH_ROWS:
                     print(
                         f"[{source}] scanned {scanned}/{total_rows} kept {kept}",
@@ -255,35 +441,56 @@ def extract_xatlas(source: str, run_id: str) -> dict:
                 flush=True,
             )
             time.sleep(wait)
+    _flush()
 
-    row = np.concatenate(rows_buf) if rows_buf else np.zeros(0, dtype=np.int64)
-    col = np.concatenate(cols_buf) if cols_buf else np.zeros(0, dtype=np.int64)
-    dat = np.concatenate(vals_buf) if vals_buf else np.zeros(0)
-    group_sums = sparse.csr_matrix(
-        (dat, (row, col)), shape=(len(group_keys), len(panel_genes))
-    ).toarray()
+    if all_source_targets:
+        # Pooled delta: per-target mean log1p minus pooled control mean.
+        sums = accum[:-1].toarray()  # (n_targets, n_genes) float64
+        ctrl_mean = accum[-1].toarray().ravel() / max(int(group_cells[-1]), 1)
+        order = targets_requested
+        covered = group_cells[:-1] > 0
+        n_cells = group_cells[:-1]
+        delta_pool = np.zeros((len(order), len(panel_genes)), dtype=np.float32)
+        nz = n_cells > 0
+        delta_pool[nz] = (sums[nz] / n_cells[nz, None] - ctrl_mean[None, :]).astype(np.float32)
+        pert_cells = cells[cells["gene_target"] != XATLAS_CONTROL]
+        per_target_samples = pert_cells.groupby("gene_target")["sample"].nunique().to_dict()
+        n_samples = np.array([per_target_samples.get(t, 0) for t in order], dtype=np.int64)
+        extra = {}
+        delta_columns = {"delta": "pooled controls"}
+    else:
+        row = np.concatenate(rows_buf) if rows_buf else np.zeros(0, dtype=np.int64)
+        col = np.concatenate(cols_buf) if cols_buf else np.zeros(0, dtype=np.int64)
+        dat = np.concatenate(vals_buf) if vals_buf else np.zeros(0)
+        group_sums = sparse.csr_matrix(
+            (dat, (row, col)), shape=(len(group_keys), len(panel_genes))
+        ).toarray()
 
-    deltas = cd.deltas_from_group_sums(group_sums, group_cells, group_keys, XATLAS_CONTROL)
-    order = targets_requested
-    covered = np.array([t in deltas for t in order])
-    delta_pool = np.zeros((len(order), len(panel_genes)), dtype=np.float32)
-    delta_batch = np.zeros_like(delta_pool)
-    n_cells = np.zeros(len(order), dtype=np.int64)
-    n_samples = np.zeros(len(order), dtype=np.int64)
-    for i, t in enumerate(order):
-        if t in deltas:
-            delta_pool[i] = deltas[t]["pooled"]
-            delta_batch[i] = deltas[t]["batch"]
-            n_cells[i] = deltas[t]["n_cells"]
-            n_samples[i] = deltas[t]["n_samples"]
+        deltas = cd.deltas_from_group_sums(group_sums, group_cells, group_keys, XATLAS_CONTROL)
+        order = targets_requested
+        covered = np.array([t in deltas for t in order])
+        delta_pool = np.zeros((len(order), len(panel_genes)), dtype=np.float32)
+        delta_batch = np.zeros_like(delta_pool)
+        n_cells = np.zeros(len(order), dtype=np.int64)
+        n_samples = np.zeros(len(order), dtype=np.int64)
+        for i, t in enumerate(order):
+            if t in deltas:
+                delta_pool[i] = deltas[t]["pooled"]
+                delta_batch[i] = deltas[t]["batch"]
+                n_cells[i] = deltas[t]["n_cells"]
+                n_samples[i] = deltas[t]["n_samples"]
+        extra = {"delta_batch": delta_batch}
+        delta_columns = {"delta": "pooled controls", "delta_batch": "per-sample paired"}
 
     stem = out / f"deltas_{source}"
+    # Member order matches the original layout in default mode (delta_batch
+    # before covered); all-source mode simply omits delta_batch.
     np.savez_compressed(
         str(stem) + ".npz",
         genes=np.asarray(panel_genes),
         targets=np.asarray(order),
         delta=delta_pool,
-        delta_batch=delta_batch,
+        **extra,
         covered=covered,
         n_cells=n_cells,
         n_samples=n_samples,
@@ -294,6 +501,7 @@ def extract_xatlas(source: str, run_id: str) -> dict:
         "run_id": run_id,
         "control_label": XATLAS_CONTROL,
         "control_cap_per_sample": CONTROL_CAP_PER_SAMPLE,
+        "target_selection": target_selection,
         "expression_rows_scanned": int(scanned),
         "expression_rows_kept": int(kept),
         "expression_table_rows": int(total_rows),
@@ -304,10 +512,14 @@ def extract_xatlas(source: str, run_id: str) -> dict:
         "panel_genes": len(panel_genes),
         "panel_genes_missing_from_source": missing_genes,
         "units": "mean log1p(raw counts) perturbed minus control",
-        "delta_columns": {"delta": "pooled controls", "delta_batch": "per-sample paired"},
+        "delta_columns": delta_columns,
         "elapsed_seconds": round(time.time() - t0, 1),
     }
     (out / f"manifest_{source}.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    if all_source_targets:
+        ckpt = out / "checkpoint_scan.npz"
+        if ckpt.exists():
+            ckpt.unlink()
     volume.commit()
     return {"status": "completed", "npz": str(stem) + ".npz", "manifest": manifest}
 
@@ -324,7 +536,12 @@ def extract_xatlas(source: str, run_id: str) -> dict:
     volumes={str(VOLUME_ROOT): volume},
     ephemeral_disk=524288,
 )
-def extract_cd4(run_id: str) -> dict:
+def extract_cd4(
+    run_id: str,
+    targets: list | None = None,
+    all_source_targets: bool = False,
+    out_subdir: str = "",
+) -> dict:
     import hashlib
     import time
 
@@ -338,12 +555,19 @@ def extract_cd4(run_id: str) -> dict:
     import consensus_deltas as cd
 
     _check_run_id(run_id)
-    out = OUT_DIR / run_id
-    out.mkdir(parents=True, exist_ok=True)
+    out = _resolve_out_dir(out_subdir, run_id)
     stem = out / "deltas_cd4"
     if (stem.parent / (stem.name + ".npz")).exists():
         raise FileExistsError(f"{stem}.npz already exists -- use a new run ID")
-    targets_requested, _, _ = _load_request_targets()
+    if targets is None and not all_source_targets:
+        targets_requested, _, _ = _load_request_targets()
+        target_selection = "panel_plus_eval"
+    elif targets is not None:
+        targets_requested = sorted({str(t) for t in targets})
+        target_selection = "targets_file"
+    else:
+        targets_requested = None  # resolved after the h5ad is opened
+        target_selection = "all_source_targets"
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
 
     t0 = time.time()
@@ -369,6 +593,9 @@ def extract_cd4(run_id: str) -> dict:
             else adata.var_names.astype(str).to_numpy()
         )
         obs_target = obs["target_contrast_gene_name"].astype(str)
+        if targets_requested is None:
+            # --all-source-targets: every contrast's target in the table.
+            targets_requested = sorted(t for t in obs_target.unique() if t and t != "nan")
         selected = np.flatnonzero(obs_target.isin(targets_requested).to_numpy())
         chosen = obs.iloc[selected]
         log_fc = np.asarray(adata.layers["log_fc"][selected, :], dtype=np.float64)
@@ -417,6 +644,7 @@ def extract_cd4(run_id: str) -> dict:
         "dataset_url": CD4_URL,
         "sha256": CD4_SHA256,
         "run_id": run_id,
+        "target_selection": target_selection,
         "units": "publisher log2 fold-change (NOT mean-log1p shift)",
         "quality_filter": "n_guides>=2 & !single_guide & ontarget_significant "
         "& !distal_offtarget & !low_target_gex",
@@ -441,7 +669,12 @@ def extract_cd4(run_id: str) -> dict:
     scaledown_window=2,
     volumes={str(VOLUME_ROOT): volume},
 )
-def extract_k562(run_id: str) -> dict:
+def extract_k562(
+    run_id: str,
+    targets: list | None = None,
+    all_source_targets: bool = False,
+    out_subdir: str = "",
+) -> dict:
     """Subset the existing K562 deltas to the requested targets.
 
     ``delta_matrix_src.npz`` ships no explicit ``genes`` array; its column
@@ -466,12 +699,19 @@ def extract_k562(run_id: str) -> dict:
     sys.path.insert(0, str(REMOTE_ROOT / "tools"))
 
     _check_run_id(run_id)
-    out = OUT_DIR / run_id
-    out.mkdir(parents=True, exist_ok=True)
+    out = _resolve_out_dir(out_subdir, run_id)
     stem = out / "deltas_k562"
     if (stem.parent / (stem.name + ".npz")).exists():
         raise FileExistsError(f"{stem}.npz already exists -- use a new run ID")
-    targets_requested, _, _ = _load_request_targets()
+    if targets is None and not all_source_targets:
+        targets_requested, _, _ = _load_request_targets()
+        target_selection = "panel_plus_eval"
+    elif targets is not None:
+        targets_requested = sorted({str(t) for t in targets})
+        target_selection = "targets_file"
+    else:
+        targets_requested = None  # resolved after the source npz is opened
+        target_selection = "all_source_targets"
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
 
     t0 = time.time()
@@ -487,6 +727,10 @@ def extract_k562(run_id: str) -> dict:
         src_deltas = src["deltas"]
         if src_deltas.shape[1] != len(panel_genes):
             raise ValueError("delta_matrix_src column count does not match the panel axis")
+    if targets_requested is None:
+        # --all-source-targets: every target in the src matrix plus the
+        # paired-eval targets (paired rows keep the honest Replogle swap).
+        targets_requested = sorted(set(src_targets) | set(paired_targets))
 
     delta = np.zeros((len(targets_requested), len(panel_genes)), dtype=np.float32)
     covered = np.zeros(len(targets_requested), dtype=bool)
@@ -521,6 +765,7 @@ def extract_k562(run_id: str) -> dict:
         "src-matrix rows for those targets are in-context hESC deltas and "
         "would leak the k022 eval.",
         "paired_targets_from_replogle": n_paired_honest,
+        "target_selection": target_selection,
         "targets_requested": len(targets_requested),
         "targets_covered": int(covered.sum()),
         "elapsed_seconds": round(time.time() - t0, 1),
@@ -531,13 +776,25 @@ def extract_k562(run_id: str) -> dict:
 
 
 @app.local_entrypoint()
-def main(source: str, run_id: str):
+def main(
+    source: str,
+    run_id: str = "",
+    targets_file: str = "",
+    all_source_targets: bool = False,
+    out_subdir: str = "",
+    probe: bool = False,
+):
+    if probe:
+        print(json.dumps(probe_xatlas.remote(source), indent=2))
+        return
+    _check_run_id(run_id)
+    targets = _read_targets_file(targets_file) if targets_file else None
     if source in XATLAS_ARMS:
-        result = extract_xatlas.remote(source, run_id)
+        result = extract_xatlas.remote(source, run_id, targets, all_source_targets, out_subdir)
     elif source == "cd4":
-        result = extract_cd4.remote(run_id)
+        result = extract_cd4.remote(run_id, targets, all_source_targets, out_subdir)
     elif source == "k562":
-        result = extract_k562.remote(run_id)
+        result = extract_k562.remote(run_id, targets, all_source_targets, out_subdir)
     else:
         raise ValueError("source must be hct116, hek293t, cd4, or k562")
     print(json.dumps(result, indent=2))
