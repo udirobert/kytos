@@ -1,0 +1,16 @@
+{
+  "run_id": "k034-nctr-dm",
+  "entry_id": "SkPX8WRYGVfEFEcQ3WzI",
+  "model_name": "kytos-k034-nctr-dm",
+  "submitted_utc": "2026-09-28T16:36:20Z",
+  "build_app": "ap-miF8rjf4PwdNKj6yuysnzS",
+  "submit_app": "ap-osIvDvB5xWg6O5q7wxB2Qb",
+  "deltas": "/kytos-vol/k023-consensus/extract-20260921-02-honest/variants/variant_consensus_w.npz",
+  "deltas_sha256": "c0fff9dd28da822dcca7d4c6e962a0adfcbec154b53d5bbd96b4d42cb3174720",
+  "deltas_recipe": "weighted consensus of unit-normalized deltas over {k562 x2, hct116, hek293t, cd4}, rescaled to per-target K562 norm; UNCENTERED (the *_ctr per-gene-median-across-targets subtraction removed)",
+  "generator": "build_prediction_dual_moment(amplitude=1.0, bulk_amplitude=0.5, pool_k=4, space=bulk_delta) -- identical to k027 champion config",
+  "vcc_volume": "/kytos-vol/k034-nctr-dm/prediction.prep.vcc",
+  "ablation": "single-variable probe vs k027: identical generator + seed + dispatch, only deltas differ (variant_consensus_w vs variant_consensus_w_ctr)",
+  "hypothesis": "Gate B (hESC-only) cannot arbitrate recipe choices (k030 finding); leaderboard probe tests whether common-response centering helps or deletes signal on the real 3-context panel. Pre-declared expectation: pds up, mse slightly down, rest ~flat",
+  "notes": "build preempted twice on Modal and auto-retried (idempotent steps); submit_app preempted after upload during --wait, retry hit 'submission already in progress' (entry already queued); scored via vcc status --wait. meta.json run_id/mode strings are stale k027 tool defaults; authoritative fields (deltas_npz, sha256, generator, dispatch) verified."
+}

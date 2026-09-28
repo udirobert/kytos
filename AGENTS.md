@@ -441,6 +441,18 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   `docs/final-phase-runbook.md`. Tools: `tools/subset_deltas_npz.py`,
   `tools/modal_k034_final_submit.py`. Receipts:
   `experiments/k034-final-rehearsal/`, `experiments/k034-genomewide-extract/`.
+- **`kytos-k034-nctr-dm` submitted 2026-09-28 — +0.1178 (rank ~455),
+  regression vs champion.** Single-variable ablation: champion dual-moment
+  generator config but deltas = `variant_consensus_w` (uncentered; the
+  `*_ctr` common-response centering removed). Officially regressed
+  (−0.0084 vs k027) — consistent with Gate B's local ordering
+  (centering helps, does not delete signal). **This settles the open
+  final-phase recipe question: ship the centered k027 recipe blind; k027
+  remains champion.** k027's per-component officials were never captured
+  and the entry is purged from the API, so only the overall delta is
+  verifiable; the embargoed note records the fullest comparison.
+  Receipts: `experiments/k034-nctr-dm/`; analysis:
+  `experiments/_embargoed/k034-nctr-nm.md`.
 - **Gate B rounds 11–12 (2026-09-28, no promotion candidate).**
   `gate-20260928-02` swept `bulk_amplitude` 0.5–3.0 plus eb2/uncentered
   probes; `gate-20260928-03` tested their composition. Raw

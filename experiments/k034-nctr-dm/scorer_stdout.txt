@@ -1,0 +1,17 @@
+  status: scoring
+  status: published
+  entry:    SkPX8WRYGVfEFEcQ3WzI
+  model:    kytos-k034-nctr-dm
+  status:   published
+  submitted:2026-09-28T16:36:20.163774Z
+  Rank:                            455
+  Overall:                         0.11783623928991634
+  Perturbation discrimination pds: 0.5803574616759354
+  Expression accuracy mse:         0.012704621974919061
+  DE log-FC accuracy nmae:         0.08729358859060325
+  DE direction fidelity fid:       -0.017717181848454864
+  DE direction reach reach:        0.04303877487555712
+  DE significance overlap jac:     0.0013401704709381547
+  Partition:                       val
+  Panel:                           vcc2026-val-1
+  Anchor set:                      vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4

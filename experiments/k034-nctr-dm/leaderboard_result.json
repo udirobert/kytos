@@ -1,0 +1,20 @@
+{
+  "entry": "SkPX8WRYGVfEFEcQ3WzI",
+  "model": "kytos-k034-nctr-dm",
+  "status": "published",
+  "submitted": "2026-09-28T16:36:20.163774Z",
+  "rank": 455,
+  "leaderboard_size": 1202,
+  "overall": 0.11783623928991634,
+  "pds": 0.5803574616759354,
+  "mse": 0.012704621974919061,
+  "nmae": 0.08729358859060325,
+  "fid": -0.017717181848454864,
+  "reach": 0.04303877487555712,
+  "jac": 0.0013401704709381547,
+  "partition": "val",
+  "panel": "vcc2026-val-1",
+  "anchor_set": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+  "vs_k027_overall": -0.0084,
+  "note": "k027 official per-component scores were never captured (leaderboard page showed only overall at capture; entry fN4wjAp9BUEvHtGWk0az no longer retrievable). Full-component comparison vs k030 recorded in experiments/_embargoed/k034-nctr-nm.md."
+}

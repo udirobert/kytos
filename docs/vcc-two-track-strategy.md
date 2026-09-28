@@ -144,9 +144,12 @@ checking their validity caveats.
   deltas for all five sources are pre-extracted (`/kytos-vol/k034-final-prep/`),
   the submit path is rehearsed end-to-end on a mock D/E/F panel
   (`vcc prep --contexts D,E,F` dry-run PASS), and
-  `docs/final-phase-runbook.md` has the Oct-22 checklist. Remaining open
-  decision: which recipe ships blind — k027 champion vs the uncentered
-  variant.
+  `docs/final-phase-runbook.md` has the Oct-22 checklist.
+- **Final recipe decision (2026-09-28): RESOLVED.** `kytos-k034-nctr-dm`
+  (single-variable ablation: champion generator + uncentered `consensus_w`
+  deltas) scored +0.1178 vs k027's +0.1262 — the common-response centering
+  is load-bearing. **Ship the centered k027 recipe** (`consensus_w_ctr` +
+  dual-moment a1.0/b0.5/pk4) as the blind final submission.
 - **k030 campaign findings (qualitative; details embargoed
   `experiments/_embargoed/k030-ctxlineage.md`):**
   - *Gate B has a context blind spot.* Its eval subset is hESC-only,
