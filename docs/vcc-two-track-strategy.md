@@ -24,17 +24,19 @@ checking their validity caveats.
 - **Objective:** make comparisons trustworthy before choosing the next model
   change. We are not assuming that more architecture complexity is the missing
   ingredient.
-- **In-flight lever (2026-09-26): k033 trained-signature track.** A State
-  Transition model trained on the Replogle genome-wide K562 Perturb-seq
-  bundle (272/300 panel-target coverage) is the first *learned* signature
+- **Completed lever (2026-09-28): k033 trained-signature track — negative.** A
+  State Transition model trained on the Replogle genome-wide K562 Perturb-seq
+  bundle (272/300 panel-target coverage) was the first *learned* signature
   source; all prior submissions, including k027, ship transplanted
   mean-shift signatures, which the k022 paired-panel audit showed reach
-  roughly half of measured in-context transfer — signature content is the
-  quantified bottleneck. Deltas feed the existing generator via
-  `tools/modal_k033_delta_calibrate.py` and must pass cell-eval2 Gate B
-  round 10 (ST-only / ST-raw / ST×consensus-blend arms + drift control)
-  before any submission slot is spent. Status and infra notes: `AGENTS.md`
-  §4 (`k033`).
+  roughly half of measured in-context transfer. It trained to 40k steps,
+  emitted learned deltas through `tools/modal_k033_delta_calibrate.py`, and
+  went through cell-eval2 Gate B round 10 (ST-only / ST-raw / ST×consensus-blend
+  arms + drift control). **All three ST arms lost to the drift control** — the
+  learned signature did not recover per-target direction as well as the
+  transplanted consensus mean, and no blend beat the reference. No submission
+  slot was spent. Implementation-specific (one model class/corpus), not a
+  class-wide falsification. Status and infra notes: `AGENTS.md` §4 (`k033`).
 - **Implementation progress:** strict prediction-artifact metadata, baseline
   backfill for uncovered targets/contexts, no-op parity and A-only context
   isolation are verified on synthetic fixtures. Full-panel parity is not yet

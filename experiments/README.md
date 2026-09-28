@@ -250,14 +250,18 @@ enrichment path.
   figshare genome-wide Perturb-seq K562 bundle and ranked per-target
   signature reliability — the input screen for what to train on in k033.
   Exact reliability tables embargoed.
-- `k033-state-st` — **IN FLIGHT 2026-09-26** (no submission yet). Trained
-  signature source: Arc State ST model on the Replogle GWPS K562 bundle
-  (272/300 panel coverage), `tools/modal_k033_state_{probe,train}.py`,
+- `k033-state-st` — **COMPLETE 2026-09-28, negative gate result (no
+  submission).** Trained signature source: Arc State ST model on the Replogle
+  GWPS K562 bundle (272/300 panel coverage), `tools/modal_k033_state_{probe,train}.py`,
   Modal GPU, server-side chained stages (`prepare → fix → recompress →
-  train → infer`) on the `kytos-vcc` Volume. Outputs HVG-space log1p deltas
-  for calibration (`tools/modal_k033_delta_calibrate.py`) and Gate B round
-  10 arms. Loss curves, step rates and arm metrics embargoed; receipts land
-  here once a checkpoint is promoted.
+  train → infer`) on the `kytos-vcc` Volume. Trained to 40k steps, emitted
+  HVG-space log1p deltas, norm-calibrated (`tools/modal_k033_delta_calibrate.py`)
+  and scored through Gate B round 10 (`gate-20260928-01`): all three ST arms
+  (ST-only / ST-raw / ST×consensus-blend) lost to the `dm_ref` drift control —
+  the learned signature did not recover per-target direction as well as the
+  transplanted consensus mean. No slot spent; k027 remains champion. Loss
+  curves, step rates and arm metrics embargoed. Receipts:
+  [`k033-state-st/`](k033-state-st/).
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /

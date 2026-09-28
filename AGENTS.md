@@ -1,9 +1,9 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-09-26** — k033 trained-signature track (Modal GPU)
-> recorded in §4 as in-flight; §4b's GPU-training pause is lifted **only** for
-> that approved run. Validation reset still recorded in §4b; Cleveland Clinic /
-> GQAI remains a separate workstream (`docs/cleveland/`).
+> Last updated **2026-09-28** — k033 trained-signature track (Modal GPU) is
+> **complete with a negative Gate B result** (no submission); §4b's
+> GPU-training pause is **re-instated**. Validation reset still recorded in
+> §4b; Cleveland Clinic / GQAI remains a separate workstream (`docs/cleveland/`).
 
 This file is the ground truth for any agent working on this repo. It covers
 the **2026 Virtual Cell Challenge** and a **separate** Cleveland Clinic
@@ -437,7 +437,8 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   established the figshare GWPS K562 bundle (URL `35775507`) access pattern
   and per-target reliability ranking used to decide what was worth training
   on. Qualitative outcome only; exact reliability tables embargoed.
-- **k033 — trained-signature track (IN FLIGHT 2026-09-26).** First attempt at
+- **k033 — trained-signature track (COMPLETE 2026-09-28, negative gate
+  result, no submission).** First attempt at
   a *learned* signature source rather than transplanted mean shifts.
   `tools/modal_k033_state_probe.py` established that every published Arc
   State checkpoint carries the 2,024-target essential onehot vocab and
@@ -454,8 +455,21 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   remembering: cell-load 0.10.4 needs `obs/_index`/`var/_index` as h5py
   **datasets** (anndata writes groups), and **gzip-compressed** `.h5ad` parts
   starve the dataloader badly enough that the GPU idles — parts are stored
-  uncompressed. Gate protocol unchanged: nothing gets a submission slot
-  without beating the pinned cell-eval2 Gate B (`tools/modal_k025_eval2_gate.py`
+  uncompressed. A third blocker on the infer side: the volume sync's
+  non-checkpoint size guard silently dropped the dense
+  `pert_onehot_map.pt` the CLI writes pre-fit; `infer_deltas` now rebuilds it
+  from `var_dims.pkl` `pert_names` (identical ordering by construction).
+  Training completed the full 40k-step run; inference emitted learned deltas
+  for the covered panel + paired-eval targets; the calibrator norm-matched
+  them onto the consensus axis. **Gate B round 10 (`gate-20260928-01`): all
+  three ST arms lost to the `dm_ref` drift control** — the learned signature
+  does not recover per-target direction as well as the transplanted consensus
+  mean on the measured eval targets, and no blend setting beat the reference.
+  Clean negative: the sign of the verdict is unambiguous, so no submission
+  slot was spent. This is implementation-specific (one model class, one
+  corpus, ~40k steps) — not a class-wide falsification of trained signature
+  models. Gate protocol unchanged: nothing gets a submission slot without
+  beating the pinned cell-eval2 Gate B (`tools/modal_k025_eval2_gate.py`
   round 10 arms: ST-only, ST-raw, ST×consensus blend, plus a drift control).
   Exact step-rate, loss and arm numbers embargoed
   (`experiments/_embargoed/`).

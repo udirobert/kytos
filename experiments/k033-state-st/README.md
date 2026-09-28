@@ -1,8 +1,14 @@
 # k033 — trained signatures (Arc State ST on Replogle GWPS K562)
 
-Status: **in flight 2026-09-26** — training + inference chained server-side on
-Modal; no submission yet. See `AGENTS.md` §4 (`k033`) and
-`docs/vcc-two-track-strategy.md` §Current state for the strategy.
+Status: **complete 2026-09-28 — negative gate result, no submission.** The
+model trained to 40,000 steps; inference emitted learned deltas for the
+covered panel + paired-eval targets; Gate B round 10 (`gate-20260928-01`)
+scored `st_norm_dm` / `st_raw_dm` / `st_mix_dm` against the `dm_ref` drift
+control. **All three ST arms lost to the reference.** Direction recovery
+(PDS-space) on the measured hESC eval targets was the decisive failure: the
+learned signature does not recover per-target direction better than (in fact
+far worse than) the transplanted K562 consensus mean. See `AGENTS.md` §4
+(`k033`) and `docs/vcc-two-track-strategy.md` for the strategy-level reading.
 
 Contract of this run track:
 
