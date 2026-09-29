@@ -453,6 +453,23 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   verifiable; the embargoed note records the fullest comparison.
   Receipts: `experiments/k034-nctr-dm/`; analysis:
   `experiments/_embargoed/k034-nctr-nm.md`.
+- **Submission protocol revised (2026-09-29, user-directed).** The +0.02
+  Gate-B promotion bar is retired for signature/fusion machinery: Gate B's
+  hESC-only eval demonstrably cannot arbitrate recipe choices (k030
+  ordering inversion; nctr's local gain officially regressing). New rule:
+  **submissions are measurement probes** — each must carry a pre-declared
+  component-level prediction recorded BEFORE submit (in the run's
+  embargoed note), and cadence is up to the daily cap rather than gated
+  by local deltas. Gate B still runs for drift control, regression
+  checks and leakage screening; it no longer vetoes machinery. Constants
+  fit to validation contexts A/B/C via the board are flagged
+  "context-fit" and do NOT ship blind on D/E/F unless they self-
+  calibrate from control statistics. New compute host:
+  `snapflip-vultr` (4 vCPU/31 GB/252 GB, no GPU) at `/opt/kytos/` —
+  replaces Modal for CPU work (vcc auth + Modal volume read wired);
+  SnapFlip containers under `/opt/snapflip/` are untouchable, cap our
+  RSS ~24 GB. Untracked: `experiments/k030-ctxlineage/` and `logs/` stay
+  out of git.
 - **Gate B rounds 11–12 (2026-09-28, no promotion candidate).**
   `gate-20260928-02` swept `bulk_amplitude` 0.5–3.0 plus eb2/uncentered
   probes; `gate-20260928-03` tested their composition. Raw
