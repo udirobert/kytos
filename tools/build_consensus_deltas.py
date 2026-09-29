@@ -40,6 +40,14 @@ import consensus_deltas as cd
 WEIGHTED = {"k562": 2.0, "hct116": 1.0, "hek293t": 1.0, "cd4": 1.0}
 NCELL_FULL_WEIGHT = 100.0
 
+# k035 machinery: per-gene cross-source agreement gate + selective
+# decorrelation. Gate constants follow the published leaderboard recipe
+# (per-gene fused effect shrunk by clip((|fused|/sum|contrib| - 0.30)/0.70,
+# 0, 1)); SELCTR_STRONG_Q mirrors the "decorrelate the weakest ~80% of
+# targets" pattern also seen publicly.
+AGR_LO, AGR_HI = 0.30, 0.70
+SELCTR_STRONG_Q = 0.8
+
 
 def load_source_npz(path):
     with np.load(path, allow_pickle=False) as d:
@@ -114,6 +122,46 @@ def build_variants(sources):
     ncell = consensus_matrix(WEIGHTED, ncell_weight=True)
     variants["consensus_w_ncell"] = ncell.astype(np.float32)
     variants["consensus_w_ncell_ctr"] = cd.center_common_response(ncell).astype(np.float32)
+
+    # --- k035 machinery variants (vectorized over unit-normalized sources) ---
+    # norm_src[s]: (T, G) unit-normalized delta per source, rows zeroed where
+    # the source does not cover the target.
+    norm_src = {}
+    for name, s in sources.items():
+        covered = s["covered"] if s["covered"] is not None else np.ones(len(targets), bool)
+        d = s["delta"].astype(np.float64)
+        norms = np.linalg.norm(d, axis=1, keepdims=True)
+        d = d / np.maximum(norms, 1e-12)
+        norm_src[name] = np.where(covered[:, None], d, 0.0)
+    wsum = sum(float(WEIGHTED.get(n, 1.0)) for n in norm_src)
+    fused = np.zeros((len(targets), len(genes)))
+    contrib_den = np.zeros_like(fused)
+    for n, d in norm_src.items():
+        w = float(WEIGHTED.get(n, 1.0))
+        fused += w * d
+        contrib_den += w * np.abs(d)
+    fused /= max(wsum, 1e-12)
+    contrib_den /= max(wsum, 1e-12)
+    agr = np.clip(
+        (np.abs(fused) / np.maximum(contrib_den, 1e-12) - AGR_LO) / (AGR_HI - AGR_LO),
+        0.0,
+        1.0,
+    )
+    # agr is (T, G): per-gene weight on the norm-restored weighted consensus.
+    variants["consensus_w_agr"] = (weighted * agr).astype(np.float32)
+    variants["consensus_w_agr_ctr"] = cd.center_common_response(weighted * agr).astype(np.float32)
+    # selective decorrelation: subtract the common (per-gene median) component
+    # only from the weakest ~80% of targets by consensus norm; strong targets
+    # keep their shared component.
+    strength = np.linalg.norm(weighted, axis=1)
+    nz = strength[strength > 0]
+    thresh = np.quantile(nz, SELCTR_STRONG_Q) if nz.size else np.inf
+    weak = (strength < thresh)[:, None]
+    common = np.median(weighted, axis=0)
+    selctr = np.where(weak, weighted - common, weighted)
+    variants["consensus_w_selctr"] = selctr.astype(np.float32)
+    variants["consensus_w_selctr_agr"] = (selctr * agr).astype(np.float32)
+    variants["consensus_w_ctr_agr"] = (cd.center_common_response(weighted) * agr).astype(np.float32)
     return variants
 
 
@@ -158,6 +206,10 @@ def main(argv=None):
             "amplitude restored to the target's K562 delta norm",
             "*_ctr subtracts the per-gene median across targets",
             "*_ncell down-weights a source by min(1, n_cells/100) per target",
+            "*_agr applies a per-gene cross-source agreement gate "
+            "clip((|fused|/sum|contrib| - 0.30)/0.70, 0, 1)",
+            "*_selctr subtracts the common component only from the weakest "
+            "80% of targets by consensus norm",
         ],
     }
     (args.out_dir / "build_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
