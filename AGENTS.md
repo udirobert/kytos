@@ -500,6 +500,18 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   change. Within-source per-sample agreement remains untested (npz
   `delta_batch` is pooled, not per-sample — needs re-extraction).
   Builder: `tools/build_consensus_deltas_v2.py`.
+- **Round `gate-local-20260930-02` (2026-09-30):** `ctr_agr_tight_rmass`
+  (gate picks genes, row-norm restores target mass) = new local best;
+  gain comes from reach/jac — the rmass hypothesis (recover nmae/mse)
+  was FALSIFIED (mass loss isn't the nmae driver; the keep-mask carries
+  the value). Per-sample/per-donor agreement feasibility: Jurkat
+  per-channel parts exist on the Modal volume (cheap, today); X-Atlas
+  per-sample needs a small Modal re-extract (~2-3h) — worthwhile, 78-116
+  samples/target median is a far stronger gate term than 5-source
+  agreement; CD4 per-donor does NOT exist in the publisher artifact
+  (pooled across donors); K562 pooled only. Atlas h5ad on the VPS has
+  48 batches — usable as an ORACLE check (does batch sign-agreement
+  track true DE?) before spending Modal credits.
 - **Gate B rounds 11–12 (2026-09-28, no promotion candidate).**
   `gate-20260928-02` swept `bulk_amplitude` 0.5–3.0 plus eb2/uncentered
   probes; `gate-20260928-03` tested their composition. Raw

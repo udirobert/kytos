@@ -38,6 +38,18 @@ unless --force):
   (0.40, 0.80) instead of the standard (0.30, 0.70) -- the n_cells
   reliability term folded into the tight-constant gate.
 
+- ``consensus_w_ctr_agr_tight_rmass`` ("restore mass"): the tight
+  agreement gate decides WHICH genes carry effect (a 0..1 keep-mask);
+  each target row is then rescaled so the gated row recovers the full
+  ungated row L2 norm -- the gate's shrinkage is treated as feature
+  selection, not amplitude attenuation. Concretely::
+
+      gated[t]   = ctr[t] * agr_tight[t]
+      rmass[t]   = gated[t] * (||ctr[t]|| / ||gated[t]||)   (0 if gated==0)
+
+  This concentrates the target's total delta mass on agreed genes,
+  targeting the known nmae/mse erosion from gate-induced mass loss.
+
 Run:
   python tools/build_consensus_deltas_v2.py \
       --src-dir /opt/kytos/data/vol/k035-src \
@@ -160,12 +172,25 @@ def main(argv=None) -> int:
     vagr = _agreement_gate(norm_src, WEIGHTED, AGR_LO, AGR_HI, rel=rel)
     vagr_tight = _agreement_gate(norm_src, WEIGHTED, *AGR_TIGHT, rel=rel)
 
+    # rmass: the gate is a (0..1) keep-mask on genes; restore each target
+    # row's L2 norm to the ungated ctr row so the gate acts as feature
+    # selection rather than amplitude attenuation. Rows fully gated out
+    # (or zero in ctr) stay zero -- there is nothing to restore onto.
+    gated_tight = ctr * agr_tight
+    ctr_row_norm = np.linalg.norm(ctr, axis=1)
+    gated_row_norm = np.linalg.norm(gated_tight, axis=1)
+    rmass_scale = np.where(
+        gated_row_norm > 0, ctr_row_norm / np.maximum(gated_row_norm, 1e-12), 0.0
+    )
+    rmass_tight = gated_tight * rmass_scale[:, None]
+
     variants = {
         "consensus_w_ctr_agr_loose": (ctr * agr_loose).astype(np.float32),
-        "consensus_w_ctr_agr_tight": (ctr * agr_tight).astype(np.float32),
+        "consensus_w_ctr_agr_tight": gated_tight.astype(np.float32),
         "consensus_w_ctr_agr_xtight": (ctr * agr_xtight).astype(np.float32),
         "consensus_w_ctr_vagr": (ctr * vagr).astype(np.float32),
         "consensus_w_ctr_vagr_tight": (ctr * vagr_tight).astype(np.float32),
+        "consensus_w_ctr_agr_tight_rmass": rmass_tight.astype(np.float32),
     }
 
     # Self-check: recompute the confirmed consensus_w_ctr_agr and compare to
@@ -235,6 +260,10 @@ def main(argv=None) -> int:
             "n_cells keep rel=1; uncovered targets rel=0",
             "vagr_tight: the vagr reliability-weighted gate evaluated at "
             "the tight clip constants (0.40, 0.80)",
+            "agr_tight_rmass: ctr*agr_tight rescaled per target row by "
+            "||ctr[t]||/||ctr[t]*agr_tight[t]|| -- the gate picks which "
+            "genes carry effect, the row norm is restored to the ungated "
+            "value (rows fully gated out stay zero)",
             "delta_batch is a pooled batch-paired delta (not per-sample), so "
             "no per-sample sign-consistency term was computed -- n_cells "
             "reliability is the only within-source term",
