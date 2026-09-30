@@ -1,0 +1,17 @@
+  status: scoring
+  status: published
+  entry:    xRk8Zk4MWHjQ7V6UJaX5
+  model:    kytos-k035-ctragr-dm
+  status:   published
+  submitted:2026-09-30T02:31:51.206568Z
+  Rank:                            449
+  Overall:                         0.12421467920499464
+  Perturbation discrimination pds: 0.6112550892544178
+  Expression accuracy mse:         0.011769339332012555
+  DE log-FC accuracy nmae:         0.08301036441748615
+  DE direction fidelity fid:       -0.020903309518263354
+  DE direction reach reach:        0.05911987393458452
+  DE significance overlap jac:     0.0010367178097301694
+  Partition:                       val
+  Panel:                           vcc2026-val-1
+  Anchor set:                      vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4

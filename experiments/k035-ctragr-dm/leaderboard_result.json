@@ -1,0 +1,20 @@
+{
+  "entry": "xRk8Zk4MWHjQ7V6UJaX5",
+  "model": "kytos-k035-ctragr-dm",
+  "status": "published",
+  "submitted": "2026-09-30T02:31:51.206568Z",
+  "rank": 449,
+  "leaderboard_size": 1226,
+  "overall": 0.12421467920499464,
+  "pds": 0.6112550892544178,
+  "mse": 0.011769339332012555,
+  "nmae": 0.08301036441748615,
+  "fid": -0.020903309518263354,
+  "reach": 0.05911987393458452,
+  "jac": 0.0010367178097301694,
+  "partition": "val",
+  "panel": "vcc2026-val-1",
+  "anchor_set": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+  "vs_k027_overall": -0.0020,
+  "note": "Single-variable probe vs k027: same dual-moment generator + dispatch, deltas = variant_consensus_w_ctr_agr.npz (centered consensus + per-gene cross-source agreement gate). k027 official per-component scores were never captured (entry fN4wjAp9BUEvHtGWk0az no longer retrievable). Full-component comparison vs k034/k030 and pre-declared prediction verdicts in experiments/_embargoed/k035-ctragr-predeclared.md. Submit-log final status showed rank 450 at publish; `vcc status` shows 449."
+}

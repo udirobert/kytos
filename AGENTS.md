@@ -470,6 +470,24 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   SnapFlip containers under `/opt/snapflip/` are untouchable, cap our
   RSS ~24 GB. Untracked: `experiments/k030-ctxlineage/` and `logs/` stay
   out of git.
+- **`kytos-k035-ctragr-dm` submitted 2026-09-30 — +0.1242 (rank ~449):
+  statistical tie with champion (−0.0020), ALL pre-declared predictions
+  confirmed.** Single-variable probe: k027 generator config + deltas =
+  `variant_consensus_w_ctr_agr` (centered consensus + per-gene
+  cross-source agreement gate, constants 0.30/0.70). Highest recorded
+  `score_pds` (0.6113) and `score_reach` (0.0591); mse/fid/jac flat,
+  nmae flat-to-slightly-down. Verdict: agreement-gate machinery transfers
+  to the official panel — `consensus_w_ctr_agr` is the new reference
+  delta set for downstream machinery stacking. Local gate also showed
+  uncentered+gate beats centered+gate (same trap as k034-nctr — the
+  centered variant was the correct probe). Selective decorrelation
+  (`_selctr`) was locally NEGATIVE alone — dropped. Gate round on the
+  VPS (`gate-local-20260929-01`, tools/run_k025_gate_local.py — VPS-only,
+  uncommitted there) reproduced dm_ref at float epsilon vs the Modal
+  harness. Streamed submit generator `tools/run_k035_streamed_submit.py`
+  (2 GB peak vs 59 GB; bit-identical X) makes full builds runnable on
+  the VPS. Receipts: `experiments/k035-ctragr-dm/`; analysis:
+  `experiments/_embargoed/k035-ctragr-predeclared.md` (RESULT section).
 - **Gate B rounds 11–12 (2026-09-28, no promotion candidate).**
   `gate-20260928-02` swept `bulk_amplitude` 0.5–3.0 plus eb2/uncentered
   probes; `gate-20260928-03` tested their composition. Raw

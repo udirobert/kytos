@@ -145,6 +145,14 @@ checking their validity caveats.
   the submit path is rehearsed end-to-end on a mock D/E/F panel
   (`vcc prep --contexts D,E,F` dry-run PASS), and
   `docs/final-phase-runbook.md` has the Oct-22 checklist.
+- **Probe cadence live (2026-09-30):** `kytos-k035-ctragr-dm` = +0.1242 —
+  a statistical tie with champion, but the pre-declared component
+  predictions all confirmed (pds/reach record highs, mse flat): the
+  per-gene cross-source agreement gate genuinely improves signature
+  direction on the real panel. `consensus_w_ctr_agr` is now the reference
+  delta set. Next machinery: source granularity (per-donor/per-sample
+  deltas feed better agreement statistics), gate-constant tuning,
+  emission upgrades. Components still weakest: mse, fid (negative), jac.
 - **Final recipe decision (2026-09-28): RESOLVED.** `kytos-k034-nctr-dm`
   (single-variable ablation: champion generator + uncentered `consensus_w`
   deltas) scored +0.1178 vs k027's +0.1262 — the common-response centering

@@ -1,0 +1,16 @@
+{
+  "run_id": "k035-ctragr-dm",
+  "entry_id": "xRk8Zk4MWHjQ7V6UJaX5",
+  "model_name": "kytos-k035-ctragr-dm",
+  "submitted_utc": "2026-09-30T02:31:51Z",
+  "build_app": "ap-NgqHJsJcNMQOMp2MFpG3vL",
+  "submit_app": "ap-ZTYJCPV7HUgGWHnzIxPtpz",
+  "deltas": "/kytos-vol/k035-machinery/variant_consensus_w_ctr_agr.npz",
+  "deltas_sha256": "0516a6843584a1d450e983000a77b94e155304e17c7ff2baf0594a1393773e5c",
+  "deltas_recipe": "variant_consensus_w_ctr_agr: centered weighted consensus (consensus_w_ctr) + per-gene cross-source agreement gate clip((|fused|/sum|contrib| - 0.30)/0.70, 0, 1); 343 targets x 18533 genes",
+  "generator": "build_prediction_dual_moment(amplitude=1.0, bulk_amplitude=0.5, pool_k=4, space=bulk_delta) -- identical to k027 champion config",
+  "vcc_volume": "/kytos-vol/k035-ctragr-dm/prediction.prep.vcc",
+  "ablation": "single-variable probe vs k027: identical generator + seed + dispatch, only deltas differ (variant_consensus_w_ctr vs variant_consensus_w_ctr_agr)",
+  "hypothesis": "Gate B (hESC-only) showed the agreement gate helping locally (fbavg 0.2020 vs dm_ref 0.1913, raw pds_cosine 0.882 vs 0.854, raw reach 0.030 vs 0.018). Pre-declared expectations in experiments/_embargoed/k035-ctragr-predeclared.md: pds UP, reach up modestly, mse ~flat, nmae flat-to-slightly-down, fid/jac ~flat, score_avg 0.115-0.145.",
+  "notes": "Build app completed in one pass (no preemptions): prediction.h5ad 360,000x18,533 2434.3M nnz in 1730.8s -> vcc prep PASS -> persisted /kytos-vol/k035-ctragr-dm/ (3.8 GB + meta.json). Submit app uploaded 3.7 GiB in 13m27s and completed --wait server-side without preemption. meta.json run_id/mode strings are stale k027 tool defaults; authoritative fields (deltas_npz, sha256, generator, dispatch) verified before submit."
+}
