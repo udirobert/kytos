@@ -488,6 +488,18 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   (2 GB peak vs 59 GB; bit-identical X) makes full builds runnable on
   the VPS. Receipts: `experiments/k035-ctragr-dm/`; analysis:
   `experiments/_embargoed/k035-ctragr-predeclared.md` (RESULT section).
+- **Gate-constant optimum found and axis exhausted (2026-09-30, rounds
+  `gate-local-20260929-02` + `gate-local-20260930-01`, VPS):** bracketed
+  the agr clip constants — tight (0.40/0.80) is the local optimum
+  (avg 0.2456 > xtight 0.50/0.90 = 0.2442 > std 0.30/0.70 = 0.2406 ≈
+  loose 0.20/0.60 = 0.2409); n_cells reliability weighting (vagr)
+  adds ~+0.0015 at std constants but does NOT stack at tight. Constant
+  gain over confirmed `ctr_agr` (+0.005 local ≈ +0.001 official expected)
+  is sub-resolution — no standalone probe; **`consensus_w_ctr_agr_tight`
+  is the new reference delta set**, stacked under the next mechanism
+  change. Within-source per-sample agreement remains untested (npz
+  `delta_batch` is pooled, not per-sample — needs re-extraction).
+  Builder: `tools/build_consensus_deltas_v2.py`.
 - **Gate B rounds 11–12 (2026-09-28, no promotion candidate).**
   `gate-20260928-02` swept `bulk_amplitude` 0.5–3.0 plus eb2/uncentered
   probes; `gate-20260928-03` tested their composition. Raw
