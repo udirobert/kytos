@@ -1,0 +1,29 @@
+{
+  "entry": "olPYV6UW8ytPw4i5AXSs",
+  "model": "kytos-k037-k027-rescore",
+  "status": "published",
+  "submitted": "2026-10-03T21:30:14.821575Z",
+  "published_utc": "2026-10-03T21:50:48Z",
+  "rank": 483,
+  "leaderboard_size": 1299,
+  "overall": 0.12617341328670964,
+  "pds": 0.6032128571637503,
+  "mse": 0.014832619127239247,
+  "nmae": 0.08816547321521839,
+  "fid": -0.018816080790150246,
+  "reach": 0.068583834708932,
+  "jac": 0.001061776295268088,
+  "raw": {
+    "pds_cosine": 0.7722147900408769,
+    "expr_mse_unbiased_capped_norm": 0.9737736457712844,
+    "de_wilcoxon_lfc_nmae": 0.9480577230397335,
+    "de_wilcoxon_direction_fidelity_yield_raw": 0.5070563434118626,
+    "de_wilcoxon_direction_reach_raw": 0.13964441793778912,
+    "de_wilcoxon_sig_jaccard": 0.030692302329891376
+  },
+  "partition": "val",
+  "panel": "vcc2026-val-1",
+  "anchor_set": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+  "vs_k027_recorded_overall": -2.7e-05,
+  "note": "Re-score of the champion's ORIGINAL packaged bundle (/kytos-vol/k027-consensus-dm/prediction.prep.vcc, built 2026-09-22T13:53Z, deltas sha 336f2cbc1d01, nnz 2434201087). score_avg reproduces the recorded +0.1262 to within 3e-5, so scorer/panel/anchors are stable across the Sep 22 -> Oct 3 gap. These are the champion's first-ever captured per-component officials and are now the canonical baseline. Rank moved 308 -> 483 purely by leaderboard densification (1088 -> 1299 entries); scoring latency observed ~20 min. Per-band verdicts and the corrected reading of the k035 agreement-gate probe: experiments/_embargoed/k037-k027-rescore-predeclared.md (local-only)."
+}

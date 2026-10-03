@@ -1,0 +1,28 @@
+{
+  "run_id": "k038-ctragr-tight-rmass-dm",
+  "entry_id": "b8ellZcFjWy58mJkVl31",
+  "model_name": "kytos-k038-ctragr-tight-rmass-dm",
+  "submitted_utc": "2026-10-03T21:50:58Z",
+  "build_app": "ap-wyOaHvDgptq86bpSJaoaRi",
+  "submit_app": "ap-ybkwsHvXzSY66vsU1BUMFK",
+  "deltas": "/kytos-vol/k035-machinery/variant_consensus_w_ctr_agr_tight_rmass.npz",
+  "deltas_sha256": "989d1415b2477d107d8e369df69cf48662115e3ff1c94a2ca227122dd21ae252",
+  "deltas_recipe": "variant_consensus_w_ctr_agr_tight_rmass: centered weighted consensus + per-gene cross-source agreement gate at TIGHT constants (0.40/0.80) + per-target row-norm mass restore (the gate picks genes, the restore puts the target's delta mass back). 343 targets x 18533 genes. sha verified at three hops (VPS -> Mac -> Modal volume) and re-enforced inside the container with `sha256sum -c`.",
+  "generator": "build_prediction_dual_moment(amplitude=1.0, bulk_amplitude=0.5, pool_k=4, space=bulk_delta), seed 0, 400 cells/pert -- the k027 champion config, unchanged",
+  "vcc_volume": "/kytos-vol/k038-ctragr-tight-rmass-dm/prediction.prep.vcc",
+  "ablation": "NOT a single-variable ablation: two delta variables move vs k035 (gate constants std->tight, plus the rmass restore). Declared as a recipe probe.",
+  "pre_submit_gates_verified": {
+    "meta.n_targets": 300,
+    "meta.total_cells": 360000,
+    "meta.contexts": ["A", "B", "C"],
+    "meta.dispatch": {"real": 900},
+    "meta.uncovered_targets": [],
+    "meta.generator": "dual_moment amp 1.0 / bulk 0.5 / pool_k 4 / bulk_delta -- field-for-field identical to the k035 receipt",
+    "meta.seed": 0,
+    "deltas_npz_sha256": "989d1415b247 (enforced in-container)",
+    "nnz": "2434075583 vs k035 2434256304 (champion 2434201087) -- 0.007% apart, as expected from a gene-selection-only delta change",
+    "vcc_prep": "PASS: 360000 cells x 18533 genes, contexts A=120000/B=120000/C=120000, targets verified against the official list, counts-preserved"
+  },
+  "hypothesis": "Gate B found tight (0.40/0.80) the local optimum and rmass the local best variant, with the gain coming from reach/jaccard. Declared expectations: reach UP the most, jaccard up, nmae FLAT (explicitly not up -- the mass-restore-holds-DE hypothesis), pds holding, mse/fid ~flat. Exact declared bands and decision rules: experiments/_embargoed/k038-ctragr-tight-rmass-predeclared.md (local-only, embargoed until the Oct 22 final test set).",
+  "notes": "Second and last daily slot. Queued behind k037 because the site allows one in-flight submission per team; released automatically when k037 published (21:50:48Z) via a watcher, upload 3.7 GiB in 5m01s. Build ran end-to-end on Modal: matrix 360k x 18533 then `vcc prep` (the step that does not fit the 31 GB VPS -- see the k037 note). meta.json run_id/mode strings are stale k027 tool defaults, identical to the k035 receipt; authoritative fields verified above."
+}

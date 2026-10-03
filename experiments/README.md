@@ -262,6 +262,33 @@ enrichment path.
   transplanted consensus mean. No slot spent; k027 remains champion. Loss
   curves, step rates and arm metrics embargoed. Receipts:
   [`k033-state-st/`](k033-state-st/).
+- `k034-nctr-dm` — submitted 2026-09-28: champion generator + **uncentered**
+  `consensus_w` deltas (single-variable ablation). Official **+0.1178**, rank
+  ~455 — regression; common-response centering is load-bearing, so the blind
+  Oct-22 ship is the centered k027 recipe. Receipts:
+  [`k034-nctr-dm/`](k034-nctr-dm/).
+- `k035-ctragr-dm` — submitted 2026-09-30 (entry `xRk8Zk4MWHjQ7V6UJaX5`):
+  centered consensus + per-gene cross-source agreement gate (0.30/0.70),
+  champion generator otherwise unchanged. Official **+0.1242**, rank ~449 —
+  statistical tie. **Dated correction (2026-10-03, from `k037-k027-rescore`):
+  the original "all pre-declared predictions confirmed / reach record high"
+  reading was against a baseline that had never been captured.** With the
+  champion's real components known, the gate is a component reshuffle — it
+  raises pds and lowers reach, nmae, mse and fid. Interpretation in
+  `_embargoed/k035-ctragr-predeclared.md` + `_embargoed/k037-...-predeclared.md`.
+  Receipts: [`k035-ctragr-dm/`](k035-ctragr-dm/).
+- `k036-xatlas-samplestats` — **tool only, no run** (2026-09-30).
+  `tools/modal_k036_xatlas_samplestats.py` extracts per-sample delta
+  statistics from the X-Atlas Orion hct116/hek293t lines so within-source
+  sample agreement can replace the 5-source gate term; the ~315 GB shard cost
+  is queued behind an Atlas-batch oracle check.
+- `k037-k027-rescore` — submitted 2026-10-03 (entry `olPYV6UW8ytPw4i5AXSs`):
+  **byte-identical re-score of the champion** (its original packaged `.vcc`
+  from 2026-09-22, resubmitted under a distinct model name). Official
+  **+0.12617** vs the recorded +0.1262 → scorer/panel stable across 11 days;
+  this run supplies k027's never-captured six components, which are now the
+  canonical per-component baseline. k027 remains champion. Receipts:
+  [`k037-k027-rescore/`](k037-k027-rescore/).
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /

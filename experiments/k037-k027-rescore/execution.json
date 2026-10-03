@@ -1,0 +1,19 @@
+{
+  "run_id": "k037-k027-rescore",
+  "entry_id": "olPYV6UW8ytPw4i5AXSs",
+  "model_name": "kytos-k037-k027-rescore",
+  "submitted_utc": "2026-10-03T21:30:14Z",
+  "submit_app": "ap-YFNLmUMX9MyjPD5ksa91gv",
+  "abandoned_first_attempt": "ap-GqmqfDdhQt32217QQFzq8L stopped right after its image build with no function output; the site's /api/cli/submissions/limits confirmed nothing reached the server (spent 0, in_flight 0), so no daily slot was consumed by the failed attempt.",
+  "artifact": "/kytos-vol/k027-consensus-dm/prediction.prep.vcc",
+  "artifact_provenance": "The champion's ORIGINAL packaged bundle, timestamped 2026-09-22T13:53Z -- the exact artifact that produced the +0.1262 champion score. Submitted as-is under a distinct model name so the leaderboard distinguishes the probe from the champion entry.",
+  "deltas": "/root/variant_consensus_w_ctr.npz (inside the 2026-09-22 build)",
+  "deltas_sha256": "336f2cbc1d0125af9c4024e41b62c9639c24f15f8c38f7724e6dcf4da09f7eea",
+  "generator": "build_prediction_dual_moment(amplitude=1.0, bulk_amplitude=0.5, pool_k=4, space=bulk_delta), seed 0, 400 cells/pert, 360,000 cells, 2,434,201,087 nnz -- the champion config, unchanged",
+  "purpose": [
+    "Supply the missing unconfounded per-component baseline for the champion recipe. Every component verdict since (k028, k029, k030, k034, k035) was measured against a baseline that differed in more than the variable being interpreted, and k027's own components were never captured before its entry left the API.",
+    "Measure panel/scorer drift directly: same bytes, different date. Movement against the recorded champion overall is attributable to the scoring side, not the build, because the input is byte-identical by construction."
+  ],
+  "determinism_check": "A separate streamed rebuild of the same deltas on snapflip-vultr (tools/run_k035_streamed_submit.py, ~2 GB peak, 830 s) reproduced the champion nnz 2434201087, deltas sha, seed, cell counts and dispatch exactly. It was NOT submitted: packaging it would have needed the ~29 GB vcc prep peak that killed the first attempt on the 31 GB VPS, and the original bundle is a strictly cleaner probe.",
+  "hypothesis": "Pre-declared expectations: the re-score reproduces the champion overall within a narrow band, with pds and reach NOT above the agreement-gate probe's published values; larger movement in either direction means cross-date comparisons are confounded by drift. Exact declared bands and the decision rules: experiments/_embargoed/k037-k027-rescore-predeclared.md (local-only, embargoed until the Oct 22 final test set)."
+}

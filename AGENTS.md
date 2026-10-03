@@ -40,7 +40,11 @@ same commit as the fact.
 
 - Docs: `docs/cleveland/`. Code: `src/cleveland/`. Experiments: `experiments/cleveland/`.
 - **Venv:** `.venv-cleveland` only (`networkx`, BioPython, scikit-learn). Never
-  install Qiskit/Braket/Classiq into `.venv` / `.venv-science`.
+  install Qiskit/Braket/Classiq into `.venv` / `.venv-science`. **As of
+  2026-10-03 that env does not exist locally** (only `.venv` does, and it has
+  `networkx` + `scikit-learn` but no BioPython), so the `c001`–`c007` runners
+  break on the `Bio.PDB` import in `src/cleveland/pdb/__init__.py`. The isolation rule above still
+  stands; rebuilding `.venv-cleveland` is a pending user decision.
 - Phase 1 (classical CTRW + coarse-grain Spearman gate) is **local-safe**
   (small graphs). Phase 2+ quantum circuits use challenge Braket/Classiq.
 - Secret: `MOTH_API_KEY` in `.env` (see `.env.example`).
@@ -110,11 +114,24 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
 "dead end" as class-wide scientific conclusions.
 
 - `vcc` is logged in as `ungethe@gmail.com` / team `Udi Ngethe`.
-- `vcc` version `0.2.0` is installed in `.venv-science/bin/`.
-- Legacy `cell-eval 0.8.2` is installed in `.venv-science`; it is not the
-  official 2026 six-metric scorer identified in §4b.
-- The 2026 `controls` bundle is at `data/raw/vcc2026/` (~660 MB zip; 3 context
-  `.h5ad` + `gene_names.csv` + `pert_counts.csv`).
+- **Environment reality check (verified 2026-10-03).** The older entries below
+  name local venvs that no longer exist: the only local venv is `.venv`
+  (uv CPython 3.12.8 — pytest 9.1.1, anndata/scipy stack; the four cited
+  science test files pass there, 43 tests, no installs needed). `.venv-eval2`
+  was deleted 2026-09-23 for disk (rebuild recipe in
+  `docs/phase0-environment.md`); `.venv-science` and `.venv-cleveland` are also
+  gone, so `vcc`, legacy `cell-eval 0.8.2` and the cleveland runners are NOT
+  available locally.
+- The `vcc` CLI (0.2.2) lives on `snapflip-vultr` at `/opt/kytos/.venv/bin/vcc`
+  (credentialed, `token_source: file`) and inside the Modal job images. Use it
+  there, not locally.
+- The 2026 `controls` bundle is NOT held locally any more (only
+  `gene_names.csv` / `pert_counts.csv` / `manifest.json` remain in
+  `data/raw/vcc2026/`); the 3 context `.h5ad` files live on
+  `snapflip-vultr:/opt/kytos/repo/data/raw/vcc2026/` and every Modal build job
+  re-downloads them via `vcc datasets download controls`.
+- Legacy `cell-eval 0.8.2` was never the official 2026 six-metric scorer
+  identified in §4b.
 - A `kytos-pipe-test` random `vcc sample` baseline has been submitted and
   scored (`score_avg` ~-0.948). Do **not** submit another random sample; use
   daily slots for real models.
@@ -475,10 +492,15 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   confirmed.** Single-variable probe: k027 generator config + deltas =
   `variant_consensus_w_ctr_agr` (centered consensus + per-gene
   cross-source agreement gate, constants 0.30/0.70). Highest recorded
-  `score_pds` (0.6113) and `score_reach` (0.0591); mse/fid/jac flat,
-  nmae flat-to-slightly-down. Verdict: agreement-gate machinery transfers
-  to the official panel — `consensus_w_ctr_agr` is the new reference
-  delta set for downstream machinery stacking. Local gate also showed
+  `score_pds` (0.6113); mse/fid/jac flat, nmae flat-to-slightly-down.
+  **RE-READ 2026-10-03 against k037's captured champion baseline: the
+  "all confirmed" reading is wrong on `score_reach`** — this entry's 0.0591 is
+  *below* the champion's 0.0686, not a record. The gate is a component
+  reshuffle: +0.0081 pds paid back by −0.0095 reach, −0.0052 nmae, −0.0031 mse,
+  −0.0021 fid (the six deltas sum to the observed −0.0020). Verdict revised:
+  agreement-gate machinery does **not** transfer as a win; it stays the
+  reference delta set only because pds is the channel nothing else moves.
+  Local gate also showed
   uncentered+gate beats centered+gate (same trap as k034-nctr — the
   centered variant was the correct probe). Selective decorrelation
   (`_selctr`) was locally NEGATIVE alone — dropped. Gate round on the
@@ -486,8 +508,27 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   uncommitted there) reproduced dm_ref at float epsilon vs the Modal
   harness. Streamed submit generator `tools/run_k035_streamed_submit.py`
   (2 GB peak vs 59 GB; bit-identical X) makes full builds runnable on
-  the VPS. Receipts: `experiments/k035-ctragr-dm/`; analysis:
-  `experiments/_embargoed/k035-ctragr-predeclared.md` (RESULT section).
+  the VPS — **but `vcc prep` on the same bundle peaked >29 GB there and was
+  aborted by the memory guard; packaging stays a Modal step.** Receipts:
+  `experiments/k035-ctragr-dm/`; analysis:
+  `experiments/_embargoed/k035-ctragr-predeclared.md` (RESULT section) and
+  `experiments/_embargoed/k037-k027-rescore-predeclared.md` (RESULT section,
+  champion component table).
+- **`kytos-k037-k027-rescore` submitted 2026-10-03 — +0.12617 (rank 483/1299):
+  byte-identical re-score of the champion; scorer/panel confirmed STABLE.**
+  Not a new model — the champion's original packaged bundle
+  (`/kytos-vol/k027-consensus-dm/prediction.prep.vcc`, built 2026-09-22T13:53Z,
+  deltas sha `336f2cbc1d01…`, nnz 2434201087) resubmitted under a distinct
+  model name to capture the six per-component officials k027 never recorded
+  before its entry left the API. `score_avg` reproduced +0.1262 to Δ3e-5 across
+  the 11-day gap → no drift; the rank slide is field densification only
+  (1088→1299 entries). **Champion components are now the canonical baseline:
+  pds 0.6032 · mse 0.0148 · nmae 0.0882 · fid −0.0188 · reach 0.0686 ·
+  jac 0.00106.** k027 remains champion. The cheapest possible probe (a
+  resubmit of an artifact already on disk) and it re-based five runs' worth of
+  component reads. Tool: `tools/modal_k037_k027_rescore_submit.py`; receipts:
+  `experiments/k037-k027-rescore/`; analysis:
+  `experiments/_embargoed/k037-k027-rescore-predeclared.md`.
 - **Gate-constant optimum found and axis exhausted (2026-09-30, rounds
   `gate-local-20260929-02` + `gate-local-20260930-01`, VPS):** bracketed
   the agr clip constants — tight (0.40/0.80) is the local optimum, with
@@ -659,12 +700,13 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   equivalence remains unverified (anchor-bundle rules, DE-engine parity vs
   production, pert_col naming). Local `cell-eval` 0.8.2 `vcc` profile remains
   the unrelated legacy three-metric suite.
-- Local verification (existing science venv, no installations):
-  `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv-science/bin/python -m pytest -q tests/test_prediction_parity.py tests/test_pipeline_audit.py tests/test_models.py tests/test_transfer.py`.
-  The initial targeted run passed 39 tests; two subsequent output-safety tests
-  also passed in the final 21-test consumer run. Ruff checks pass for the
-  consumer, audit runner and their two test files. Heavy runs still require
-  external-compute/budget confirmation under section 6.
+- Local verification (existing `.venv`, no installations):
+  `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_prediction_parity.py tests/test_pipeline_audit.py tests/test_models.py tests/test_transfer.py`.
+  Re-confirmed 2026-10-03: 43 passed in ~2s. (Historically the same suite ran
+  in `.venv-science`: 39 tests initially, 21 in a later consumer-only run.)
+  Ruff 0.16.4 checks pass for the consumer, audit runner and their two test
+  files. Heavy runs still require external-compute/budget confirmation under
+  section 6.
 
 ---
 
@@ -672,6 +714,19 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
 
 - **≤2 submissions / day.** Prefer dry-runs (`vcc prep --dry-run`) before live
   `vcc submit`.
+- **…and only ONE submission in flight at a time.** The site rejects a second
+  create while the first is still `scoring` ("Your team already has a
+  submission in progress"), so real cadence is gated by scoring latency, not the
+  daily cap. Sequence probes: submit, wait for terminal, submit next.
+- **Check the slot state before assuming a submission happened or a slot was
+  spent:** `GET /api/cli/submissions/limits` (Bearer token from
+  `~/.config/vcc/credentials.json` on the VPS) returns
+  `{limit_reached, spent, limit, in_flight}`. There is no CLI command to list
+  your submissions — `vcc status` needs an entry ID.
+- **A Modal app that stops with no function logs did not run.** Observed
+  2026-10-03: a detached submit job ended right after `Built image …`, and
+  `limits` confirmed nothing reached the server (`spent 0, in_flight 0`) — no
+  slot consumed. Verify via `limits` rather than re-submitting blind.
 - **If a submission is stuck in scoring**, use `vcc cancel <entry-id> --yes`.
   It does not count against the daily limit.
 - **Never commit** `.env`, raw `.vcc`, or large `.h5ad` files. `.vcc` and

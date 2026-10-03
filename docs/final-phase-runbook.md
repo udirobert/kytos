@@ -21,9 +21,23 @@ so do not waste slots.
   delta NPZs (panel-axis 18,533) must be rebuilt — the extracts are pinned
   to `data/raw/vcc2026/gene_names.csv`. If unchanged, proceed as below.
 - Do **not** run `vcc submit` without explicit approval; keep `run-id`
-  prefix `k034-*`/`k035-*` for final-phase runs.
+  prefix `k034-*`/`k035-*` for final-phase machinery, `k0NN-*` for probes
+  (Oct-03 probes ran as `k037-*`/`k038-*`).
 - All heavy stages run on **Modal** — the local Mac cannot package a
   360k-cell prediction (~55 GB RAM for prep).
+- **`vcc prep` does NOT fit the 31 GB VPS either.** Measured 2026-10-03 on the
+  champion bundle: the streamed matrix build peaks ~2 GB and runs there fine,
+  but `vcc prep` reached **>29 GB RSS + all 8 GB swap** before a guard killed
+  it (swap thrash, no `.vcc` written). Matrix assembly = VPS-eligible,
+  packaging = Modal-only. Keep prep in the ≥64 GB Modal job, as
+  `tools/modal_k038_rmass_submit.py` does end-to-end.
+- **One in-flight submission per team**, on top of the 2/day cap: the API
+  rejects a second create while one is `scoring` (val-panel scoring took ~20
+  min on 2026-10-03). On Oct 22, with no scoring feedback to release the lock,
+  queue submits serially and confirm each upload completed before starting the
+  next. `GET /api/cli/submissions/limits` (token on the VPS at
+  `~/.config/vcc/credentials.json`) returns `{spent, limit, in_flight}` and is
+  the only way to check state — there is no "list my submissions" command.
 - If the new `pert_counts.csv` carries an `n_cells` column ≠ 400, that
   column wins inside `vcc prep` — pass matching `--cells-per-pert` to the
   generator (it uses one global count).

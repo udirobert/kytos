@@ -13,9 +13,14 @@ checking their validity caveats.
 
 - **Best recorded submission:** `kytos-k027-consensus-dm`, overall
   **+0.1262**, rank **308 of 1088** at capture (entry `fN4wjAp9BUEvHtGWk0az`,
-  2026-09-22; the board has since grown past 1,130 — rank drifts) —
+  2026-09-22; the board has since grown past 1,290 — rank drifts) —
   consensus deltas + dual-moment count generation. Still champion after
   the k028/k029/k030 probes all regressed (details below).
+  **Confirmed stable 2026-10-03:** `kytos-k037-k027-rescore` resubmitted that
+  bundle byte-identically and reproduced **+0.12617** (Δ3e-5 over 11 days),
+  so scoring/panel/anchors do not drift and cross-date comparisons are valid.
+  That probe also captured k027's six components for the first time — the
+  canonical per-component baseline (see the k035 correction below).
   Supersedes
   `kytos-k026-consensus-w-ctr` (+0.0670, rank 512) and
   `kytos-k011-ds-x1p7` (+0.059575, rank 486 at its snapshot, entry
@@ -145,14 +150,19 @@ checking their validity caveats.
   the submit path is rehearsed end-to-end on a mock D/E/F panel
   (`vcc prep --contexts D,E,F` dry-run PASS), and
   `docs/final-phase-runbook.md` has the Oct-22 checklist.
-- **Probe cadence live (2026-09-30):** `kytos-k035-ctragr-dm` = +0.1242 —
-  a statistical tie with champion, but the pre-declared component
-  predictions all confirmed (pds/reach record highs, mse flat): the
-  per-gene cross-source agreement gate genuinely improves signature
-  direction on the real panel. `consensus_w_ctr_agr` is now the reference
-  delta set. Next machinery: source granularity (per-donor/per-sample
-  deltas feed better agreement statistics), gate-constant tuning,
-  emission upgrades. Components still weakest: mse, fid (negative), jac.
+- **Probe cadence live (2026-09-30, corrected 2026-10-03):**
+  `kytos-k035-ctragr-dm` = +0.1242 — a statistical tie with champion. Its
+  original reading ("all pre-declared predictions confirmed, pds/reach record
+  highs") was written before the champion's components had ever been captured.
+  `kytos-k037-k027-rescore` (+0.12617, byte-identical resubmit of k027's own
+  bundle) supplies them: the agreement gate raises `pds` (+0.0081) but lowers
+  `reach` (−0.0095), `nmae` (−0.0052), `mse` (−0.0031) and `fid` (−0.0021), and
+  the six channel deltas sum to the observed overall loss. **The gate is a
+  component reshuffle, not a win**; `consensus_w_ctr_agr` remains the reference
+  delta set only because pds is the channel nothing else moves. Next
+  machinery: source granularity (per-donor/per-sample deltas feed better
+  agreement statistics), gate-constant tuning, emission upgrades. Components
+  still weakest: mse, fid (negative), jac.
 - **Final recipe decision (2026-09-28): RESOLVED.** `kytos-k034-nctr-dm`
   (single-variable ablation: champion generator + uncentered `consensus_w`
   deltas) scored +0.1178 vs k027's +0.1262 — the common-response centering
