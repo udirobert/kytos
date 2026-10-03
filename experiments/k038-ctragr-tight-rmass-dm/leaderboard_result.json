@@ -1,0 +1,30 @@
+{
+  "entry": "b8ellZcFjWy58mJkVl31",
+  "model": "kytos-k038-ctragr-tight-rmass-dm",
+  "status": "published",
+  "submitted": "2026-10-03T21:50:58.807953Z",
+  "published_utc": "2026-10-03T22:10:54Z",
+  "rank": 489,
+  "leaderboard_size": 1299,
+  "overall": 0.1254388194622373,
+  "pds": 0.6136341753808736,
+  "mse": 0.0149402587867243,
+  "nmae": 0.09032974100296125,
+  "fid": -0.021556011881981155,
+  "reach": 0.054078256378334716,
+  "jac": 0.0012064971065110796,
+  "raw": {
+    "pds_cosine": 0.7769862504645113,
+    "expr_mse_unbiased_capped_norm": 0.9736692714753943,
+    "de_wilcoxon_lfc_nmae": 0.9467017553017485,
+    "de_wilcoxon_direction_fidelity_yield_raw": 0.5062486955250153,
+    "de_wilcoxon_direction_reach_raw": 0.12709941995092272,
+    "de_wilcoxon_sig_jaccard": 0.030743276721887404
+  },
+  "partition": "val",
+  "panel": "vcc2026-val-1",
+  "anchor_set": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+  "vs_k037_champion_overall": -0.000735,
+  "vs_k035_overall": 0.001224,
+  "note": "Recipe probe (two delta variables vs k035: gate constants std->tight, plus per-target row-norm mass restore). Officially a statistical tie with the champion and the best score_pds / score_nmae / score_jac recorded, but score_reach fell to the lowest of the three gate settings. The declared reach and nmae predictions were both wrong and both in the direction opposite to Gate B round 16's local reading. Component table, band-by-band verdicts and the pds<->reach trade analysis: experiments/_embargoed/k038-ctragr-tight-rmass-predeclared.md (RESULT section, local-only)."
+}

@@ -159,10 +159,19 @@ checking their validity caveats.
   `reach` (−0.0095), `nmae` (−0.0052), `mse` (−0.0031) and `fid` (−0.0021), and
   the six channel deltas sum to the observed overall loss. **The gate is a
   component reshuffle, not a win**; `consensus_w_ctr_agr` remains the reference
-  delta set only because pds is the channel nothing else moves. Next
-  machinery: source granularity (per-donor/per-sample deltas feed better
-  agreement statistics), gate-constant tuning, emission upgrades. Components
-  still weakest: mse, fid (negative), jac.
+  delta set only because pds is the channel nothing else moves.
+  **Axis closed 2026-10-03 by `kytos-k038-ctragr-tight-rmass-dm` (+0.12544, a
+  second tie):** tightening the gate (0.40/0.80) plus the row-norm mass restore
+  produced the best `pds` (0.6136), `nmae` and `jac` yet and the *worst*
+  `reach` (0.0541). Across the three gate settings pds and rise and reach falls
+  monotonically (0.6032/0.0686 → 0.6113/0.0591 → 0.6136/0.0541) — the gate buys
+  direction by deleting exactly the genes that would count as reached, the two
+  channels are equally weighted, and reach moves harder. That trade, not lost
+  signal, is what the post-k027 plateau has been. Next machinery must **add**
+  confidently-signed genes rather than sharpen the keep-mask: source
+  granularity (per-donor/per-sample deltas — `tools/modal_k036_xatlas_samplestats.py`)
+  or a lineage-matched second source. Components still weakest: mse, fid
+  (negative), jac.
 - **Final recipe decision (2026-09-28): RESOLVED.** `kytos-k034-nctr-dm`
   (single-variable ablation: champion generator + uncentered `consensus_w`
   deltas) scored +0.1178 vs k027's +0.1262 — the common-response centering

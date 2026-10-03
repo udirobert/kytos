@@ -289,6 +289,16 @@ enrichment path.
   this run supplies k027's never-captured six components, which are now the
   canonical per-component baseline. k027 remains champion. Receipts:
   [`k037-k027-rescore/`](k037-k027-rescore/).
+- `k038-ctragr-tight-rmass-dm` — submitted 2026-10-03 (entry
+  `b8ellZcFjWy58mJkVl31`): recipe probe — gate constants 0.30/0.70 → 0.40/0.80
+  **and** the per-target row-norm mass restore, champion generator unchanged.
+  Official **+0.12544**, rank 489/1299 — a second statistical tie with k027.
+  Best pds (0.6136) / nmae (0.0903) / jac (0.00121) recorded, lowest reach
+  (0.0541). Together with k035 and k037 this establishes the pds↔reach trade as
+  the reason the gate axis has not moved the score since September: **the
+  agreement-gate/constants axis is closed.** Both falsifiable declarations
+  failed, in opposite directions. Receipts:
+  [`k038-ctragr-tight-rmass-dm/`](k038-ctragr-tight-rmass-dm/).
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /

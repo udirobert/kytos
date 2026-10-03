@@ -543,11 +543,15 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   change. Within-source per-sample agreement remains untested (npz
   `delta_batch` is pooled, not per-sample — needs re-extraction).
   Builder: `tools/build_consensus_deltas_v2.py`.
+  **SUPERSEDED 2026-10-03 by `kytos-k038-ctragr-tight-rmass-dm` (+0.1254): the
+  tight-constant "new reference delta set" is NOT a promotion — see the k038
+  entry. The constants axis is closed.**
 - **Round `gate-local-20260930-02` (2026-09-30):** `ctr_agr_tight_rmass`
   (gate picks genes, row-norm restores target mass) = new local best;
-  gain comes from reach/jac — the rmass hypothesis (recover nmae/mse)
-  was FALSIFIED (mass loss isn't the nmae driver; the keep-mask carries
-  the value). Per-sample/per-donor agreement feasibility: Jurkat
+  gain attributed to reach/jac — the rmass hypothesis (recover nmae/mse)
+  was called FALSIFIED locally. **Both of those local readings inverted
+  officially — see the k038 entry below.**
+  Per-sample/per-donor agreement feasibility: Jurkat
   per-channel parts exist on the Modal volume (cheap, today); X-Atlas
   per-sample needs a small Modal re-extract (~2-3h) — worthwhile, 78-116
   samples/target median is a far stronger gate term than 5-source
@@ -555,6 +559,31 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   (pooled across donors); K562 pooled only. Atlas h5ad on the VPS has
   48 batches — usable as an ORACLE check (does batch sign-agreement
   track true DE?) before spending Modal credits.
+- **`kytos-k038-ctragr-tight-rmass-dm` submitted 2026-10-03 — +0.12544 (rank
+  489/1299): second consecutive statistical tie; the agreement-gate axis is
+  CLOSED.** Recipe probe (two delta variables vs k035: gate constants
+  0.30/0.70→0.40/0.80 **and** the rmass row-norm restore), champion generator
+  otherwise identical, deltas sha `989d1415b247…`. Best `score_pds` (0.6136),
+  `score_nmae` (0.0903) and `score_jac` (0.00121) ever recorded — and the
+  **lowest `score_reach`** (0.0541) of the three gate settings, so the two
+  falsifiable declarations both broke, in opposite directions: reach was declared
+  UP (it fell), nmae was declared explicitly-not-UP (it rose past the champion).
+  **Mechanism found — the plateau explained:** along the gate axis
+  (no gate → std → tight+rmass) pds and reach move monotonically *opposite*
+  (0.6032→0.6113→0.6136 vs 0.0686→0.0591→0.0541). Sharpening cross-source
+  agreement suppresses low-agreement genes, which are exactly the genes that
+  would register as reached DE genes; the channels are equally weighted and
+  reach moves harder, so every step on this axis is a tie or a loss. We have
+  been re-shuffling between anti-correlated channels, not losing signal.
+  Ship recipe for Oct 22 is unchanged (`consensus_w_ctr` + dual-moment
+  a1.0/b0.5/pk4). Only mechanisms that add confidently-signed genes (more
+  samples per source = k036; a lineage-matched second source) qualify for a
+  slot; further gate-constant/shape/centering variants do not. Gate B's
+  promotion ordering has now failed to transfer on four consecutive attempts —
+  it is a leakage/regression/drift screen, not a judge. Tool:
+  `tools/modal_k038_rmass_submit.py`; receipts:
+  `experiments/k038-ctragr-tight-rmass-dm/`; analysis:
+  `experiments/_embargoed/k038-ctragr-tight-rmass-predeclared.md` (RESULT).
 - **Gate B rounds 11–12 (2026-09-28, no promotion candidate).**
   `gate-20260928-02` swept `bulk_amplitude` 0.5–3.0 plus eb2/uncentered
   probes; `gate-20260928-03` tested their composition. Raw
