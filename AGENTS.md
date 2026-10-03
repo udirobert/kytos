@@ -490,12 +490,14 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   `experiments/_embargoed/k035-ctragr-predeclared.md` (RESULT section).
 - **Gate-constant optimum found and axis exhausted (2026-09-30, rounds
   `gate-local-20260929-02` + `gate-local-20260930-01`, VPS):** bracketed
-  the agr clip constants — tight (0.40/0.80) is the local optimum
-  (avg 0.2456 > xtight 0.50/0.90 = 0.2442 > std 0.30/0.70 = 0.2406 ≈
-  loose 0.20/0.60 = 0.2409); n_cells reliability weighting (vagr)
-  adds ~+0.0015 at std constants but does NOT stack at tight. Constant
-  gain over confirmed `ctr_agr` (+0.005 local ≈ +0.001 official expected)
-  is sub-resolution — no standalone probe; **`consensus_w_ctr_agr_tight`
+  the agr clip constants — tight (0.40/0.80) is the local optimum, with
+  loose → std → xtight → tight ordering monotonically improving and
+  xtight/tight close together; n_cells reliability weighting (vagr) helps
+  at std constants but does NOT stack at tight. Exact arm averages for all
+  four bracket points: `experiments/_embargoed/k025-eval2-gate/gate-local-
+  {20260929-02,20260930-01}/` (local-only). The constant gain over
+  confirmed `ctr_agr` is sub-resolution on the official scale — no
+  standalone probe; **`consensus_w_ctr_agr_tight`
   is the new reference delta set**, stacked under the next mechanism
   change. Within-source per-sample agreement remains untested (npz
   `delta_batch` is pooled, not per-sample — needs re-extraction).
