@@ -103,6 +103,11 @@ def test_builder_emits_variants_and_consensus(tmp_path):
         "consensus_w_ctr",
         "consensus_w_ncell",
         "consensus_w_ncell_ctr",
+        "consensus_w_agr",
+        "consensus_w_agr_ctr",
+        "consensus_w_ctr_agr",
+        "consensus_w_selctr",
+        "consensus_w_selctr_agr",
     }
     assert set(manifest["variants"]) == expected
     for name in expected:
