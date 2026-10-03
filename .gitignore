@@ -76,3 +76,8 @@ data/raw/refs/
 experiments/_embargoed/
 experiments/k020-gnn-crosslineage/gnn.pt
 experiments/k018-h1-dualmoment/modal_build.pid
+
+# Recorded as deliberately untracked in AGENTS.md §4 (submission-protocol
+# revision, 2026-09-29). Ignored so a broad `git add` can't sweep them public.
+experiments/k030-ctxlineage/
+logs/
