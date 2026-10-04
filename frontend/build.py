@@ -18,6 +18,7 @@ if str(REPO_ROOT / "src") not in sys.path:
 from frontend.observatory.render import (  # noqa: E402 - after sys.path bootstrap
     render_about,
     render_home,
+    render_quantum,
     render_run_detail,
     render_runs_index,
 )
@@ -134,6 +135,23 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         render_runs_index(runs, root_prefix="../", js_version=js_hash), encoding="utf-8"
     )
 
+    # Quantum workstream — c008 Moth QPU tomography + the Cleveland arc.
+    # Skipped cleanly when the c008 dir is absent (returns None).
+    quantum_html = render_quantum(
+        runs,
+        root_prefix="../",
+        js_version=js_hash,
+        cleveland_dir=experiments_dir / "cleveland",
+    )
+    quantum_built = quantum_html is not None
+    if quantum_built:
+        quantum_dir = out_dir / "quantum"
+        quantum_dir.mkdir()
+        figs_src = experiments_dir / "cleveland" / "c008-moth-qpu-tomography" / "narrative" / "figs"
+        if figs_src.is_dir():
+            _copy_tree(figs_src, quantum_dir / "figs")
+        (quantum_dir / "index.html").write_text(quantum_html, encoding="utf-8")
+
     # Per-run OG share cards — a scored run gets a 1200×630 PNG with its
     # actual result in the unfurl. Requires Pillow; runs without scores skip.
     ordered_runs = sorted(
@@ -203,6 +221,8 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         )
 
     sitemap_paths = ["/", "/about/", "/runs/"] + [f"/runs/{run.run_id}/" for run in runs]
+    if quantum_built:
+        sitemap_paths.append("/quantum/")
     if chronicle.shorts:
         sitemap_paths += ["/shorts/"] + [f"/shorts/{shot.slug}/" for shot in chronicle.shorts]
     (out_dir / "robots.txt").write_text(render_robots_txt(), encoding="utf-8")

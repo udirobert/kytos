@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+{{ nav | safe }}
+<main class="content quantum-content" id="main-content" tabindex="-1">
+
+  <section class="quantum-hero">
+    <p class="eyebrow">Kytos Observatory · quantum workstream</p>
+    <h1>Real biology on real quantum hardware.</h1>
+    <p class="quantum-lede">{{ headline }}</p>
+    <div class="quantum-chips">
+      <span class="q-chip">{{ engine }}</span>
+      <span class="q-chip">{{ backend }}</span>
+      <span class="q-chip">2 proteins + 1 control</span>
+      <span class="q-chip">20 qubits</span>
+      <span class="q-chip">{{ shots }} shots</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header class="panel-header"><h2>The experiment</h2></header>
+    <p class="q-text">Protein contact graphs — which residues touch which —
+      carry the topology that allosteric drug sites live in. We take each
+      target's coarse-grained contact graph, keep the biologically meaningful
+      core (catalytic "source" supernodes, the known allosteric pocket, and
+      the strongest couplings between them), and submit it to Moth's
+      <code>{{ engine }}</code> engine as a 20-qubit coupling map.</p>
+    <figure class="q-fig">
+      <img src="{{ root_prefix }}quantum/figs/fig1_coupling_graphs.png"
+           alt="The KRAS G12C and cardiac myosin 20-qubit coupling graphs, nodes colored by biological role" loading="lazy" decoding="async">
+      <figcaption>The two allosteric cores submitted to hardware — red
+        nodes are catalytic-site supernodes, blue the known drug pockets,
+        purple overlap both. Node→residue mapping in
+        <code>metrics/graphs/</code>.</figcaption>
+    </figure>
+  </section>
+
+  <section class="panel">
+    <header class="panel-header"><h2>What the hardware did to it</h2></header>
+    <p class="q-text">Each coupling map ran twice: <code>emu</code> (Moth's
+      Aer emulator) and <code>qpu</code> (IBM {{ backend }}, {{ shots }}
+      shots, full two-qubit tomography on every graph edge).</p>
+    <ol class="q-findings">
+      {% for f in findings %}
+      <li>{{ f }}</li>
+      {% endfor %}
+    </ol>
+    <figure class="q-fig">
+      <img src="{{ root_prefix }}quantum/figs/fig4_real_vs_control.png"
+           alt="Bar charts comparing edge correlation magnitude and edge agreement between real protein graphs and a random control, on emulator vs ibm_fez" loading="lazy" decoding="async">
+      <figcaption>Real vs random. On the emulator the protein topologies are
+        ~2× more correlated than a degree-matched random graph; on hardware
+        the separation washes out.</figcaption>
+    </figure>
+    <details class="q-details">
+      <summary>Full tomography: correlation matrices + Bloch vectors</summary>
+      <figure class="q-fig">
+        <img src="{{ root_prefix }}quantum/figs/fig2_edge_correlations.png"
+             alt="Per-edge two-qubit correlation heatmaps for KRAS and myosin — emulator, ibm_fez, and the difference" loading="lazy" decoding="async">
+        <figcaption>Per-edge |correlation vector|, emulator vs hardware vs
+          the difference. Magnitudes transfer; the pattern does not.</figcaption>
+      </figure>
+      <figure class="q-fig">
+        <img src="{{ root_prefix }}quantum/figs/fig3_bloch_magnitudes.png"
+             alt="Per-qubit Bloch vector magnitudes on emulator vs ibm_fez for both proteins" loading="lazy" decoding="async">
+        <figcaption>Per-qubit Bloch |r|. Both backends produce structured,
+          polarized single-qubit states — but their directions decorrelate
+          (median cosine ≈ 0).</figcaption>
+      </figure>
+    </details>
+  </section>
+
+  <section class="panel">
+    <header class="panel-header"><h2>Receipts</h2></header>
+    <p class="q-text">Every claim on this page resolves to a submitted job.
+      Moth job IDs query the engine's result endpoint; IBM job IDs are the
+      hardware execution receipts.</p>
+    <div class="q-receipts-wrap">
+      <table class="q-receipts">
+        <thead>
+          <tr><th>run</th><th>moth job (qpu)</th><th>moth job (emu)</th><th>IBM job</th></tr>
+        </thead>
+        <tbody>
+          {% for t in target_rows %}
+          <tr>
+            <td>{{ t.name }}</td>
+            <td><code>{{ t.moth_qpu }}</code></td>
+            <td><code>{{ t.moth_emu }}</code></td>
+            <td><code>{{ t.ibm_job_id }}</code></td>
+          </tr>
+          {% endfor %}
+          {% if control %}
+          <tr>
+            <td>random control</td>
+            <td><code>{{ control.moth_jobs.qpu }}</code></td>
+            <td><code>{{ control.moth_jobs.emu }}</code></td>
+            <td><code>{{ control.ibm_job_id }}</code></td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    <p class="q-subgraph-note">{% for t in target_rows %}{{ t.name }}: {{ t.subgraph }}.{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
+  </section>
+
+  <section class="panel">
+    <header class="panel-header"><h2>The record behind the run</h2></header>
+    <p class="q-text">c008 is the latest step of the Cleveland Clinic / GQAI
+      quantum-allostery workstream — the same publish-everything discipline
+      as the Virtual Cell Challenge runs on this site.</p>
+    <div class="q-arc">
+      {% for a in arc %}
+      <div class="q-arc-row">
+        <span class="q-arc-id">{{ a.id }}</span>
+        <span class="q-arc-date">{{ a.created }}</span>
+        <span class="q-arc-note">{{ a.note }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if caveats %}
+  <section class="panel">
+    <header class="panel-header"><h2>Honest caveats</h2></header>
+    <p class="q-text">What this page does not claim.</p>
+    <ul class="q-caveats">
+      {% for c in caveats %}
+      <li>{{ c }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <section class="panel">
+    <header class="panel-header"><h2>Artifacts</h2></header>
+    <p class="q-text">Code, graphs, request payloads, raw engine results,
+      analysis, and the reproduction scripts live in the repository:
+      <code>experiments/cleveland/c008-moth-qpu-tomography/</code>.
+      The classical+CTQW allostery pipeline upstream is
+      <code>src/cleveland/</code>.</p>
+  </section>
+
+</main>
+{% endblock %}

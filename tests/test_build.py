@@ -117,6 +117,20 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "component-matrix" not in home_html
     # Bar rows link into run pages relative to /runs/ — pin the best row.
     assert 'class="traj-bar-row is-best" href="../runs/k027-consensus-dm/index.html"' in runs_html
+
+    # Quantum workstream page — c008 QPU tomography showcase.
+    quantum = dist / "quantum" / "index.html"
+    assert quantum.is_file()
+    quantum_html = quantum.read_text(encoding="utf-8")
+    assert "Real biology on real quantum hardware" in quantum_html
+    assert "ibm_fez" in quantum_html
+    assert "db1crfrid5ic73eqvk1g" in quantum_html  # KRAS IBM job receipt
+    assert "random control" in quantum_html
+    assert "c008-moth-qpu-tomography" in quantum_html
+    assert "c001-ctrw-full-vs-coarse" in quantum_html  # full c-arc present
+    assert (dist / "quantum" / "figs" / "fig1_coupling_graphs.png").is_file()
+    sitemap = (dist / "sitemap.xml").read_text(encoding="utf-8")
+    assert "/quantum/" in sitemap
     assert "hk-stability" in html or "housekeeping_shift" in html
     # Holo screenshot ships compressed when Pillow is present (raw ~410KB;
     # the Trust panel shows it as a small thumbnail) — never a 400KB asset.

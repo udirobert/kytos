@@ -285,6 +285,7 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
     links = [
         ("Home", f"{root_prefix}index.html", active == "home"),
         ("Runs", f"{root_prefix}runs/index.html", active == "runs"),
+        ("Quantum", f"{root_prefix}quantum/index.html", active == "quantum"),
         ("Chronicle", f"{root_prefix}shorts/index.html", active == "shorts"),
         ("About", f"{root_prefix}about/index.html", active == "about"),
     ]
@@ -1035,6 +1036,104 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "", js_version: s
         "substantiation_about_html": _substantiation_about_html(runs),
     }
     return render_template("about.html", **context)
+
+
+def _quantum_arc(cleveland_dir: Path) -> list[dict[str, str]]:
+    """One-line-per-experiment arc for the Cleveland workstream."""
+    arc: list[dict[str, str]] = []
+    if not cleveland_dir.is_dir():
+        return arc
+    for child in sorted(cleveland_dir.iterdir()):
+        facts_path = child / "facts.json"
+        if not child.is_dir() or not facts_path.is_file():
+            continue
+        try:
+            facts = json.loads(facts_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        meta_path = child / "meta.json"
+        meta: dict[str, Any] = {}
+        if meta_path.is_file():
+            try:
+                meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                pass
+        arc.append(
+            {
+                "id": child.name,
+                "created": str(meta.get("created") or facts.get("created") or ""),
+                "method": str(facts.get("method") or ""),
+                "note": str(meta.get("notes") or facts.get("headline") or ""),
+            }
+        )
+    return arc
+
+
+def render_quantum(
+    runs: list[RunSummary],
+    *,
+    root_prefix: str = "../",
+    js_version: str = "",
+    cleveland_dir: Path,
+) -> str | None:
+    """The quantum workstream page — c008 Moth QPU tomography + the c-arc.
+
+    Returns None when the c008 experiment dir is absent so the build can skip
+    the page cleanly on checkouts without the Cleveland tree.
+    """
+    c008 = cleveland_dir / "c008-moth-qpu-tomography"
+    facts_path = c008 / "facts.json"
+    if not facts_path.is_file():
+        return None
+    facts = json.loads(facts_path.read_text(encoding="utf-8"))
+    summary_path = c008 / "metrics" / "summary.json"
+    summary: dict[str, Any] = {}
+    if summary_path.is_file():
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+
+    targets = facts.get("targets") or {}
+    target_rows = []
+    for key in ("kras_g12c", "cardiac_myosin"):
+        t = targets.get(key) or {}
+        name = "KRAS G12C" if "kras" in key else "cardiac myosin"
+        target_rows.append(
+            {
+                "name": name,
+                "subgraph": str(t.get("subgraph") or ""),
+                "ibm_job_id": str(t.get("ibm_job_id") or ""),
+                "moth_qpu": str((t.get("moth_job_ids") or {}).get("qpu") or ""),
+                "moth_emu": str((t.get("moth_job_ids") or {}).get("emu") or ""),
+            }
+        )
+    ctrl = summary.get("random_control") or {}
+
+    meta = PageMeta(
+        title="Quantum",
+        description=(
+            "Protein allosteric cores as 20-qubit coupling maps on real IBM "
+            "hardware — KRAS G12C and cardiac myosin tomography on ibm_fez "
+            "via Moth's graph-v1 engine, with a random-graph control."
+        ),
+        canonical_path="/quantum/",
+    )
+    context = {
+        "meta": meta,
+        "head_tags": render_head_tags(meta, root_prefix=root_prefix),
+        "body_class": "page-quantum",
+        "root_prefix": root_prefix,
+        "js_version": js_version,
+        "nav": _nav("quantum", runs, root_prefix=root_prefix),
+        "headline": str(facts.get("headline") or ""),
+        "findings": [str(f) for f in (facts.get("findings") or [])],
+        "caveats": [str(c) for c in (facts.get("honest_caveats") or [])],
+        "target_rows": target_rows,
+        "control": ctrl,
+        "arc": _quantum_arc(cleveland_dir),
+        "backend": str(facts.get("backend_qpu") or "ibm_fez"),
+        "engine": str(facts.get("engine") or "graph-v1"),
+        "shots": str(facts.get("shots") or "1024"),
+    }
+    return render_template("quantum.html", **context)
 
 
 def _run_card_html(run: RunSummary, chron: list[RunSummary], prev: RunSummary | None) -> str:
