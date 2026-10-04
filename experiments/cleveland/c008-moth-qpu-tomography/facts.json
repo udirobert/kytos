@@ -38,7 +38,8 @@
     "Per-qubit Bloch-vector DIRECTIONS decorrelate between emu and qpu (median cosines -0.01, -0.27) - the dominant decoherence signature is directional scrambling, not magnitude loss.",
     "The engine's prepared state is NOT a pure graph state (single-qubit |r| up to 1.0 vs 0 for a graph state); emu mode also deviates from the exact CZ-product baseline (metrics/graphs/*_exact.json). Interpretation is 'Moth correlated-state protocol driven by our protein topology', not graph-state fidelity.",
     "Role-level decomposition (source / known-site / connector edges) is inconsistent across targets and underpowered (n=5-6 known edges) - reported as noise, not signal.",
-    "KRAS role means (qpu): source 0.305 / sourceknown 0.253 / connector 0.295 / known 0.237. Myosin: source 0.414 / sourceknown 0.281 / known 0.509 / connector 0.499."
+    "KRAS role means (qpu): source 0.305 / sourceknown 0.253 / connector 0.295 / known 0.237. Myosin: source 0.414 / sourceknown 0.281 / known 0.509 / connector 0.499.",
+    "Random control (degree-matched 20-node/50-edge graph, ibm_fez db1d1h2vog1s73fhvp00): emulator edge-corr 0.184 vs KRAS 0.338 / myosin 0.419 - real topology is ~2x more correlated in emulation. On hardware the separation washes out (control qpu 0.441 vs KRAS 0.284): topology-specific fine structure is the first casualty of NISQ noise."
   ],
   "honest_caveats": [
     "graph-v1 internals are Moth's black box; the coupling_map parameterizes their protocol, circuit not exposed.",

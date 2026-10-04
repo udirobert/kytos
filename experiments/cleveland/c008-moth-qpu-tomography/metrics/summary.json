@@ -88,5 +88,27 @@
    "emu": "00000011010001100101",
    "qpu": "00010111001011001101"
   }
+ },
+ "random_control": {
+  "target": "random_degree_matched_50e",
+  "ibm_job_id": "db1d1h2vog1s73fhvp00",
+  "backend": "ibm_fez",
+  "shots": 1024,
+  "moth_jobs": {
+   "emu": "f097e67a-3905-449b-b152-d44439ff76f9",
+   "qpu": "6445e00e-c282-4aa3-87ea-a156a372274f"
+  },
+  "edge_agreement": {
+   "emu": 0.44,
+   "qpu": 0.46
+  },
+  "edge_corr_mean": {
+   "emu": 0.18411499476839058,
+   "qpu": 0.4413841919624845
+  },
+  "bloch_r_mean": {
+   "emu": 0.4733241133772029,
+   "qpu": 0.6565546633199605
+  }
  }
 }

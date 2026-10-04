@@ -51,6 +51,19 @@ Pauli-pair correlations on every graph edge returned.
   c002–c007; this run supplies the hardware receipt and decoherence
   characterization. The pre-declared significance gate is still unmet.
 
+## Random-graph control (added)
+
+A degree-matched random 20-node graph (50 edges, same shot count) ran both
+modes — moth jobs `6445e00e` (qpu) / `f097e67a` (emu), IBM `ibm_fez`. Result:
+
+- Emulator: protein cores show ~2× the edge-correlation magnitude of random
+  (KRAS 0.338, myosin 0.419 vs control 0.184) — the engine output is
+  topology-sensitive in emulation.
+- Hardware: the separation does not survive — control qpu |corr| 0.441 vs
+  KRAS 0.284. Fine, topology-specific structure is the first thing hardware
+  noise erases.
+- Edge agreement: KRAS 0.52 / myosin 0.48 / control 0.46 on QPU.
+
 ## For the write-up (W2)
 
 One-paragraph story: *We took the allosteric cores of two real drug targets —
