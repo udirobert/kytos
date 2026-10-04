@@ -96,6 +96,10 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "chart-details" in html
     assert "run-header" in html
     assert "vessel3d.js" in html
+    # Lateral nav: the full pill strip folds behind a switcher; k001 is the
+    # first run so the prev slot is an empty spacer (no link back).
+    assert "run-switcher" in html
+    assert "switcher-next" in html
     assert "% ceiling" in html
     assert "metrics-chart-data" in html
     assert "vessel3d.js" not in runs_html

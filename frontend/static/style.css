@@ -397,6 +397,111 @@ code {
 .dot-error { background: var(--error); }
 .dot-none { background: var(--muted); }
 
+/* ── Run switcher (run detail lateral nav) ───────────────────────────────
+   The full pill strip folds behind a details; prev/next links keep
+   adjacent-run jumps to one click. */
+
+.run-switcher {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+}
+
+.switcher-link {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+  border-right: 1px solid var(--line);
+  max-width: 14rem;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.switcher-link.switcher-next {
+  border-right: none;
+  border-left: 1px solid var(--line);
+}
+
+a.switcher-link:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.switcher-id {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ink);
+}
+
+.switcher-link:hover .switcher-id {
+  color: var(--accent);
+}
+
+.run-switcher-details {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.run-switcher-details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.run-switcher-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.run-switcher-details > summary:hover {
+  color: var(--accent);
+}
+
+.switcher-pos {
+  color: var(--ink);
+}
+
+.switcher-label::before {
+  content: "▸ ";
+}
+
+.run-switcher-details[open] > summary .switcher-label::before {
+  content: "▾ ";
+}
+
+.run-switcher-details .run-strip {
+  border-bottom: none;
+  border-top: 1px solid var(--line);
+}
+
+/* Phones: sibling links shrink to bare arrows so the switcher stays one row. */
+@media (max-width: 640px) {
+  .switcher-link {
+    max-width: 3rem;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .switcher-id {
+    display: none;
+  }
+}
+
 /* ════════════════════════════════════════════════════════════════════════
    HERO
    ════════════════════════════════════════════════════════════════════════ */
@@ -667,6 +772,7 @@ code {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 0.6rem 0.85rem;
+  min-width: 0;
 }
 
 .stat-label {
@@ -684,6 +790,8 @@ code {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--ink);
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -2127,6 +2235,12 @@ code {
   font-size: 1.1rem;
   color: var(--muted);
   flex-shrink: 0;
+}
+
+/* The hint summarizes a closed panel; once open, the content speaks and the
+   hint becomes a repeated label — hide it. */
+.disclosure-panel[open] .disclosure-hint {
+  display: none;
 }
 
 .disclosure-panel[open] .disclosure-icon .t-icon[data-icon="closed"] {

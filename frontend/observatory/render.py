@@ -291,13 +291,14 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
         f'<li><a class="nav-link{" is-active" if is_active else ""}" href="{href}">{label}</a></li>'
         for label, href, is_active in links
     )
-    # Lateral nav strip only where it earns its keep: run-detail pages
-    # ("which run am I in, what's its sibling, who's the red one?"). Home is
-    # an immersive poster (one stat, one door); runs index already lists runs
-    # as cards; about is pure thesis.
+    # Lateral nav only where it earns its keep: run-detail pages ("which run
+    # am I in, what's its sibling, who's the red one?"). Home is an immersive
+    # poster; runs index already lists runs as cards; about is pure thesis.
+    # The full 24-pill strip folds behind a switcher — adjacent-run nav stays
+    # one click via the prev/next links either side of it.
     strip_block = ""
-    show_strip = len(runs) > 1 and any(r.run_id == active for r in runs)
-    if show_strip:
+    idx = next((i for i, r in enumerate(runs) if r.run_id == active), -1)
+    if len(runs) > 1 and idx >= 0:
         strip = "".join(
             f'<a class="run-pill{" is-active" if run.run_id == active else ""}" '
             f'href="{root_prefix}runs/{_h(run.run_id)}/index.html">'
@@ -308,7 +309,41 @@ def _nav(active: str, runs: list[RunSummary], *, root_prefix: str) -> str:
             f"</a>"
             for run in runs
         )
-        strip_block = f'<div class="run-strip">{strip}</div>'
+
+        def _sibling(run: RunSummary | None, cls: str, label: str) -> str:
+            if run is None:
+                return f'<span class="switcher-link {cls}"></span>'
+            return (
+                f'<a class="switcher-link {cls}" '
+                f'href="{root_prefix}runs/{_h(run.run_id)}/index.html" '
+                f'title="{_h(run.run_id)}">{label}</a>'
+            )
+
+        prev_run = runs[idx - 1] if idx > 0 else None
+        next_run = runs[idx + 1] if idx < len(runs) - 1 else None
+        prev_link = _sibling(
+            prev_run,
+            "switcher-prev",
+            f'← <span class="switcher-id">{_h(prev_run.run_id) if prev_run else ""}</span>',
+        )
+        next_link = _sibling(
+            next_run,
+            "switcher-next",
+            f'<span class="switcher-id">{_h(next_run.run_id) if next_run else ""}</span> →',
+        )
+        strip_block = f"""
+        <nav class="run-switcher" aria-label="Switch run">
+          {prev_link}
+          <details class="run-switcher-details">
+            <summary>
+              <span class="switcher-pos">Run {idx + 1} of {len(runs)}</span>
+              <span class="switcher-label">all runs</span>
+            </summary>
+            <div class="run-strip">{strip}</div>
+          </details>
+          {next_link}
+        </nav>
+        """
     # Day / night controls — the Observatory's adaptive theme. The auto
     # button appears only once a visitor pins a theme, so un-pinning is one
     # click back to dawn/dusk mode.
@@ -1608,14 +1643,20 @@ def render_run_detail(
     # The metrics-vs-ceiling chart is the run's core signal — render it
     # inline in the Audit panel, not behind a third nested <details>. The
     # class name doubles as the test contract; see initPlotly (no <details>
-    # parent → Plotly boots immediately).
+    # parent → Plotly boots immediately). Runs that ship no metrics/ dir get
+    # no empty box — there is nothing to plot.
+    chart_block = ""
+    if metrics_names:
+        chart_block = (
+            '<div class="chart-block chart-details">'
+            + '<p class="chart-block-label">Metrics vs ceiling (all scores)</p>'
+            + '<div id="metrics-chart" class="chart chart-compact"></div>'
+            + f'<script type="application/json" id="metrics-chart-data">{chart_json}</script>'
+            + "</div>"
+        )
     audit_inner = (
         flags_html
-        + '<div class="chart-block chart-details">'
-        + '<p class="chart-block-label">Metrics vs ceiling (all scores)</p>'
-        + '<div id="metrics-chart" class="chart chart-compact"></div>'
-        + f'<script type="application/json" id="metrics-chart-data">{chart_json}</script>'
-        + "</div>"
+        + chart_block
         + '<details class="volcano-details">'
         + "<summary>Differential expression volcano plot (log2FC vs -log10 p)</summary>"
         + '<div id="volcano-chart" class="chart chart-compact"></div>'

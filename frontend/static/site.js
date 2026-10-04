@@ -264,8 +264,18 @@
   function initKeyboardShortcuts() {
     var pills = Array.prototype.slice.call(document.querySelectorAll(".run-strip .run-pill"));
     var active = document.querySelector(".run-strip .run-pill.is-active");
-    if (active && active.scrollIntoView) {
+    // The strip may sit inside a folded <details> (run switcher) — only
+    // scroll a rendered pill, and scroll it into view when the fold opens.
+    if (active && active.scrollIntoView && active.offsetParent !== null) {
       active.scrollIntoView({ block: "nearest", inline: "center" });
+    }
+    var switcher = document.querySelector(".run-switcher-details");
+    if (switcher) {
+      switcher.addEventListener("toggle", function () {
+        if (switcher.open && active && active.scrollIntoView) {
+          active.scrollIntoView({ block: "nearest", inline: "center" });
+        }
+      });
     }
 
     document.addEventListener("keydown", function (e) {
