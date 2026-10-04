@@ -3365,3 +3365,30 @@ a.switcher-link:hover {
 .q-findings-detail {
   color: var(--muted);
 }
+
+.q-audio {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.5rem;
+}
+
+.q-audio-track {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.q-audio-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.q-audio audio {
+  height: 2.4rem;
+  width: 16rem;
+  border-radius: var(--radius);
+}

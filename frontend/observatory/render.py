@@ -1237,6 +1237,7 @@ def render_quantum(
         "headline": str(facts.get("headline") or ""),
         "findings": headline_findings,
         "detail_findings": detail_findings,
+        "repo_blob": repo_blob,
         "caveats": [str(c) for c in (facts.get("honest_caveats") or [])],
         "target_rows": target_rows,
         "control": ctrl,

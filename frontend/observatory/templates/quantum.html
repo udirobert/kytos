@@ -92,6 +92,41 @@
   </section>
 
   <section class="panel">
+    <header class="panel-header"><h2>Hear it decohere</h2></header>
+    <p class="q-text">The same measurement, rendered as sound. Each of the 50
+      graph edges plays one note; <strong>pitch is the measured correlation
+      strength</strong>, timing is fixed by edge order. Play them in turn —
+      the melodies differ exactly where the hardware redistributed the
+      correlations.</p>
+    <div class="q-audio">
+      <div class="q-audio-track">
+        <span class="q-audio-label">emulator</span>
+        <audio controls preload="none" src="{{ root_prefix }}quantum/audio/kras_emu.wav"></audio>
+      </div>
+      <div class="q-audio-track">
+        <span class="q-audio-label">ibm_fez</span>
+        <audio controls preload="none" src="{{ root_prefix }}quantum/audio/kras_qpu.wav"></audio>
+      </div>
+      <div class="q-audio-track">
+        <span class="q-audio-label">emulator, echoed through a quantum circuit</span>
+        <audio controls preload="none" src="{{ root_prefix }}quantum/audio/kras_emu_echo.wav"></audio>
+      </div>
+    </div>
+    <p class="q-widget-caption">Third track: the emulator melody passed through
+      Moth's <code>retrocausal-echo</code> engine — a multi-tap delay whose tap
+      weights are measured on a quantum circuit (Aer simulation). Not hardware:
+      an honest echo of what the ideal device would return.</p>
+    <figure class="q-fig">
+      <img src="{{ root_prefix }}quantum/figs/fig5_teleblur_morph.png"
+           alt="The emulator correlation matrix of KRAS morphing toward the hardware measurement, rendered through quantum rotation gates" loading="lazy" decoding="async">
+      <figcaption>The emulator's correlation map morphing toward the hardware's,
+        re-rendered through quantum rotation gates by Moth's
+        <code>telablur</code> engine — decoherence, painted by the same class
+        of machine that produced it.</figcaption>
+    </figure>
+  </section>
+
+  <section class="panel">
     <header class="panel-header"><h2>What the hardware did to it</h2></header>
     <p class="q-text">The numbers behind the widget — three findings, all
       verifiable against the raw job receipts below.</p>
@@ -122,6 +157,15 @@
              alt="Per-edge two-qubit correlation heatmaps for KRAS and myosin — emulator, ibm_fez, and the difference" loading="lazy" decoding="async">
         <figcaption>Per-edge |correlation vector|, emulator vs hardware vs
           the difference. Magnitudes transfer; the pattern does not.</figcaption>
+      </figure>
+      <figure class="q-fig">
+        <img src="{{ root_prefix }}quantum/figs/fig6_qpixl_readback.png"
+             alt="Scatter plot of encoded edge correlations vs values read back by ibm_fez through the qpixl engine, showing near-identity agreement" loading="lazy" decoding="async">
+        <figcaption>Write the measurement back through the hardware: the 50
+          edge correlations encoded as qubit angles by <code>qpixl</code> and
+          read back on <code>ibm_fez</code> — Pearson 0.98, mean error 0.057.
+          The values survive the machine; the directional structure is what's
+          lost.</figcaption>
       </figure>
       <figure class="q-fig">
         <img src="{{ root_prefix }}quantum/figs/fig3_bloch_magnitudes.png"
@@ -161,6 +205,12 @@
             <td><a class="q-job-link" href="{{ control.qpu_href }}" target="_blank" rel="noopener"><code>{{ control.ibm_job_id }}</code></a></td>
           </tr>
           {% endif %}
+          <tr>
+            <td>correlation read-back<br><span class="muted">qpixl-v1</span></td>
+            <td><a class="q-job-link" href="{{ repo_blob }}/experiments/cleveland/c008-moth-qpu-tomography/metrics/results/qpixl_readback.json" target="_blank" rel="noopener"><code>1260e041-28c1-45c3-b224-96755f65130b</code></a></td>
+            <td><span class="muted">—</span></td>
+            <td><a class="q-job-link" href="{{ repo_blob }}/experiments/cleveland/c008-moth-qpu-tomography/metrics/results/qpixl_readback.json" target="_blank" rel="noopener"><code>db1e6o6egvvc73bhgtu0</code></a></td>
+          </tr>
         </tbody>
       </table>
     </div>

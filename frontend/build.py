@@ -150,6 +150,9 @@ def build(experiments_dir: Path, out_dir: Path, frontend_root: Path) -> None:
         figs_src = experiments_dir / "cleveland" / "c008-moth-qpu-tomography" / "narrative" / "figs"
         if figs_src.is_dir():
             _copy_tree(figs_src, quantum_dir / "figs")
+        audio_src = experiments_dir / "cleveland" / "c008-moth-qpu-tomography" / "metrics" / "audio"
+        if audio_src.is_dir():
+            _copy_tree(audio_src, quantum_dir / "audio")
         (quantum_dir / "index.html").write_text(quantum_html, encoding="utf-8")
 
     # Per-run OG share cards — a scored run gets a 1200×630 PNG with its

@@ -1,114 +1,150 @@
 {
- "generated": "2026-10-04",
- "engine": "graph-v1",
- "kras": {
-  "target": "kras_g12c",
-  "ibm_job_id": "db1crfrid5ic73eqvk1g",
-  "backend": "ibm_fez",
-  "shots": 1024,
-  "n_qubits": 20,
-  "n_edges": 50,
-  "edge_agreement": {
-   "emu": 0.42,
-   "qpu": 0.52
+  "generated": "2026-10-04",
+  "engine": "graph-v1",
+  "kras": {
+    "target": "kras_g12c",
+    "ibm_job_id": "db1crfrid5ic73eqvk1g",
+    "backend": "ibm_fez",
+    "shots": 1024,
+    "n_qubits": 20,
+    "n_edges": 50,
+    "edge_agreement": {
+      "emu": 0.42,
+      "qpu": 0.52
+    },
+    "edge_corr_mean": {
+      "emu": 0.3382361776169681,
+      "qpu": 0.28418433013001854,
+      "ratio": 0.8401949552890229
+    },
+    "bloch_r_mean": {
+      "emu": 0.5523920359197512,
+      "qpu": 0.49537044022155624
+    },
+    "bloch_cos_median": -0.01425536497133398,
+    "qpu_edge_corr_by_role": {
+      "source": {
+        "mean": 0.30510071838536407,
+        "n": 13
+      },
+      "sourceknown": {
+        "mean": 0.25334086723437343,
+        "n": 9
+      },
+      "connector": {
+        "mean": 0.29471348432226974,
+        "n": 23
+      },
+      "known": {
+        "mean": 0.2368858445939261,
+        "n": 5
+      }
+    },
+    "dominant_bitstring": {
+      "emu": "01101100101011100001",
+      "qpu": "01000011010100011001"
+    }
   },
-  "edge_corr_mean": {
-   "emu": 0.3382361776169681,
-   "qpu": 0.28418433013001854,
-   "ratio": 0.8401949552890229
+  "cardiac_myosin": {
+    "target": "cardiac_myosin",
+    "ibm_job_id": "db1cssjid5ic73eqvlc0",
+    "backend": "ibm_fez",
+    "shots": 1024,
+    "n_qubits": 20,
+    "n_edges": 42,
+    "edge_agreement": {
+      "emu": 0.4762,
+      "qpu": 0.4762
+    },
+    "edge_corr_mean": {
+      "emu": 0.41857613784870035,
+      "qpu": 0.42384882262101636,
+      "ratio": 1.0125967160942697
+    },
+    "bloch_r_mean": {
+      "emu": 0.5889597975851657,
+      "qpu": 0.6399253347288307
+    },
+    "bloch_cos_median": -0.27050588654382324,
+    "qpu_edge_corr_by_role": {
+      "source": {
+        "mean": 0.4140702892590884,
+        "n": 12
+      },
+      "sourceknown": {
+        "mean": 0.28076028649080964,
+        "n": 10
+      },
+      "known": {
+        "mean": 0.5092116353535696,
+        "n": 5
+      },
+      "connector": {
+        "mean": 0.4986097358198459,
+        "n": 15
+      }
+    },
+    "dominant_bitstring": {
+      "emu": "00000011010001100101",
+      "qpu": "00010111001011001101"
+    }
   },
-  "bloch_r_mean": {
-   "emu": 0.5523920359197512,
-   "qpu": 0.49537044022155624
+  "random_control": {
+    "target": "random_degree_matched_50e",
+    "ibm_job_id": "db1d1h2vog1s73fhvp00",
+    "backend": "ibm_fez",
+    "shots": 1024,
+    "moth_jobs": {
+      "emu": "f097e67a-3905-449b-b152-d44439ff76f9",
+      "qpu": "6445e00e-c282-4aa3-87ea-a156a372274f"
+    },
+    "edge_agreement": {
+      "emu": 0.44,
+      "qpu": 0.46
+    },
+    "edge_corr_mean": {
+      "emu": 0.18411499476839058,
+      "qpu": 0.4413841919624845
+    },
+    "bloch_r_mean": {
+      "emu": 0.4733241133772029,
+      "qpu": 0.6565546633199605
+    }
   },
-  "bloch_cos_median": -0.01425536497133398,
-  "qpu_edge_corr_by_role": {
-   "source": {
-    "mean": 0.30510071838536407,
-    "n": 13
-   },
-   "sourceknown": {
-    "mean": 0.25334086723437343,
-    "n": 9
-   },
-   "connector": {
-    "mean": 0.29471348432226974,
-    "n": 23
-   },
-   "known": {
-    "mean": 0.2368858445939261,
-    "n": 5
-   }
-  },
-  "dominant_bitstring": {
-   "emu": "01101100101011100001",
-   "qpu": "01000011010100011001"
+  "derived_artifacts": {
+    "sonification": {
+      "files": [
+        "metrics/audio/kras_emu.wav",
+        "metrics/audio/kras_qpu.wav"
+      ],
+      "method": "edge |corr| -> A-minor-pentatonic pitch, fixed edge order (reproduce/sonify.py)"
+    },
+    "teleblur_morph": {
+      "file": "narrative/figs/fig5_teleblur_morph.png",
+      "moth_job_id": "b8710e89-9231-4991-8e07-b98700e9494b",
+      "engine": "telablur-v1",
+      "note": "kras emu->qpu heatmap morph through quantum rotation gates"
+    },
+    "echo_ir": {
+      "emu_job_id": "04586f1f-cfde-4029-b8d1-1afcbbde5768",
+      "qpu_job_id": "194355e2-cea3-49a8-9f16-c4a5f9946544",
+      "engine": "retrocausal-echo-v1",
+      "note": "kras_emu.wav through quantum multi-tap delay; emu=aer, qpu=ibm_fez",
+      "files": [
+        "metrics/audio/kras_emu_echo.wav"
+      ],
+      "qpu_job_status": "failed: engine requires BYOK IBM token (mothbackend injection unsupported)"
+    },
+    "qpixl_readback": {
+      "job_id": "1260e041-28c1-45c3-b224-96755f65130b",
+      "engine": "qpixl-v1",
+      "note": "50 kras emu edge |corr| values encoded as qubit angles, read back on ibm_fez",
+      "ibm_job_id": "db1e6o6egvvc73bhgtu0",
+      "pearson": 0.9811,
+      "mean_abs_err": 0.0573,
+      "top10_preserved": 9,
+      "result_file": "metrics/results/qpixl_readback.json",
+      "figure": "narrative/figs/fig6_qpixl_readback.png"
+    }
   }
- },
- "cardiac_myosin": {
-  "target": "cardiac_myosin",
-  "ibm_job_id": "db1cssjid5ic73eqvlc0",
-  "backend": "ibm_fez",
-  "shots": 1024,
-  "n_qubits": 20,
-  "n_edges": 42,
-  "edge_agreement": {
-   "emu": 0.4762,
-   "qpu": 0.4762
-  },
-  "edge_corr_mean": {
-   "emu": 0.41857613784870035,
-   "qpu": 0.42384882262101636,
-   "ratio": 1.0125967160942697
-  },
-  "bloch_r_mean": {
-   "emu": 0.5889597975851657,
-   "qpu": 0.6399253347288307
-  },
-  "bloch_cos_median": -0.27050588654382324,
-  "qpu_edge_corr_by_role": {
-   "source": {
-    "mean": 0.4140702892590884,
-    "n": 12
-   },
-   "sourceknown": {
-    "mean": 0.28076028649080964,
-    "n": 10
-   },
-   "known": {
-    "mean": 0.5092116353535696,
-    "n": 5
-   },
-   "connector": {
-    "mean": 0.4986097358198459,
-    "n": 15
-   }
-  },
-  "dominant_bitstring": {
-   "emu": "00000011010001100101",
-   "qpu": "00010111001011001101"
-  }
- },
- "random_control": {
-  "target": "random_degree_matched_50e",
-  "ibm_job_id": "db1d1h2vog1s73fhvp00",
-  "backend": "ibm_fez",
-  "shots": 1024,
-  "moth_jobs": {
-   "emu": "f097e67a-3905-449b-b152-d44439ff76f9",
-   "qpu": "6445e00e-c282-4aa3-87ea-a156a372274f"
-  },
-  "edge_agreement": {
-   "emu": 0.44,
-   "qpu": 0.46
-  },
-  "edge_corr_mean": {
-   "emu": 0.18411499476839058,
-   "qpu": 0.4413841919624845
-  },
-  "bloch_r_mean": {
-   "emu": 0.4733241133772029,
-   "qpu": 0.6565546633199605
-  }
- }
 }
