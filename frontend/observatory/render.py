@@ -8,6 +8,7 @@ import json
 import os
 import re
 import urllib.parse
+from pathlib import Path
 from typing import Any
 
 from frontend.observatory import data as data_mod
@@ -1729,8 +1730,10 @@ def render_run_detail(
     headline_m = facts.get("headline_metrics") or {}
     # Metrics CSVs ship next to the run page (build.py copies run/metrics/
     # to runs/<run-id>/metrics/) — link relative to the run page, not the
-    # site root, or the score link 404s.
-    csv_href = "metrics/agg_results.csv"
+    # site root, or the score link 404s. Submission-receipt runs carry no
+    # metrics/ dir — render the score as plain text rather than a dead link.
+    csv_exists = (run.path / "metrics" / "agg_results.csv").is_file()
+    csv_href = "metrics/agg_results.csv" if csv_exists else None
     score_line = _run_score_line(facts, csv_href)
 
     evidence_hint = _evidence_hint(literature, entity_summary)
@@ -1760,7 +1763,7 @@ def render_run_detail(
     trust_body = (
         agent_trace_html
         + _verification_section(run.path, run.run_id, embedded=True)
-        + _provenance_block(prov, run.run_id)
+        + _provenance_block(prov, run.run_id, run.path)
     )
 
     hyp_list = hyp_html or '<li class="muted">None</li>'
@@ -2135,11 +2138,13 @@ def _disclosure_section(
     """
 
 
-def _run_score_line(facts: dict, csv_href: str) -> str:
+def _run_score_line(facts: dict, csv_href: str | None) -> str:
     """Single hero score surface: % ceiling + audit warns (links to metrics CSV)."""
     line = _metrics_line_from_facts(facts)
     if not line or line == "—":
         return ""
+    if csv_href is None:
+        return f'<p class="run-score-line"><span>{_h(line)}</span></p>'
     return (
         f'<p class="run-score-line">'
         f'<a class="run-score-link" href="{_h(csv_href)}" title="Open metrics CSV">'
@@ -2804,21 +2809,29 @@ def _run_header_media(visual: dict, facts: dict, *, run_path: Any = None) -> str
     return ""
 
 
-def _provenance_block(prov: dict, run_id: str) -> str:
-    cmd = (
-        f"python -m kytos.audit --run experiments/{_h(run_id)} "
-        f"&amp;&amp; python -m kytos.eval.facts --run experiments/{_h(run_id)}"
+def _provenance_block(prov: dict, run_id: str, run_dir: Path | None = None) -> str:
+    # Submission-receipt runs ship leaderboard_result.json + meta.json instead
+    # of the cell-eval metrics tree — their reproduce path is the receipt
+    # converter, not the audit pipeline.
+    receipt = run_dir is not None and (run_dir / "leaderboard_result.json").is_file()
+    if receipt:
+        cmd = f"python3 tools/facts_from_receipt.py --run experiments/{_h(run_id)}"
+    else:
+        cmd = (
+            f"python -m kytos.audit --run experiments/{_h(run_id)} "
+            f"&amp;&amp; python -m kytos.eval.facts --run experiments/{_h(run_id)}"
+        )
+    rows = "".join(
+        f"<dt>{key}</dt><dd><code>{_h(str(prov[key]))}</code></dd>"
+        for key in ("commit", "seed", "code_hash")
+        if prov.get(key) not in (None, "")
     )
-    coverage_row = ""
     if prov.get("coverage"):
-        coverage_row = f"<dt>coverage</dt><dd>{_h(str(prov['coverage']))}</dd>"
+        rows += f"<dt>coverage</dt><dd>{_h(str(prov['coverage']))}</dd>"
     return f"""
     <footer class="provenance provenance-compact">
       <dl>
-        <dt>commit</dt><dd><code>{_h(str(prov.get("commit", "")))}</code></dd>
-        <dt>seed</dt><dd>{_h(str(prov.get("seed", "")))}</dd>
-        <dt>code_hash</dt><dd><code>{_h(str(prov.get("code_hash", "")))}</code></dd>
-        {coverage_row}
+        {rows}
       </dl>
       <div class="terminal-widget">
         <div class="terminal-widget-header">

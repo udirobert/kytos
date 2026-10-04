@@ -1,0 +1,29 @@
+{
+  "run_id": "k027-consensus-dm",
+  "created": "2026-09-22",
+  "headline": "consensus_w_ctr deltas + dual-moment count generation \u2014 overall +0.1262 (rank 308/1088), champion; the artifact k037 later re-scored byte-identically",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.1262,
+    "pds": 0.6032128571637503,
+    "mse": 0.014832619127239247,
+    "nmae": 0.08816547321521839,
+    "fid": -0.018816080790150246,
+    "reach": 0.068583834708932,
+    "jac": 0.001061776295268088
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "dual-moment count generation beats the transport sampler through the same consensus deltas"
+  ],
+  "next_steps": [
+    "is common-response centering load-bearing? (k034 answered: yes \u2014 recipe locked for the Oct-22 ship)"
+  ],
+  "provenance": {
+    "strategy": "consensus_w_ctr deltas + dual-moment generation (amplitude 1.0, bulk_amplitude 0.5, pool_k 4)",
+    "code": "tools/run_k027_dual_moment_submit.py",
+    "data": "K562 GWPS + X-Atlas HCT116/HEK293T + CD4 Marson + Jurkat consensus"
+  },
+  "vessel_fill": 99
+}

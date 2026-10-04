@@ -1,0 +1,28 @@
+{
+  "run_id": "k037-k027-rescore",
+  "created": "2026-10-03",
+  "headline": "byte-identical re-score of the champion's packaged .vcc \u2014 overall +0.12617 (rank 483/1299); scorer/panel stable across 11 days; supplies k027's canonical components",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.12617341328670964,
+    "pds": 0.6032128571637503,
+    "mse": 0.014832619127239247,
+    "nmae": 0.08816547321521839,
+    "fid": -0.018816080790150246,
+    "reach": 0.068583834708932,
+    "jac": 0.001061776295268088
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "a byte-identical resubmit reproduces the champion score within scorer noise"
+  ],
+  "next_steps": [
+    "these six components are the canonical per-component baseline (corrects k035's earlier verdict)"
+  ],
+  "provenance": {
+    "strategy": "k027 artifact, byte-identical resubmit under a distinct model name",
+    "data": "same as k027-consensus-dm"
+  },
+  "vessel_fill": 99
+}

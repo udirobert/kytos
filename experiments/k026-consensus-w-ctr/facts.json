@@ -1,0 +1,28 @@
+{
+  "run_id": "k026-consensus-w-ctr",
+  "created": "2026-09-22",
+  "headline": "consensus_w_ctr deltas through the k011 transport generator \u2014 overall +0.0670 (rank 512/1086), new champion by score; Gate B direction validated on the leaderboard",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.067,
+    "pds": null,
+    "mse": null,
+    "nmae": null,
+    "fid": null,
+    "reach": null,
+    "jac": null
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "five-source consensus deltas beat the champion through the unchanged k011 generator"
+  ],
+  "next_steps": [
+    "same deltas through dual-moment generation (\u2192 k027)"
+  ],
+  "provenance": {
+    "strategy": "consensus_w_ctr deltas + heterogeneous-kd(kd_std=2.0)+delta_scale(1.7) transport",
+    "data": "K562 GWPS + X-Atlas HCT116/HEK293T + CD4 Marson + Jurkat consensus"
+  },
+  "vessel_fill": 99
+}

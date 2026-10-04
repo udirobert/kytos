@@ -1,0 +1,28 @@
+{
+  "run_id": "k030-consensus-meanj-dm",
+  "created": "2026-09-24",
+  "headline": "uniform 5-source consensus mean adding Jurkat CRISPRi deltas, champion generator unchanged \u2014 overall +0.1088 (rank 442), regression vs k027",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.10883872474352498,
+    "pds": 0.5570496083875701,
+    "mse": 0.0017584032515975216,
+    "nmae": 0.07354079285844246,
+    "fid": -0.019731747829760223,
+    "reach": 0.03925005354948154,
+    "jac": 0.0011652382438185071
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "Jurkat stim-arm deltas (GSE249595) add real signal for the T-cell-like context"
+  ],
+  "next_steps": [
+    "lineage-matched coverage exists but the uniform mean join doesn't exploit it"
+  ],
+  "provenance": {
+    "strategy": "5-source consensus mean (+Jurkat GSE249595 stim) + dual-moment generation",
+    "data": "K562 + X-Atlas HCT116/HEK293T + CD4 + Jurkat GSE249595"
+  },
+  "vessel_fill": 99
+}

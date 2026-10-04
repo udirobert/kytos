@@ -1,0 +1,28 @@
+{
+  "run_id": "k018-h1-dualmoment",
+  "created": "2026-09-19",
+  "headline": "H1 rank-64 transfer + dual-moment counts on context C only \u2014 overall +0.042 (rank 546), regression vs k011; the k017 offline win did not transfer to the leaderboard",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.04238558793117259,
+    "pds": 0.28046009421464657,
+    "mse": 0.0,
+    "nmae": -0.09415602366214008,
+    "fid": -0.011113946228805882,
+    "reach": 0.0781591206094316,
+    "jac": 0.0009642826539033801
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "a learned H1 signature improves context-C predictions over the k011 champion"
+  ],
+  "next_steps": [
+    "offline/proxy wins are not proof of leaderboard transfer \u2014 need an OOD-proxy gate (\u2192 k019)"
+  ],
+  "provenance": {
+    "strategy": "h1-rank64-transfer (context C) + dual-moment counts; A/B on k011 champion",
+    "data": "H1 corpus paired transfer + VCC 2026 controls"
+  },
+  "vessel_fill": 99
+}

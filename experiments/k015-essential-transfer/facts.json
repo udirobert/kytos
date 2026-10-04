@@ -1,0 +1,28 @@
+{
+  "run_id": "k015-essential-transfer",
+  "created": "2026-09-19",
+  "headline": "essential-screen low-rank transfer (rank 256) \u2014 overall -0.028 (rank 683), regression vs k011; the essential-gene subspace was OOD for the panel (0/300 target overlap)",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": -0.027965771766984917,
+    "pds": 0.11729829946854932,
+    "mse": 0.0,
+    "nmae": -0.07253311157072766,
+    "fid": -0.2072780321995548,
+    "reach": 0.014585751904105814,
+    "jac": -0.01986753820428217
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "a rank-256 map over the 2,393-target essential screens transfers direction to the 2026 panel"
+  ],
+  "next_steps": [
+    "implementation-specific negative \u2014 the projection discarded target-specific signal (pds 0.117, fid -0.207); need panel-matched sources (\u2192 k023 consensus program)"
+  ],
+  "provenance": {
+    "strategy": "essential-screen low-rank transfer (rank 256), all contexts",
+    "data": "4-lineage essential screens (2,393 shared targets)"
+  },
+  "vessel_fill": 99
+}

@@ -1,0 +1,28 @@
+{
+  "run_id": "k038-ctragr-tight-rmass-dm",
+  "created": "2026-10-03",
+  "headline": "gate constants 0.40/0.80 + per-target row-norm mass restore \u2014 overall +0.1254 (rank 489/1299), second statistical tie; best pds/nmae/jac recorded, lowest reach \u2014 the gate axis is closed",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.1254388194622373,
+    "pds": 0.6136341753808736,
+    "mse": 0.0149402587867243,
+    "nmae": 0.09032974100296125,
+    "fid": -0.021556011881981155,
+    "reach": 0.054078256378334716,
+    "jac": 0.0012064971065110796
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "tighter gate constants plus mass restore beat the champion (pre-declared, falsified)"
+  ],
+  "next_steps": [
+    "gate axis closed \u2014 remaining levers are signature content and the Oct-22 final contexts"
+  ],
+  "provenance": {
+    "strategy": "agreement gate 0.40/0.80 + row-norm mass restore + dual-moment",
+    "data": "consensus_w_ctr (gated) + VCC 2026 controls"
+  },
+  "vessel_fill": 99
+}

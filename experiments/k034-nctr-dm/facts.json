@@ -1,0 +1,28 @@
+{
+  "run_id": "k034-nctr-dm",
+  "created": "2026-09-28",
+  "headline": "uncentered consensus_w single-variable ablation \u2014 overall +0.1178 (rank 455/1202), regression; common-response centering is load-bearing",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.11783623928991634,
+    "pds": 0.5803574616759354,
+    "mse": 0.012704621974919061,
+    "nmae": 0.08729358859060325,
+    "fid": -0.017717181848454864,
+    "reach": 0.04303877487555712,
+    "jac": 0.0013401704709381547
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "common-response centering is incidental to the consensus gain (falsified)"
+  ],
+  "next_steps": [
+    "lock the centered k027 recipe for the Oct-22 blind ship"
+  ],
+  "provenance": {
+    "strategy": "uncentered consensus_w deltas + dual-moment generation",
+    "data": "consensus_w (uncentered) + VCC 2026 controls"
+  },
+  "vessel_fill": 99
+}

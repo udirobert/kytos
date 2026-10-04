@@ -1,9 +1,12 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-09-28** — k033 trained-signature track (Modal GPU) is
-> **complete with a negative Gate B result** (no submission); §4b's
-> GPU-training pause is **re-instated**. Validation reset still recorded in
-> §4b; Cleveland Clinic / GQAI remains a separate workstream (`docs/cleveland/`).
+> Last updated **2026-10-03** — the agreement-gate axis is **closed**: k035
+> and k038 both tied the champion (+0.1242/+0.1254 vs +0.1262) with
+> opposite component reshuffles (pds↔reach trade). k033 trained-signature
+> track (Modal GPU) remains **complete with a negative Gate B result** (no
+> submission); §4b's GPU-training pause is **re-instated**. The §4b
+> validation reset still supersedes broad §4 conclusions. Cleveland
+> Clinic / GQAI remains a separate workstream (`docs/cleveland/`).
 
 This file is the ground truth for any agent working on this repo. It covers
 the **2026 Virtual Cell Challenge** and a **separate** Cleveland Clinic

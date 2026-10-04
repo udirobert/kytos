@@ -116,10 +116,7 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "cm-col-label" in runs_html
     assert "component-matrix" not in home_html
     # Bar rows link into run pages relative to /runs/ — pin the best row.
-    assert (
-        'class="traj-bar-row is-best" '
-        'href="../runs/k011-delta-scale-x1p7-validation/index.html"' in runs_html
-    )
+    assert 'class="traj-bar-row is-best" href="../runs/k027-consensus-dm/index.html"' in runs_html
     assert "hk-stability" in html or "housekeeping_shift" in html
     # Holo screenshot ships compressed when Pillow is present (raw ~410KB;
     # the Trust panel shows it as a small thumbnail) — never a 400KB asset.

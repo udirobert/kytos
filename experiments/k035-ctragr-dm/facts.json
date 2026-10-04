@@ -1,0 +1,28 @@
+{
+  "run_id": "k035-ctragr-dm",
+  "created": "2026-09-30",
+  "headline": "cross-source agreement gate 0.30/0.70, champion otherwise unchanged \u2014 overall +0.1242 (rank 449/1226), statistical tie; a component reshuffle, not a gain",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.12421467920499464,
+    "pds": 0.6112550892544178,
+    "mse": 0.011769339332012555,
+    "nmae": 0.08301036441748615,
+    "fid": -0.020903309518263354,
+    "reach": 0.05911987393458452,
+    "jac": 0.0010367178097301694
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "per-gene cross-source agreement gating improves the champion (pre-declared; reading corrected by k037's component capture)"
+  ],
+  "next_steps": [
+    "probe the gate constants + row-norm mass restore (\u2192 k038)"
+  ],
+  "provenance": {
+    "strategy": "centered consensus + cross-source agreement gate (0.30/0.70) + dual-moment",
+    "data": "consensus_w_ctr (agreement-gated) + VCC 2026 controls"
+  },
+  "vessel_fill": 99
+}
