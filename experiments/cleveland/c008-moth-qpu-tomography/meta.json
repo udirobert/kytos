@@ -1,0 +1,11 @@
+{
+  "challenge": "moth-hack-2026",
+  "code": {
+    "commit": "b1b38d3"
+  },
+  "created": "2026-10-04",
+  "notes": "Moth graph-v1 engine, emu + qpu modes on ibm_fez. 20-qubit functional cores of KRAS G12C and cardiac myosin contact graphs. Real-hardware tomography receipts for the Moth Hack virtual hackathon (submissions close 2026-10-05 23:59 PT).",
+  "run_id": "c008-moth-qpu-tomography",
+  "seed": 0,
+  "task": "real_qpu_tomography_protein_contact_graphs"
+}

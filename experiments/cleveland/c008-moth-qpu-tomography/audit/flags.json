@@ -1,0 +1,24 @@
+{
+  "flags": [
+    {
+      "id": "engine_blackbox",
+      "severity": "warn",
+      "meaning": "graph-v1 circuit/protocol internals not exposed by Moth; results describe engine output, not a self-specified circuit"
+    },
+    {
+      "id": "subgraph_reduction",
+      "severity": "warn",
+      "meaning": "20-qubit engine cap forced functional-core subgraphs (KRAS 32->20, myosin 56->20 supernodes); not the full contact graph"
+    },
+    {
+      "id": "role_decomposition_underpowered",
+      "severity": "info",
+      "meaning": "known-site edge groups have n=5-6; role-level differences inconsistent across targets - treated as noise"
+    },
+    {
+      "id": "no_significance_claim",
+      "severity": "info",
+      "meaning": "hardware tomography is a receipt + decoherence characterization; no biological site-recovery claim attached"
+    }
+  ]
+}

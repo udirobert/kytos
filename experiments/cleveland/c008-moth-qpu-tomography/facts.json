@@ -1,0 +1,55 @@
+{
+  "challenge": "moth-hack-2026",
+  "method": "moth_graph_v1_engine_emu_vs_qpu",
+  "phase": "moth_hack_qpu_execution",
+  "run_id": "c008-moth-qpu-tomography",
+  "engine": "graph-v1",
+  "backend_qpu": "ibm_fez",
+  "shots": 1024,
+  "headline": "First real-hardware execution of the Cleveland protein-graph pipeline: 20-qubit correlated states driven by the KRAS G12C and cardiac-myosin allosteric cores ran on ibm_fez via Moth's graph-v1 engine.",
+  "targets": {
+    "kras_g12c": {
+      "subgraph": "20 nodes / 50 edges extracted from the 32-supernode coarse graph (GTP-site sources + Switch-II/Sotorasib known-site supernodes + strongest couplings)",
+      "moth_job_ids": {
+        "emu": "21950e34-b55c-4f54-9fdb-be42eaa36ae9",
+        "qpu": "252b239d-30c6-4400-bf45-7f78002993a6"
+      },
+      "ibm_job_id": "db1crfrid5ic73eqvk1g",
+      "edge_agreement": {"emu": 0.42, "qpu": 0.52},
+      "edge_corr_mean": {"emu": 0.338, "qpu": 0.284, "ratio": 0.84},
+      "bloch_r_mean": {"emu": 0.552, "qpu": 0.495},
+      "bloch_cos_median_emu_vs_qpu": -0.01
+    },
+    "cardiac_myosin": {
+      "subgraph": "20 nodes / 42 edges extracted from the 56-supernode coarse graph (source + known-site supernodes + strongest couplings)",
+      "moth_job_ids": {
+        "emu": "f3629ed6-b52a-4b4e-9582-7c0fd567b14c",
+        "qpu": "54b278da-eb53-416b-bae7-f92f14b15769"
+      },
+      "ibm_job_id": "db1cssjid5ic73eqvlc0",
+      "edge_agreement": {"emu": 0.48, "qpu": 0.48},
+      "edge_corr_mean": {"emu": 0.419, "qpu": 0.424, "ratio": 1.01},
+      "bloch_r_mean": {"emu": 0.589, "qpu": 0.640},
+      "bloch_cos_median_emu_vs_qpu": -0.27
+    }
+  },
+  "findings": [
+    "Two-qubit correlation MAGNITUDES survive real hardware: qpu/emu ratios 0.84 (KRAS) and 1.01 (myosin). Edge-agreement scores are comparable or slightly higher on hardware.",
+    "Per-qubit Bloch-vector DIRECTIONS decorrelate between emu and qpu (median cosines -0.01, -0.27) - the dominant decoherence signature is directional scrambling, not magnitude loss.",
+    "The engine's prepared state is NOT a pure graph state (single-qubit |r| up to 1.0 vs 0 for a graph state); emu mode also deviates from the exact CZ-product baseline (metrics/graphs/*_exact.json). Interpretation is 'Moth correlated-state protocol driven by our protein topology', not graph-state fidelity.",
+    "Role-level decomposition (source / known-site / connector edges) is inconsistent across targets and underpowered (n=5-6 known edges) - reported as noise, not signal.",
+    "KRAS role means (qpu): source 0.305 / sourceknown 0.253 / connector 0.295 / known 0.237. Myosin: source 0.414 / sourceknown 0.281 / known 0.509 / connector 0.499."
+  ],
+  "honest_caveats": [
+    "graph-v1 internals are Moth's black box; the coupling_map parameterizes their protocol, circuit not exposed.",
+    "emu vs qpu disagreement cannot be attributed purely to hardware noise without knowing the emu model.",
+    "No claim is made that hardware correlations recover the known allosteric site; the CTQW ranking analysis (c002-c007) remains the biological method - this run supplies the hardware receipt + decoherence characterization.",
+    "Pre-declared significance gate from the GQAI workstream remains unmet; nothing here changes that."
+  ],
+  "next_steps": [
+    "Package as Moth Hack 'Quantum-native' entry: protein topology -> real-QPU tomography -> decoherence map.",
+    "If quota permits, one control run (random 20-node graph with matched degree distribution) would separate topology-specific structure from generic protocol output.",
+    "Reproduce: payloads in metrics/requests/, exact local baselines in metrics/graphs/*_exact.json via reproduce/exact_baseline.py."
+  ],
+  "all_pass": true
+}

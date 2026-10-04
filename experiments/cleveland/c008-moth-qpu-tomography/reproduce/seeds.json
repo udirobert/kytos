@@ -1,0 +1,11 @@
+{
+  "engine_seed_field": null,
+  "subgraph_selection": "deterministic (greedy strongest-coupling fill)",
+  "moth_jobs": {
+    "kras_emu": "21950e34-b55c-4f54-9fdb-be42eaa36ae9",
+    "kras_qpu": "252b239d-30c6-4400-bf45-7f78002993a6 -> ibm db1crfrid5ic73eqvk1g",
+    "myosin_emu": "f3629ed6-b52a-4b4e-9582-7c0fd567b14c",
+    "myosin_qpu": "54b278da-eb53-416b-bae7-f92f14b15769 -> ibm db1cssjid5ic73eqvlc0"
+  },
+  "note": "graph-v1 returns seed:null; exact reproduction = resubmit payload from metrics/requests/ and compare distributions, not bitwise rerun"
+}

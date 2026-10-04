@@ -1,0 +1,10 @@
+{
+  "engine": "graph-v1",
+  "modes": ["emu", "qpu"],
+  "num_qubits": 20,
+  "shots": 1024,
+  "subgraph_selection": "source + known-site supernodes, greedily extended by strongest edge weight to 20 nodes (engine cap)",
+  "targets": ["kras_g12c", "cardiac_myosin"],
+  "api_base": "https://api.mothquantum.com",
+  "credential_env": "MOTH_API_KEY"
+}
