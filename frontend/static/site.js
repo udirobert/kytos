@@ -1541,6 +1541,149 @@
     initFullRecordCta();
     initRunLogControls();
     initHashTargetReveal();
+    initQuantumWidget();
+  }
+
+  function initQuantumWidget() {
+    var root = document.querySelector("[data-qwidget]");
+    if (!root) {
+      return;
+    }
+    var dataEl = root.querySelector("#q-graph-data");
+    var svg = root.querySelector("#q-widget-svg");
+    var corrEl = root.querySelector("#q-readout-corr");
+    var agreeEl = root.querySelector("#q-readout-agree");
+    var noteEl = root.querySelector("#q-readout-note");
+    var datasets;
+    try {
+      datasets = (JSON.parse(dataEl.textContent).datasets || []);
+    } catch (err) {
+      return;
+    }
+    if (!datasets.length) {
+      return;
+    }
+    var NS = "http://www.w3.org/2000/svg";
+    var PAD = 30;
+    var W = 400;
+    var H = 320;
+    var ROLE_COLORS = {
+      source: "#d94f3d",
+      known: "#3d7fd9",
+      sourceknown: "#a03dd9",
+      connector: "#9aa0a6",
+    };
+    var NOTES = {
+      "protein-emu": "the protein's coupling map, emulated",
+      "protein-qpu": "same graph, real silicon",
+      "ctrl-emu": "a random graph — topology gone",
+      "ctrl-qpu": "random on hardware — indistinguishable",
+    };
+    var state = { dataset: "kras", mode: "emu" };
+    var renderedKey = null;
+
+    function current() {
+      for (var i = 0; i < datasets.length; i++) {
+        if (datasets[i].key === state.dataset) {
+          return datasets[i];
+        }
+      }
+      return datasets[0];
+    }
+
+    function applyMode() {
+      var d = current();
+      var vmax = 0.001;
+      d.edges.forEach(function (e) {
+        if (e[state.mode] > vmax) {
+          vmax = e[state.mode];
+        }
+      });
+      var mean = 0;
+      d.edges.forEach(function (e, i) {
+        mean += e[state.mode];
+        var v = e[state.mode] / vmax;
+        var line = svg.querySelector('[data-edge="' + i + '"]');
+        if (line) {
+          line.setAttribute("stroke-width", (0.6 + v * 5.4).toFixed(2));
+          line.setAttribute("stroke-opacity", (0.1 + v * 0.78).toFixed(2));
+        }
+      });
+      mean /= Math.max(d.edges.length, 1);
+      corrEl.textContent = mean.toFixed(3);
+      var agree = state.mode === "emu" ? d.agree_emu : d.agree_qpu;
+      agreeEl.textContent = typeof agree === "number" ? agree.toFixed(2) : "—";
+      var kind = state.dataset === "ctrl" ? "ctrl" : "protein";
+      noteEl.textContent = NOTES[kind + "-" + state.mode] || "";
+    }
+
+    function render() {
+      var d = current();
+      while (svg.firstChild) {
+        svg.removeChild(svg.firstChild);
+      }
+      var nodes = d.nodes.map(function (n) {
+        return {
+          x: PAD + n.x * (W - 2 * PAD),
+          y: PAD + n.y * (H - 2 * PAD),
+          role: ROLE_COLORS[n.role] ? n.role : "connector",
+        };
+      });
+      d.edges.forEach(function (e, i) {
+        var a = nodes[e.a];
+        var b = nodes[e.b];
+        var line = document.createElementNS(NS, "line");
+        line.setAttribute("x1", a.x);
+        line.setAttribute("y1", a.y);
+        line.setAttribute("x2", b.x);
+        line.setAttribute("y2", b.y);
+        line.setAttribute("class", "q-edge");
+        line.setAttribute("stroke-linecap", "round");
+        line.setAttribute("data-edge", i);
+        svg.appendChild(line);
+      });
+      nodes.forEach(function (n) {
+        var c = document.createElementNS(NS, "circle");
+        c.setAttribute("cx", n.x);
+        c.setAttribute("cy", n.y);
+        c.setAttribute("r", 5.5);
+        c.setAttribute("fill", ROLE_COLORS[n.role]);
+        c.setAttribute("stroke", "var(--bg)");
+        c.setAttribute("stroke-width", 1.5);
+        svg.appendChild(c);
+      });
+      applyMode();
+    }
+
+    function refresh() {
+      if (renderedKey !== state.dataset) {
+        renderedKey = state.dataset;
+        render();
+      } else {
+        applyMode();
+      }
+    }
+
+    root.querySelectorAll("[data-dataset]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.dataset = btn.getAttribute("data-dataset");
+        root.querySelectorAll("[data-dataset]").forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        refresh();
+      });
+    });
+    root.querySelectorAll("[data-mode]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.mode = btn.getAttribute("data-mode");
+        root.querySelectorAll("[data-mode]").forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        applyMode();
+      });
+    });
+    render();
+    renderedKey = state.dataset;
   }
 
   if (document.readyState === "loading") {

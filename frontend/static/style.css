@@ -3184,3 +3184,157 @@ a.switcher-link:hover {
     padding: 0.6rem 0;
   }
 }
+
+/* Quantum interactive widget + hero fidelity split */
+
+.quantum-fidelity {
+  display: flex;
+  gap: 3rem;
+  margin: 0 0 1.5rem;
+}
+
+.q-fid-num {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(2.6rem, 6vw, 4rem);
+  line-height: 1;
+  color: var(--accent);
+}
+
+.q-fid-bad .q-fid-num {
+  color: var(--ink);
+}
+
+.q-fid-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+.q-widget {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 640px;
+}
+
+.q-widget-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.q-seg {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.q-seg-btn {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.q-seg-btn + .q-seg-btn {
+  border-left: 1px solid var(--line);
+}
+
+.q-seg-btn.is-active {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.q-widget-stage {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.q-widget-svg {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.q-edge {
+  stroke: var(--accent);
+  transition:
+    stroke-width 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    stroke-opacity 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.q-widget-readout {
+  flex: 0 0 9.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+}
+
+.q-readout-label {
+  color: var(--muted);
+  display: block;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+}
+
+.q-readout-val {
+  display: block;
+  font-size: 1.3rem;
+  color: var(--ink);
+  transition: color 0.4s;
+}
+
+.q-readout-note {
+  margin-top: auto;
+  color: var(--accent);
+  font-size: 0.66rem;
+  line-height: 1.5;
+}
+
+.q-widget-caption {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0.75rem 0 0;
+  max-width: 56ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .q-edge {
+    transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .q-widget-stage {
+    flex-direction: column;
+  }
+
+  .q-widget-readout {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .q-readout-note {
+    margin-top: 0;
+    width: 100%;
+  }
+}

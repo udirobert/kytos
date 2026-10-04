@@ -6,12 +6,25 @@
 
   <section class="quantum-hero">
     <p class="eyebrow">Kytos Observatory · quantum workstream</p>
-    <h1>Real biology on real quantum hardware.</h1>
-    <p class="quantum-lede">{{ headline }}</p>
+    <h1>For 40 years, KRAS was called undruggable.</h1>
+    <p class="quantum-lede">The pocket that finally cracked it wasn't at the
+      active site — it was allosteric, encoded in the protein's contact
+      topology. We put that topology onto a real quantum processor and
+      measured what survives.</p>
+    <div class="quantum-fidelity">
+      <div class="q-fid">
+        <span class="q-fid-num">84–101%</span>
+        <span class="q-fid-label">correlation magnitude survives<br>(KRAS 0.84× · myosin 1.01×)</span>
+      </div>
+      <div class="q-fid q-fid-bad">
+        <span class="q-fid-num">≈0</span>
+        <span class="q-fid-label">direction preserved<br>(Bloch cosine)</span>
+      </div>
+    </div>
     <div class="quantum-chips">
       <span class="q-chip">{{ engine }}</span>
       <span class="q-chip">{{ backend }}</span>
-      <span class="q-chip">2 proteins + 1 control</span>
+      <span class="q-chip">KRAS + myosin + control</span>
       <span class="q-chip">20 qubits</span>
       <span class="q-chip">{{ shots }} shots</span>
     </div>
@@ -36,10 +49,52 @@
   </section>
 
   <section class="panel">
-    <header class="panel-header"><h2>What the hardware did to it</h2></header>
+    <header class="panel-header"><h2>Watch it decohere</h2></header>
     <p class="q-text">Each coupling map ran twice: <code>emu</code> (Moth's
       Aer emulator) and <code>qpu</code> (IBM {{ backend }}, {{ shots }}
-      shots, full two-qubit tomography on every graph edge).</p>
+      shots, full two-qubit tomography on every graph edge). Edge thickness
+      is the measured correlation strength — flip the switch and watch what
+      real hardware does to it.</p>
+    <div class="q-widget" id="q-widget" data-qwidget>
+      <script type="application/json" id="q-graph-data">{{ graphs_json | safe }}</script>
+      <div class="q-widget-controls">
+        <div class="q-seg" role="group" aria-label="Dataset">
+          <button class="q-seg-btn is-active" data-dataset="kras" type="button">KRAS</button>
+          <button class="q-seg-btn" data-dataset="myosin" type="button">myosin</button>
+          <button class="q-seg-btn" data-dataset="ctrl" type="button">random ctrl</button>
+        </div>
+        <div class="q-seg" role="group" aria-label="Backend">
+          <button class="q-seg-btn is-active" data-mode="emu" type="button">emulator</button>
+          <button class="q-seg-btn" data-mode="qpu" type="button">ibm_fez →</button>
+        </div>
+      </div>
+      <div class="q-widget-stage">
+        <svg class="q-widget-svg" id="q-widget-svg" viewBox="0 0 400 320" role="img"
+             aria-label="Protein coupling graph; edge thickness shows measured two-qubit correlation"></svg>
+        <div class="q-widget-readout">
+          <div class="q-readout-row">
+            <span class="q-readout-label">mean |corr|</span>
+            <span class="q-readout-val" id="q-readout-corr">—</span>
+          </div>
+          <div class="q-readout-row">
+            <span class="q-readout-label">edge agreement</span>
+            <span class="q-readout-val" id="q-readout-agree">—</span>
+          </div>
+          <div class="q-readout-row q-readout-note" id="q-readout-note">
+            real topology, ideal baseline
+          </div>
+        </div>
+      </div>
+      <p class="q-widget-caption">Every edge is a measured two-qubit
+        correlation from the actual job result — not a re-simulation.
+        Same graph, two backends.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header class="panel-header"><h2>What the hardware did to it</h2></header>
+    <p class="q-text">The numbers behind the widget — three findings, all
+      verifiable against the raw job receipts below.</p>
     <ol class="q-findings">
       {% for f in findings %}
       <li>{{ f }}</li>

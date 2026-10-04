@@ -1069,6 +1069,95 @@ def _quantum_arc(cleveland_dir: Path) -> list[dict[str, str]]:
     return arc
 
 
+_QUANTUM_PAULIS = ["XX", "XY", "XZ", "YX", "YY", "YZ", "ZX", "ZY", "ZZ"]
+
+
+def _quantum_edge_norm(out: dict[str, Any], a: int, b: int) -> float:
+    rel = (out.get("tomography") or {}).get("relationships") or {}
+    v = rel.get(f"{a},{b}") or rel.get(f"{b},{a}") or {}
+    vals = [float(v.get(p, 0.0)) for p in _QUANTUM_PAULIS]
+    return float(sum(x * x for x in vals) ** 0.5)
+
+
+def _quantum_graph_widget_data(c008: Path) -> str:
+    """Bake the interactive scramble-widget data: nodes (fixed positions,
+    roles) + per-edge |correlation| under emu and qpu for every dataset."""
+    try:
+        import networkx as nx
+    except ImportError:
+        nx = None
+
+    def _layout(edges: list[list[int]], n: int) -> list[list[float]]:
+        if nx is not None:
+            g = nx.Graph()
+            g.add_nodes_from(range(n))
+            g.add_edges_from(edges)
+            pos = nx.spring_layout(g, seed=4, k=1.6)
+            pts = [pos[i].tolist() for i in range(n)]
+        else:
+            import math
+
+            pts = [[math.cos(2 * math.pi * i / n), math.sin(2 * math.pi * i / n)] for i in range(n)]
+        xs = [p[0] for p in pts]
+        ys = [p[1] for p in pts]
+        span = max(max(xs) - min(xs), max(ys) - min(ys), 1e-9)
+        return [[(x - min(xs)) / span, (y - min(ys)) / span] for (x, y) in pts]
+
+    def _result(name: str) -> dict[str, Any]:
+        p = c008 / "metrics" / "results" / f"{name}.json"
+        if not p.is_file():
+            return {}
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))["result"]["output"]
+        except (json.JSONDecodeError, OSError, KeyError):
+            return {}
+
+    datasets = []
+    for key, label, graph_file in (
+        ("kras", "KRAS G12C", "kras_core.json"),
+        ("myosin", "cardiac myosin", "myosin_core.json"),
+        ("ctrl", "random control", "ctrl_graph.json"),
+    ):
+        gpath = c008 / "metrics" / "graphs" / graph_file
+        if not gpath.is_file():
+            continue
+        gdata = json.loads(gpath.read_text(encoding="utf-8"))
+        edges = [tuple(e) for e in (gdata.get("edges") or gdata.get("control_edges") or [])]
+        node_map = gdata.get("node_map") or {}
+        n = int(gdata.get("n_nodes") or 20)
+        pos = _layout([list(e) for e in edges], n)
+        emu = _result(f"{key}_emu")
+        qpu = _result(f"{key}_qpu")
+        nodes = [
+            {
+                "x": round(pos[i][0], 4),
+                "y": round(pos[i][1], 4),
+                "role": str((node_map.get(str(i)) or {}).get("role") or "connector"),
+            }
+            for i in range(n)
+        ]
+        edge_rows = [
+            {
+                "a": int(a),
+                "b": int(b),
+                "emu": round(_quantum_edge_norm(emu, a, b), 3) if emu else 0.0,
+                "qpu": round(_quantum_edge_norm(qpu, a, b), 3) if qpu else 0.0,
+            }
+            for a, b in edges
+        ]
+        datasets.append(
+            {
+                "key": key,
+                "label": label,
+                "nodes": nodes,
+                "edges": edge_rows,
+                "agree_emu": emu.get("edge_agreement_score"),
+                "agree_qpu": qpu.get("edge_agreement_score"),
+            }
+        )
+    return json.dumps({"datasets": datasets})
+
+
 def render_quantum(
     runs: list[RunSummary],
     *,
@@ -1107,6 +1196,8 @@ def render_quantum(
         )
     ctrl = summary.get("random_control") or {}
 
+    graphs_json = _quantum_graph_widget_data(c008)
+
     meta = PageMeta(
         title="Quantum",
         description=(
@@ -1129,6 +1220,7 @@ def render_quantum(
         "target_rows": target_rows,
         "control": ctrl,
         "arc": _quantum_arc(cleveland_dir),
+        "graphs_json": graphs_json,
         "backend": str(facts.get("backend_qpu") or "ibm_fez"),
         "engine": str(facts.get("engine") or "graph-v1"),
         "shots": str(facts.get("shots") or "1024"),

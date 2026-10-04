@@ -122,7 +122,9 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     quantum = dist / "quantum" / "index.html"
     assert quantum.is_file()
     quantum_html = quantum.read_text(encoding="utf-8")
-    assert "Real biology on real quantum hardware" in quantum_html
+    assert "KRAS was called undruggable" in quantum_html
+    assert "q-graph-data" in quantum_html  # interactive widget data baked
+    assert "data-qwidget" in quantum_html
     assert "ibm_fez" in quantum_html
     assert "db1crfrid5ic73eqvk1g" in quantum_html  # KRAS IBM job receipt
     assert "random control" in quantum_html
