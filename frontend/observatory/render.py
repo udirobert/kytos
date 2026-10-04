@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime
 import html
 import json
+import os
 import re
 import urllib.parse
 from typing import Any
@@ -590,6 +591,23 @@ def render_home(
             )  # Dr. Kytos presenter — a broadcast billboard strip under the hero
         # (full-bleed video behind the headline degrades to unreadable on
         # mobile). The vessel stays the hero; the anchor gets the stage below.
+        # The hero reports the best result, not the latest — the newest run is
+        # often a probe or a negative result, and leading with it undersells
+        # the trajectory (latest stays one line over in its own card).
+        scored_runs = [
+            r for r in runs if (r.facts.get("headline_metrics") or {}).get("overall") is not None
+        ]
+        best_run = (
+            max(
+                scored_runs,
+                key=lambda r: float(r.facts["headline_metrics"]["overall"]),
+            )
+            if scored_runs
+            else None
+        )
+        best_overall = float(best_run.facts["headline_metrics"]["overall"]) if best_run else None
+        best_rank = (best_run.meta.get("scores") or {}).get("rank") if best_run else None
+
         presenter_bg = ""
         if presenter:
             presenter_src = f"{root_prefix}runs/{_h(latest.run_id)}/{_h(presenter)}"
@@ -631,6 +649,13 @@ def render_home(
                 "latest_created": latest.facts.get("created", ""),
                 "latest_rank": (latest.meta.get("scores") or {}).get("rank"),
                 "latest_overall": (latest.facts.get("headline_metrics") or {}).get("overall"),
+                "best_run_id": best_run.run_id if best_run else "",
+                "best_href": (
+                    f"{root_prefix}runs/{_h(best_run.run_id)}/index.html" if best_run else ""
+                ),
+                "best_overall": best_overall,
+                "best_rank": best_rank,
+                "runs_count": len(runs),
                 "days_left": _days_to_vcc(),
                 "matrix": _runs_comparison_matrix(runs, root_prefix=root_prefix),
                 "trajectory": _score_trajectory_svg(runs),
@@ -976,23 +1001,17 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "", js_version: s
     return render_template("about.html", **context)
 
 
-def render_runs_index(
-    runs: list[RunSummary], *, root_prefix: str = "../", js_version: str = ""
-) -> str:
-    cards = ""
-    for run in reversed(runs):
-        href = f"{_h(run.run_id)}/index.html"
-        m = _run_card_metrics_line(run)
-        severity = _run_severity(run.facts)
-        vd = _vessel_data(run.facts)
-        chron = list(runs)
-        run_pos = chron.index(run)
-        prev = chron[run_pos - 1] if run_pos > 0 else None
-        delta = _run_card_delta(run, prev)
-        mini_svg = _vessel_svg(run.facts, svg_class="vessel-mini")
-        status_badge = _data_status_badge(run.facts, run.meta)
-        sparkline = _mini_sparkline(runs, run)
-        cards += f"""
+def _run_card_html(run: RunSummary, chron: list[RunSummary], prev: RunSummary | None) -> str:
+    """One run card — vessel mini, headline, sparkline, metrics, delta."""
+    href = f"{_h(run.run_id)}/index.html"
+    m = _run_card_metrics_line(run)
+    severity = _run_severity(run.facts)
+    vd = _vessel_data(run.facts)
+    delta = _run_card_delta(run, prev)
+    mini_svg = _vessel_svg(run.facts, svg_class="vessel-mini")
+    status_badge = _data_status_badge(run.facts, run.meta)
+    sparkline = _mini_sparkline(chron, run)
+    return f"""
         <a class="run-card" href="{href}">
           <div class="run-card-vessel">{mini_svg}</div>
           <span class="run-card-top">
@@ -1009,7 +1028,60 @@ def render_runs_index(
         </a>
         """
 
+
+def render_runs_index(
+    runs: list[RunSummary], *, root_prefix: str = "../", js_version: str = ""
+) -> str:
+    # Chapters group consecutive runs that share a campaign — the same scan
+    # the home run log uses, but the depth layer here is the full run card
+    # (vessel, sparkline, metrics) rather than the prose log.
+    ordered = sorted(
+        runs,
+        key=lambda r: r.meta.get("created_at") or r.facts.get("created") or "",
+    )
+
+    def _overall(run: RunSummary) -> float | None:
+        value = (run.facts.get("headline_metrics") or {}).get("overall")
+        return float(value) if value is not None else None
+
+    scored = [(ov, run) for run in ordered if (ov := _overall(run)) is not None]
+    best_id = max(scored, key=lambda s: s[0])[1].run_id if scored else ""
+
+    chapters = _campaign_chapters([(run, run) for run in ordered])
+    last_key = chapters[-1]["key"] if chapters else ""
+
+    chapter_html: list[str] = []
+    for chapter in reversed(chapters):  # newest campaign first
+        key, members = chapter["key"], chapter["members"]
+        member_ids = [run.run_id for run, _ in members]
+        is_best_chapter = best_id in member_ids
+        open_attr = " open" if key == last_key or is_best_chapter else ""
+        best_badge = '<span class="log-best">best</span>' if is_best_chapter else ""
+        cards_inner = ""
+        for run, _ in reversed(members):  # newest run first inside a chapter
+            run_pos = ordered.index(run)
+            prev = ordered[run_pos - 1] if run_pos > 0 else None
+            cards_inner += _run_card_html(run, ordered, prev)
+        chapter_html.append(
+            f'<details class="log-chapter run-chapter" '
+            f'id="run-chapter-{_h(key)}"{open_attr}>'
+            f'<summary class="log-chapter-head">'
+            f'<span class="log-chapter-id">{_h(_chapter_label(member_ids))}</span>'
+            f"{best_badge}"
+            f'<span class="log-chapter-meta">{_h(_chapter_meta(members))}</span>'
+            f"</summary>"
+            f'<div class="run-grid run-chapter-grid">{cards_inner}</div>'
+            f"</details>"
+        )
+    chapters_html = "".join(chapter_html)
+
     run_count = f"{len(runs)} run{'s' if len(runs) != 1 else ''} published" if runs else ""
+    if scored:
+        best_score, best_run = max(scored, key=lambda s: s[0])
+        run_count += (
+            f" · best {best_score:+.3f} "
+            f'(<a href="{_h(best_run.run_id)}/index.html">{_h(best_run.run_id)}</a>)'
+        )
     header = f"""
         <section class="runs-header">
           <h1>Experiment runs</h1>
@@ -1039,8 +1111,9 @@ def render_runs_index(
         "nav": _nav("runs", runs, root_prefix=root_prefix),
         "header": header,
         "matrix": matrix,
-        "trajectory": _score_trajectory_svg(runs),
-        "cards": cards,
+        "trajectory": _score_bars_svg(runs, root_prefix=root_prefix),
+        "chapters": chapters_html,
+        "runs_count": len(runs),
         "insight_cards": insight_cards,
     }
     return render_template("runs_index.html", **context)
@@ -1111,35 +1184,252 @@ def _score_trajectory_svg(runs: list[RunSummary]) -> str:
     """
 
 
-def _run_log_section(runs: list[RunSummary], *, root_prefix: str = "") -> str:
-    """The run log — one honest paragraph per run: what we tried, what happened.
+def _score_bars_svg(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
+    """Leaderboard cut of the same scores — horizontal bars, best → worst.
 
-    facts.json `log` fields, rendered as a chronological timeline. This is the
-    narrative layer the matrix can't carry: why each score moved.
+    Home keeps the chronological sparkline (the arc is the story). The runs
+    index gets the comparison view: a diverging bar chart sorted by score so
+    distance between runs — not just the slope — is legible at a glance.
+    """
+    pts = []
+    for run in runs:
+        v = (run.facts.get("headline_metrics") or {}).get("overall")
+        if v is not None:
+            pts.append((run.run_id, float(v), run))
+    pts.sort(key=lambda p: p[2].meta.get("created_at") or p[2].facts.get("created") or "")
+    pts = [(rid, v) for rid, v, _ in pts]
+    pts.sort(key=lambda p: -p[1])  # best first
+    if len(pts) < 2:
+        return ""
+
+    w, row_h, pad_l, pad_r, pad_t, pad_b = 720, 23, 190, 60, 14, 26
+    h = pad_t + len(pts) * row_h + pad_b
+    lo = min(v for _, v in pts)
+    hi = max(0.0, max(v for _, v in pts))
+    span = hi - lo if hi != lo else 1.0
+    span_px = w - pad_l - pad_r
+
+    def x(v: float) -> float:
+        return pad_l + (v - lo) / span * span_px
+
+    x0 = x(0.0)
+    best_id = pts[0][0]
+    rows = []
+    for i, (rid, v) in enumerate(pts):
+        y = pad_t + i * row_h
+        label = re.sub(r"-(validation|baseline)$", "", rid)
+        cls = "bar-pos" if v >= 0 else "bar-neg"
+        rows.append(
+            f'<a class="traj-bar-row{" is-best" if rid == best_id else ""}" '
+            f'href="{root_prefix}runs/{_h(rid)}/index.html">'
+            f'<text class="bar-label" x="{pad_l - 8}" y="{y + row_h * 0.68:.1f}" '
+            f'text-anchor="end">{_h(label)}</text>'
+            f'<rect class="{cls}" x="{min(x0, x(v)):.1f}" y="{y + 4:.1f}" '
+            f'width="{abs(x(v) - x0):.1f}" height="{row_h - 8}" rx="3"/>'
+            f'<text class="bar-value" x="{w - 8}" y="{y + row_h * 0.68:.1f}" '
+            f'text-anchor="end">{v:+.3f}</text>'
+            f"<title>{_h(rid)} · overall {v:+.3f}</title></a>"
+        )
+    axis = (
+        f'<line class="bar-zero" x1="{x0:.1f}" y1="{pad_t}" '
+        f'x2="{x0:.1f}" y2="{h - pad_b}"/>'
+        f'<text class="bar-axis" x="{pad_l}" y="{h - 8}" text-anchor="start">'
+        f"{lo:+.3f}</text>"
+        f'<text class="bar-axis" x="{x0:.1f}" y="{h - 8}" text-anchor="middle">0</text>'
+    )
+    caption = (
+        f'<p class="traj-caption">Every submitted run, best → worst — '
+        f"{len(pts)} runs, same climb as the sparkline, cut for comparison.</p>"
+    )
+    return f"""
+    <div class="score-trajectory score-bars">
+      <svg class="traj-svg traj-bars" viewBox="0 0 {w} {h}"
+           preserveAspectRatio="xMidYMid meet"
+           aria-label="Overall score per run, sorted best to worst">
+        {axis}
+        {"".join(rows)}
+      </svg>
+      {caption}
+    </div>
+    """
+
+
+_LOG_TEASER_MAX = 190  # chars of a log entry shown before the "more" fold
+
+
+def _log_entry_text(run: RunSummary) -> str:
+    """Narrative line for the run log.
+
+    ``facts.log`` is the written account; scored runs without one fall back to
+    their headline (a result statement by convention). Unsubmitted probes with
+    no log stay out of the results log entirely — they remain visible in the
+    scorecard matrix.
+    """
+    facts = run.facts
+    log = str(facts.get("log") or "").strip()
+    if log:
+        return log
+    metrics = facts.get("headline_metrics") or {}
+    if metrics.get("overall") is not None:
+        return str(facts.get("headline") or "").strip()
+    return ""
+
+
+def _campaign_key(run_id: str) -> str:
+    """Campaign a run belongs to — the kNNN prefix groups sweep variants."""
+    match = re.match(r"^k\d+", run_id)
+    return match.group(0) if match else run_id
+
+
+def _campaign_chapters(
+    items: list[tuple[RunSummary, Any]],
+) -> list[dict[str, Any]]:
+    """Group consecutive runs by campaign — shared by home log + runs index.
+
+    Each chapter is ``{"key": campaign, "members": [(run, payload), ...]}`` in
+    chronological order; callers decide open-state and inner content.
+    """
+    chapters: list[dict[str, Any]] = []
+    for run, payload in items:
+        key = _campaign_key(run.run_id)
+        if chapters and chapters[-1]["key"] == key:
+            chapters[-1]["members"].append((run, payload))
+        else:
+            chapters.append({"key": key, "members": [(run, payload)]})
+    return chapters
+
+
+def _chapter_meta(members: list[tuple[RunSummary, Any]]) -> str:
+    """Right-aligned chapter stat: '6 runs · -0.011 → +0.051' or the lone score."""
+    vals = []
+    for run, _ in members:
+        overall = (run.facts.get("headline_metrics") or {}).get("overall")
+        if overall is not None:
+            vals.append(float(overall))
+    if len(members) == 1:
+        return f"{vals[0]:+.3f}" if vals else "not submitted"
+    meta = f"{len(members)} runs"
+    return meta + (f" · {vals[0]:+.3f} → {max(vals):+.3f}" if vals else " · not submitted")
+
+
+def _chapter_label(run_ids: list[str]) -> str:
+    """Display name for a campaign chapter, derived from shared run-id prefix."""
+    if len(run_ids) == 1:
+        return re.sub(r"-(validation|baseline)$", "", run_ids[0])
+    raw = os.path.commonprefix(run_ids)
+    if raw.endswith("-"):
+        label = raw.rstrip("-")
+    elif "-" in raw:
+        # Prefix ended mid-segment (k009-gamma-kd-s[1p4]/s[2p0]) — drop the stub.
+        label = raw.rsplit("-", 1)[0]
+    else:
+        label = raw
+    return label or _campaign_key(run_ids[0])
+
+
+def _teaser(text: str) -> str:
+    """Visible lead for a folded log entry — lands on a sentence boundary."""
+    if len(text) <= _LOG_TEASER_MAX:
+        return ""
+    boundary = text.find(". ", 100, _LOG_TEASER_MAX)
+    if boundary != -1:
+        return text[: boundary + 1]
+    cut = text.rfind(" ", 80, _LOG_TEASER_MAX)
+    return text[: (cut if cut != -1 else _LOG_TEASER_MAX)] + " …"
+
+
+def _log_entry_body(text: str) -> str:
+    """Short entries render flat; long ones fold behind a teaser + <details>."""
+    teaser = _teaser(text)
+    if not teaser:
+        return f'<p class="log-text">{_h(text)}</p>'
+    return (
+        '<details class="log-more">'
+        f'<summary><span class="log-teaser">{_h(teaser)}</span></summary>'
+        f'<p class="log-text">{_h(text)}</p>'
+        "</details>"
+    )
+
+
+def _run_log_section(runs: list[RunSummary], *, root_prefix: str = "") -> str:
+    """The run log — campaigns as collapsible chapters, one honest line per run.
+
+    The flat paragraph-per-run timeline didn't scale: a 6-point parameter
+    sweep read as six full-width prose blocks. Chapters restore the scan —
+    campaign, run count, score span — and each entry folds its evidence
+    paragraph behind a teaser so the arc survives first contact.
     """
     ordered = sorted(
         runs,
         key=lambda r: r.meta.get("created_at") or r.facts.get("created") or "",
     )
-    entries = []
-    for run in ordered:
-        log = run.facts.get("log")
-        if not log:
-            continue
-        m = run.facts.get("headline_metrics") or {}
-        overall = m.get("overall")
-        score = f"{float(overall):+.3f}" if overall is not None else "not submitted"
-        score_cls = "log-score" if overall is not None else "log-score log-score-na"
-        entries.append(
-            f'<li class="log-entry">'
-            f'<a class="log-head" href="{root_prefix}runs/{_h(run.run_id)}/index.html">'
-            f'<span class="log-run">{_h(run.run_id)}</span>'
-            f'<span class="{score_cls}">{score}</span></a>'
-            f'<p class="log-text">{_h(log)}</p></li>'
-        )
-    if not entries:
+    items = [(run, _log_entry_text(run)) for run in ordered]
+    items = [item for item in items if item[1]]
+    if not items:
         return ""
-    return f'<ol class="run-log">{"".join(entries)}</ol>'
+
+    def _overall(run: RunSummary) -> float | None:
+        value = (run.facts.get("headline_metrics") or {}).get("overall")
+        return float(value) if value is not None else None
+
+    scored = [(ov, run) for run, _ in items if (ov := _overall(run)) is not None]
+    best_id = max(scored, key=lambda s: s[0])[1].run_id if scored else ""
+
+    chapters = _campaign_chapters(items)
+    last_key = chapters[-1]["key"]
+
+    lede = (
+        (
+            f'<p class="log-lede">{len(items)} experiments · '
+            f"{len(scored)} submitted · best "
+            f"<strong>{max(s for s, _ in scored):+.3f}</strong> "
+            f'(<a href="{root_prefix}runs/{_h(best_id)}/index.html">{_h(best_id)}</a>) '
+            "— chapters group runs that share a campaign.</p>"
+        )
+        if scored
+        else ""
+    )
+
+    chapter_html: list[str] = []
+    prev_submitted: float | None = None
+    for chapter in chapters:
+        key, members = chapter["key"], chapter["members"]
+        member_ids = [run.run_id for run, _ in members]
+        meta = _chapter_meta(members)
+        is_best_chapter = best_id in member_ids
+        open_attr = " open" if key == last_key or is_best_chapter else ""
+        best_badge = '<span class="log-best">best</span>' if is_best_chapter else ""
+
+        entries: list[str] = []
+        for run, text in members:
+            overall = _overall(run)
+            delta = ""
+            if overall is not None:
+                if prev_submitted is not None:
+                    delta = f'<span class="log-delta">Δ {overall - prev_submitted:+.3f}</span>'
+                prev_submitted = overall
+            score = f"{overall:+.3f}" if overall is not None else "not submitted"
+            score_cls = "log-score" if overall is not None else "log-score log-score-na"
+            entries.append(
+                f'<li class="log-entry" id="log-{_h(run.run_id)}">'
+                f'<a class="log-head" href="{root_prefix}runs/{_h(run.run_id)}/index.html">'
+                f'<span class="log-run">{_h(run.run_id)}</span>'
+                f'<span class="log-score-wrap">{delta}'
+                f'<span class="{score_cls}">{score}</span></span></a>'
+                f"{_log_entry_body(text)}</li>"
+            )
+        chapter_html.append(
+            f'<details class="log-chapter" id="log-chapter-{_h(key)}"{open_attr}>'
+            f'<summary class="log-chapter-head">'
+            f'<span class="log-chapter-id">{_h(_chapter_label(member_ids))}</span>'
+            f"{best_badge}"
+            f'<span class="log-chapter-meta">{_h(meta)}</span>'
+            f"</summary>"
+            f'<ol class="run-log">{"".join(entries)}</ol>'
+            f"</details>"
+        )
+
+    return f'{lede}<div class="run-log-chapters">{"".join(chapter_html)}</div>'
 
 
 def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
@@ -1150,7 +1440,7 @@ def _runs_comparison_matrix(runs: list[RunSummary], *, root_prefix: str = "../")
     for run in runs:
         facts = run.facts
         meta = run.meta
-        href = f"{_h(run.run_id)}/index.html"
+        href = f"{root_prefix}runs/{_h(run.run_id)}/index.html"
         severity = _run_severity(facts)
         vd = _vessel_data(facts)
         status_badge = _data_status_badge(facts, meta)

@@ -678,6 +678,54 @@
     }
   }
 
+  // ── Run log: expand / collapse every chapter at once ────────────────────
+  function initRunLogControls() {
+    var controls = document.querySelector("[data-log-controls]");
+    if (!controls) {
+      return;
+    }
+    controls.addEventListener("click", function (event) {
+      var btn = event.target.closest("[data-log-action]");
+      if (!btn) {
+        return;
+      }
+      var open = btn.getAttribute("data-log-action") === "expand";
+      document
+        .querySelectorAll(".log-chapter, .log-chapter .log-more")
+        .forEach(function (d) {
+          d.open = open;
+        });
+    });
+  }
+
+  // A hash that lands inside a closed <details> (run-log chapter, scorecard)
+  // would otherwise scroll to hidden content — open the ancestors instead.
+  function revealHashTarget() {
+    var hash = (window.location.hash || "").replace(/^#/, "");
+    if (!hash) {
+      return;
+    }
+    var el = document.getElementById(hash);
+    if (!el) {
+      return;
+    }
+    if (el.tagName === "DETAILS") {
+      el.open = true;
+    }
+    var node = el.parentElement;
+    while (node) {
+      if (node.tagName === "DETAILS" && !node.open) {
+        node.open = true;
+      }
+      node = node.parentElement;
+    }
+  }
+
+  function initHashTargetReveal() {
+    revealHashTarget();
+    window.addEventListener("hashchange", revealHashTarget);
+  }
+
   function initHashDisclosure() {
     applyHashDisclosure();
     window.addEventListener("hashchange", applyHashDisclosure);
@@ -1481,6 +1529,8 @@
     initTermSpotlight();
     initChroniclePreview();
     initFullRecordCta();
+    initRunLogControls();
+    initHashTargetReveal();
   }
 
   if (document.readyState === "loading") {

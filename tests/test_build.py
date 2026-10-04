@@ -59,7 +59,12 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     # (run-strip presence depends on run count — the strip renders when ≥2
     # runs exist; do not pin it either way here)
     assert "Latest run" in home_html
-    assert "All runs" in home_html
+    assert "Scorecard" in home_html
+    assert "log-chapter" in home_html
+    # Home uses the chronological sparkline; /runs/ uses a score-sorted
+    # bar chart — same data, different questions.
+    assert "traj-line" in home_html
+    assert "traj-bars" not in home_html
 
     assert "VEED Summer Lock-In" in about_html
     assert "vessel-about-panel" in about_html
@@ -98,6 +103,15 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "runs-matrix-table" in runs_html
     assert "Cross-experiment matrix" in runs_html
     assert "run-card" in runs_html
+    assert "Score by run" in runs_html
+    assert "traj-bars" in runs_html
+    assert "traj-line" not in runs_html
+    assert "traj-bar-row" in runs_html
+    # Bar rows link into run pages relative to /runs/ — pin the best row.
+    assert (
+        'class="traj-bar-row is-best" '
+        'href="../runs/k011-delta-scale-x1p7-validation/index.html"' in runs_html
+    )
     assert "hk-stability" in html or "housekeeping_shift" in html
     # Holo screenshot ships compressed when Pillow is present (raw ~410KB;
     # the Trust panel shows it as a small thumbnail) — never a 400KB asset.

@@ -7,22 +7,33 @@
   {% if trajectory %}
   <section class="panel">
     <div class="panel-header">
-      <h2>Score trajectory</h2>
-      <p class="muted">Overall VCC score across runs — the story is the slope, not any single point.</p>
+      <h2>Score by run</h2>
+      <p class="muted">Overall VCC score per submission, best → worst — click a bar to inspect the run.</p>
     </div>
     {{ trajectory | safe }}
   </section>
   {% endif %}
   <section class="panel">
     <div class="panel-header">
-      <h2>Cross-experiment matrix</h2>
-      <p class="muted">Every run, side by side — how accurate, how much room is left, and whether it passes our biology checks.</p>
+      <h2>Runs by campaign</h2>
+      <div class="log-controls" data-log-controls>
+        <span class="muted log-controls-hint">Sweeps grouped — expand a chapter for run detail</span>
+        <button class="log-toggle" type="button" data-log-action="expand">expand all</button>
+        <button class="log-toggle" type="button" data-log-action="collapse">collapse all</button>
+      </div>
     </div>
-    {{ matrix | safe }}
-  </section>
-  <div class="run-grid">
-    {{ cards | safe }}
+    {{ chapters | safe }}
     {{ insight_cards | safe }}
-  </div>
+  </section>
+  <details class="panel matrix-panel">
+    <summary class="matrix-panel-summary">
+      <span class="matrix-panel-title">Cross-experiment matrix</span>
+      <span class="matrix-panel-hint">{{ runs_count }} runs side by side</span>
+    </summary>
+    <div class="matrix-panel-body">
+      <p class="muted matrix-panel-desc">Every run, side by side — how accurate, how much room is left, and whether it passes our biology checks.</p>
+      {{ matrix | safe }}
+    </div>
+  </details>
 </main>
 {% endblock %}

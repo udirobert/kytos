@@ -572,6 +572,85 @@ code {
   color: var(--accent);
 }
 
+/* ── Score-by-run bars (runs index) ──────────────────────────────────────
+   Same data as the home sparkline, different question: best → worst so the
+   gaps between runs are legible. Negative runs sit left of the zero line. */
+
+.traj-bars {
+  max-height: none;
+  min-width: 620px;
+}
+
+/* On phones the 720px viewBox would shrink labels/touch targets ~2x;
+   keep it readable and let the row scroll horizontally instead. */
+@media (max-width: 640px) {
+  .score-bars {
+    overflow-x: auto;
+  }
+}
+
+.traj-bar-row {
+  cursor: pointer;
+}
+
+.traj-bar-row .bar-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  fill: var(--muted);
+  transition: fill 0.15s;
+}
+
+.traj-bar-row .bar-value {
+  font-family: var(--mono);
+  font-size: 10px;
+  fill: var(--ink);
+}
+
+.traj-bar-row .bar-pos {
+  fill: var(--accent);
+  opacity: 0.85;
+}
+
+.traj-bar-row .bar-neg {
+  fill: var(--muted);
+  opacity: 0.45;
+}
+
+.traj-bar-row:hover .bar-pos,
+.traj-bar-row:hover .bar-neg,
+.traj-bar-row:focus-visible .bar-pos,
+.traj-bar-row:focus-visible .bar-neg {
+  opacity: 1;
+}
+
+.traj-bar-row:hover .bar-label,
+.traj-bar-row:focus-visible .bar-label {
+  fill: var(--accent);
+}
+
+.traj-bar-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.traj-bar-row.is-best .bar-label,
+.traj-bar-row.is-best .bar-value {
+  fill: var(--accent);
+  font-weight: 600;
+}
+
+.bar-zero {
+  stroke: var(--line-bright);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.bar-axis {
+  font-family: var(--mono);
+  font-size: 9px;
+  fill: var(--muted);
+}
+
 /* ════════════════════════════════════════════════════════════════════════
    RUN STAT GRID
    ════════════════════════════════════════════════════════════════════════ */
@@ -858,6 +937,268 @@ code {
   margin: 0;
 }
 
+/* ── Run log: progressive disclosure ─────────────────────────────────────
+   Chapters group consecutive runs that share a campaign (a sweep reads as
+   one row, not six prose walls). Each entry folds its evidence behind a
+   teaser; the chapter head stays scannable at a glance. */
+
+.log-lede {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+.log-lede strong,
+.log-lede a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.log-lede a:hover {
+  text-decoration: underline;
+}
+
+.log-controls {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.log-controls-hint {
+  font-size: 0.78rem;
+  margin-right: 0.25rem;
+}
+
+.log-toggle {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.log-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.log-chapter {
+  border-bottom: 1px solid var(--line);
+}
+
+.log-chapter:last-child {
+  border-bottom: none;
+}
+
+.log-chapter-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  padding: 0.8rem 0;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.log-chapter-head::-webkit-details-marker {
+  display: none;
+}
+
+.log-chapter-head::before {
+  content: "▸";
+  color: var(--muted);
+  font-size: 0.8rem;
+  transition: transform 0.15s;
+}
+
+.log-chapter[open] > .log-chapter-head::before {
+  content: "▾";
+}
+
+.log-chapter-head:hover .log-chapter-id {
+  color: var(--accent);
+}
+
+.log-chapter-id {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.log-best {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+}
+
+.log-chapter-meta {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.log-chapter .run-log {
+  padding: 0 0 0.9rem 1.5rem;
+}
+
+.log-score-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  white-space: nowrap;
+}
+
+.log-delta {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.log-more summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.log-more summary::-webkit-details-marker {
+  display: none;
+}
+
+.log-teaser {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.log-more summary .log-teaser::after {
+  content: "  more ▸";
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.log-more summary:hover .log-teaser::after {
+  text-decoration: underline;
+}
+
+/* When open, the teaser hands off to the full account — the summary
+   becomes a small "less" affordance so the fold works both ways. */
+.log-more[open] > summary .log-teaser {
+  display: none;
+}
+
+.log-more[open] > summary::before {
+  content: "▾ less";
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+}
+
+.log-more[open] > summary:hover::before {
+  text-decoration: underline;
+}
+
+/* ── Scorecard panel (home): the full matrix folds by default ──────────── */
+
+.matrix-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.matrix-panel-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 1.1rem 1.5rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.matrix-panel-summary::-webkit-details-marker {
+  display: none;
+}
+
+.matrix-panel-summary::after {
+  content: "+";
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.matrix-panel[open] > .matrix-panel-summary::after {
+  content: "−";
+}
+
+.matrix-panel-summary:hover {
+  background: var(--bg-elevated);
+}
+
+.matrix-panel-title {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.matrix-panel-hint {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.matrix-panel-body {
+  padding: 0 1.5rem 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.matrix-panel-foot {
+  margin: 0.9rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+}
+
+.matrix-panel-foot a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.matrix-panel-foot a:hover {
+  text-decoration: underline;
+}
+
+/* Hero standing — best result leads, latest tagged quietly behind it. */
+
+.hero-best-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero-best-link:hover strong {
+  text-decoration: underline;
+}
+
+.hero-latest {
+  color: var(--muted);
+}
+
 .gene-chip {
   display: inline-block;
   font-family: var(--mono);
@@ -935,6 +1276,17 @@ code {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.25rem;
+}
+
+/* Card grid nested inside a campaign chapter (runs index) — indented like
+   the log entries under a chapter head on home. */
+.run-chapter-grid {
+  padding: 0.25rem 0 1rem 1.5rem;
+}
+
+.matrix-panel-desc {
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
 }
 
 .run-card {
@@ -2225,6 +2577,23 @@ code {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
+  }
+
+  .log-chapter-head {
+    flex-wrap: wrap;
+  }
+
+  .log-head {
+    flex-wrap: wrap;
+  }
+
+  .log-delta {
+    display: none;
+  }
+
+  .run-chapter-grid,
+  .log-chapter .run-log {
+    padding-left: 0.9rem;
   }
 }
 
