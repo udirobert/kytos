@@ -80,7 +80,7 @@
             <span class="q-readout-label">edge agreement</span>
             <span class="q-readout-val" id="q-readout-agree">—</span>
           </div>
-          <div class="q-readout-row q-readout-note" id="q-readout-note">
+          <div class="q-readout-row q-readout-note" id="q-readout-note" aria-live="polite">
             real topology, ideal baseline
           </div>
         </div>
@@ -100,6 +100,14 @@
       <li>{{ f }}</li>
       {% endfor %}
     </ol>
+    <details class="q-details">
+      <summary>Technical detail — what the engine actually prepared</summary>
+      <ol class="q-findings q-findings-detail" start="4">
+        {% for f in detail_findings %}
+        <li>{{ f }}</li>
+        {% endfor %}
+      </ol>
+    </details>
     <figure class="q-fig">
       <img src="{{ root_prefix }}quantum/figs/fig4_real_vs_control.png"
            alt="Bar charts comparing edge correlation magnitude and edge agreement between real protein graphs and a random control, on emulator vs ibm_fez" loading="lazy" decoding="async">
@@ -128,8 +136,9 @@
   <section class="panel">
     <header class="panel-header"><h2>Receipts</h2></header>
     <p class="q-text">Every claim on this page resolves to a submitted job.
-      Moth job IDs query the engine's result endpoint; IBM job IDs are the
-      hardware execution receipts.</p>
+      Each job ID links to the raw engine response committed in the
+      repository — the file itself carries the ID, so the link is the
+      verification.</p>
     <div class="q-receipts-wrap">
       <table class="q-receipts">
         <thead>
@@ -139,22 +148,30 @@
           {% for t in target_rows %}
           <tr>
             <td>{{ t.name }}</td>
-            <td><code>{{ t.moth_qpu }}</code></td>
-            <td><code>{{ t.moth_emu }}</code></td>
-            <td><code>{{ t.ibm_job_id }}</code></td>
+            <td><a class="q-job-link" href="{{ t.qpu_href }}" target="_blank" rel="noopener"><code>{{ t.moth_qpu }}</code></a></td>
+            <td><a class="q-job-link" href="{{ t.emu_href }}" target="_blank" rel="noopener"><code>{{ t.moth_emu }}</code></a></td>
+            <td><a class="q-job-link" href="{{ t.qpu_href }}" target="_blank" rel="noopener"><code>{{ t.ibm_job_id }}</code></a></td>
           </tr>
           {% endfor %}
           {% if control %}
           <tr>
             <td>random control</td>
-            <td><code>{{ control.moth_jobs.qpu }}</code></td>
-            <td><code>{{ control.moth_jobs.emu }}</code></td>
-            <td><code>{{ control.ibm_job_id }}</code></td>
+            <td><a class="q-job-link" href="{{ control.qpu_href }}" target="_blank" rel="noopener"><code>{{ control.moth_jobs.qpu }}</code></a></td>
+            <td><a class="q-job-link" href="{{ control.emu_href }}" target="_blank" rel="noopener"><code>{{ control.moth_jobs.emu }}</code></a></td>
+            <td><a class="q-job-link" href="{{ control.qpu_href }}" target="_blank" rel="noopener"><code>{{ control.ibm_job_id }}</code></a></td>
           </tr>
           {% endif %}
         </tbody>
       </table>
     </div>
+    <details class="q-details">
+      <summary>How to verify independently</summary>
+      <p class="q-text q-verify">With any Moth API key, the platform replays the
+        record server-side:</p>
+      <pre class="q-verify-cmd" id="q-verify-cmd">curl -H "Authorization: Bearer $MOTH_API_KEY" \
+  https://api.mothquantum.com/api/v1/jobs/252b239d-30c6-4400-bf45-7f78002993a6/status</pre>
+      <button class="copy-btn q-verify-copy" type="button" data-copy="#q-verify-cmd" data-copy-label="copy">copy</button>
+    </details>
     <p class="q-subgraph-note">{% for t in target_rows %}{{ t.name }}: {{ t.subgraph }}.{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
   </section>
 

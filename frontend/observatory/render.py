@@ -1180,21 +1180,41 @@ def render_quantum(
     if summary_path.is_file():
         summary = json.loads(summary_path.read_text(encoding="utf-8"))
 
+    repo_blob = "https://github.com/udirobert/kytos/blob/main"
+    c008_rel = "experiments/cleveland/c008-moth-qpu-tomography"
+
+    def _receipt(file_key: str) -> str:
+        return f"{repo_blob}/{c008_rel}/metrics/results/{file_key}.json"
+
     targets = facts.get("targets") or {}
     target_rows = []
-    for key in ("kras_g12c", "cardiac_myosin"):
+    for key, label, file_key in (
+        ("kras_g12c", "KRAS G12C", "kras"),
+        ("cardiac_myosin", "cardiac myosin", "myosin"),
+    ):
         t = targets.get(key) or {}
-        name = "KRAS G12C" if "kras" in key else "cardiac myosin"
         target_rows.append(
             {
-                "name": name,
+                "name": label,
                 "subgraph": str(t.get("subgraph") or ""),
                 "ibm_job_id": str(t.get("ibm_job_id") or ""),
                 "moth_qpu": str((t.get("moth_job_ids") or {}).get("qpu") or ""),
                 "moth_emu": str((t.get("moth_job_ids") or {}).get("emu") or ""),
+                "qpu_href": _receipt(f"{file_key}_qpu"),
+                "emu_href": _receipt(f"{file_key}_emu"),
             }
         )
     ctrl = summary.get("random_control") or {}
+    if ctrl:
+        ctrl = dict(ctrl)
+        ctrl["qpu_href"] = _receipt("ctrl_qpu")
+        ctrl["emu_href"] = _receipt("ctrl_emu")
+
+    # Headline findings vs technical depth — same progressive-disclosure
+    # discipline as the rest of the site: story first, internals behind a fold.
+    all_findings = [str(f) for f in (facts.get("findings") or [])]
+    headline_findings = all_findings[:2] + all_findings[5:]
+    detail_findings = all_findings[2:5]
 
     graphs_json = _quantum_graph_widget_data(c008)
 
@@ -1215,7 +1235,8 @@ def render_quantum(
         "js_version": js_version,
         "nav": _nav("quantum", runs, root_prefix=root_prefix),
         "headline": str(facts.get("headline") or ""),
-        "findings": [str(f) for f in (facts.get("findings") or [])],
+        "findings": headline_findings,
+        "detail_findings": detail_findings,
         "caveats": [str(c) for c in (facts.get("honest_caveats") or [])],
         "target_rows": target_rows,
         "control": ctrl,

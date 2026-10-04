@@ -3338,3 +3338,30 @@ a.switcher-link:hover {
     width: 100%;
   }
 }
+
+.q-job-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent);
+}
+
+.q-job-link:hover {
+  color: var(--accent);
+}
+
+.q-verify-cmd {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  white-space: pre;
+  max-width: 640px;
+  margin: 0 0 0.5rem;
+}
+
+.q-findings-detail {
+  color: var(--muted);
+}

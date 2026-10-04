@@ -64,7 +64,7 @@ for ax, (name, t) in zip(axes, TARGETS):
 legend_items = [
     ("source (active site)", ROLE_COLORS["source"]),
     ("known site", ROLE_COLORS["known"]),
-    ("sourceknown (both)", ROLE_COLORS["sourceknown"]),
+    ("source + known (both)", ROLE_COLORS["sourceknown"]),
     ("connector", ROLE_COLORS[""]),
 ]
 handles = [
