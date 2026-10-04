@@ -13,6 +13,15 @@
     {{ trajectory | safe }}
   </section>
   {% endif %}
+  {% if components %}
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Component profile</h2>
+      <p class="muted">Same runs, same order — why each score landed where it did. A run can own one column and still lose the overall.</p>
+    </div>
+    {{ components | safe }}
+  </section>
+  {% endif %}
   <section class="panel">
     <div class="panel-header">
       <h2>Runs by campaign</h2>

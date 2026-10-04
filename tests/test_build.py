@@ -111,6 +111,10 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "traj-bars" in runs_html
     assert "traj-line" not in runs_html
     assert "traj-bar-row" in runs_html
+    # Component matrix: per-metric diverging bars under the overall chart.
+    assert "component-matrix" in runs_html
+    assert "cm-col-label" in runs_html
+    assert "component-matrix" not in home_html
     # Bar rows link into run pages relative to /runs/ — pin the best row.
     assert (
         'class="traj-bar-row is-best" '

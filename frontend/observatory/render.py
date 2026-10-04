@@ -1147,6 +1147,7 @@ def render_runs_index(
         "header": header,
         "matrix": matrix,
         "trajectory": _score_bars_svg(runs, root_prefix=root_prefix),
+        "components": _component_matrix_svg(runs, root_prefix=root_prefix),
         "chapters": chapters_html,
         "runs_count": len(runs),
         "insight_cards": insight_cards,
@@ -1283,6 +1284,129 @@ def _score_bars_svg(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
            aria-label="Overall score per run, sorted best to worst">
         {axis}
         {"".join(rows)}
+      </svg>
+      {caption}
+    </div>
+    """
+
+
+# VCC components shown in the run-profile matrix. "overall" is the row order
+# (it lives in the bar chart above); "mse" is identically 0 for every scored
+# run so a column of it would be dead pixels.
+_COMPONENT_METRICS = ["pds", "nmae", "fid", "reach", "jac"]
+
+
+def _component_matrix_svg(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
+    """Per-component profile matrix — the "why" under the score bars.
+
+    Same runs, same best→worst row order as _score_bars_svg, so a reader can
+    trace a row down into this chart. Each column is one VCC component on its
+    own linear scale — mini diverging bars around zero, best-in-column in
+    accent. This is where failed hypotheses become visible: a run can sit
+    near the top overall while owning one column and losing the rest.
+    """
+    order = []
+    for run in runs:
+        m = run.facts.get("headline_metrics") or {}
+        if m.get("overall") is not None:
+            order.append(run)
+    order.sort(key=lambda r: -(r.facts["headline_metrics"]["overall"]))
+    if len(order) < 2:
+        return ""
+
+    cols: list[tuple[str, dict[str, float]]] = []
+    for key in _COMPONENT_METRICS:
+        vals = {
+            r.run_id: float(r.facts["headline_metrics"][key])
+            for r in order
+            if isinstance(r.facts["headline_metrics"].get(key), (int, float))
+        }
+        if len(set(vals.values())) >= 2:
+            cols.append((key, vals))
+    if not cols:
+        return ""
+
+    w, row_h, pad_l, pad_r, pad_t, pad_b = 720, 22, 190, 16, 30, 30
+    n = len(order)
+    h = pad_t + n * row_h + pad_b
+    col_w = (w - pad_l - pad_r) / len(cols)
+    val_w = 34  # right edge of each cell reserved for the value
+
+    # Per column: the drawn scale is [min(0, data_lo), max(0, data_hi)] so the
+    # zero line always fits; the printed range shows the real data span.
+    col_meta = []
+    for key, vals in cols:
+        data_lo, data_hi = min(vals.values()), max(vals.values())
+        lo, hi = min(0.0, data_lo), max(0.0, data_hi)
+        span = hi - lo if hi != lo else 1.0
+        col_meta.append((key, vals, lo, span, data_lo, data_hi))
+
+    head = "".join(
+        f'<text class="cm-col-label" x="{pad_l + c * col_w + col_w / 2:.1f}" '
+        f'y="12" text-anchor="middle">{_h(key)}</text>'
+        for c, (key, *_rest) in enumerate(col_meta)
+    )
+    ranges = "".join(
+        f'<text class="cm-range" x="{pad_l + c * col_w + col_w / 2:.1f}" '
+        f'y="{h - 10}" text-anchor="middle">{d_lo:+.2f}…{d_hi:+.2f}</text>'
+        for c, (_k, _v, _l, _s, d_lo, d_hi) in enumerate(col_meta)
+    )
+
+    row_bits = []
+    for i, run in enumerate(order):
+        y = pad_t + i * row_h
+        label = re.sub(r"-(validation|baseline)$", "", run.run_id)
+        cells = []
+        for c, (_key, vals_map, lo, span, _d_lo, best) in enumerate(col_meta):
+            v = vals_map.get(run.run_id)
+            cx = pad_l + c * col_w
+            bar_w = col_w - val_w
+            if v is None:
+                cells.append(
+                    f'<text class="cm-na" x="{cx + col_w - 4:.1f}" '
+                    f'y="{y + row_h * 0.68:.1f}" text-anchor="end">—</text>'
+                )
+                continue
+            zx = cx + (0.0 - lo) / span * bar_w
+            xv = cx + (v - lo) / span * bar_w
+            cls = "bar-pos" if v >= 0 else "bar-neg"
+            best_cls = " is-best" if v == best else ""
+            cells.append(
+                f'<rect class="{cls}" x="{min(zx, xv):.1f}" y="{y + 5:.1f}" '
+                f'width="{max(1.0, abs(xv - zx)):.1f}" height="{row_h - 10}" rx="2"/>'
+                f'<text class="cm-val{best_cls}" x="{cx + col_w - 4:.1f}" '
+                f'y="{y + row_h * 0.68:.1f}" text-anchor="end">{v:+.3f}</text>'
+            )
+        row_bits.append(
+            f'<a class="traj-bar-row" href="{root_prefix}runs/{_h(run.run_id)}/index.html">'
+            f'<text class="bar-label" x="{pad_l - 8}" y="{y + row_h * 0.68:.1f}" '
+            f'text-anchor="end">{_h(label)}</text>{"".join(cells)}'
+            f"<title>{_h(run.run_id)} · component profile</title></a>"
+        )
+
+    def _zero_x(c: int, lo: float, span: float) -> float:
+        return pad_l + c * col_w + (0.0 - lo) / span * (col_w - val_w)
+
+    zeros = "".join(
+        f'<line class="bar-zero" x1="{_zero_x(c, lo, span):.1f}" '
+        f'y1="{pad_t - 4}" x2="{_zero_x(c, lo, span):.1f}" '
+        f'y2="{h - pad_b + 4}"/>'
+        for c, (_k, _v, lo, span, _dl, _dh) in enumerate(col_meta)
+    )
+    caption = (
+        '<p class="traj-caption">Component profile per run, same order as the '
+        "bars above — each column scaled to its own range; accent marks the "
+        "column's best. mse is 0 for every run, so it earns no column.</p>"
+    )
+    return f"""
+    <div class="score-trajectory score-bars component-matrix">
+      <svg class="traj-svg traj-bars" viewBox="0 0 {w} {h}"
+           preserveAspectRatio="xMidYMid meet"
+           aria-label="Component scores per run, sorted by overall">
+        {head}
+        {zeros}
+        {"".join(row_bits)}
+        {ranges}
       </svg>
       {caption}
     </div>
