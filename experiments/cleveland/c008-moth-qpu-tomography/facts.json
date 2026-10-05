@@ -15,9 +15,19 @@
         "qpu": "252b239d-30c6-4400-bf45-7f78002993a6"
       },
       "ibm_job_id": "db1crfrid5ic73eqvk1g",
-      "edge_agreement": {"emu": 0.42, "qpu": 0.52},
-      "edge_corr_mean": {"emu": 0.338, "qpu": 0.284, "ratio": 0.84},
-      "bloch_r_mean": {"emu": 0.552, "qpu": 0.495},
+      "edge_agreement": {
+        "emu": 0.42,
+        "qpu": 0.52
+      },
+      "edge_corr_mean": {
+        "emu": 0.338,
+        "qpu": 0.284,
+        "ratio": 0.84
+      },
+      "bloch_r_mean": {
+        "emu": 0.552,
+        "qpu": 0.495
+      },
       "bloch_cos_median_emu_vs_qpu": -0.01
     },
     "cardiac_myosin": {
@@ -27,9 +37,19 @@
         "qpu": "54b278da-eb53-416b-bae7-f92f14b15769"
       },
       "ibm_job_id": "db1cssjid5ic73eqvlc0",
-      "edge_agreement": {"emu": 0.48, "qpu": 0.48},
-      "edge_corr_mean": {"emu": 0.419, "qpu": 0.424, "ratio": 1.01},
-      "bloch_r_mean": {"emu": 0.589, "qpu": 0.640},
+      "edge_agreement": {
+        "emu": 0.48,
+        "qpu": 0.48
+      },
+      "edge_corr_mean": {
+        "emu": 0.419,
+        "qpu": 0.424,
+        "ratio": 1.01
+      },
+      "bloch_r_mean": {
+        "emu": 0.589,
+        "qpu": 0.64
+      },
       "bloch_cos_median_emu_vs_qpu": -0.27
     }
   },
@@ -45,7 +65,8 @@
     "graph-v1 internals are Moth's black box; the coupling_map parameterizes their protocol, circuit not exposed.",
     "emu vs qpu disagreement cannot be attributed purely to hardware noise without knowing the emu model.",
     "No claim is made that hardware correlations recover the known allosteric site; the CTQW ranking analysis (c002-c007) remains the biological method - this run supplies the hardware receipt + decoherence characterization.",
-    "Pre-declared significance gate from the GQAI workstream remains unmet; nothing here changes that."
+    "Pre-declared significance gate from the GQAI workstream remains unmet; nothing here changes that.",
+    "We did synthesize our own circuit: the pipeline's Laplacian CTQW (H=D-A, t=0.4, 2 Trotter slices, 200 CX) compiled to OpenQASM 2 and verified against exact expm at Pearson 0.991 (metrics/requests/ctqw_kras_t0.4_s2.qasm, reproduce/qasm_ctqw.py). Running it needs the one QASM-capable engine, tomography-api-v2, which timed out on every submission including a 2-qubit Bell pair \u2014 engine availability, not a circuit failure. Blocked, not abandoned."
   ],
   "next_steps": [
     "Package as Moth Hack 'Quantum-native' entry: protein topology -> real-QPU tomography -> decoherence map.",

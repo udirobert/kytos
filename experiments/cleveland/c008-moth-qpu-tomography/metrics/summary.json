@@ -145,6 +145,20 @@
       "top10_preserved": 9,
       "result_file": "metrics/results/qpixl_readback.json",
       "figure": "narrative/figs/fig6_qpixl_readback.png"
+    },
+    "ctqw_qasm": {
+      "file": "metrics/requests/ctqw_kras_t0.4_s2.qasm",
+      "generator": "reproduce/qasm_ctqw.py",
+      "circuit": "H=D-A laplacian CTQW, single excitation on q0 (P-loop supernode), t=0.4, 2 Trotter slices, 200 CX (2-CX numerically-solved XY blocks)",
+      "verification": "numpy statevector on full 2^20 space vs scipy expm: Pearson 0.991, L1 0.384",
+      "target_engine": "tomography-api-v2",
+      "status": "blocked: tomography-api-v2 engine timed out on all submissions incl. a 2-qubit Bell pair (engine_timeout, retryable) \u2014 engine unavailable, not a circuit failure",
+      "probe_jobs": [
+        "3ba40444-f9a1-4ed6-a792-735fbeb3c90c",
+        "c018fb02-6f8a-41ce-80fd-cbfa1ca40a6e",
+        "048a84ea-d242-4e20-8e53-aa2ccd264386",
+        "dedf8b01-009f-415d-9c26-d8e1a7b49ac4"
+      ]
     }
   }
 }

@@ -50,13 +50,39 @@ hardware tomography out, with receipts (IBM job IDs below). The honest result �
 casualty" — is a concrete fingerprint of where NISQ hardware stands when fed
 real biological structure rather than benchmark graphs.
 
+## The interactive exhibit
+
+The full exhibit — interactive emulator→hardware toggle, playable
+sonifications, and every receipt deep-linked — lives at
+**https://kytosapp.netlify.app/quantum/**.
+
+Three derived artifacts push the same measurement through other Moth engines:
+
+- **Sonification** (`metrics/audio/`): each of KRAS's 50 edges plays one note —
+  pitch = measured |corr|, timing fixed by edge order. Emulator and `ibm_fez`
+  versions are literally different melodies; you can hear the redistribution
+  the widget shows. A third track passes the emulator melody through
+  `retrocausal-echo-v1`'s quantum multi-tap delay (Aer — the engine's QPU path
+  requires BYOK IBM credentials; documented, not hidden).
+- **Teleblur** (`narrative/figs/fig5_teleblur_morph.png`): the emu→qpu
+  correlation-matrix morph re-rendered through `telablur-v1`'s quantum
+  rotation gates — decoherence painted by the same class of machine that
+  produced it.
+- **Read-back receipt** (`qpixl-v1`, IBM job `db1e6o6egvvc73bhgtu0`): the 50
+  measured edge-correlation magnitudes encoded as qubit angles and read back
+  on `ibm_fez` — **Pearson 0.98**. The values survive a round-trip through
+  real silicon; direction is what's lost.
+
 ## Reproducibility
 
 - Engine: Moth `graph-v1` (`mode: qpu`), IBM `ibm_fez`
 - IBM jobs: KRAS `db1crfrid5ic73eqvk1g` · myosin `db1cssjid5ic73eqvlc0` ·
-  control `db1d1h2vog1s73fhvp00`
+  control `db1d1h2vog1s73fhvp00` · qpixl read-back `db1e6o6egvvc73bhgtu0`
+- Moth jobs: teleblur `b8710e89-9231-4991-8e07-b98700e9494b` · echo
+  `04586f1f-cfde-4029-b8d1-1afcbbde5768` · qpixl `1260e041-28c1-45c3-b224-96755f65130b`
 - Code, graphs, payloads, raw results, analysis:
   `experiments/cleveland/c008-moth-qpu-tomography/` in this repo
+  (`reproduce/engine_client.py` regenerates every derived artifact)
 - The pipeline upstream (PDB → contact graph → coarse-grain → CTQW allostery
   analysis) is the `src/cleveland/` package built for the Cleveland Clinic /
   GQAI quantum-allostery challenge.
