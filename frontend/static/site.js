@@ -1673,8 +1673,20 @@
         refresh();
       });
     });
+    var userTouched = false;
+    root.querySelectorAll("[data-dataset]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        userTouched = true;
+        state.dataset = btn.getAttribute("data-dataset");
+        root.querySelectorAll("[data-dataset]").forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        refresh();
+      });
+    });
     root.querySelectorAll("[data-mode]").forEach(function (btn) {
       btn.addEventListener("click", function () {
+        userTouched = true;
         state.mode = btn.getAttribute("data-mode");
         root.querySelectorAll("[data-mode]").forEach(function (b) {
           b.classList.toggle("is-active", b === btn);
@@ -1684,6 +1696,33 @@
     });
     render();
     renderedKey = state.dataset;
+
+    // Self-demo: when the widget first scrolls into view, flip to hardware
+    // once so the visitor sees the scramble without being told. Skipped for
+    // reduced-motion users and cancelled by any earlier interaction.
+    if (!prefersReducedMotion() && typeof IntersectionObserver !== "undefined") {
+      var demoObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) {
+              return;
+            }
+            demoObserver.disconnect();
+            setTimeout(function () {
+              if (userTouched) {
+                return;
+              }
+              var qpuBtn = root.querySelector('[data-mode="qpu"]');
+              if (qpuBtn) {
+                qpuBtn.click();
+              }
+            }, 900);
+          });
+        },
+        { threshold: 0.5 }
+      );
+      demoObserver.observe(root);
+    }
   }
 
   if (document.readyState === "loading") {

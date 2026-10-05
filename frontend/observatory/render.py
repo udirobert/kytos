@@ -1186,6 +1186,9 @@ def render_quantum(
     def _receipt(file_key: str) -> str:
         return f"{repo_blob}/{c008_rel}/metrics/results/{file_key}.json"
 
+    def _short_id(jid: str) -> str:
+        return f"{jid[:8]}…{jid[-4:]}" if len(jid) > 16 else jid
+
     targets = facts.get("targets") or {}
     target_rows = []
     for key, label, file_key in (
@@ -1198,8 +1201,11 @@ def render_quantum(
                 "name": label,
                 "subgraph": str(t.get("subgraph") or ""),
                 "ibm_job_id": str(t.get("ibm_job_id") or ""),
+                "ibm_job_short": _short_id(str(t.get("ibm_job_id") or "")),
                 "moth_qpu": str((t.get("moth_job_ids") or {}).get("qpu") or ""),
+                "moth_qpu_short": _short_id(str((t.get("moth_job_ids") or {}).get("qpu") or "")),
                 "moth_emu": str((t.get("moth_job_ids") or {}).get("emu") or ""),
+                "moth_emu_short": _short_id(str((t.get("moth_job_ids") or {}).get("emu") or "")),
                 "qpu_href": _receipt(f"{file_key}_qpu"),
                 "emu_href": _receipt(f"{file_key}_emu"),
             }
@@ -1209,6 +1215,12 @@ def render_quantum(
         ctrl = dict(ctrl)
         ctrl["qpu_href"] = _receipt("ctrl_qpu")
         ctrl["emu_href"] = _receipt("ctrl_emu")
+        jobs = ctrl.get("moth_jobs") or {}
+        ctrl["moth_qpu_short"] = _short_id(str(jobs.get("qpu") or ""))
+        ctrl["moth_emu_short"] = _short_id(str(jobs.get("emu") or ""))
+        ctrl["ibm_job_short"] = _short_id(str(ctrl.get("ibm_job_id") or ""))
+        ctrl["moth_qpu"] = str(jobs.get("qpu") or "")
+        ctrl["moth_emu"] = str(jobs.get("emu") or "")
 
     # Headline findings vs technical depth — same progressive-disclosure
     # discipline as the rest of the site: story first, internals behind a fold.

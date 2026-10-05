@@ -33,28 +33,24 @@
   <section class="panel">
     <header class="panel-header"><h2>The experiment</h2></header>
     <p class="q-text">Protein contact graphs — which residues touch which —
-      carry the topology that allosteric drug sites live in. We take each
-      target's coarse-grained contact graph, keep the biologically meaningful
-      core (catalytic "source" supernodes, the known allosteric pocket, and
-      the strongest couplings between them), and submit it to Moth's
-      <code>{{ engine }}</code> engine as a 20-qubit coupling map.</p>
+      carry the topology allosteric drug sites live in. From each target's
+      graph we keep the functional core (catalytic sources, the known pocket,
+      the strongest couplings) and submit it to Moth's
+      <code>{{ engine }}</code> as a 20-qubit coupling map.</p>
     <figure class="q-fig">
       <img src="{{ root_prefix }}quantum/figs/fig1_coupling_graphs.png"
            alt="The KRAS G12C and cardiac myosin 20-qubit coupling graphs, nodes colored by biological role" loading="lazy" decoding="async">
-      <figcaption>The two allosteric cores submitted to hardware — red
-        nodes are catalytic-site supernodes, blue the known drug pockets,
-        purple overlap both. Node→residue mapping in
-        <code>metrics/graphs/</code>.</figcaption>
+      <figcaption>The two allosteric cores, colored by biological role.
+        Node→residue mapping in <code>metrics/graphs/</code>.</figcaption>
     </figure>
   </section>
 
   <section class="panel">
     <header class="panel-header"><h2>Watch it decohere</h2></header>
-    <p class="q-text">Each coupling map ran twice: <code>emu</code> (Moth's
-      Aer emulator) and <code>qpu</code> (IBM {{ backend }}, {{ shots }}
-      shots, full two-qubit tomography on every graph edge). Edge thickness
-      is the measured correlation strength — flip the switch and watch what
-      real hardware does to it.</p>
+    <p class="q-text">Each coupling map ran twice — once on Moth's Aer
+      emulator, once on IBM's {{ backend }} ({{ shots }} shots, full two-qubit
+      tomography per edge). Edge thickness is measured correlation strength.
+      Flip the switch; watch real hardware answer back.</p>
     <div class="q-widget" id="q-widget" data-qwidget>
       <script type="application/json" id="q-graph-data">{{ graphs_json | safe }}</script>
       <div class="q-widget-controls">
@@ -85,19 +81,16 @@
           </div>
         </div>
       </div>
-      <p class="q-widget-caption">Every edge is a measured two-qubit
-        correlation from the actual job result — not a re-simulation.
-        Same graph, two backends.</p>
+      <p class="q-widget-caption">Every edge is a real job result, not a
+        re-simulation.</p>
     </div>
   </section>
 
   <section class="panel">
     <header class="panel-header"><h2>Hear it decohere</h2></header>
-    <p class="q-text">The same measurement, rendered as sound. Each of the 50
-      graph edges plays one note; <strong>pitch is the measured correlation
-      strength</strong>, timing is fixed by edge order. Play them in turn —
-      the melodies differ exactly where the hardware redistributed the
-      correlations.</p>
+    <p class="q-text">Each edge plays one note — <strong>pitch is the measured
+      correlation strength</strong>, timing is fixed. The melodies differ
+      exactly where the hardware did.</p>
     <div class="q-audio">
       <div class="q-audio-track">
         <span class="q-audio-label">emulator</span>
@@ -112,10 +105,9 @@
         <audio controls preload="none" src="{{ root_prefix }}quantum/audio/kras_emu_echo.wav"></audio>
       </div>
     </div>
-    <p class="q-widget-caption">Third track: the emulator melody passed through
-      Moth's <code>retrocausal-echo</code> engine — a multi-tap delay whose tap
-      weights are measured on a quantum circuit (Aer simulation). Not hardware:
-      an honest echo of what the ideal device would return.</p>
+    <p class="q-widget-caption">The third track runs the melody through
+      <code>retrocausal-echo</code> — a delay whose tap weights are measured
+      on a quantum circuit (Aer simulation, labelled honestly).</p>
     <figure class="q-fig">
       <img src="{{ root_prefix }}quantum/figs/fig5_teleblur_morph.png"
            alt="The emulator correlation matrix of KRAS morphing toward the hardware measurement, rendered through quantum rotation gates" loading="lazy" decoding="async">
@@ -128,8 +120,8 @@
 
   <section class="panel">
     <header class="panel-header"><h2>What the hardware did to it</h2></header>
-    <p class="q-text">The numbers behind the widget — three findings, all
-      verifiable against the raw job receipts below.</p>
+    <p class="q-text">Three findings, each verifiable against the receipts
+      below.</p>
     <ol class="q-findings">
       {% for f in findings %}
       <li>{{ f }}</li>
@@ -179,10 +171,9 @@
 
   <section class="panel">
     <header class="panel-header"><h2>Receipts</h2></header>
-    <p class="q-text">Every claim on this page resolves to a submitted job.
-      Each job ID links to the raw engine response committed in the
-      repository — the file itself carries the ID, so the link is the
-      verification.</p>
+    <p class="q-text">Every claim resolves to a submitted job. Each ID links
+      to its raw engine response — the file carries the ID, so the link is
+      the verification. Hover for the full ID.</p>
     <div class="q-receipts-wrap">
       <table class="q-receipts">
         <thead>
@@ -192,24 +183,24 @@
           {% for t in target_rows %}
           <tr>
             <td>{{ t.name }}</td>
-            <td><a class="q-job-link" href="{{ t.qpu_href }}" target="_blank" rel="noopener"><code>{{ t.moth_qpu }}</code></a></td>
-            <td><a class="q-job-link" href="{{ t.emu_href }}" target="_blank" rel="noopener"><code>{{ t.moth_emu }}</code></a></td>
-            <td><a class="q-job-link" href="{{ t.qpu_href }}" target="_blank" rel="noopener"><code>{{ t.ibm_job_id }}</code></a></td>
+            <td><a class="q-job-link" href="{{ t.qpu_href }}" target="_blank" rel="noopener" title="{{ t.moth_qpu }}"><code>{{ t.moth_qpu_short }}</code></a></td>
+            <td><a class="q-job-link" href="{{ t.emu_href }}" target="_blank" rel="noopener" title="{{ t.moth_emu }}"><code>{{ t.moth_emu_short }}</code></a></td>
+            <td><a class="q-job-link" href="{{ t.qpu_href }}" target="_blank" rel="noopener" title="{{ t.ibm_job_id }}"><code>{{ t.ibm_job_short }}</code></a></td>
           </tr>
           {% endfor %}
           {% if control %}
           <tr>
             <td>random control</td>
-            <td><a class="q-job-link" href="{{ control.qpu_href }}" target="_blank" rel="noopener"><code>{{ control.moth_jobs.qpu }}</code></a></td>
-            <td><a class="q-job-link" href="{{ control.emu_href }}" target="_blank" rel="noopener"><code>{{ control.moth_jobs.emu }}</code></a></td>
-            <td><a class="q-job-link" href="{{ control.qpu_href }}" target="_blank" rel="noopener"><code>{{ control.ibm_job_id }}</code></a></td>
+            <td><a class="q-job-link" href="{{ control.qpu_href }}" target="_blank" rel="noopener" title="{{ control.moth_qpu }}"><code>{{ control.moth_qpu_short }}</code></a></td>
+            <td><a class="q-job-link" href="{{ control.emu_href }}" target="_blank" rel="noopener" title="{{ control.moth_emu }}"><code>{{ control.moth_emu_short }}</code></a></td>
+            <td><a class="q-job-link" href="{{ control.qpu_href }}" target="_blank" rel="noopener" title="{{ control.ibm_job_id }}"><code>{{ control.ibm_job_short }}</code></a></td>
           </tr>
           {% endif %}
           <tr>
             <td>correlation read-back<br><span class="muted">qpixl-v1</span></td>
-            <td><a class="q-job-link" href="{{ repo_blob }}/experiments/cleveland/c008-moth-qpu-tomography/metrics/results/qpixl_readback.json" target="_blank" rel="noopener"><code>1260e041-28c1-45c3-b224-96755f65130b</code></a></td>
+            <td><a class="q-job-link" href="{{ repo_blob }}/experiments/cleveland/c008-moth-qpu-tomography/metrics/results/qpixl_readback.json" target="_blank" rel="noopener" title="1260e041-28c1-45c3-b224-96755f65130b"><code>1260e041…510b</code></a></td>
             <td><span class="muted">—</span></td>
-            <td><a class="q-job-link" href="{{ repo_blob }}/experiments/cleveland/c008-moth-qpu-tomography/metrics/results/qpixl_readback.json" target="_blank" rel="noopener"><code>db1e6o6egvvc73bhgtu0</code></a></td>
+            <td><a class="q-job-link" href="{{ repo_blob }}/experiments/cleveland/c008-moth-qpu-tomography/metrics/results/qpixl_readback.json" target="_blank" rel="noopener" title="db1e6o6egvvc73bhgtu0"><code>db1e6o6e…hgtu0</code></a></td>
           </tr>
         </tbody>
       </table>
