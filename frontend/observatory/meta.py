@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
 import html
 import os
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 
 SITE_TITLE = "Kytos Observatory"
 SITE_TAGLINE = "Virtual Cell Challenge · build in public"
@@ -62,6 +65,16 @@ def _h(text: str) -> str:
     return html.escape(text, quote=True)
 
 
+@lru_cache(maxsize=1)
+def _css_version() -> str:
+    """Content hash of style.css for cache-busting, matching site.js's ?v= scheme."""
+    css = Path(__file__).resolve().parent.parent / "static" / "style.css"
+    try:
+        return hashlib.md5(css.read_bytes()).hexdigest()[:8]
+    except OSError:
+        return ""
+
+
 def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
     """HTML fragment for <head> — title, icons, description, OG, Twitter, canonical.
 
@@ -84,6 +97,9 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
     icon_href = f"{root_prefix}static/favicon.svg"
     apple_href = f"{root_prefix}static/apple-touch-icon.png"
     manifest_href = f"{root_prefix}static/site.webmanifest"
+
+    css_v = _css_version()
+    css_qs = f"?v={css_v}" if css_v else ""
 
     twitter_site = ""
     if TWITTER_HANDLE:
@@ -119,7 +135,7 @@ def render_head_tags(meta: PageMeta, *, root_prefix: str) -> str:
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-  <link rel="stylesheet" href="{root_prefix}static/style.css">"""
+  <link rel="stylesheet" href="{root_prefix}static/style.css{css_qs}">"""
 
     # ── Conditional heavy scripts ──────────────────────────────────────────
     # Plotly is now lazy-loaded by site.js when the chart scrolls into view
