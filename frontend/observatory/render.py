@@ -1328,7 +1328,8 @@ def render_runs_index(
             f'<summary class="log-chapter-head">'
             f'<span class="log-chapter-id">{_h(_chapter_label(member_ids))}</span>'
             f"{best_badge}"
-            f'<span class="log-chapter-meta">{_h(_chapter_meta(members))}</span>'
+            f'<span class="log-chapter-meta">{_chapter_sparkline(members)}'
+            f"{_h(_chapter_meta(members))}</span>"
             f"</summary>"
             f'<div class="run-grid run-chapter-grid">{cards_inner}</div>'
             f"</details>"
@@ -1720,6 +1721,38 @@ def _chapter_meta(members: list[tuple[RunSummary, Any]]) -> str:
         return f"{vals[0]:+.3f}" if vals else "not submitted"
     meta = f"{len(members)} runs"
     return meta + (f" · {vals[0]:+.3f} → {max(vals):+.3f}" if vals else " · not submitted")
+
+
+def _chapter_sparkline(members: list[tuple[RunSummary, Any]]) -> str:
+    """Score trajectory inside a chapter summary — the campaign's shape at a
+    glance, without opening the fold."""
+    vals = []
+    for run, _ in members:
+        v = (run.facts.get("headline_metrics") or {}).get("overall")
+        vals.append(float(v) if v is not None else None)
+    scored_pts = [(i, v) for i, v in enumerate(vals) if v is not None]
+    if len(scored_pts) < 2:
+        return ""
+    w, h, pad = 84, 18, 3
+    scores = [v for _, v in scored_pts]
+    lo, hi = min(scores), max(scores)
+    span = hi - lo if hi != lo else 1.0
+    n = max(len(vals) - 1, 1)
+    pts_xy = [
+        (
+            pad + (i / n) * (w - 2 * pad),
+            pad + (1 - (v - lo) / span) * (h - 2 * pad),
+        )
+        for i, v in scored_pts
+    ]
+    poly = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts_xy)
+    last = pts_xy[-1]
+    return (
+        f'<svg class="chapter-spark" viewBox="0 0 {w} {h}" aria-hidden="true">'
+        f'<polyline class="spark-line" points="{poly}"/>'
+        f'<circle class="spark-dot spark-dot-current" cx="{last[0]:.1f}" '
+        f'cy="{last[1]:.1f}" r="2.2"/></svg>'
+    )
 
 
 def _chapter_label(run_ids: list[str]) -> str:

@@ -694,17 +694,64 @@
     if (!controls) {
       return;
     }
+    // Bulk actions set .open on every chapter — suppress the accordion
+    // handler while they run, or each chapter would close the previous one.
+    var bulk = false;
     controls.addEventListener("click", function (event) {
       var btn = event.target.closest("[data-log-action]");
       if (!btn) {
         return;
       }
       var open = btn.getAttribute("data-log-action") === "expand";
+      bulk = true;
       document
         .querySelectorAll(".log-chapter, .log-chapter .log-more")
         .forEach(function (d) {
           d.open = open;
         });
+      bulk = false;
+    });
+    // Accordion on /runs/ campaign chapters: opening one closes the rest,
+    // so the record stays bounded to a single open campaign.
+    document.addEventListener("toggle", function (event) {
+      var d = event.target;
+      if (bulk || !(d instanceof Element) || !d.classList.contains("run-chapter") || !d.open) {
+        return;
+      }
+      document.querySelectorAll(".run-chapter[open]").forEach(function (other) {
+        if (other !== d) {
+          other.open = false;
+        }
+      });
+    }, true);
+  }
+
+  // Compact density on /runs/: the seg flips data-density on <main>, CSS
+  // reflows run cards into single-line rows. Persisted per visitor.
+  function initRunsDensity() {
+    var main = document.querySelector("main[data-density]");
+    if (!main) {
+      return;
+    }
+    var KEY = "kytos-runs-density";
+    try {
+      var saved = localStorage.getItem(KEY);
+      if (saved === "rows") {
+        main.setAttribute("data-density", "rows");
+      }
+    } catch (e) {}
+    document.querySelectorAll("[data-density-set]").forEach(function (btn) {
+      var mode = btn.getAttribute("data-density-set");
+      btn.classList.toggle("is-active", main.getAttribute("data-density") === mode);
+      btn.addEventListener("click", function () {
+        main.setAttribute("data-density", mode);
+        document.querySelectorAll("[data-density-set]").forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        try {
+          localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
     });
   }
 
@@ -1540,6 +1587,7 @@
     initChroniclePreview();
     initFullRecordCta();
     initRunLogControls();
+    initRunsDensity();
     initHashTargetReveal();
     initQuantumWidget();
     initRunsBarsSort();

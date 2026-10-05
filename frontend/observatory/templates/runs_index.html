@@ -2,7 +2,7 @@
 
 {% block content %}
 {{ nav | safe }}
-<main class="content" id="main-content" tabindex="-1">
+<main class="content" id="main-content" tabindex="-1" data-density="cards">
   {{ header | safe }}
   {% if trajectory %}
   <section class="panel">
@@ -32,6 +32,10 @@
       <h2>Runs by campaign</h2>
       <div class="log-controls" data-log-controls>
         <span class="muted log-controls-hint">Sweeps grouped — expand a chapter for run detail</span>
+        <div class="q-seg" role="group" aria-label="Run display density">
+          <button class="q-seg-btn is-active" data-density-set="cards" type="button">cards</button>
+          <button class="q-seg-btn" data-density-set="rows" type="button">rows</button>
+        </div>
         <button class="log-toggle" type="button" data-log-action="expand">expand all</button>
         <button class="log-toggle" type="button" data-log-action="collapse">collapse all</button>
       </div>

@@ -4529,3 +4529,98 @@ html.no-webgl .legend-field {
 .vcc-marker span {
   white-space: nowrap;
 }
+
+/* ── /runs/ compact density ───────────────────────────────────────────────
+   The "cards / rows" seg flips data-density on <main>; rows reflows run
+   cards into single-line entries — severity dot, id, sparkline, metrics,
+   delta — the same facts serialized tighter. Chapter summaries also carry
+   a mini sparkline of the campaign's own trajectory. */
+
+.chapter-spark {
+  width: 60px;
+  height: 13px;
+  vertical-align: middle;
+  margin-right: 0.55rem;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.chapter-spark .spark-line {
+  stroke: var(--muted);
+  stroke-width: 1.4;
+}
+
+.chapter-spark .spark-dot-current {
+  stroke-width: 1;
+}
+
+[data-density="rows"] .run-chapter-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0.15rem 0 0.9rem 1.5rem;
+}
+
+[data-density="rows"] .run-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius);
+}
+
+[data-density="rows"] .run-card-vessel {
+  width: 16px;
+  height: 21px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+[data-density="rows"] .run-card-top {
+  margin: 0;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
+[data-density="rows"] .run-card-id {
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+[data-density="rows"] .run-card-fill {
+  font-size: 0.75rem;
+}
+
+[data-density="rows"] .run-card-headline,
+[data-density="rows"] .run-card .data-status-badge {
+  display: none;
+}
+
+[data-density="rows"] .run-sparkline {
+  width: 64px;
+  height: 15px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+[data-density="rows"] .run-card-metrics {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.72rem;
+}
+
+[data-density="rows"] .run-card-delta {
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  [data-density="rows"] .run-sparkline,
+  [data-density="rows"] .run-card-delta {
+    display: none;
+  }
+}
