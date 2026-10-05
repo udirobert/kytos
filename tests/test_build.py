@@ -70,7 +70,7 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "vessel-about-panel" in about_html
     assert "Today · London" not in about_html
     assert "vcc-stats" in about_html
-    assert "hackathon-countdown" in about_html
+    assert "Opt-in closed" in about_html
     assert "Why the Observatory" in about_html
     assert "substantiation-panel" in about_html
     assert "evidence-strip" in about_html

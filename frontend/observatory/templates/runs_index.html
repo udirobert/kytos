@@ -8,19 +8,24 @@
   <section class="panel">
     <div class="panel-header">
       <h2>Score by run</h2>
-      <p class="muted">Overall VCC score per submission, best → worst — click a bar to inspect the run.</p>
+      <div class="q-seg" role="group" aria-label="Sort order">
+        <button class="q-seg-btn is-active" data-bars-sort="score" type="button">by score</button>
+        <button class="q-seg-btn" data-bars-sort="date" type="button">by date</button>
+      </div>
     </div>
     {{ trajectory | safe }}
   </section>
   {% endif %}
   {% if components %}
-  <section class="panel">
-    <div class="panel-header">
-      <h2>Component profile</h2>
-      <p class="muted">Same runs, same order — why each score landed where it did. A run can own one column and still lose the overall.</p>
+  <details class="panel matrix-panel">
+    <summary class="matrix-panel-summary">
+      <span class="matrix-panel-title">Why each score landed there</span>
+      <span class="matrix-panel-hint">per-component profile — own one column, still lose the overall</span>
+    </summary>
+    <div class="matrix-panel-body">
+      {{ components | safe }}
     </div>
-    {{ components | safe }}
-  </section>
+  </details>
   {% endif %}
   <section class="panel">
     <div class="panel-header">

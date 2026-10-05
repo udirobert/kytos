@@ -716,7 +716,7 @@ def _timeline_html() -> str:
           Challenge entry, shipping from this repo through Nov 5.
         </p>
         <p class="hackathon-deadline">
-          Opt-in closed <strong id="hackathon-countdown" class="t-text-swap">…</strong>
+          <strong>Opt-in closed ✅</strong>
           <span class="muted">· we keep building in public</span>
         </p>
       </div>
@@ -737,10 +737,6 @@ def _timeline_html() -> str:
             <div class="vcc-marker" data-date="{VCC_START}">
               <span class="vcc-marker-emoji" aria-hidden="true">🚀</span>
               <time>Aug 20</time><span>we ship</span>
-            </div>
-            <div class="vcc-marker vcc-marker-hackathon" data-date="2026-08-22T12:00:00Z">
-              <span class="vcc-marker-emoji" aria-hidden="true">🏆</span>
-              <time>Aug 22</time><span>you are here</span>
             </div>
             <div class="vcc-marker" data-date="{VCC_TEST_SET}">
               <span class="vcc-marker-emoji" aria-hidden="true">🎯</span>
@@ -992,6 +988,9 @@ def _substantiation_about_html(runs: list[RunSummary]) -> str:
             <li>Biological audit flags <em>separate from</em> score</li>
             <li>Literature + NER + provenance + reproduce commands</li>
           </ul>
+          <p class="prose substantiation-quantum">The same discipline now runs
+          the <a href="../quantum/">quantum workstream</a> — every hardware
+          receipt published, decoherence and all.</p>
         </div>
       </div>
 
@@ -1337,18 +1336,37 @@ def render_runs_index(
     chapters_html = "".join(chapter_html)
 
     run_count = f"{len(runs)} run{'s' if len(runs) != 1 else ''} published" if runs else ""
+    hero_stats = ""
     if scored:
         best_score, best_run = max(scored, key=lambda s: s[0])
+        worst_score = min(s for s, _ in scored)
         run_count += (
             f" · best {best_score:+.3f} "
             f'(<a href="{_h(best_run.run_id)}/index.html">{_h(best_run.run_id)}</a>)'
+            f" · latest "
+            f'(<a href="{_h(runs[-1].run_id)}/index.html">{_h(runs[-1].run_id)}</a>)'
         )
+        hero_stats = f"""
+          <div class="stat-split">
+            <div class="stat">
+              <span class="stat-num">{best_score:+.3f}</span>
+              <span class="stat-label">best score ·
+                <a href="{_h(best_run.run_id)}/index.html">{_h(best_run.run_id)}</a></span>
+            </div>
+            <div class="stat stat-bad">
+              <span class="stat-num">{worst_score:+.3f}</span>
+              <span class="stat-label">the baseline we started from — published anyway</span>
+            </div>
+          </div>"""
     header = f"""
         <section class="runs-header">
-          <h1>Experiment runs</h1>
+          <p class="eyebrow">Kytos Observatory · the record</p>
+          <h1>Every run. Including the ones that lost.</h1>
           <p class="runs-header-sub">
-            Metrics, ceiling headroom, and audit flags for every experiment.
+            {len(runs)} submissions to the Virtual Cell Challenge — scores, audit
+            flags, dead ends, and the climb between them. Nothing unpublished.
           </p>
+          {hero_stats}
           <p class="runs-header-count">{run_count}</p>
         </section>
         """
@@ -1459,6 +1477,10 @@ def _score_bars_svg(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
         if v is not None:
             pts.append((run.run_id, float(v), run))
     pts.sort(key=lambda p: p[2].meta.get("created_at") or p[2].facts.get("created") or "")
+    # Chronological index is recorded before the score sort so the front end
+    # can re-order the same rows on demand — score order answers "who won",
+    # date order answers "how we got here".
+    chrono_rank = {rid: i for i, (rid, _v, _r) in enumerate(pts)}
     pts = [(rid, v) for rid, v, _ in pts]
     pts.sort(key=lambda p: -p[1])  # best first
     if len(pts) < 2:
@@ -1476,14 +1498,17 @@ def _score_bars_svg(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
 
     x0 = x(0.0)
     best_id = pts[0][0]
+    latest_id = max(chrono_rank, key=chrono_rank.get)
     rows = []
     for i, (rid, v) in enumerate(pts):
         y = pad_t + i * row_h
         label = re.sub(r"-(validation|baseline)$", "", rid)
         cls = "bar-pos" if v >= 0 else "bar-neg"
+        mark = " is-best" if rid == best_id else (" is-latest" if rid == latest_id else "")
         rows.append(
-            f'<a class="traj-bar-row{" is-best" if rid == best_id else ""}" '
-            f'href="{root_prefix}runs/{_h(rid)}/index.html">'
+            f'<a class="traj-bar-row{mark}" '
+            f'href="{root_prefix}runs/{_h(rid)}/index.html" '
+            f'data-score-idx="{i}" data-chrono-idx="{chrono_rank.get(rid, i)}">'
             f'<text class="bar-label" x="{pad_l - 8}" y="{y + row_h * 0.68:.1f}" '
             f'text-anchor="end">{_h(label)}</text>'
             f'<rect class="{cls}" x="{min(x0, x(v)):.1f}" y="{y + 4:.1f}" '
@@ -1500,11 +1525,11 @@ def _score_bars_svg(runs: list[RunSummary], *, root_prefix: str = "../") -> str:
         f'<text class="bar-axis" x="{x0:.1f}" y="{h - 8}" text-anchor="middle">0</text>'
     )
     caption = (
-        f'<p class="traj-caption">Every submitted run, best → worst — '
-        f"{len(pts)} runs, same climb as the sparkline, cut for comparison.</p>"
+        '<p class="traj-caption" id="runs-bars-caption">Every submitted run, '
+        "best → worst — click a bar for the full record.</p>"
     )
     return f"""
-    <div class="score-trajectory score-bars">
+    <div class="score-trajectory score-bars" data-runs-bars data-row-h="{row_h}">
       <svg class="traj-svg traj-bars" viewBox="0 0 {w} {h}"
            preserveAspectRatio="xMidYMid meet"
            aria-label="Overall score per run, sorted best to worst">

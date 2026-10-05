@@ -1542,6 +1542,7 @@
     initRunLogControls();
     initHashTargetReveal();
     initQuantumWidget();
+    initRunsBarsSort();
   }
 
   function initQuantumWidget() {
@@ -1664,15 +1665,6 @@
       }
     }
 
-    root.querySelectorAll("[data-dataset]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        state.dataset = btn.getAttribute("data-dataset");
-        root.querySelectorAll("[data-dataset]").forEach(function (b) {
-          b.classList.toggle("is-active", b === btn);
-        });
-        refresh();
-      });
-    });
     var userTouched = false;
     root.querySelectorAll("[data-dataset]").forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -1723,6 +1715,42 @@
       );
       demoObserver.observe(root);
     }
+  }
+
+  // ── Runs index: re-sort the score bars score ↔ date ─────────────────────
+  // Rows are positioned in score order server-side; each carries its
+  // chronological rank in data-chrono-idx. "By date" translates each row by
+  // the difference in row-heights — CSS transition does the rest.
+  function initRunsBarsSort() {
+    var chart = document.querySelector("[data-runs-bars]");
+    if (!chart) {
+      return;
+    }
+    var rowH = parseFloat(chart.getAttribute("data-row-h")) || 23;
+    var caption = document.getElementById("runs-bars-caption");
+    var CAPTIONS = {
+      score: "Every submitted run, best → worst — click a bar for the full record.",
+      date: "The same runs in submission order — the climb, not just the ranking.",
+    };
+    function applySort(mode) {
+      chart.querySelectorAll(".traj-bar-row").forEach(function (row) {
+        var score = parseInt(row.getAttribute("data-score-idx"), 10);
+        var chrono = parseInt(row.getAttribute("data-chrono-idx"), 10);
+        var dy = mode === "date" ? (chrono - score) * rowH : 0;
+        row.style.transform = "translateY(" + dy + "px)";
+      });
+      if (caption) {
+        caption.textContent = CAPTIONS[mode] || CAPTIONS.score;
+      }
+    }
+    document.querySelectorAll("[data-bars-sort]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        document.querySelectorAll("[data-bars-sort]").forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        applySort(btn.getAttribute("data-bars-sort"));
+      });
+    });
   }
 
   if (document.readyState === "loading") {

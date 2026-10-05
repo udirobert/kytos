@@ -696,6 +696,13 @@ a.switcher-link:hover {
 
 .traj-bar-row {
   cursor: pointer;
+  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .traj-bar-row {
+    transition: none;
+  }
 }
 
 .traj-bar-row .bar-label {
@@ -742,6 +749,10 @@ a.switcher-link:hover {
 .traj-bar-row.is-best .bar-value {
   fill: var(--accent);
   font-weight: 600;
+}
+
+.traj-bar-row.is-latest .bar-label {
+  fill: var(--ceiling);
 }
 
 .bar-zero {
@@ -2663,10 +2674,6 @@ a.switcher-link:hover {
 .journey-progress,
 .journey-live,
 .view-mode-toggle,
-.timeline-panel,
-.vcc-track,
-.vcc-stats,
-.vessel-about-panel,
 .hero-fullscreen,
 .briefing-video,
 .bulletin-orbit,
@@ -3187,13 +3194,13 @@ a.switcher-link:hover {
 
 /* Quantum interactive widget + hero fidelity split */
 
-.quantum-fidelity {
+.stat-split {
   display: flex;
   gap: 3rem;
   margin: 0 0 1.5rem;
 }
 
-.q-fid-num {
+.stat-num {
   display: block;
   font-family: var(--serif);
   font-size: clamp(2.6rem, 6vw, 4rem);
@@ -3201,11 +3208,11 @@ a.switcher-link:hover {
   color: var(--accent);
 }
 
-.q-fid-bad .q-fid-num {
+.stat-bad .stat-num {
   color: var(--ink);
 }
 
-.q-fid-label {
+.stat-label {
   display: block;
   font-family: var(--mono);
   font-size: 0.7rem;
@@ -3391,4 +3398,335 @@ a.switcher-link:hover {
   height: 2.4rem;
   width: 16rem;
   border-radius: var(--radius);
+}
+
+/* About — the claim panel gets the site's serif voice, not default sans */
+
+.analogy-panel h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+  line-height: 1.1;
+  margin: 0 0 1rem;
+}
+
+.analogy-punch {
+  font-family: var(--serif);
+  font-size: 1.45rem;
+  line-height: 1.25;
+  color: var(--accent);
+  margin: 1rem 0;
+}
+
+.substantiation-quantum {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.substantiation-quantum a {
+  color: var(--accent);
+}
+
+/* ── About phase 2: vessel + VCC timeline rail (restored) ── */
+
+.vessel-about-panel {
+  text-align: left;
+}
+
+.vessel-about-grid {
+  display: grid;
+  grid-template-columns: min(140px, 28%) 1fr;
+  gap: 1.25rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.vessel-about-art {
+  display: grid;
+  place-items: center;
+}
+
+.vessel-about-art .about-vessel {
+  width: 100%;
+  max-width: 140px;
+  height: auto;
+}
+
+.vessel-about-copy .vessel-legend-inline {
+  margin-top: 0.65rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.vessel-legend-inline .legend-item {
+  display: inline-block;
+  margin: 0 0.4rem 0.2rem 0;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.timeline-hackathon h2,
+.timeline-subhead,
+.vessel-about-panel h2,
+.substantiation-panel h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   TIMELINE — hackathon callout + VCC rail
+   ════════════════════════════════════════════════════════════════════════ */
+
+.timeline-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.timeline-centered {
+  text-align: center;
+  align-items: center;
+}
+
+.timeline-centered .timeline-hackathon,
+.timeline-centered .timeline-vcc {
+  max-width: 640px;
+  width: 100%;
+}
+
+.timeline-centered .timeline-tagline,
+.timeline-centered .hackathon-deadline {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.timeline-hackathon {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.07), rgba(45, 212, 191, 0.04));
+  border: 1px solid rgba(251, 191, 36, 0.22);
+}
+
+.timeline-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  margin: 0 0 0.35rem;
+  text-transform: none;
+}
+
+.timeline-hackathon h2 {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+  line-height: 1.25;
+}
+
+.timeline-tagline {
+  margin: 0 0 0.55rem;
+  color: var(--muted);
+  font-size: 0.84rem;
+  max-width: 40rem;
+  line-height: 1.45;
+}
+
+.timeline-lede {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  max-width: 52rem;
+}
+
+.hackathon-deadline {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.hackathon-deadline strong {
+  color: #fbbf24;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-vcc {
+  padding-top: 0.2rem;
+}
+
+.timeline-subhead {
+  margin: 0 0 0.55rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.vcc-marker-emoji {
+  font-size: 0.95rem;
+  line-height: 1;
+  margin-bottom: 0.15rem;
+}
+
+.vcc-marker-hackathon::before {
+  border-color: rgba(251, 191, 36, 0.7);
+  background: rgba(251, 191, 36, 0.25);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
+}
+
+.vcc-marker-hackathon time,
+.vcc-marker-hackathon > span:not(.vcc-marker-emoji) {
+  color: #fbbf24;
+}
+
+.vcc-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 0.85rem;
+}
+
+.vcc-stat {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(22, 59, 92, 0.55);
+  border: 1px solid var(--line);
+  transition: border-color 0.2s ease;
+}
+
+.vcc-stat:hover {
+  border-color: rgba(45, 212, 191, 0.25);
+}
+
+.vcc-stat-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.vcc-stat-value {
+  display: block;
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 2px;
+}
+
+.vcc-stat-of {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.vcc-stat-note {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.3;
+  opacity: 0.85;
+}
+
+.vcc-track {
+  position: relative;
+  height: 4.1rem;
+  margin: 0.4rem 0 0;
+}
+
+/* End markers are centered on 0%/100% — the inner rail is inset so their
+   labels stay fully on-screen, and marker % positions stay aligned with
+   the line (percentages are relative to the inner content box). */
+.vcc-inner {
+  position: relative;
+  height: 100%;
+  margin: 0 3.5rem;
+}
+
+.vcc-line {
+  position: absolute;
+  top: 0.35rem;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.vcc-fill {
+  position: absolute;
+  top: 0.35rem;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--ceiling));
+  border-radius: 2px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.4);
+}
+
+.vcc-needle {
+  position: absolute;
+  top: 0.1rem;
+  left: 0;
+  width: 2px;
+  height: 0.9rem;
+  background: var(--ink);
+  box-shadow: 0 0 8px rgba(226, 232, 240, 0.6);
+  transition: left 0.6s ease;
+}
+
+.vcc-marker {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.vcc-marker::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+}
+
+.vcc-marker time {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.vcc-countdown {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0.6rem 0 0;
+}
+
+.vcc-countdown strong {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.vcc-day {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0.35rem 0 0;
+}
+
+.vcc-day strong {
+  color: var(--ceiling);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .vcc-stats { grid-template-columns: 1fr; }
+  .vcc-inner { margin: 0 2.2rem; }
+  .vcc-marker { font-size: 0.58rem; }
 }
