@@ -10,21 +10,21 @@ and video briefings for community scrutiny.
 
 **Live:** [kytosapp.netlify.app](https://kytosapp.netlify.app)
 
-## Current status — 2026-09-20
+## Current status — 2026-10-05
 
-- **Best recorded submission:** `kytos-k011-ds-x1p7`, overall **+0.059575**,
-  observed rank **486** at publication. Ranks and thresholds are dated
+- **Best recorded submission:** `kytos-k027-consensus-dm`, overall **+0.1262**,
+  observed rank **308** at publication. Ranks and thresholds are dated
   snapshots, not current standing.
-- **Active plan:** validation first. Resolve feature-axis alignment, pin the
-  official `cell-eval2`/`vcc2026` scoring contract, then run controlled
-  baseline diagnostics before choosing the next model change.
-- **Current blocker:** the k022 real-data pilot stopped at preflight because
-  three Atlas labels are absent from the source gene axis (`HSPA14-1`,
-  `TBCE-1`, `TMSB15B-1`). No predictions or official scores were produced.
-- **Scorer:** the public `cell-eval2` `vcc2026` preset has been identified and
-  documented, but not installed, integrated, or proven production-equivalent.
-- **Paused:** GPU training, architecture escalation, and new leaderboard
-  submissions until the data/scoring gates pass.
+- **Latest:** `kytos-k038-ctragr-tight-rmass-dm` **+0.1254** (rank 489/1299) —
+  second statistical tie with the champion; best pds/nmae/jac recorded,
+  lowest reach. With k035 (+0.1242) the agreement-gate axis is **closed**.
+- **Training track:** `k033` completed with a **negative Gate B result** (no
+  submission); the GPU-training pause is re-instated.
+- **Quantum workstream:** the separate Cleveland Clinic / GQAI stack
+  (`experiments/cleveland/`) has real-hardware tomography receipts on IBM
+  `ibm_fez` — protein contact-graph coupling maps through Moth's `graph-v1`
+  engine, plus a read-back receipt at Pearson 0.98. Exhibit:
+  [kytosapp.netlify.app/quantum/](https://kytosapp.netlify.app/quantum/).
 
 Start here:
 
@@ -53,6 +53,10 @@ Start here:
 | `k026` | Multi-lineage consensus deltas | submitted; score +0.0670 |
 | `k027` | Consensus deltas + dual-moment generation — **champion** | submitted; score +0.1262, rank 308 |
 | `k028` | Consensus + dual-moment (wider pooling variant) | submitted; score +0.1239, rank 352 — k027 remains champion |
+| `k033` | Trained-signature track (Modal GPU) | **negative Gate B** — no submission |
+| `k035` | ctragr gate variant | submitted; +0.1242 — statistical tie, pds↔reach trade |
+| `k038` | Tight gate constants + per-target row-norm mass restore | submitted; +0.1254, rank 489 — second tie; gate axis closed |
+| `c008` | Protein contact-graph coupling maps → tomography on IBM `ibm_fez` | hardware receipts; correlation magnitude survives, direction decoheres |
 
 See [`experiments/README.md`](experiments/README.md) for the full registry,
 including proxy labels and interpretation caveats.

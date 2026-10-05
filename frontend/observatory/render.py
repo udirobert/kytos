@@ -679,6 +679,7 @@ def render_home(
                 "proof": proof,
                 "run_href": run_href,
                 "runs_href": f"{root_prefix}runs/index.html",
+                "quantum_href": f"{root_prefix}quantum/index.html",
                 "about_href": about_href,
                 "latest_run_id": latest.run_id,
                 "latest_headline": latest.facts.get("headline", latest.run_id),

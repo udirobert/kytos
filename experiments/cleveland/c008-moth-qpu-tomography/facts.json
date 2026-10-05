@@ -69,9 +69,9 @@
     "We did synthesize our own circuit: the pipeline's Laplacian CTQW (H=D-A, t=0.4, 2 Trotter slices, 200 CX) compiled to OpenQASM 2 and verified against exact expm at Pearson 0.991 (metrics/requests/ctqw_kras_t0.4_s2.qasm, reproduce/qasm_ctqw.py). Running it needs the one QASM-capable engine, tomography-api-v2, which timed out on every submission including a 2-qubit Bell pair \u2014 engine availability, not a circuit failure. Blocked, not abandoned."
   ],
   "next_steps": [
-    "Package as Moth Hack 'Quantum-native' entry: protein topology -> real-QPU tomography -> decoherence map.",
-    "If quota permits, one control run (random 20-node graph with matched degree distribution) would separate topology-specific structure from generic protocol output.",
-    "Reproduce: payloads in metrics/requests/, exact local baselines in metrics/graphs/*_exact.json via reproduce/exact_baseline.py."
+    "Retry Phase C if tomography-api-v2 recovers before the 2026-10-05 23:59 PT deadline: metrics/requests/ctqw_kras_t0.4_s2.qasm is submission-ready (verified vs exact expm, Pearson 0.991).",
+    "Submit the entry through the hackathon's external channel \u2014 the Moth API has no submission endpoint and /showcases requires provider features our player key lacks.",
+    "Reproduce: payloads in metrics/requests/, exact local baselines in metrics/graphs/*_exact.json via reproduce/exact_baseline.py, engine artifacts via reproduce/engine_client.py."
   ],
   "all_pass": true
 }

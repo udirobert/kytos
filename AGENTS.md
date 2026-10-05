@@ -53,6 +53,16 @@ same commit as the fact.
 - Secret: `MOTH_API_KEY` in `.env` (see `.env.example`).
 - Runner: `.venv-cleveland/bin/python tools/run_cleveland_c001.py`
   … `c007.py` (see `docs/cleveland/`). Qiskit only in `.venv-cleveland`.
+- **`c008` (2026-10-04) is the live Moth Hack entry** — protein contact-graph
+  coupling maps (KRAS G12C + cardiac myosin + random control) through Moth's
+  `graph-v1` engine on IBM `ibm_fez`; real-hardware tomography + qpixl
+  read-back (Pearson 0.98). No `.venv-cleveland` needed — everything ran via
+  `experiments/cleveland/c008-moth-qpu-tomography/reproduce/engine_client.py`
+  (curl, `MOTH_API_KEY`). The interactive exhibit is `/quantum/` on the
+  Observatory. Phase C (our own Laplacian CTQW compiled to OpenQASM 2,
+  verified vs expm at Pearson 0.991, `reproduce/qasm_ctqw.py`) is
+  **engine-blocked**: `tomography-api-v2` timed out on every submission —
+  retry before the 2026-10-05 23:59 PT deadline if the engine recovers.
 - **Compression watch:** cardiac myosin Phase 1 Spearman ρ=0.823 is the
   tightest gate margin — keep it visible. `c007` distal lever → myosin
   best-known rank 3 (null still n.s.).
