@@ -154,8 +154,8 @@ def render_shorts_index(chronicle: Chronicle, *, root_prefix: str, js_version: s
     meta = PageMeta(
         title="The Chronicle",
         description=(
-            "Short field reports from the Virtual Cell Challenge — one idea each, "
-            "with plain-words context underneath."
+            "Short field reports from Kytos research — the Virtual Cell Challenge and "
+            "quantum hardware experiments — one idea each, with plain-words context underneath."
         ),
         canonical_path="/shorts/",
         needs_vessel=False,

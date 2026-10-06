@@ -1,0 +1,33 @@
+WEBVTT
+
+1
+00:00:00.500 --> 00:00:07.200
+For forty years, KRAS was called undruggable — the protein behind a quarter of all human cancers.
+
+2
+00:00:07.800 --> 00:00:13.700
+It was finally beaten not through its active site, but through a hidden pocket in its shape — encoded in contact topology.
+
+3
+00:00:14.800 --> 00:00:23.100
+So we gave that shape to a quantum computer. Twenty qubits. IBM's ibm_fez. Real hardware — not a simulation.
+
+4
+00:00:25.800 --> 00:00:34.400
+The chip kept the protein's structure — but it lost its direction. And you can hear the difference. Each edge is a note. That's the emulator.
+
+5
+00:00:34.600 --> 00:00:42.500
+[emulator sonification — each graph edge, one note]
+
+6
+00:00:42.600 --> 00:00:43.900
+That's the chip.
+
+7
+00:00:44.000 --> 00:00:51.400
+[ibm_fez sonification — same graph, real silicon]
+
+8
+00:00:52.000 --> 00:01:02.200
+If hardware can feel the shape of a protein, drug discovery might someday run on physics itself. Every claim links to a raw job receipt. This is the Kytos Observatory.

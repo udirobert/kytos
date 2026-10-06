@@ -2,6 +2,46 @@
   "series": "VCC 2026 Chronicle",
   "shorts": [
     {
+      "slug": "specimen-005-protein-on-chip",
+      "title": "We put a protein on a quantum computer",
+      "hook": "KRAS was undruggable for 40 years — until a drug found a hidden pocket in its shape. We gave that shape to a real IBM quantum chip and measured what survived.",
+      "published": "2026-10-06",
+      "series": "Moth Hack 2026 · Quantum Chronicle",
+      "plain_words": "The protein KRAS drives roughly a quarter of human cancers and resisted drugs for four decades — until sotorasib found a hidden pocket written into its shape, not its active site. That shape is contact topology: which residues touch which. We distilled the allosteric cores of KRAS G12C and cardiac myosin into 20-qubit coupling maps and ran them on Moth's graph-v1 engine — once on an emulator, once on IBM's ibm_fez quantum processor. The result was a clean split: correlation magnitude survives real hardware (about 84% of emulator strength) while direction decoheres to essentially zero, and the protein-versus-random-control separation washes out. Fine structure is NISQ noise's first casualty. We also sonified both measurements — each coupling edge becomes a note, so you can literally hear the decoherence — and every claim on the page links to a raw job receipt.",
+      "terms": [
+        "allostery",
+        "contact topology",
+        "decoherence"
+      ],
+      "sources": [
+        {
+          "label": "Interactive exhibit — /quantum/ on the Observatory",
+          "who": "Kytos Observatory",
+          "id": "quantum",
+          "url": "https://kytosapp.netlify.app/quantum/"
+        },
+        {
+          "label": "c008 experiment record — receipts, reproduce scripts, figures",
+          "who": "Kytos / Cleveland GQAI workstream",
+          "id": "c008-moth-qpu-tomography",
+          "url": "https://github.com/udirobert/kytos/tree/main/experiments/cleveland/c008-moth-qpu-tomography"
+        },
+        {
+          "label": "Moth Atlas — engine platform used for all measurements",
+          "who": "Moth Quantum",
+          "id": "platform.mothquantum.com",
+          "url": "https://platform.mothquantum.com"
+        }
+      ],
+      "deep": "KRAS G12C and cardiac myosin contact graphs were coarse-grained to their 20-node allosteric cores (catalytic site, known drug pocket, strongest couplings; 50 and 42 edges) plus a degree-matched random control. Submitted to Moth graph-v1 in emu and qpu modes on IBM ibm_fez: 1024 shots, full two-qubit tomography per edge. Measured: mean edge |corr| held ~0.84× of emulator on hardware while Bloch-vector direction cosine fell to ≈0; emu separated protein graphs from the random control, qpu did not — topology-specific fine structure is the first casualty of NISQ noise. Read-back: writing measured correlations through qpixl-v1 returned Pearson 0.98. Sonification maps each edge to a note in submission order; emu and qpu render the same graph as audibly different melodies. A custom Laplacian CTQW was compiled to OpenQASM 2 and verified vs exact expm at Pearson 0.991 — execution blocked only by a tomography-api-v2 outage during the hack window. Engines: graph-v1, qpixl-v1, telablur-v1, retrocausal-echo-v1.",
+      "media": {
+        "video": "https://api.grove.storage/d2cc8601c0b3c728815ccb15e87a5b18351e0063574d417acffa39e33eb83d34",
+        "video_uri": "lens://d2cc8601c0b3c728815ccb15e87a5b18351e0063574d417acffa39e33eb83d34",
+        "poster": "poster.png",
+        "captions": "captions.vtt"
+      }
+    },
+    {
       "slug": "specimen-004-edge-of-map",
       "title": "The edge of the map",
       "hook": "Borrowed biology kept winning — until we asked which cells we were actually predicting.",

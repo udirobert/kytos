@@ -10,5 +10,17 @@
   "Perturb-seq": {
     "term": "Perturb-seq",
     "definition": "Silence one gene per cell across millions of cells, and read what changed — a catalog of cause and effect."
+  },
+  "allostery": {
+    "term": "allostery",
+    "definition": "Control at a distance — a hidden pocket changes shape and the protein's active site answers."
+  },
+  "contact topology": {
+    "term": "contact topology",
+    "definition": "Which residues physically touch which — the protein's wiring diagram."
+  },
+  "decoherence": {
+    "term": "decoherence",
+    "definition": "Noise washing out a quantum state — what real hardware does to ideal answers."
   }
 }
