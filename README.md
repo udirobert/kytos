@@ -10,7 +10,7 @@ and video briefings for community scrutiny.
 
 **Live:** [kytosapp.netlify.app](https://kytosapp.netlify.app)
 
-## Current status — 2026-10-05
+## Current status — VCC 2026-10-05; Qollab 2026-10-11
 
 - **Best recorded submission:** `kytos-k027-consensus-dm`, overall **+0.1262**,
   observed rank **308** at publication. Ranks and thresholds are dated
@@ -25,6 +25,12 @@ and video briefings for community scrutiny.
   `ibm_fez` — protein contact-graph coupling maps through Moth's `graph-v1`
   engine, plus a read-back receipt at Pearson 0.98. Exhibit:
   [kytosapp.netlify.app/quantum/](https://kytosapp.netlify.app/quantum/).
+- **Qollab hackathon (separate; 2026-10-11):** a self-contained Qiskit
+  source-to-pocket graph-walk demo built from a disclosed slice of earlier
+  Cleveland work ran on Qollab's free built-in and IonQ Forte 1 simulators.
+  The project is still a **draft**, not a blind biological validation or a
+  submission. Status, research limits, and next gates:
+  [Qollab workstream](docs/qollab-hackathon.md).
 
 Start here:
 
@@ -102,6 +108,7 @@ require external compute; see [`AGENTS.md`](AGENTS.md).
 | [`docs/demo-script.md`](docs/demo-script.md) | 7-beat pitch script for a 2-min Loom |
 | [`NOTES.md`](NOTES.md) | Task, motivation, catalog learnings |
 | [`docs/cleveland/`](docs/cleveland/) | **Separate** Cleveland Clinic / GQAI 2026 workstream |
+| [`docs/qollab-hackathon.md`](docs/qollab-hackathon.md) | Qollab demo status, evidence, research gap, and product-surface decision |
 
 ## Layout
 
