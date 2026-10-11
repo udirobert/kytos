@@ -1,6 +1,6 @@
 # Qollab 2026 — quantum-allostery follow-on
 
-**Status (2026-10-11):** The `papa/kytos` Qollab project is a **draft**. The current self-contained Python/Qiskit code is [`qollab/main.py`](../qollab/main.py). A public default version, a 2–3 minute video, team submission, and judging outcome have **not** been verified. Submission deadline: October 11, 19:00 ET ([Qollab rules](https://qollab.xyz/programs/hackathon/terms)). This is separate from the VCC `kNNN-*` runs and the Cleveland `cNNN-*` runs.
+**Status (2026-10-11):** The [`papa/kytos` Qollab project](https://qollab.xyz/u/papa/kytos) is published as public **v1.0**. The current self-contained Python/Qiskit code is [`qollab/main.py`](../qollab/main.py). The free built-in simulator run and public 123-second demo video are verified; the public Run button, MIT publication marker, team submission, and judging outcome still require final external verification. Submission deadline: October 11, 19:00 ET ([Qollab rules](https://qollab.xyz/programs/hackathon/terms)). This is separate from the VCC `kNNN-*` runs and the Cleveland `cNNN-*` runs.
 
 ## Provenance and what ran
 
@@ -21,7 +21,7 @@ Current code sends **one four-qubit circuit** containing two independent two-qub
 
 **Proposed contribution, not yet an outcome:** Test whether *localized active-site CTQW* adds information about held-out distal pockets beyond classical diffusion, graph distance/degree, and matched rewired or decoy-pocket controls. Freeze graph construction, source definitions, time aggregation, and readouts **before** examining held-out labels. Evaluate all eligible apo proteins in a declared panel, report uncertainty and failures, and do not label a visually pleasing edge-deletion response 'biological causality'. A negative result with a reusable falsification harness is still a contribution; it is not quantum advantage. The present Qollab code is a runnable explanatory slice, **not** that benchmark. A larger AlloBench evaluation is future work, not a completed submission result.
 
-## Product surface (implemented locally 2026-10-11; pending deployment)
+## Product surface (deployed 2026-10-11)
 
 The [`/quantum/` exhibit](https://kytosapp.netlify.app/quantum/) keeps the c008 Moth hardware story intact as **Chapter 1** and adds a separate, dated **Chapter 2** (`#qollab`). The hero has a two-card chapter strip linking to each. Chapter 2 is rendered by `render_quantum()` from `qollab/observed-run.json`. It contains a source→pocket diagram and a recorded / edge-(0,2)-deleted toggle. Next to them are measured, exact-quantum and classical readouts, plus a frozen five-point reference-sweep chart (t = 0.5, 1.0, 1.5, 2.0, 3.0 from `reference_sweep` in `observed-run.json`; connecting lines are reading aids, not additional measurements) with the single measured point marked. Badges distinguish **measured simulator**, **exact reference**, **earlier hardware (different protocol)** and **planned blind test**, and the caveats and the blind-panel next step are shown inline. The Qollab project link appears automatically once `project_url` is set in `observed-run.json`. The VCC home/runs surfaces are unchanged.
 
@@ -29,11 +29,13 @@ The [`/quantum/` exhibit](https://kytosapp.netlify.app/quantum/) keeps the c008 
 
 `chronicle/specimen-006-source-to-pocket-long/` is the 123-second 16:9 HyperFrames judge cut. It uses the established specimen format (Dr. Kytos anchor, mini intro, kinetic scenes, evidence cards, closing mission line) and includes screen captures of the Chapter 2 widget and a local `main.py` run, labelled as an ideal simulator. `chronicle/specimen-006-source-to-pocket/` is the ~65 s 9:16 derivative, which drops the circuit and terminal scenes. Both use the established `tts-1` / `shimmer` narration, not the earlier superseded voice. Per §8 of `docs/chronicle/context-layer.md`, renders are hosted on Grove, not in git.
 
-Public replacements (2026-10-11): [judge demo, 123 seconds](https://api.grove.storage/55f966f13fe2776520a6725add61c69e7aea855ca562c0565c14df5058934140) · [vertical cut, 65 seconds](https://api.grove.storage/14c32a7a061e7f0b16a1c42c174ab348e71cb002c2cba7ad8f6f509252340737). The former public 116-second cut did **not** satisfy Qollab's 2–3 minute requirement and is superseded; its immutable Grove URL remains accessible but should not be submitted.
+Public replacements (2026-10-11): [judge demo, 123 seconds](https://api.grove.storage/55f966f13fe2776520a6725add61c69e7aea855ca562c0565c14df5058934140) · [vertical cut, 65 seconds](https://api.grove.storage/14c32a7a061e7f0b16a1c42c174ab348e71cb002c2cba7ad8f6f509252340737). The submitted project card links the same judge cut on YouTube: <https://youtu.be/hjB0799z8yc>. The former public 116-second cut did **not** satisfy Qollab's 2–3 minute requirement and is superseded; its immutable Grove URL remains accessible but should not be submitted.
 
-## Submission gates still open
+## Submission status
 
-1. Replace the Qollab Project Card with the source→pocket write-up. It removes the retired VQE/chemistry/hardware-noise claims and discloses what predates October 9 and what was built during the window.
-2. Publish under MIT as a public **default** Qollab version, verify its public Run button, and link it from this document only after publication.
-3. Provide a public 2–3 minute demo video without sign-in and have the registered team captain submit it from Qollab's registration page before the deadline. Publishing alone is not submission.
-4. Treat any next scientific comparison as a new, predeclared evaluation with classical and null controls, not as an after-the-fact interpretation of this slice.
+1. **Done:** The Qollab Project Card uses the source→pocket write-up, disclosing prior work, the selected slice/readout/time, simulator provenance, and the absence of a biological-validation or quantum-advantage claim.
+2. **Done:** [`papa/kytos`](https://qollab.xyz/u/papa/kytos) is public as v1.0. Confirm in a signed-out session that the visible project is the default public version and that its MIT marker is present.
+3. **Done:** The code ran on Qollab's free built-in simulator in the final pre-publication check (2,048 shots): recorded **0.18945**, altered **0.39746**, versus exact references **0.19051 / 0.40502**.
+4. **Done:** A public 123-second demo video is linked on the card without sign-in.
+5. **Still required:** Test the public **Run on Qollab** button, then have the registered team captain submit from the [registration page](https://qollab.xyz/programs/hackathon/register) before the deadline. Publishing alone is not submission.
+6. Treat any next scientific comparison as a new, predeclared evaluation with classical and null controls, not as an after-the-fact interpretation of this slice.

@@ -3,7 +3,7 @@
   "captured_date": "2026-10-11",
   "source": "User-shared Qollab run console; no public job receipt verified",
   "project_status_at_capture": "draft",
-  "project_url": null,
+  "project_url": "https://qollab.xyz/u/papa/kytos",
   "backend": "IonQ Forte 1 simulator",
   "backend_type": "remote noise-model simulator, not hardware",
   "shots": 2048,

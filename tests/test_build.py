@@ -139,6 +139,7 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert '"times":[0.5,1.0,1.5,2.0,3.0]' in quantum_html.replace(" ", "")
     assert "planned · blind panel test" in quantum_html
     assert 'href="#c008"' in quantum_html
+    assert 'href="https://qollab.xyz/u/papa/kytos"' in quantum_html
     render_src = (FRONTEND / "observatory" / "render.py").read_text()
     assert "_expm" not in render_src
     assert "_qollab_walk_probs" not in render_src
