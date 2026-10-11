@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0a0a0f; }
+      body { font-family: "Inter", sans-serif; }
+      #root { position: relative; width: 1080px; height: 1920px; background: #0a0a0f; }
+      .clip { position: absolute; inset: 0; }
+      .kicker { font-family: "IBM Plex Mono", monospace; font-size: 24px; letter-spacing: 0.32em; color: #2dd4bf; text-transform: uppercase; }
+      .kicker.amber { color: #f59e0b; }
+      .bigtext { font-family: "Instrument Serif", serif; color: #ebebf2; line-height: 1.08; }
+      .bigtext em { color: #2dd4bf; font-style: italic; }
+      .subline { font-family: "Inter", sans-serif; color: #8c8c9e; font-size: 30px; line-height: 1.35; }
+      .subline b { color: #ebebf2; font-weight: 500; }
+      .abs { position: absolute; }
+      .label { font-family: "IBM Plex Mono", monospace; font-size: 18px; letter-spacing: 0.2em; color: #ebebf2; background: rgba(10, 10, 15, 0.85); padding: 6px 14px; border-radius: 8px; }
+      .frame { border: 1px solid #262634; border-radius: 18px; overflow: hidden; background: #0d0d14; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5); }
+      .frame video, .frame img { display: block; width: 100%; }
+      .qchip { font-family: "IBM Plex Mono", monospace; font-size: 24px; padding: 14px 22px; border: 1px solid #2dd4bf; border-radius: 12px; background: #12121a; color: #2dd4bf; }
+      .qchip.dim { border-color: #262634; color: #8c8c9e; }
+      .qchip.amber { border-color: #f59e0b; color: #f59e0b; }
+      .row { display: flex; gap: 18px; }
+
+      #anchor { position: absolute; left: 0; top: 0; width: 520px; border-radius: 22px; overflow: hidden; border: 2px solid rgba(45, 212, 191, 0.5); box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55); transform-origin: top left; }
+      #anchor video { display: block; width: 100%; height: auto; }
+      #anchor-tag { position: absolute; left: 14px; bottom: 12px; font-family: "IBM Plex Mono", monospace; font-size: 20px; letter-spacing: 0.18em; color: #2dd4bf; background: rgba(10, 10, 15, 0.72); padding: 5px 12px; border-radius: 7px; }
+
+      /* walk graph (shared by s3 + s6) */
+      .wg .edge { stroke: #2dd4bf; stroke-width: 6; stroke-linecap: round; }
+      .wg .edge.cut { stroke: #f59e0b; stroke-dasharray: 14 14; stroke-opacity: 0.8; stroke-width: 4; }
+      .wg text { font-family: "IBM Plex Mono", monospace; font-size: 22px; fill: #8c8c9e; }
+      .wg text.key { fill: #ebebf2; }
+
+      /* circuit */
+      #circ line.wire { stroke: #5c5c70; stroke-width: 2; }
+      #circ text { font-family: "IBM Plex Mono", monospace; fill: #8c8c9e; font-size: 22px; }
+      #circ .gate-rec { fill: rgba(45, 212, 191, 0.12); stroke: #2dd4bf; stroke-width: 2; }
+      #circ .gate-alt { fill: rgba(245, 158, 11, 0.12); stroke: #f59e0b; stroke-width: 2; }
+      #circ .meas { fill: #12121a; stroke: #8c8c9e; stroke-width: 2; }
+      #term { font-family: "IBM Plex Mono", monospace; font-size: 19px; line-height: 1.5; color: #c8c8d6; background: #0d0d14; border: 1px solid #262634; border-radius: 16px; padding: 56px 30px 24px; white-space: pre; }
+      #term .p { color: #2dd4bf; }
+      #term .hi { color: #ebebf2; font-weight: 600; }
+      #term .dim { color: #5c5c70; }
+      #term-bar { position: absolute; left: 0; right: 0; top: 0; height: 38px; border-bottom: 1px solid #262634; display: flex; align-items: center; gap: 8px; padding-left: 16px; }
+      #term-bar i { width: 12px; height: 12px; border-radius: 50%; background: #262634; display: block; }
+
+      /* readout cards */
+      .rcard { width: 520px; border: 1px solid #262634; border-radius: 20px; background: rgba(18, 18, 26, 0.92); padding: 28px 34px; }
+      .rcard .rname { font-family: "IBM Plex Mono", monospace; font-size: 22px; letter-spacing: 0.2em; color: #8c8c9e; }
+      .rcard .rnum { font-family: "IBM Plex Mono", monospace; font-size: 96px; font-weight: 600; line-height: 1.15; margin-top: 22px; }
+      .rcard .rdesc { font-family: "IBM Plex Mono", monospace; font-size: 20px; color: #8c8c9e; margin-top: 12px; }
+      .rcard.rec { border-color: rgba(45, 212, 191, 0.55); }
+      .rcard.rec .rnum { color: #2dd4bf; }
+      .rcard.alt { border-color: rgba(245, 158, 11, 0.55); }
+      .rcard.alt .rnum { color: #f59e0b; }
+
+      /* bars */
+      .bgroup { width: 620px; }
+      .bgroup .gname { font-family: "IBM Plex Mono", monospace; font-size: 24px; letter-spacing: 0.16em; color: #ebebf2; margin-bottom: 22px; }
+      .brow { display: grid; grid-template-columns: 210px 1fr 110px; align-items: center; gap: 18px; margin-bottom: 18px; font-family: "IBM Plex Mono", monospace; font-size: 22px; color: #8c8c9e; }
+      .btrack { height: 28px; background: #1a1a26; border-radius: 999px; overflow: hidden; }
+      .bfill { height: 100%; border-radius: 999px; transform-origin: left center; }
+      .bfill.q { background: #2dd4bf; }
+      .bfill.c { background: #f59e0b; }
+      .bval { text-align: right; color: #ebebf2; font-size: 26px; }
+
+      /* not-list */
+      .notrow { display: flex; align-items: baseline; gap: 30px; margin-bottom: 44px; }
+      .notx { font-family: "IBM Plex Mono", monospace; font-size: 56px; color: #f59e0b; width: 60px; }
+      .nothead { font-family: "Instrument Serif", serif; font-size: 72px; color: #ebebf2; text-decoration: line-through; text-decoration-color: #f59e0b; text-decoration-thickness: 4px; }
+      .notsub { font-family: "Inter", sans-serif; font-size: 28px; color: #8c8c9e; margin-left: 24px; }
+
+      /* steps */
+      .step { width: 380px; border: 1px solid #262634; border-radius: 18px; background: #12121a; padding: 30px 28px; }
+      .step .sn { font-family: "IBM Plex Mono", monospace; font-size: 22px; color: #2dd4bf; letter-spacing: 0.2em; }
+      .step .sh { font-family: "Instrument Serif", serif; font-size: 52px; color: #ebebf2; margin-top: 10px; }
+      .step .sd { font-family: "Inter", sans-serif; font-size: 23px; color: #8c8c9e; margin-top: 10px; line-height: 1.35; }
+      .step.last { border-color: rgba(245, 158, 11, 0.6); }
+      .step.last .sn { color: #f59e0b; }
+      .arrow { font-family: "IBM Plex Mono", monospace; font-size: 40px; color: #5c5c70; align-self: center; }
+
+      .receipt { font-family: "IBM Plex Mono", monospace; font-size: 22px; color: #8c8c9e; border: 1px solid #262634; border-radius: 10px; background: #12121a; padding: 12px 22px; letter-spacing: 0.06em; }
+      .receipt b { color: #2dd4bf; font-weight: 600; }
+      .receipt.amber b { color: #f59e0b; }
+
+      .kicker { font-size: 28px; }
+      .subline { font-size: 34px; }
+      .center { left: 0; width: 100%; text-align: center; }
+      .rcard { width: 450px; padding: 26px 28px; }
+      .rcard .rnum { font-size: 92px; }
+      .bgroup { width: 860px; }
+      .brow { grid-template-columns: 220px 1fr 110px; font-size: 26px; }
+      .notrow { flex-direction: column; gap: 6px; margin-bottom: 56px; }
+      .nothead { font-size: 92px; }
+      .notsub { margin-left: 0; font-size: 32px; }
+      .notx { display: none; }
+</style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="65" data-width="1080" data-height="1920">
+      <div id="anchor" data-layout-allow-overflow>
+        <video data-hf-id="hf-anchor" id="anchor-video" src="assets/anchor.mp4" muted playsinline data-start="0" data-duration="65"></video>
+        <div id="anchor-tag">DR. KYTOS</div>
+      </div>
+
+      <!-- s0 · intro (0–8) -->
+      <div id="s0" class="clip" data-start="0" data-duration="8" data-track-index="0">
+        <div id="s0-kicker" class="abs center" style="top:760px"><span class="kicker">this is kytos</span></div>
+        <div id="s0-title" class="abs bigtext center" style="top:840px;font-size:88px;padding:0 60px">An open lab notebook for<br><em>biology's hardest predictions</em>.</div>
+        <div id="s0-sub" class="abs subline center" style="top:1250px;padding:0 90px">every run published · <b>failures included</b></div>
+        <div id="s0-spec" class="abs center" style="top:1370px"><span class="kicker" style="font-size:24px;color:#8c8c9e">specimen 006 · source → pocket · qollab 2026</span></div>
+      </div>
+
+      <!-- s1 · graph + one control (8–20.8) -->
+      <div id="s1" class="clip" data-start="8" data-duration="12.8" data-track-index="1">
+        <div id="s1-kicker" class="abs center" style="top:220px"><span class="kicker">the question</span></div>
+        <div id="s1-title" class="abs bigtext center" style="top:290px;font-size:78px;padding:0 70px">Does the <em>wiring</em> change<br>what reaches the pocket?</div>
+        <svg id="s1-graph" class="abs wg" style="left:70px;top:560px" width="940" height="620" viewBox="0 0 940 620">
+          <line class="edge" id="s1-e01" x1="180" y1="310" x2="440" y2="500"/>
+          <line class="edge" id="s1-e02" x1="180" y1="310" x2="520" y2="110"/>
+          <line class="edge" id="s1-e12" x1="440" y1="500" x2="520" y2="110"/>
+          <line class="edge" id="s1-e23" x1="520" y1="110" x2="790" y2="310"/>
+          <circle cx="180" cy="310" r="40" fill="#d94f3d"/>
+          <circle cx="440" cy="500" r="28" fill="#9aa0a6"/>
+          <circle cx="520" cy="110" r="28" fill="#a03dd9"/>
+          <circle cx="790" cy="310" r="40" fill="#3d7fd9"/>
+          <text class="key" x="180" y="395" text-anchor="middle">P-loop source</text>
+          <text x="440" y="570" text-anchor="middle">intermediate</text>
+          <text x="520" y="60" text-anchor="middle">intermediate</text>
+          <text class="key" x="790" y="395" text-anchor="middle">known pocket</text>
+          <g id="s1-cutmark" opacity="0"><circle cx="350" cy="210" r="32" fill="#0a0a0f" stroke="#f59e0b" stroke-width="3"/><text x="350" y="221" text-anchor="middle" style="fill:#f59e0b;font-size:32px">✕</text></g>
+        </svg>
+        <div id="s1-list" class="abs subline center" style="top:1220px;padding:0 90px">four supernodes from the <b>KRAS contact core</b> we recorded earlier</div>
+        <div id="s1-control" class="abs center" style="top:1380px"><span class="qchip amber">CONTROL · DELETE ONE EDGE</span></div>
+      </div>
+
+      <!-- s2 · the run (20.8–38.4) -->
+      <div id="s2" class="clip" data-start="20.8" data-duration="17.6" data-track-index="2">
+        <div id="s2-kicker" class="abs center" style="top:200px"><span class="kicker">one 4-qubit circuit · one job</span></div>
+        <div id="s2-frame" class="abs frame" style="left:70px;top:280px;width:940px"><video data-hf-id="hf-widget" id="widget-video" src="assets/qollab-widget.mp4" muted playsinline data-start="21.0" data-duration="16.4"></video></div>
+        <div id="s2-framelabel" class="abs label" style="left:86px;top:296px">LIVE · OBSERVATORY /quantum</div>
+        <div id="s2-backend" class="abs center" style="top:1000px"><span class="kicker" style="font-size:22px;letter-spacing:0.12em;color:#8c8c9e">ionq forte 1 · noise-model simulator · 2048 shots</span></div>
+        <div id="s2-cards" class="abs row" style="left:70px;top:1070px;gap:40px">
+          <div id="s2-rec" class="rcard rec"><div class="rname">RECORDED</div><div class="rnum" id="s2-recnum">0%</div><div class="rdesc">exact 19.1%</div></div>
+          <div id="s2-alt" class="rcard alt"><div class="rname">ONE EDGE OFF</div><div class="rnum" id="s2-altnum">0%</div><div class="rdesc">exact 40.5%</div></div>
+        </div>
+        <div id="s2-sub" class="abs subline center" style="top:1420px;padding:0 90px">P(walker at pocket) · both <b>within a point</b> of exact</div>
+      </div>
+
+      <!-- s3 · versus classical (38.4–47.6) -->
+      <div id="s3" class="clip" data-start="38.4" data-duration="9.2" data-track-index="3">
+        <div id="s3-kicker" class="abs center" style="top:300px"><span class="kicker">versus a classical random walk</span></div>
+        <div id="s3-g1" class="abs bgroup" style="left:110px;top:480px">
+          <div class="gname">RECORDED GRAPH</div>
+          <div class="brow"><span>quantum</span><div class="btrack"><div class="bfill q" style="width:38.3%"></div></div><span class="bval">19%</span></div>
+          <div class="brow"><span>classical</span><div class="btrack"><div class="bfill c" style="width:16%"></div></div><span class="bval">8%</span></div>
+        </div>
+        <div id="s3-g2" class="abs bgroup" style="left:110px;top:760px">
+          <div class="gname">ONE EDGE REMOVED</div>
+          <div class="brow"><span>quantum</span><div class="btrack"><div class="bfill q" style="width:79.1%"></div></div><span class="bval">40%</span></div>
+          <div class="brow"><span>classical</span><div class="btrack"><div class="bfill c" style="width:11.5%"></div></div><span class="bval">6%</span></div>
+        </div>
+        <div id="s3-title" class="abs bigtext center" style="top:1110px;font-size:80px;padding:0 70px">A different dynamic —<br><em>not</em> a better prediction.</div>
+      </div>
+
+      <!-- s4 · what this is not (47.6–57.6) -->
+      <div id="s4" class="clip" data-start="47.6" data-duration="10" data-track-index="4">
+        <div id="s4-kicker" class="abs" style="left:110px;top:330px"><span class="kicker amber">what this is not</span></div>
+        <div class="abs" style="left:110px;top:440px;width:860px">
+          <div class="notrow" id="s4-n1"><span class="nothead">blind</span><span class="notsub">we picked the slice and time knowing where the pocket was</span></div>
+          <div class="notrow" id="s4-n2"><span class="nothead">hardware</span><span class="notsub">a remote noise-model simulator, one run</span></div>
+          <div class="notrow" id="s4-n3"><span class="nothead">quantum advantage</span><span class="notsub">none claimed</span></div>
+        </div>
+        <div id="s4-next" class="abs subline" style="left:110px;top:1330px;width:860px;border-left:3px solid #f59e0b;padding-left:24px">next: a <b>blind panel test</b> — freeze the readouts first, beat classical diffusion and rewired controls, or publish that it doesn't</div>
+      </div>
+
+      <!-- s5 · closer + end card (57.6–65) -->
+      <div id="s5" class="clip" data-start="57.6" data-duration="7.4" data-track-index="5">
+        <div id="s5-receipts" class="abs" style="left:0;width:100%;top:820px;display:flex;flex-direction:column;align-items:center;gap:16px">
+          <div class="receipt"><b>circuit</b> &nbsp;qollab/main.py · runs on Qollab</div>
+          <div class="receipt"><b>record</b> &nbsp;qollab/observed-run.json</div>
+          <div class="receipt amber"><b>limits</b> &nbsp;docs/qollab-hackathon.md</div>
+        </div>
+        <div id="s5-card" class="abs center" style="top:1180px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:28px;color:#8c8c9e;margin-bottom:24px">K Y T O S &nbsp;·&nbsp; S 0 0 6</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:42px;color:#2dd4bf">kytosapp.netlify.app/quantum</div>
+          <div class="bigtext" style="font-size:46px;margin-top:30px;padding:0 80px">someday we'll read a protein's <em>wiring</em><br>before we drug it.</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;color:#78788a;margin-top:28px;letter-spacing:0.14em">QISKIT · IONQ FORTE 1 SIM · QOLLAB 2026</div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-vo0" id="vo0" src="assets/vo-0.mp3" data-start="0.5" data-track-index="10"></audio>
+      <audio data-hf-id="hf-vo3" id="vo3" src="assets/vo-3.mp3" data-start="8.3" data-track-index="11"></audio>
+      <audio data-hf-id="hf-vo5" id="vo5" src="assets/vo-5.mp3" data-start="21.2" data-track-index="12"></audio>
+      <audio data-hf-id="hf-vo6" id="vo6" src="assets/vo-6.mp3" data-start="38.8" data-track-index="13"></audio>
+      <audio data-hf-id="hf-vo7" id="vo7" src="assets/vo-7.mp3" data-start="48.0" data-track-index="14"></audio>
+      <audio data-hf-id="hf-vo9" id="vo9" src="assets/vo-9.mp3" data-start="58.0" data-track-index="15"></audio>
+      <audio data-hf-id="hf-fx1" id="fx1" src="assets/click.mp3" data-start="7.9" data-track-index="20"></audio>
+      <audio data-hf-id="hf-fx2" id="fx2" src="assets/click.mp3" data-start="16.6" data-track-index="21"></audio>
+      <audio data-hf-id="hf-fx3" id="fx3" src="assets/click.mp3" data-start="20.8" data-track-index="22"></audio>
+      <audio data-hf-id="hf-fx4" id="fx4" src="assets/click.mp3" data-start="47.6" data-track-index="23"></audio>
+      <audio data-hf-id="hf-fx5" id="fx5" src="assets/click.mp3" data-start="57.6" data-track-index="24"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      const $ = (id) => document.getElementById(id);
+      const inn = (sel, at, extra) => tl.fromTo(sel, { autoAlpha: 0, y: 26 }, Object.assign({ autoAlpha: 1, y: 0, duration: 0.55, ease: "power3.out" }, extra || {}), at);
+
+      /* anchor: hero (intro) → PiP → hero (closer) */
+      gsap.set("#anchor", { x: 98, y: 160, scale: 1.7 });
+      tl.to("#anchor", { x: 640, y: 1640, scale: 0.62, duration: 0.7, ease: "power3.inOut" }, 7.6);
+      tl.to("#anchor", { x: 202, y: 200, scale: 1.3, duration: 0.8, ease: "power3.inOut" }, 57.5);
+      tl.to("#anchor", { scale: 1.3, duration: 0.01 }, 64.9);
+
+      inn("#s0-kicker", 0.3); inn("#s0-title", 0.7, { y: 40, duration: 0.7 }); inn("#s0-sub", 2.0); inn("#s0-spec", 4.2);
+
+      inn("#s1-kicker", 8.1); inn("#s1-title", 8.4, { duration: 0.7 });
+      tl.fromTo("#s1-graph circle, #s1-graph text", { autoAlpha: 0, scale: 0.6, transformOrigin: "50% 50%" }, { autoAlpha: 1, scale: 1, duration: 0.45, stagger: 0.06, ease: "back.out(1.8)" }, 9.2);
+      tl.fromTo("#s1-graph .edge", { strokeDasharray: 700, strokeDashoffset: 700 }, { strokeDashoffset: 0, duration: 0.8, stagger: 0.2, ease: "power2.out" }, 10.0);
+      inn("#s1-list", 11.0);
+      tl.to("#s1-e02", { duration: 0.01, onStart: () => $("s1-e02").classList.add("cut"), onReverseComplete: () => $("s1-e02").classList.remove("cut") }, 16.6);
+      tl.set("#s1-e02", { strokeDasharray: "14 14", strokeDashoffset: 0 }, 16.6);
+      tl.fromTo("#s1-cutmark", { autoAlpha: 0, scale: 1.6, transformOrigin: "350px 210px" }, { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 16.6);
+      inn("#s1-control", 16.9, { ease: "back.out(1.6)" });
+
+      inn("#s2-kicker", 20.9);
+      tl.fromTo("#s2-frame", { autoAlpha: 0, y: 40, scale: 0.97 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }, 21.0);
+      tl.fromTo("#s2-framelabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 21.6);
+      inn("#s2-backend", 22.6);
+      const recN = { v: 0 }, altN = { v: 0 };
+      inn("#s2-rec", 29.6, { ease: "back.out(1.6)" });
+      tl.to(recN, { v: 19.1, duration: 1.2, ease: "power2.out", onUpdate: () => { $("s2-recnum").textContent = recN.v.toFixed(1) + "%"; } }, 30.0);
+      inn("#s2-alt", 33.1, { ease: "back.out(1.6)" });
+      tl.to(altN, { v: 39.6, duration: 1.2, ease: "power2.out", onUpdate: () => { $("s2-altnum").textContent = altN.v.toFixed(1) + "%"; } }, 33.5);
+      inn("#s2-sub", 35.6);
+
+      inn("#s3-kicker", 38.5); inn("#s3-g1", 39.0); inn("#s3-g2", 39.4);
+      tl.fromTo("#s3-g1 .bfill.q, #s3-g2 .bfill.q", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out" }, 39.6);
+      tl.fromTo("#s3-g1 .bfill.c, #s3-g2 .bfill.c", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out" }, 42.4);
+      inn("#s3-title", 44.6, { duration: 0.7 });
+
+      inn("#s4-kicker", 47.7); inn("#s4-n1", 49.7); inn("#s4-n2", 53.1); inn("#s4-n3", 56.0); inn("#s4-next", 56.6);
+
+      tl.fromTo("#s5-receipts .receipt", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.25, ease: "power2.out" }, 58.2);
+      inn("#s5-card", 60.0, { duration: 0.7 });
+    </script>
+  </body>
+</html>

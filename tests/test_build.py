@@ -131,6 +131,18 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "c008-moth-qpu-tomography" in quantum_html
     assert "c001-ctrw-full-vs-coarse" in quantum_html  # full c-arc present
     assert (dist / "quantum" / "figs" / "fig1_coupling_graphs.png").is_file()
+    # Qollab chapter: separate, dated, data-driven from qollab/observed-run.json.
+    assert 'id="qollab"' in quantum_html
+    assert "data-qlwidget" in quantum_html
+    assert "0.39551" in quantum_html  # altered-graph measured readout
+    assert "0.57341" in quantum_html  # frozen reference sweep, altered t=3.0
+    assert '"times":[0.5,1.0,1.5,2.0,3.0]' in quantum_html.replace(" ", "")
+    assert "planned · blind panel test" in quantum_html
+    assert 'href="#c008"' in quantum_html
+    render_src = (FRONTEND / "observatory" / "render.py").read_text()
+    assert "_expm" not in render_src
+    assert "_qollab_walk_probs" not in render_src
+    assert "reference_sweep" in render_src
     sitemap = (dist / "sitemap.xml").read_text(encoding="utf-8")
     assert "/quantum/" in sitemap
     assert "hk-stability" in html or "housekeeping_shift" in html

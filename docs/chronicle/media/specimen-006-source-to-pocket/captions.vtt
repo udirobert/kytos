@@ -1,0 +1,65 @@
+WEBVTT
+
+1
+00:00:00.620 --> 00:00:04.920
+This is Kytos, an open lab notebook for biology's hardest predictions.
+
+2
+00:00:05.520 --> 00:00:06.500
+Every run, failures included.
+
+3
+00:00:08.420 --> 00:00:11.880
+We took four supernodes from a KRAS contact core we had recorded earlier,
+
+4
+00:00:12.359 --> 00:00:16.140
+the P-loop source, two intermediate nodes, and the known pocket.
+
+5
+00:00:16.740 --> 00:00:19.250
+Then one control, delete a single edge.
+
+6
+00:00:21.280 --> 00:00:27.260
+On IonQ's Forte 1 noise model simulator at two thousand and forty-eight shots,
+
+7
+00:00:27.660 --> 00:00:31.560
+the recorded graph lands on the pocket nineteen percent of the time.
+
+8
+00:00:32.200 --> 00:00:35.500
+With one edge removed, forty percent, both sit within a point of the exact answer.
+
+9
+00:00:38.900 --> 00:00:44.200
+A classical random walk on the same graph reaches the pocket only six to eight percent of the time.
+
+10
+00:00:44.740 --> 00:00:46.780
+A different dynamic, not a better prediction.
+
+11
+00:00:48.120 --> 00:00:49.120
+Here's what this is not.
+
+12
+00:00:49.700 --> 00:00:52.660
+We picked the slice and the time knowing where the pocket was.
+
+13
+00:00:53.060 --> 00:00:56.820
+It's a simulator, not hardware, and we claim no quantum advantage.
+
+14
+00:00:58.120 --> 00:00:59.320
+The circuit runs on Qollab.
+
+15
+00:00:59.480 --> 00:01:00.760
+Every number links to its source.
+
+16
+00:01:00.980 --> 00:01:02.500
+This is Kytos.

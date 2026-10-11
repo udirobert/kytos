@@ -28,9 +28,23 @@
       <span class="q-chip">20 qubits</span>
       <span class="q-chip">{{ shots }} shots</span>
     </div>
+    {% if qollab %}
+    <nav class="q-chapters" aria-label="Chapters">
+      <a class="q-chapter" href="#c008">
+        <span class="q-chapter-num">Chapter 1 · 2026-10-04</span>
+        <span class="q-chapter-title">The shape on real IBM hardware</span>
+        <span class="q-chapter-sub">c008 · Moth graph-v1 · ibm_fez tomography</span>
+      </a>
+      <a class="q-chapter" href="#qollab">
+        <span class="q-chapter-num">Chapter 2 · 2026-10-11 · Qollab</span>
+        <span class="q-chapter-title">Source → pocket: delete one edge</span>
+        <span class="q-chapter-sub">4-qubit Qiskit walk · IonQ Forte 1 simulator</span>
+      </a>
+    </nav>
+    {% endif %}
   </section>
 
-  <section class="panel">
+  <section class="panel" id="c008">
     <header class="panel-header"><h2>The experiment</h2></header>
     <p class="q-text">Protein contact graphs — which residues touch which —
       carry the topology allosteric drug sites live in. From each target's
@@ -241,6 +255,91 @@
       <li>{{ c }}</li>
       {% endfor %}
     </ul>
+  </section>
+  {% endif %}
+
+  {% if qollab %}
+  {% set r = qollab.run %}
+  <section class="panel q-qollab" id="qollab">
+    <header class="panel-header">
+      <div>
+        <p class="eyebrow">Chapter 2 · Qollab hackathon · {{ r.captured_date }}</p>
+        <h2>Source → pocket: delete one edge</h2>
+      </div>
+    </header>
+    <p class="q-text">A signal starts at KRAS's P-loop and walks the contact
+      graph. Does the wiring change what reaches the distant pocket? We took
+      a disclosed four-supernode slice of the KRAS core recorded in
+      chapter 1, ran it as a continuous-time quantum walk, and compared it
+      with the same graph with one edge removed — two independent
+      two-qubit walks in <strong>one four-qubit Qiskit circuit</strong>,
+      one job.</p>
+    <div class="q-badges" aria-label="Evidence types on this chapter">
+      <span class="q-badge q-badge-measured">measured · {{ r.backend }} ({{ r.backend_type.split(',')[0] }})</span>
+      <span class="q-badge q-badge-exact">exact reference · classical computation</span>
+      <a class="q-badge q-badge-prior" href="#c008">earlier hardware · different protocol</a>
+      <span class="q-badge q-badge-planned">planned · blind panel test</span>
+    </div>
+    <div class="ql-widget" data-qlwidget>
+      <script type="application/json" id="ql-data">{{ qollab.widget_json | safe }}</script>
+      <div class="q-widget-controls">
+        <div class="q-seg" role="group" aria-label="Graph">
+          <button class="q-seg-btn is-active" data-qlgraph="recorded" type="button" aria-pressed="true">recorded graph</button>
+          <button class="q-seg-btn" data-qlgraph="altered" type="button" aria-pressed="false">edge ({{ r.deleted_edge_local[0] }},{{ r.deleted_edge_local[1] }}) deleted</button>
+        </div>
+      </div>
+      <div class="ql-stage">
+        <svg class="ql-graph" id="ql-graph" viewBox="0 0 400 250" role="img"
+             aria-label="Four-node KRAS slice: P-loop source to the known pocket, with the control edge that is deleted"></svg>
+        <div class="ql-readout" aria-live="polite">
+          <p class="ql-readout-head">P(walker at pocket) · t = {{ r.time }}</p>
+          <div class="ql-row ql-row-measured">
+            <span class="ql-label">measured<em>{{ r.backend }} sim · {{ r.shots }} shots</em></span>
+            <span class="ql-bar"><span id="ql-bar-measured"></span></span>
+            <span class="ql-val" id="ql-val-measured">—</span>
+          </div>
+          <div class="ql-row ql-row-exact">
+            <span class="ql-label">exact quantum<em>ideal CTQW, L = D − A</em></span>
+            <span class="ql-bar"><span id="ql-bar-exact"></span></span>
+            <span class="ql-val" id="ql-val-exact">—</span>
+          </div>
+          <div class="ql-row ql-row-classical">
+            <span class="ql-label">classical walk<em>CTRW, Q = D⁻¹A − I</em></span>
+            <span class="ql-bar"><span id="ql-bar-classical"></span></span>
+            <span class="ql-val" id="ql-val-classical">—</span>
+          </div>
+        </div>
+      </div>
+      <figure class="ql-chart-fig">
+        <svg class="ql-chart" id="ql-chart" viewBox="0 0 720 230" role="img"
+             aria-label="Pocket probability over time: exact quantum walk and classical walk, with the single measured point at t=2"></svg>
+        <figcaption class="q-widget-caption">Five fixed exact/classical
+          reference times; lines connect samples for reading, not additional
+          measurements. The dot is the one measured time. t = {{ r.time }}
+          was chosen for illustration, not pre-registered.</figcaption>
+      </figure>
+    </div>
+    <ul class="q-caveats ql-caveats">
+      <li>The slice, readout node and time were chosen knowing where the pocket
+        is. This is an explanatory demo, not blind site prediction.</li>
+      <li>{{ r.backend }} here is a remote noise-model simulator, not physical
+        IonQ hardware. It is one run with no confidence interval.</li>
+      <li>The classical walk is a different dynamic, not a weaker predictor.
+        No quantum advantage is claimed.</li>
+      <li>Chapter 1's ibm_fez run used Moth's graph-v1 protocol. It does not
+        validate this circuit.</li>
+    </ul>
+    <p class="q-text ql-next"><strong>The real test:</strong> freeze graph
+      construction, sources, time aggregation and readouts first. Then run
+      every eligible apo protein in a declared panel against classical
+      diffusion, graph distance/degree and rewired or decoy-pocket controls,
+      and report failures. A negative result is still a result.</p>
+    <p class="ql-links">
+      {% if r.project_url %}<a href="{{ r.project_url }}" target="_blank" rel="noopener">Run it on Qollab →</a>{% else %}<span class="muted">Qollab project: draft, link added at publication</span>{% endif %}
+      <a href="{{ repo_blob }}/qollab/main.py" target="_blank" rel="noopener">circuit code</a>
+      <a href="{{ repo_blob }}/qollab/observed-run.json" target="_blank" rel="noopener">observed-run record</a>
+      <a href="{{ repo_blob }}/docs/qollab-hackathon.md" target="_blank" rel="noopener">provenance &amp; limits</a>
+    </p>
   </section>
   {% endif %}
 

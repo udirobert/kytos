@@ -1158,6 +1158,54 @@ def _quantum_graph_widget_data(c008: Path) -> str:
     return json.dumps({"datasets": datasets})
 
 
+_QOLLAB_NODES = [
+    {"label": "P-loop", "role": "source", "residues": "15–21", "x": 125, "y": 125},
+    {
+        "label": "connector",
+        "role": "connector",
+        "residues": "114,115,142–144,151",
+        "x": 215,
+        "y": 205,
+    },
+    {"label": "res 11–14", "role": "sourceknown", "residues": "11–14", "x": 250, "y": 45},
+    {"label": "pocket", "role": "known", "residues": "93–99", "x": 350, "y": 125},
+]
+
+
+def _qollab_chapter(repo_root: Path) -> dict[str, Any] | None:
+    """The Qollab source→pocket chapter, driven by qollab/observed-run.json."""
+    path = repo_root / "qollab" / "observed-run.json"
+    if not path.is_file():
+        return None
+    run = json.loads(path.read_text(encoding="utf-8"))
+    sweep = run["reference_sweep"]
+    times = sweep["times"]
+    graphs: dict[str, Any] = {}
+    for key in ("recorded", "altered"):
+        graphs[key] = {
+            "edges": run[f"{key}_edges_local"],
+            "measured": run[key]["measured"],
+            "exact": run[key]["exact_ideal"],
+            "classical": run[key]["classical_reference"],
+            "curve_q": sweep[key]["exact_ideal"],
+            "curve_c": sweep[key]["classical_reference"],
+        }
+    widget = {
+        "nodes": _QOLLAB_NODES,
+        "times": times,
+        "measured_time": run["time"],
+        "deleted_edge": run["deleted_edge_local"],
+        "graphs": graphs,
+    }
+    return {
+        "run": run,
+        "rec": graphs["recorded"],
+        "alt": graphs["altered"],
+        "nodes": _QOLLAB_NODES,
+        "widget_json": json.dumps(widget, separators=(",", ":")),
+    }
+
+
 def render_quantum(
     runs: list[RunSummary],
     *,
@@ -1258,6 +1306,7 @@ def render_quantum(
         "backend": str(facts.get("backend_qpu") or "ibm_fez"),
         "engine": str(facts.get("engine") or "graph-v1"),
         "shots": str(facts.get("shots") or "1024"),
+        "qollab": _qollab_chapter(cleveland_dir.parent.parent),
     }
     return render_template("quantum.html", **context)
 

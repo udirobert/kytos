@@ -1590,7 +1590,158 @@
     initRunsDensity();
     initHashTargetReveal();
     initQuantumWidget();
+    initQollabWidget();
     initRunsBarsSort();
+  }
+
+  function initQollabWidget() {
+    var root = document.querySelector("[data-qlwidget]");
+    if (!root) {
+      return;
+    }
+    var data;
+    try {
+      data = JSON.parse(root.querySelector("#ql-data").textContent);
+    } catch (err) {
+      return;
+    }
+    var NS = "http://www.w3.org/2000/svg";
+    var graphSvg = root.querySelector("#ql-graph");
+    var chartSvg = root.querySelector("#ql-chart");
+    var ROLE_COLORS = {
+      source: "#d94f3d",
+      known: "#3d7fd9",
+      sourceknown: "#a03dd9",
+      connector: "#9aa0a6",
+    };
+    var del = data.deleted_edge;
+    var state = "recorded";
+
+    function el(name, attrs, parent) {
+      var node = document.createElementNS(NS, name);
+      Object.keys(attrs).forEach(function (k) {
+        node.setAttribute(k, attrs[k]);
+      });
+      parent.appendChild(node);
+      return node;
+    }
+
+    var edgeEls = [];
+    data.graphs.recorded.edges.forEach(function (e) {
+      var a = data.nodes[e[0]];
+      var b = data.nodes[e[1]];
+      var line = el("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: "ql-edge" }, graphSvg);
+      line.isControl = e[0] === del[0] && e[1] === del[1];
+      edgeEls.push(line);
+    });
+    data.nodes.forEach(function (n, i) {
+      el("circle", { cx: n.x, cy: n.y, r: i === 0 || i === 3 ? 11 : 8, fill: ROLE_COLORS[n.role] || "#9aa0a6", stroke: "var(--bg)", "stroke-width": 2 }, graphSvg);
+      var pos = i === 0 ? [n.x - 18, n.y + 4, "end"] : n.y > 100 ? [n.x, n.y + 28, "middle"] : [n.x, n.y - 16, "middle"];
+      var t = el("text", { x: pos[0], y: pos[1], "text-anchor": pos[2], class: "ql-node-label" + (i === 0 || i === 3 ? " is-key" : "") }, graphSvg);
+      t.textContent = i === 0 ? "source · " + n.label : n.label;
+    });
+
+    var W = 720;
+    var H = 230;
+    var L = 34;
+    var R = 12;
+    var T = 12;
+    var B = 26;
+    var tMax = data.times[data.times.length - 1];
+    var yMax = 0.6;
+    function px(t) {
+      return L + (t / tMax) * (W - L - R);
+    }
+    function py(v) {
+      return H - B - (v / yMax) * (H - T - B);
+    }
+    el("line", { x1: L, y1: H - B, x2: W - R, y2: H - B, class: "ql-axis" }, chartSvg);
+    el("line", { x1: L, y1: T, x2: L, y2: H - B, class: "ql-axis" }, chartSvg);
+    [0, 0.2, 0.4, 0.6].forEach(function (v) {
+      var lab = el("text", { x: L - 6, y: py(v) + 3, "text-anchor": "end", class: "ql-axis-label" }, chartSvg);
+      lab.textContent = v.toFixed(1);
+    });
+    [0.5, 1, 1.5, 2, 3].forEach(function (t) {
+      var lab = el("text", { x: px(t), y: H - 8, "text-anchor": "middle", class: "ql-axis-label" }, chartSvg);
+      lab.textContent = "t=" + t;
+    });
+    function pts(curve) {
+      return curve.map(function (v, i) {
+        return px(data.times[i]).toFixed(1) + "," + py(v).toFixed(1);
+      }).join(" ");
+    }
+    var curves = {};
+    ["recorded", "altered"].forEach(function (k) {
+      var cq = data.graphs[k].curve_q;
+      var cc = data.graphs[k].curve_c;
+      var group = { marks: [] };
+      group.q = el("polyline", { points: pts(cq), class: "ql-curve ql-curve-q" }, chartSvg);
+      group.c = el("polyline", { points: pts(cc), class: "ql-curve ql-curve-c" }, chartSvg);
+      data.times.forEach(function (t, i) {
+        group.marks.push(el("circle", { r: 2.5, cx: px(t).toFixed(1), cy: py(cq[i]).toFixed(1), class: "ql-mark ql-mark-q" }, chartSvg));
+        group.marks.push(el("circle", { r: 2.5, cx: px(t).toFixed(1), cy: py(cc[i]).toFixed(1), class: "ql-mark ql-mark-c" }, chartSvg));
+      });
+      curves[k] = group;
+    });
+    var legend = el("text", { x: L + 12, y: T + 10, "text-anchor": "start", class: "ql-axis-label" }, chartSvg);
+    legend.textContent = "— exact quantum   - - classical   ● measured";
+    var dot = el("circle", { r: 6, class: "ql-dot", cx: px(data.measured_time), cy: py(0) }, chartSvg);
+
+    function setVal(key, v) {
+      root.querySelector("#ql-val-" + key).textContent = v.toFixed(3);
+      root.querySelector("#ql-bar-" + key).style.width = Math.min(100, (v / 0.5) * 100).toFixed(1) + "%";
+    }
+
+    function apply() {
+      var g = data.graphs[state];
+      edgeEls.forEach(function (line) {
+        line.classList.toggle("is-deleted", line.isControl && state === "altered");
+      });
+      ["recorded", "altered"].forEach(function (k) {
+        curves[k].q.classList.toggle("is-ghost", k !== state);
+        curves[k].c.classList.toggle("is-ghost", k !== state);
+        curves[k].marks.forEach(function (m) {
+          m.classList.toggle("is-ghost", k !== state);
+        });
+      });
+      dot.setAttribute("cy", py(g.measured).toFixed(1));
+      setVal("measured", g.measured);
+      setVal("exact", g.exact);
+      setVal("classical", g.classical);
+    }
+
+    var touched = false;
+    root.querySelectorAll("[data-qlgraph]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        touched = true;
+        state = btn.getAttribute("data-qlgraph");
+        root.querySelectorAll("[data-qlgraph]").forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+        });
+        apply();
+      });
+    });
+    apply();
+
+    // Self-demo once on first view: delete the edge so the jump is visible.
+    if (!prefersReducedMotion() && typeof IntersectionObserver !== "undefined") {
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) {
+            return;
+          }
+          obs.disconnect();
+          setTimeout(function () {
+            if (!touched) {
+              root.querySelector('[data-qlgraph="altered"]').click();
+              touched = false;
+            }
+          }, 1200);
+        });
+      }, { threshold: 0.5 });
+      obs.observe(root);
+    }
   }
 
   function initQuantumWidget() {

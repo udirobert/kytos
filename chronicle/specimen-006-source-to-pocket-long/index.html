@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0a0a0f; }
+      body { font-family: "Inter", sans-serif; }
+      #root { position: relative; width: 1920px; height: 1080px; background: #0a0a0f; }
+      .clip { position: absolute; inset: 0; }
+      .kicker { font-family: "IBM Plex Mono", monospace; font-size: 24px; letter-spacing: 0.32em; color: #2dd4bf; text-transform: uppercase; }
+      .kicker.amber { color: #f59e0b; }
+      .bigtext { font-family: "Instrument Serif", serif; color: #ebebf2; line-height: 1.08; }
+      .bigtext em { color: #2dd4bf; font-style: italic; }
+      .subline { font-family: "Inter", sans-serif; color: #8c8c9e; font-size: 30px; line-height: 1.35; }
+      .subline b { color: #ebebf2; font-weight: 500; }
+      .abs { position: absolute; }
+      .label { font-family: "IBM Plex Mono", monospace; font-size: 18px; letter-spacing: 0.2em; color: #ebebf2; background: rgba(10, 10, 15, 0.85); padding: 6px 14px; border-radius: 8px; }
+      .frame { border: 1px solid #262634; border-radius: 18px; overflow: hidden; background: #0d0d14; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5); }
+      .frame video, .frame img { display: block; width: 100%; }
+      .qchip { font-family: "IBM Plex Mono", monospace; font-size: 24px; padding: 14px 22px; border: 1px solid #2dd4bf; border-radius: 12px; background: #12121a; color: #2dd4bf; }
+      .qchip.dim { border-color: #262634; color: #8c8c9e; }
+      .qchip.amber { border-color: #f59e0b; color: #f59e0b; }
+      .row { display: flex; gap: 18px; }
+
+      #anchor { position: absolute; left: 0; top: 0; width: 640px; border-radius: 22px; overflow: hidden; border: 2px solid rgba(45, 212, 191, 0.5); box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55); transform-origin: top left; }
+      #anchor video { display: block; width: 100%; height: auto; }
+      #anchor-tag { position: absolute; left: 14px; bottom: 12px; font-family: "IBM Plex Mono", monospace; font-size: 20px; letter-spacing: 0.18em; color: #2dd4bf; background: rgba(10, 10, 15, 0.72); padding: 5px 12px; border-radius: 7px; }
+
+      /* walk graph (shared by s3 + s6) */
+      .wg .edge { stroke: #2dd4bf; stroke-width: 6; stroke-linecap: round; }
+      .wg .edge.cut { stroke: #f59e0b; stroke-dasharray: 14 14; stroke-opacity: 0.8; stroke-width: 4; }
+      .wg text { font-family: "IBM Plex Mono", monospace; font-size: 22px; fill: #8c8c9e; }
+      .wg text.key { fill: #ebebf2; }
+
+      /* circuit */
+      #circ line.wire { stroke: #5c5c70; stroke-width: 2; }
+      #circ text { font-family: "IBM Plex Mono", monospace; fill: #8c8c9e; font-size: 22px; }
+      #circ .gate-rec { fill: rgba(45, 212, 191, 0.12); stroke: #2dd4bf; stroke-width: 2; }
+      #circ .gate-alt { fill: rgba(245, 158, 11, 0.12); stroke: #f59e0b; stroke-width: 2; }
+      #circ .meas { fill: #12121a; stroke: #8c8c9e; stroke-width: 2; }
+      #term { font-family: "IBM Plex Mono", monospace; font-size: 19px; line-height: 1.5; color: #c8c8d6; background: #0d0d14; border: 1px solid #262634; border-radius: 16px; padding: 56px 30px 24px; white-space: pre; }
+      #term .p { color: #2dd4bf; }
+      #term .hi { color: #ebebf2; font-weight: 600; }
+      #term .dim { color: #5c5c70; }
+      #term-bar { position: absolute; left: 0; right: 0; top: 0; height: 38px; border-bottom: 1px solid #262634; display: flex; align-items: center; gap: 8px; padding-left: 16px; }
+      #term-bar i { width: 12px; height: 12px; border-radius: 50%; background: #262634; display: block; }
+
+      /* readout cards */
+      .rcard { width: 520px; border: 1px solid #262634; border-radius: 20px; background: rgba(18, 18, 26, 0.92); padding: 28px 34px; }
+      .rcard .rname { font-family: "IBM Plex Mono", monospace; font-size: 22px; letter-spacing: 0.2em; color: #8c8c9e; }
+      .rcard .rnum { font-family: "IBM Plex Mono", monospace; font-size: 96px; font-weight: 600; line-height: 1.15; margin-top: 22px; }
+      .rcard .rdesc { font-family: "IBM Plex Mono", monospace; font-size: 20px; color: #8c8c9e; margin-top: 12px; }
+      .rcard.rec { border-color: rgba(45, 212, 191, 0.55); }
+      .rcard.rec .rnum { color: #2dd4bf; }
+      .rcard.alt { border-color: rgba(245, 158, 11, 0.55); }
+      .rcard.alt .rnum { color: #f59e0b; }
+
+      /* bars */
+      .bgroup { width: 620px; }
+      .bgroup .gname { font-family: "IBM Plex Mono", monospace; font-size: 24px; letter-spacing: 0.16em; color: #ebebf2; margin-bottom: 22px; }
+      .brow { display: grid; grid-template-columns: 210px 1fr 110px; align-items: center; gap: 18px; margin-bottom: 18px; font-family: "IBM Plex Mono", monospace; font-size: 22px; color: #8c8c9e; }
+      .btrack { height: 28px; background: #1a1a26; border-radius: 999px; overflow: hidden; }
+      .bfill { height: 100%; border-radius: 999px; transform-origin: left center; }
+      .bfill.q { background: #2dd4bf; }
+      .bfill.c { background: #f59e0b; }
+      .bval { text-align: right; color: #ebebf2; font-size: 26px; }
+
+      /* not-list */
+      .notrow { display: flex; align-items: baseline; gap: 30px; margin-bottom: 44px; }
+      .notx { font-family: "IBM Plex Mono", monospace; font-size: 56px; color: #f59e0b; width: 60px; }
+      .nothead { font-family: "Instrument Serif", serif; font-size: 72px; color: #ebebf2; text-decoration: line-through; text-decoration-color: #f59e0b; text-decoration-thickness: 4px; }
+      .notsub { font-family: "Inter", sans-serif; font-size: 28px; color: #8c8c9e; margin-left: 24px; }
+
+      /* steps */
+      .step { width: 350px; border: 1px solid #262634; border-radius: 18px; background: #12121a; padding: 30px 28px; }
+      .step .sn { font-family: "IBM Plex Mono", monospace; font-size: 22px; color: #2dd4bf; letter-spacing: 0.2em; }
+      .step .sh { font-family: "Instrument Serif", serif; font-size: 52px; color: #ebebf2; margin-top: 10px; }
+      .step .sd { font-family: "Inter", sans-serif; font-size: 23px; color: #8c8c9e; margin-top: 10px; line-height: 1.35; }
+      .step.last { border-color: rgba(245, 158, 11, 0.6); }
+      .step.last .sn { color: #f59e0b; }
+      .arrow { font-family: "IBM Plex Mono", monospace; font-size: 40px; color: #5c5c70; align-self: center; }
+
+      .receipt { font-family: "IBM Plex Mono", monospace; font-size: 22px; color: #8c8c9e; border: 1px solid #262634; border-radius: 10px; background: #12121a; padding: 12px 22px; letter-spacing: 0.06em; }
+      .receipt b { color: #2dd4bf; font-weight: 600; }
+      .receipt.amber b { color: #f59e0b; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="123" data-width="1920" data-height="1080">
+      <div id="anchor" data-layout-allow-overflow>
+        <video data-hf-id="hf-anchor" id="anchor-video" src="assets/anchor.mp4" muted playsinline data-start="0" data-duration="123"></video>
+        <div id="anchor-tag">DR. KYTOS</div>
+      </div>
+
+      <!-- s0 · intro (0–8) -->
+      <div id="s0" class="clip" data-start="0" data-duration="8" data-track-index="0">
+        <div id="s0-kicker" class="abs" style="left:0;width:100%;top:520px;text-align:center"><span class="kicker">this is kytos</span></div>
+        <div id="s0-title" class="abs bigtext" style="left:0;width:100%;top:580px;text-align:center;font-size:96px">An open lab notebook for<br><em>biology's hardest predictions</em>.</div>
+        <div id="s0-sub" class="abs subline" style="left:0;width:100%;top:870px;text-align:center">every run published · <b>failures included</b></div>
+        <div id="s0-spec" class="abs" style="left:0;width:100%;top:950px;text-align:center"><span class="kicker" style="font-size:20px;color:#8c8c9e">specimen 006 · source → pocket · qollab 2026</span></div>
+      </div>
+
+      <!-- s1 · allostery (8–19.4) -->
+      <div id="s1" class="clip" data-start="8" data-duration="11.4" data-track-index="1">
+        <div id="s1-kicker" class="abs" style="left:120px;top:150px"><span class="kicker">allostery</span></div>
+        <div id="s1-title" class="abs bigtext" style="left:120px;top:210px;font-size:88px">A signal at one site<br>reshapes a pocket <em>far away</em>.</div>
+        <svg id="s1-svg" class="abs" style="left:120px;top:470px" width="1100" height="380" viewBox="0 0 1100 380">
+          <path d="M60 190 C 260 40, 520 340, 760 120 S 1000 190, 1040 190" fill="none" stroke="#262634" stroke-width="4" stroke-dasharray="6 12"/>
+          <circle id="s1-site" cx="60" cy="190" r="34" fill="#d94f3d"/>
+          <circle id="s1-ring" cx="60" cy="190" r="34" fill="none" stroke="#d94f3d" stroke-width="4"/>
+          <circle id="s1-pocket" cx="1040" cy="190" r="34" fill="#3d7fd9"/>
+          <circle id="s1-pring" cx="1040" cy="190" r="34" fill="none" stroke="#3d7fd9" stroke-width="4"/>
+          <circle id="s1-dot" cx="60" cy="190" r="12" fill="#2dd4bf"/>
+          <text x="60" y="270" text-anchor="middle" font-family="IBM Plex Mono" font-size="22" fill="#ebebf2">signal</text>
+          <text x="1074" y="270" text-anchor="end" font-family="IBM Plex Mono" font-size="22" fill="#ebebf2">distant pocket</text>
+        </svg>
+        <div id="s1-stamp" class="abs" style="left:120px;top:880px;font-family:'IBM Plex Mono',monospace;font-size:40px;font-weight:600;letter-spacing:0.14em;color:#f59e0b;border:3px solid #f59e0b;border-radius:12px;padding:10px 26px;transform:rotate(-2deg);background:rgba(245,158,11,0.06)">KRAS · ONCE "UNDRUGGABLE"</div>
+        <div id="s1-sub" class="abs subline" style="left:120px;top:980px">cracked through a pocket <b>away from the active site</b></div>
+      </div>
+
+      <!-- s2 · the question (19.4–29) -->
+      <div id="s2" class="clip" data-start="19.4" data-duration="9.6" data-track-index="2">
+        <div id="s2-kicker" class="abs" style="left:120px;top:170px"><span class="kicker">the question</span></div>
+        <div id="s2-title" class="abs bigtext" style="left:120px;top:230px;font-size:84px">Does the <em>wiring</em><br>change what arrives<br>at the pocket?</div>
+        <div id="s2-sub" class="abs subline" style="left:120px;top:600px;width:640px">start a walker at the active site · let it spread across <b>which residues touch which</b></div>
+        <div id="s2-fig" class="abs frame" style="left:860px;top:170px;width:940px"><img src="assets/fig1_coupling_graphs.png" alt="KRAS contact graph"></div>
+        <div id="s2-figlabel" class="abs label" style="left:860px;top:110px;color:#2dd4bf">KRAS G12C · CONTACT CORE · RECORDED OCT 4 (C008)</div>
+      </div>
+
+      <!-- s3 · graph + one control (29–42) -->
+      <div id="s3" class="clip" data-start="29" data-duration="13" data-track-index="3">
+        <div id="s3-kicker" class="abs" style="left:120px;top:140px"><span class="kicker">four supernodes · one control</span></div>
+        <div id="s3-title" class="abs bigtext" style="left:120px;top:200px;font-size:80px">Same slice.<br><em>Delete one edge.</em></div>
+        <svg id="s3-graph" class="abs wg" style="left:860px;top:150px" width="940" height="620" viewBox="0 0 940 620">
+          <line class="edge" id="s3-e01" x1="230" y1="310" x2="470" y2="500"/>
+          <line class="edge" id="s3-e02" x1="230" y1="310" x2="540" y2="110"/>
+          <line class="edge" id="s3-e12" x1="470" y1="500" x2="540" y2="110"/>
+          <line class="edge" id="s3-e23" x1="540" y1="110" x2="800" y2="310"/>
+          <circle cx="230" cy="310" r="38" fill="#d94f3d"/>
+          <circle cx="470" cy="500" r="26" fill="#9aa0a6"/>
+          <circle cx="540" cy="110" r="26" fill="#a03dd9"/>
+          <circle cx="800" cy="310" r="38" fill="#3d7fd9"/>
+          <text class="key" x="230" y="390" text-anchor="middle">P-loop source</text>
+          <text x="230" y="420" text-anchor="middle">res 15–21</text>
+          <text x="470" y="565" text-anchor="middle">intermediate</text>
+          <text x="540" y="60" text-anchor="middle">intermediate</text>
+          <text class="key" x="800" y="390" text-anchor="middle">known pocket</text>
+          <text x="800" y="420" text-anchor="middle">res 93–99</text>
+          <g id="s3-cutmark" opacity="0"><circle cx="385" cy="210" r="30" fill="#0a0a0f" stroke="#f59e0b" stroke-width="3"/><text x="385" y="220" text-anchor="middle" style="fill:#f59e0b;font-size:30px">✕</text></g>
+        </svg>
+        <div id="s3-list" class="abs subline" style="left:120px;top:480px;width:660px">from the <b>20-node KRAS contact core</b> recorded earlier: the P-loop source, two intermediates, the known pocket.</div>
+        <div id="s3-control" class="abs" style="left:120px;top:700px"><span class="qchip amber">CONTROL · EDGE (0,2) DELETED</span></div>
+        <div id="s3-note" class="abs subline" style="left:120px;top:800px;font-size:24px;color:#5c5c70">slice and readout chosen by us, disclosed — not blind</div>
+      </div>
+
+      <!-- s4 · one circuit + terminal capture (42–56) -->
+      <div id="s4" class="clip" data-start="42" data-duration="14" data-track-index="4">
+        <div id="s4-kicker" class="abs" style="left:120px;top:120px"><span class="kicker">one circuit · one job</span></div>
+        <div id="s4-title" class="abs bigtext" style="left:120px;top:180px;font-size:76px">Both graphs.<br><em>Four qubits.</em></div>
+        <svg id="circ" class="abs" style="left:120px;top:440px" width="760" height="420" viewBox="0 0 760 420">
+          <g id="circ-wires">
+            <line class="wire" x1="90" y1="60" x2="720" y2="60"/><line class="wire" x1="90" y1="150" x2="720" y2="150"/>
+            <line class="wire" x1="90" y1="270" x2="720" y2="270"/><line class="wire" x1="90" y1="360" x2="720" y2="360"/>
+            <text x="0" y="68">q0</text><text x="0" y="158">q1</text><text x="0" y="278">q2</text><text x="0" y="368">q3</text>
+          </g>
+          <g id="circ-rec"><rect class="gate-rec" x="170" y="25" width="300" height="160" rx="12"/><text x="320" y="100" text-anchor="middle" style="fill:#2dd4bf;font-size:28px">e^(−iL·t)</text><text x="320" y="140" text-anchor="middle" style="fill:#2dd4bf">recorded graph</text></g>
+          <g id="circ-alt"><rect class="gate-alt" x="170" y="235" width="300" height="160" rx="12"/><text x="320" y="310" text-anchor="middle" style="fill:#f59e0b;font-size:28px">e^(−iL′·t)</text><text x="320" y="350" text-anchor="middle" style="fill:#f59e0b">edge (0,2) deleted</text></g>
+          <g id="circ-meas"><rect class="meas" x="560" y="35" width="60" height="50" rx="6"/><rect class="meas" x="560" y="125" width="60" height="50" rx="6"/><rect class="meas" x="560" y="245" width="60" height="50" rx="6"/><rect class="meas" x="560" y="335" width="60" height="50" rx="6"/>
+            <text x="590" y="69" text-anchor="middle">M</text><text x="590" y="159" text-anchor="middle">M</text><text x="590" y="279" text-anchor="middle">M</text><text x="590" y="369" text-anchor="middle">M</text></g>
+        </svg>
+        <div id="s4-chips" class="abs row" style="left:120px;top:900px"><span class="qchip">4 QUBITS</span><span class="qchip">1 JOB</span><span class="qchip dim">2 INDEPENDENT WALKS</span></div>
+        <div id="term" class="abs" style="left:960px;top:150px;width:860px;height:740px"><div id="term-bar"><i></i><i></i><i></i></div><div id="term-body"></div></div>
+        <div id="s4-termlabel" class="abs label" style="left:960px;top:100px">SCREEN · qollab/main.py · LOCAL IDEAL SIMULATOR</div>
+      </div>
+
+      <!-- s5 · the run: live Observatory capture + readouts (56–74) -->
+      <div id="s5" class="clip" data-start="56" data-duration="18" data-track-index="5">
+        <div id="s5-kicker" class="abs" style="left:100px;top:70px"><span class="kicker">the run</span></div>
+        <div id="s5-frame" class="abs frame" style="left:100px;top:130px;width:1100px"><video data-hf-id="hf-widget" id="widget-video" src="assets/qollab-widget.mp4" muted playsinline data-start="56.4" data-duration="16.4"></video></div>
+        <div id="s5-framelabel" class="abs label" style="left:116px;top:146px">LIVE · OBSERVATORY /quantum · CHAPTER 2</div>
+        <div id="s5-backend" class="abs" style="left:1280px;top:130px;width:540px"><span class="kicker" style="font-size:20px;color:#8c8c9e">ionq forte 1 · noise-model simulator · 2048 shots</span></div>
+        <div id="s5-rec" class="abs rcard rec" style="left:1280px;top:230px"><div class="rname">RECORDED GRAPH</div><div class="rnum" id="s5-recnum">0%</div><div class="rdesc">exact answer 19.1%</div></div>
+        <div id="s5-alt" class="abs rcard alt" style="left:1280px;top:530px"><div class="rname">ONE EDGE REMOVED</div><div class="rnum" id="s5-altnum">0%</div><div class="rdesc">exact answer 40.5%</div></div>
+        <div id="s5-sub" class="abs subline" style="left:1280px;top:850px;width:560px;font-size:26px">P(walker at pocket) at t = 2 · values from <b>observed-run.json</b></div>
+      </div>
+
+      <!-- s6 · versus classical (74–83.5) -->
+      <div id="s6" class="clip" data-start="74" data-duration="9.5" data-track-index="6">
+        <div id="s6-kicker" class="abs" style="left:120px;top:150px"><span class="kicker">versus a classical random walk</span></div>
+        <div id="s6-title" class="abs bigtext" style="left:120px;top:210px;font-size:84px">A different dynamic —<br><em>not</em> a better prediction.</div>
+        <div id="s6-g1" class="abs bgroup" style="left:120px;top:560px">
+          <div class="gname">RECORDED GRAPH</div>
+          <div class="brow"><span>quantum walk</span><div class="btrack"><div class="bfill q" style="width:38.3%"></div></div><span class="bval">19%</span></div>
+          <div class="brow"><span>classical walk</span><div class="btrack"><div class="bfill c" style="width:16%"></div></div><span class="bval">8%</span></div>
+        </div>
+        <div id="s6-g2" class="abs bgroup" style="left:1000px;top:560px">
+          <div class="gname">ONE EDGE REMOVED</div>
+          <div class="brow"><span>quantum walk</span><div class="btrack"><div class="bfill q" style="width:79.1%"></div></div><span class="bval">40%</span></div>
+          <div class="brow"><span>classical walk</span><div class="btrack"><div class="bfill c" style="width:11.5%"></div></div><span class="bval">6%</span></div>
+        </div>
+        <div id="s6-sub" class="abs subline" style="left:120px;top:830px;font-size:26px">quantum: measured on the IonQ Forte 1 simulator · classical: exact reference, same graphs, same t</div>
+      </div>
+
+      <!-- s7 · what this is not (83.5–93.5) -->
+      <div id="s7" class="clip" data-start="83.5" data-duration="10" data-track-index="7">
+        <div id="s7-kicker" class="abs" style="left:160px;top:170px"><span class="kicker amber">what this is not</span></div>
+        <div class="abs" style="left:160px;top:270px">
+          <div class="notrow" id="s7-n1"><span class="notx">✕</span><span class="nothead">blind</span><span class="notsub">we picked the slice and the time knowing where the pocket was</span></div>
+          <div class="notrow" id="s7-n2"><span class="notx">✕</span><span class="nothead">hardware</span><span class="notsub">a remote noise-model simulator, one run</span></div>
+          <div class="notrow" id="s7-n3"><span class="notx">✕</span><span class="nothead">quantum advantage</span><span class="notsub">none claimed</span></div>
+        </div>
+        <div id="s7-sub" class="abs subline" style="left:160px;top:820px;font-size:26px">chapter 1's real-hardware run (ibm_fez) was a different protocol — it doesn't validate this circuit</div>
+      </div>
+
+      <!-- s8 · the real test (93.5–106.8) -->
+      <div id="s8" class="clip" data-start="93.5" data-duration="13.3" data-track-index="8">
+        <div id="s8-kicker" class="abs" style="left:120px;top:140px"><span class="kicker">the real test is blind</span></div>
+        <div id="s8-title" class="abs bigtext" style="left:120px;top:200px;font-size:80px">Beat the baselines —<br><em>or publish that it doesn't.</em></div>
+        <div id="s8-steps" class="abs row" style="left:120px;top:520px;gap:22px">
+          <div class="step"><div class="sn">01</div><div class="sh">Freeze</div><div class="sd">graphs, sources, time window and readouts — before any run</div></div>
+          <div class="arrow">→</div>
+          <div class="step"><div class="sn">02</div><div class="sh">Run all</div><div class="sd">every eligible protein in a declared panel</div></div>
+          <div class="arrow">→</div>
+          <div class="step"><div class="sn">03</div><div class="sh">Compare</div><div class="sd">classical diffusion · rewired graphs · decoy pockets</div></div>
+          <div class="arrow">→</div>
+          <div class="step last"><div class="sn">04</div><div class="sh">Publish</div><div class="sd">either way — a negative result is still a result</div></div>
+        </div>
+      </div>
+
+      <!-- s9 · closer + end card (106.8–116) -->
+      <div id="s9" class="clip" data-start="106.8" data-duration="16.2" data-track-index="9">
+        <div id="s9-receipts" class="abs" style="left:1060px;top:170px;display:flex;flex-direction:column;gap:16px">
+          <div class="receipt"><b>circuit</b> &nbsp;qollab/main.py · runs on Qollab</div>
+          <div class="receipt"><b>record</b> &nbsp;qollab/observed-run.json</div>
+          <div class="receipt amber"><b>limits</b> &nbsp;docs/qollab-hackathon.md</div>
+        </div>
+        <div id="s9-card" class="abs" style="left:0;width:100%;top:640px;text-align:center">
+          <div id="s9-src" style="font-family:'IBM Plex Mono',monospace;font-size:24px;color:#8c8c9e;margin-bottom:20px">K Y T O S &nbsp;·&nbsp; S 0 0 6</div>
+          <div id="s9-url" style="font-family:'IBM Plex Mono',monospace;font-size:44px;color:#2dd4bf">kytosapp.netlify.app/quantum</div>
+          <div id="s9-tag" class="bigtext" style="font-size:44px;margin-top:26px">someday we'll read a protein's <em>wiring</em> before we drug it.</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;color:#78788a;margin-top:26px;letter-spacing:0.14em">QISKIT · IONQ FORTE 1 SIMULATOR · QOLLAB 2026</div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-vo0" id="vo0" src="assets/vo-0.mp3" data-start="0.5" data-track-index="10"></audio>
+      <audio data-hf-id="hf-vo1" id="vo1" src="assets/vo-1.mp3" data-start="8.4" data-track-index="11"></audio>
+      <audio data-hf-id="hf-vo2" id="vo2" src="assets/vo-2.mp3" data-start="19.8" data-track-index="12"></audio>
+      <audio data-hf-id="hf-vo3" id="vo3" src="assets/vo-3.mp3" data-start="29.4" data-track-index="13"></audio>
+      <audio data-hf-id="hf-vo4" id="vo4" src="assets/vo-4.mp3" data-start="42.4" data-track-index="14"></audio>
+      <audio data-hf-id="hf-vo5" id="vo5" src="assets/vo-5.mp3" data-start="56.4" data-track-index="15"></audio>
+      <audio data-hf-id="hf-vo6" id="vo6" src="assets/vo-6.mp3" data-start="74.4" data-track-index="16"></audio>
+      <audio data-hf-id="hf-vo7" id="vo7" src="assets/vo-7.mp3" data-start="83.8" data-track-index="17"></audio>
+      <audio data-hf-id="hf-vo8" id="vo8" src="assets/vo-8.mp3" data-start="93.8" data-track-index="18"></audio>
+      <audio data-hf-id="hf-vo9" id="vo9" src="assets/vo-9.mp3" data-start="107.2" data-track-index="19"></audio>
+      <audio data-hf-id="hf-fx1" id="fx1" src="assets/click.mp3" data-start="7.9" data-track-index="20"></audio>
+      <audio data-hf-id="hf-fx2" id="fx2" src="assets/click.mp3" data-start="19.3" data-track-index="21"></audio>
+      <audio data-hf-id="hf-fx3" id="fx3" src="assets/click.mp3" data-start="37.9" data-track-index="22"></audio>
+      <audio data-hf-id="hf-fx4" id="fx4" src="assets/click.mp3" data-start="56.0" data-track-index="23"></audio>
+      <audio data-hf-id="hf-fx5" id="fx5" src="assets/click.mp3" data-start="83.5" data-track-index="24"></audio>
+      <audio data-hf-id="hf-fx6" id="fx6" src="assets/click.mp3" data-start="106.8" data-track-index="25"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      const $ = (id) => document.getElementById(id);
+      const inn = (sel, at, extra) => tl.fromTo(sel, { autoAlpha: 0, y: 26 }, Object.assign({ autoAlpha: 1, y: 0, duration: 0.55, ease: "power3.out" }, extra || {}), at);
+
+      /* anchor: hero (intro) → PiP → off for the screen capture → PiP → hero (closer) */
+      gsap.set("#anchor", { x: 640, y: 90, scale: 1 });
+      tl.to("#anchor", { x: 1540, y: 860, scale: 0.52, duration: 0.7, ease: "power3.inOut" }, 7.6);
+      tl.to("#anchor", { x: 1960, duration: 0.5, ease: "power3.in" }, 55.6);
+      tl.to("#anchor", { x: 1540, duration: 0.5, ease: "power3.out" }, 74.1);
+      tl.to("#anchor", { x: 160, y: 150, scale: 1.25, duration: 0.8, ease: "power3.inOut" }, 106.7);
+      tl.to("#anchor", { scale: 1.25, duration: 0.01 }, 115.9);
+
+      /* s0 */
+      inn("#s0-kicker", 0.3); inn("#s0-title", 0.7, { y: 40, duration: 0.7 }); inn("#s0-sub", 2.0); inn("#s0-spec", 4.2);
+
+      /* s1 */
+      inn("#s1-kicker", 8.1); inn("#s1-title", 8.4, { duration: 0.7 });
+      tl.fromTo("#s1-svg", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 9.4);
+      tl.fromTo("#s1-ring", { attr: { r: 34 }, opacity: 1 }, { attr: { r: 90 }, opacity: 0, duration: 1.1, repeat: 2, ease: "power2.out" }, 9.8);
+      const s1p = { t: 0 };
+      const s1path = document.querySelector("#s1-svg path");
+      const s1len = s1path.getTotalLength();
+      tl.to(s1p, { t: 1, duration: 2.6, ease: "power1.inOut", onUpdate: () => {
+        const pt = s1path.getPointAtLength(s1p.t * s1len);
+        $("s1-dot").setAttribute("cx", pt.x); $("s1-dot").setAttribute("cy", pt.y);
+      } }, 10.4);
+      tl.fromTo("#s1-pring", { attr: { r: 34 }, opacity: 1 }, { attr: { r: 90 }, opacity: 0, duration: 1.1, repeat: 2, ease: "power2.out" }, 13.0);
+      tl.fromTo("#s1-stamp", { autoAlpha: 0, scale: 1.4 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "back.out(2)" }, 15.2);
+      inn("#s1-sub", 16.0);
+
+      /* s2 */
+      inn("#s2-kicker", 19.5); inn("#s2-title", 19.8, { duration: 0.7 });
+      tl.fromTo("#s2-fig", { autoAlpha: 0, x: 60 }, { autoAlpha: 1, x: 0, duration: 0.7, ease: "power3.out" }, 20.6);
+      tl.fromTo("#s2-figlabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 21.2);
+      inn("#s2-sub", 23.6);
+
+      /* s3 */
+      inn("#s3-kicker", 29.1); inn("#s3-title", 29.4, { duration: 0.7 });
+      tl.fromTo("#s3-graph circle, #s3-graph text", { autoAlpha: 0, scale: 0.6, transformOrigin: "50% 50%" }, { autoAlpha: 1, scale: 1, duration: 0.45, stagger: 0.06, ease: "back.out(1.8)" }, 30.0);
+      tl.fromTo("#s3-graph .edge", { strokeDasharray: 700, strokeDashoffset: 700 }, { strokeDashoffset: 0, duration: 0.8, stagger: 0.2, ease: "power2.out" }, 30.8);
+      inn("#s3-list", 31.5);
+      tl.to("#s3-e02", { duration: 0.01, onStart: () => $("s3-e02").classList.add("cut"), onReverseComplete: () => $("s3-e02").classList.remove("cut") }, 38.0);
+      tl.set("#s3-e02", { strokeDasharray: "14 14", strokeDashoffset: 0 }, 38.0);
+      tl.fromTo("#s3-cutmark", { autoAlpha: 0, scale: 1.6, transformOrigin: "385px 210px" }, { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 38.0);
+      inn("#s3-control", 38.3, { ease: "back.out(1.6)" });
+      inn("#s3-note", 40.0);
+
+      /* s4 */
+      inn("#s4-kicker", 42.1); inn("#s4-title", 42.4, { duration: 0.7 });
+      tl.fromTo("#circ-wires", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 43.2);
+      tl.fromTo("#circ-rec", { autoAlpha: 0, x: -30 }, { autoAlpha: 1, x: 0, duration: 0.5, ease: "power3.out" }, 43.8);
+      tl.fromTo("#circ-alt", { autoAlpha: 0, x: -30 }, { autoAlpha: 1, x: 0, duration: 0.5, ease: "power3.out" }, 44.4);
+      tl.fromTo("#circ-meas", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 45.4);
+      tl.fromTo("#s4-chips .qchip", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.18, ease: "back.out(1.6)" }, 46.6);
+      tl.fromTo("#term", { autoAlpha: 0, x: 60 }, { autoAlpha: 1, x: 0, duration: 0.6, ease: "power3.out" }, 47.2);
+      tl.fromTo("#s4-termlabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 47.6);
+      const termLines = [
+        ['p', '$ python main.py'],
+        ['dim', 'Provenance: induced 4-supernode slice of the 20-node'],
+        ['dim', 'KRAS G12C contact core (c008) — pre-hackathon analysis'],
+        ['', 'Edges recorded: [(0,1), (0,2), (1,2), (2,3)]'],
+        ['', '      altered:  [(0,1), (1,2), (2,3)]'],
+        ['', ''],
+        ['dim', 'Reference sweep (exact, not measurements):'],
+        ['', '   t | rec ideal rec class | alt ideal alt class'],
+        ['', ' 0.5 |   0.01302   0.01395 |   0.00040   0.00321'],
+        ['', ' 1.0 |   0.11827   0.03851 |   0.01948   0.01631'],
+        ['', ' 1.5 |   0.22048   0.06156 |   0.14051   0.03605'],
+        ['hi', ' 2.0 |   0.19051   0.07991 |   0.40502   0.05758'],
+        ['', ' 3.0 |   0.43133   0.10325 |   0.57341   0.09558'],
+        ['', ''],
+        ['', 'Measured at t=2.0 (one job, 4q, 2048 shots):'],
+        ['hi', '  recorded: measured 0.20068 vs exact 0.19051'],
+        ['hi', '  altered : measured 0.40967 vs exact 0.40502'],
+        ['dim', 'Caveats: pedagogical slice · no quantum advantage'],
+      ];
+      const body = $("term-body");
+      termLines.forEach(([cls, txt], i) => {
+        const d = document.createElement("div");
+        d.className = cls; d.textContent = txt || " ";
+        body.appendChild(d);
+        tl.fromTo(d, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.05 }, 48.0 + (i === 0 ? 0 : 0.6 + i * 0.36));
+      });
+
+      /* s5 */
+      inn("#s5-kicker", 56.1);
+      tl.fromTo("#s5-frame", { autoAlpha: 0, y: 40, scale: 0.97 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }, 56.2);
+      tl.fromTo("#s5-framelabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4 }, 56.8);
+      inn("#s5-backend", 57.2);
+      inn("#s5-rec", 64.4, { ease: "back.out(1.6)" });
+      const recN = { v: 0 }, altN = { v: 0 };
+      tl.to(recN, { v: 19.1, duration: 1.2, ease: "power2.out", onUpdate: () => { $("s5-recnum").textContent = recN.v.toFixed(1) + "%"; } }, 64.8);
+      inn("#s5-alt", 68.2, { ease: "back.out(1.6)" });
+      tl.to(altN, { v: 39.6, duration: 1.2, ease: "power2.out", onUpdate: () => { $("s5-altnum").textContent = altN.v.toFixed(1) + "%"; } }, 68.6);
+      inn("#s5-sub", 70.6);
+      tl.to("#s5-frame, #s5-framelabel", { autoAlpha: 0, duration: 0.4 }, 72.4);
+
+      /* s6 */
+      inn("#s6-kicker", 74.1); inn("#s6-title", 79.6, { duration: 0.7 });
+      inn("#s6-g1", 74.8); inn("#s6-g2", 75.2);
+      tl.fromTo("#s6-g1 .bfill.q, #s6-g2 .bfill.q", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out" }, 75.4);
+      tl.fromTo("#s6-g1 .bfill.c, #s6-g2 .bfill.c", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out" }, 78.1);
+      inn("#s6-sub", 81.0);
+
+      /* s7 */
+      inn("#s7-kicker", 83.6);
+      inn("#s7-n1", 85.6); inn("#s7-n2", 88.4); inn("#s7-n3", 90.2);
+      inn("#s7-sub", 91.4);
+
+      /* s8 */
+      inn("#s8-kicker", 93.6); inn("#s8-title", 93.9, { duration: 0.7 });
+      const steps = document.querySelectorAll("#s8-steps > *");
+      [95.6, 97.5, 97.7, 100.8, 101.0, 104.2, 104.4].forEach((at, i) => inn(steps[i], at, { y: 30, duration: 0.45 }));
+
+      /* s9 */
+      tl.fromTo("#s9-receipts .receipt", { autoAlpha: 0, x: 30 }, { autoAlpha: 1, x: 0, duration: 0.4, stagger: 0.3, ease: "power2.out" }, 107.6);
+      inn("#s9-card", 110.6, { duration: 0.7 });
+    </script>
+  </body>
+</html>

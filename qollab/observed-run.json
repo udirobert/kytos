@@ -25,5 +25,16 @@
     "exact_ideal": 0.40502,
     "classical_reference": 0.05758
   },
+  "reference_sweep": {
+    "times": [0.5, 1.0, 1.5, 2.0, 3.0],
+    "recorded": {
+      "exact_ideal": [0.01302, 0.11827, 0.22048, 0.19051, 0.43133],
+      "classical_reference": [0.01395, 0.03851, 0.06156, 0.07991, 0.10325]
+    },
+    "altered": {
+      "exact_ideal": [0.00040, 0.01948, 0.14051, 0.40502, 0.57341],
+      "classical_reference": [0.00321, 0.01631, 0.03605, 0.05758, 0.09558]
+    }
+  },
   "interpretation": "Illustrative, selected four-node graph and t=2; not blinded or a biological site-recovery test"
 }

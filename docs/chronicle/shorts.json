@@ -2,6 +2,46 @@
   "series": "VCC 2026 Chronicle",
   "shorts": [
     {
+      "slug": "specimen-006-source-to-pocket",
+      "title": "Does the wiring change what reaches the pocket?",
+      "hook": "Delete one edge from a KRAS contact graph and a quantum walk reaches the drug pocket twice as often. That's a different dynamic, not a better prediction, and we say exactly what it isn't.",
+      "published": "2026-10-11",
+      "series": "Qollab 2026 · Quantum Chronicle",
+      "plain_words": "Allostery is when a signal at one site of a protein reshapes a pocket far away. It's how KRAS, once called undruggable, was finally drugged. We took four supernodes from the KRAS contact core we recorded earlier: the P-loop source, two intermediates and the known pocket. Then we added one control, the same graph with a single edge deleted. One four-qubit Qiskit circuit runs both quantum walks in a single job. On IonQ's Forte 1 noise-model simulator (2,048 shots), the walker reached the pocket 19% of the time on the recorded graph and 40% with the edge removed. Both are within a point of the exact answer. A classical random walk on the same graphs reaches it only 6–8% of the time. That's a different dynamic, not a better prediction. We picked the slice and the time knowing where the pocket was, it's a simulator rather than hardware, and we claim no quantum advantage. The real test is blind: freeze the readouts first, run a declared protein panel against classical and rewired controls, and publish the result either way.",
+      "terms": [
+        "allostery",
+        "quantum walk",
+        "control"
+      ],
+      "sources": [
+        {
+          "label": "Interactive exhibit — /quantum/ Chapter 2 on the Observatory",
+          "who": "Kytos Observatory",
+          "id": "quantum#qollab",
+          "url": "https://kytosapp.netlify.app/quantum/#qollab"
+        },
+        {
+          "label": "Qollab circuit, observed-run record and evidence limits",
+          "who": "Kytos / Qollab 2026",
+          "id": "qollab",
+          "url": "https://github.com/udirobert/kytos/blob/main/docs/qollab-hackathon.md"
+        },
+        {
+          "label": "Qollab — hosted Qiskit projects with IonQ access",
+          "who": "Qollab",
+          "id": "qollab.xyz",
+          "url": "https://qollab.xyz"
+        }
+      ],
+      "deep": "An induced four-supernode slice of the c008 20-node KRAS G12C core (local order [0,3,11,8]; edges (0,1),(0,2),(1,2),(2,3); source = P-loop, readout = pocket 93–99) and a control with (0,2) deleted. Each graph is a Laplacian CTQW U = exp(−iLt) on two qubits. Both run as independent HamiltonianGates in one four-qubit circuit, measured at t = 2.0 in a single job. IonQ Forte 1 noise-model simulator, 2048 shots: recorded 0.191 (exact 0.191, classical CTRW 0.080); altered 0.396 (exact 0.405, classical 0.058). The values are a user-shared console capture with no public job receipt (qollab/observed-run.json). The slice, readout and time were not pre-registered, the result is one simulator run with no CI, and no quantum advantage is claimed. The c008 Moth graph-v1 hardware run was a different protocol. Next: a frozen, blind panel benchmark against classical diffusion, graph distance/degree and rewired/decoy-pocket nulls.",
+      "media": {
+        "video": "https://api.grove.storage/14c32a7a061e7f0b16a1c42c174ab348e71cb002c2cba7ad8f6f509252340737",
+        "video_uri": "lens://14c32a7a061e7f0b16a1c42c174ab348e71cb002c2cba7ad8f6f509252340737",
+        "poster": "poster.png",
+        "captions": "captions.vtt"
+      }
+    },
+    {
       "slug": "specimen-005-protein-on-chip",
       "title": "We put a protein on a quantum computer",
       "hook": "KRAS was undruggable for 40 years — until a drug found a hidden pocket in its shape. We gave that shape to a real IBM quantum chip and measured what survived.",
