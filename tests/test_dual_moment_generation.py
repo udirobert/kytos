@@ -89,6 +89,66 @@ def test_mass_center_removes_uniform_shift():
     assert np.array_equal(a.toarray(), b.toarray())
 
 
+def test_escape_frac_creates_escaped_subpopulation():
+    ctrl, _, genes = _fixture(lam_scale=20.0)
+    deltas = {"T0": np.concatenate([np.full(10, 3.0), np.zeros(70)]).astype(np.float32)}
+    x_esc = _build(ctrl, deltas, genes, cells=12, escape_frac=0.5)
+    x_ref = _build(ctrl, deltas, genes, cells=12)
+    resp_esc = x_esc.toarray()[:, :10].sum(1)
+    resp_ref = x_ref.toarray()[:, :10].sum(1)
+    # the escape-run should carry MORE control-like cells than the reference
+    # (dual-moment already forces some rows toward control via the bulk-vs-
+    # cell reconciliation; escape_frac makes the split explicit)
+    responder_floor = np.median(resp_ref)
+    assert (resp_esc < responder_floor).sum() > (resp_ref < responder_floor).sum()
+    assert np.median(resp_esc) < np.median(resp_ref)
+
+
+def test_eta_std_deterministic_and_changes_output():
+    ctrl, deltas, genes = _fixture(lam_scale=20.0)
+    a = _build(ctrl, deltas, genes, cells=12, eta_std=1.0, seed=5)
+    b = _build(ctrl, deltas, genes, cells=12, eta_std=1.0, seed=5)
+    c = _build(ctrl, deltas, genes, cells=12, seed=5)
+    assert (a.toarray() == b.toarray()).all()
+    assert a.shape == c.shape
+    assert not (a.toarray() == c.toarray()).all()
+
+
+def test_response_noise_dict_per_target():
+    ctrl, _, genes = _fixture(lam_scale=20.0)
+    deltas = {
+        "T0": np.concatenate([np.full(10, 2.0), np.zeros(70)]).astype(np.float32),
+        "T1": np.concatenate([np.full(10, 2.0), np.zeros(70)]).astype(np.float32),
+    }
+    noise = {"T0": np.concatenate([np.full(10, 0.5), np.zeros(70)])}
+    x = _build(ctrl, deltas, genes, cells=12, response_noise=noise)
+    assert x.shape == (24, 80)
+    assert (x.toarray() >= 0).all()
+
+
+def test_cell_effects_shape_validation():
+    from kytos.models.dual_moment import dual_moment_counts
+
+    rng = np.random.default_rng(0)
+    x = rng.dirichlet(np.ones(50), size=8)
+    depths = np.full(8, 2000)
+    bad = np.zeros((4, 50))
+    try:
+        dual_moment_counts(
+            x,
+            x[0],
+            x[0],
+            depths=depths,
+            seed=0,
+            cell_effects=bad,
+            base_probability=x[0],
+        )
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("expected ValueError for mismatched cell_effects")
+
+
 def test_fit_nb_size_recovers_overdispersion():
     rng = np.random.default_rng(3)
     n_cells, n_gene = 3000, 10

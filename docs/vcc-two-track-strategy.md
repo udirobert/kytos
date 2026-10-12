@@ -1,6 +1,6 @@
 # VCC strategy — validation first
 
-Status: **ACTIVE** · Updated **2026-10-03** · Owner: udingethe
+Status: **ACTIVE** · Updated **2026-10-12** · Owner: udingethe
 
 This file is the single active research strategy. (The filename is historical
 — it predates the validation-first pivot; the two-track plan survives only as
@@ -11,11 +11,18 @@ checking their validity caveats.
 
 ## Current state
 
-- **Best recorded submission:** `kytos-k027-consensus-dm`, overall
+- **Best recorded submission:** `kytos-k040-sagr-dm`, overall
+  **+0.1286** (entry `0CfRKgZPxSFzOh59fAXN`, 2026-10-12) — the k027
+  champion generator unchanged, delta source = `consensus_w_ctr_sagr`
+  (weighted consensus with per-gene sign-agreement shrinkage from the
+  k036 X-Atlas per-sample stats). That delta set is the Oct-22 ship
+  recipe because its agreement stats exist genome-wide, covering
+  unseen-panel targets no other variant can. Prior best:
+  `kytos-k027-consensus-dm`, overall
   **+0.1262**, rank **308 of 1088** at capture (entry `fN4wjAp9BUEvHtGWk0az`,
   2026-09-22; the board has since grown past 1,290 — rank drifts) —
-  consensus deltas + dual-moment count generation. Still champion after
-  the k028/k029/k030 probes all regressed (details below).
+  consensus deltas + dual-moment count generation — champion until k040
+  (details below).
   **Confirmed stable 2026-10-03:** `kytos-k037-k027-rescore` resubmitted that
   bundle byte-identically and reproduced **+0.12617** (Δ3e-5 over 11 days),
   so scoring/panel/anchors do not drift and cross-date comparisons are valid.
@@ -42,6 +49,19 @@ checking their validity caveats.
   transplanted consensus mean, and no blend beat the reference. No submission
   slot was spent. Implementation-specific (one model class/corpus), not a
   class-wide falsification. Status and infra notes: `AGENTS.md` §4 (`k033`).
+- **Completed levers (2026-10-12): three more axes closed; ship recipe
+  set.** (a) k039 public-source audit — no processed public knockdown
+  corpus covers the panel in a missing lineage (essential-library wall;
+  the one nominal hit is CRISPRa). (b) k041 LOLO source-mixing — oracle
+  bound says selection > blending, but basal similarity does not predict
+  which source transfers, so nothing to condition on; learned-delta axis
+  closed at rung 1. (c) k042 dual-moment response heterogeneity — scalar
+  amplitude / escape-mixture / measured-dispersion arms all below the
+  promotion margin; the bulk-vs-cell reconciliation already saturates
+  useful heterogeneity. The method class is fully explored: the Oct-22
+  play is executing the k040 build path on the final panel, not further
+  mechanism search. Details: `AGENTS.md` §4 (`k039`–`k042`),
+  `docs/k039-…`, `docs/k041-…`.
 - **Implementation progress:** strict prediction-artifact metadata, baseline
   backfill for uncovered targets/contexts, no-op parity and A-only context
   isolation are verified on synthetic fixtures. Full-panel parity is not yet

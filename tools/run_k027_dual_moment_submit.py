@@ -40,6 +40,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--amplitude", type=float, default=1.0)
     ap.add_argument("--bulk-amplitude", type=float, default=0.5)
     ap.add_argument("--pool-k", type=int, default=4)
+    ap.add_argument("--eta-std", type=float, default=0.0)
+    ap.add_argument("--escape-frac", type=float, default=0.0)
+    ap.add_argument(
+        "--response-noise-npz",
+        type=Path,
+        default=None,
+        help="npz with genes[] + response_noise[] (per-gene effect-space std), "
+        "e.g. from k036 samplestats e2-mean**2",
+    )
     ap.add_argument("--run-id", default=RUN_ID)
     args = ap.parse_args(argv)
 
@@ -87,6 +96,14 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     t0 = time.time()
+    response_noise = None
+    if args.response_noise_npz is not None:
+        with np.load(args.response_noise_npz, allow_pickle=False) as nd:
+            if nd["genes"].astype(str).tolist() != gene_order:
+                print("response-noise npz gene axis mismatch", file=sys.stderr)
+                return 2
+            response_noise = nd["response_noise"].astype(np.float64)
+
     ctx_blocks: list[sparse.csr_matrix] = []
     ctx_obs: list[pd.DataFrame] = []
     for ctx in contexts:
@@ -106,6 +123,9 @@ def main(argv: list[str] | None = None) -> int:
             bulk_amplitude=args.bulk_amplitude,
             pool_k=args.pool_k,
             seed=args.seed,
+            eta_std=args.eta_std,
+            escape_frac=args.escape_frac,
+            response_noise=response_noise,
         )
         ctx_blocks.append(X_ctx)
         ctx_obs.append(
@@ -154,6 +174,9 @@ def main(argv: list[str] | None = None) -> int:
             "amplitude": args.amplitude,
             "bulk_amplitude": args.bulk_amplitude,
             "pool_k": args.pool_k,
+            "eta_std": args.eta_std,
+            "escape_frac": args.escape_frac,
+            "response_noise": args.response_noise_npz is not None,
             "space": "bulk_delta",
         },
         "dispatch": {"real": len(targets) * len(contexts) - len(uncovered) * len(contexts)},

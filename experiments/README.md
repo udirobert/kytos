@@ -299,6 +299,20 @@ enrichment path.
   agreement-gate/constants axis is closed.** Both falsifiable declarations
   failed, in opposite directions. Receipts:
   [`k038-ctragr-tight-rmass-dm/`](k038-ctragr-tight-rmass-dm/).
+- `k040-sagr-dm` — submitted 2026-10-12 (entry `0CfRKgZPxSFzOh59fAXN`):
+  **new best official +0.1286** (champion generator unchanged; delta source
+  `consensus_w_ctr_sagr` — weighted consensus with per-gene sign-agreement
+  shrinkage from the k036 X-Atlas per-sample vote stores). Pre-declared
+  component predictions confirmed on direction (pds) with no component
+  regression; gain is below the promotion margin but the sagr stats exist
+  genome-wide, so this delta set is the Oct-22 ship recipe. Build:
+  `tools/build_consensus_deltas_v3.py` + `tools/modal_k040_sagr_build.py`;
+  submit: `tools/modal_k040_sagr_submit.py`. Receipts on the kytos-vcc
+  volume under `k040-sagr-dm/`.
+- `k041` / `k042` — no submissions: LOLO source-mixing oracle and
+  dual-moment response-heterogeneity gate round both closed their axes
+  without a slot (qualitative records in `docs/k041-…` and `AGENTS.md`
+  §4; numbers embargoed).
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /

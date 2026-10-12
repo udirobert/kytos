@@ -47,6 +47,8 @@ PAIRED_PATH = VOLUME_ROOT / "paired-transfer/paired_transfer_train.npz"
 VARIANTS_DIR = VOLUME_ROOT / "k023-consensus/extract-20260921-02-honest/variants"
 ST_CALIB_DIR = VOLUME_ROOT / "k033-state/calib-k033-st-gwps-k562-v1-best"
 PAIRS_PATH = VOLUME_ROOT / "k024-promoter-prior/pairs-20260921-01/promoter_pairs.csv"
+SAGR_PATH = VOLUME_ROOT / "k035-machinery/variant_consensus_w_ctr_sagr.npz"
+SAMPLESTATS_DIR = VOLUME_ROOT / "k036-samplestats"
 OUT_ROOT = VOLUME_ROOT / "k025-eval2-gate"
 
 CELL_EVAL2_GIT = (
@@ -248,6 +250,69 @@ def run_gate(
     cons_eb2 = _load_variant_deltas(eb2_path, axis_symbols)
     cons_w_nctr = _load_variant_deltas(nctr_path, axis_symbols)
 
+    # Round 13 (k042): response-heterogeneity arms on the k040 ship deltas
+    # (consensus_w_ctr_sagr). dual-moment dropped the transport-era kd_std
+    # mechanism; three directional-heterogeneity replacements:
+    #  - dm_eta_std: per-cell scalar eta_i ~ trunc-N(1, s) multiplying the
+    #    whole effect vector (variable knockdown efficiency).
+    #  - dm_escape: explicit escaped-cell mixture — escape_frac of cells
+    #    emitted as controls, responders boosted 1/(1-frac) to preserve the
+    #    population mean (bimodal Perturb-seq structure).
+    #  - dm_rn: per-cell effect = delta + z*noise_g(t) with noise from the
+    #    k036 per-sample dispersion e2-mean**2 scaled to per-cell level by
+    #    sqrt(median cells/sample) — measured response spread, unlike the
+    #    refuted uniform NB noise (round 9).
+    cons_sagr = {}
+    resp_noise = {}
+    if SAGR_PATH.exists():
+        cons_sagr = _load_variant_deltas(SAGR_PATH, axis_symbols)
+        for src in ("hct116", "hek293t"):
+            ss_path = SAMPLESTATS_DIR / f"{src}_samplestats.npz"
+            if not ss_path.exists():
+                continue
+            with np.load(ss_path, allow_pickle=False) as ss:
+                ss_targets = ss["targets"].astype(str).tolist()
+                t2i = {t: i for i, t in enumerate(ss_targets)}
+                rows = [t2i[t] for t in eval_targets if t in t2i]
+                sel = [t for t in eval_targets if t in t2i]
+                if not rows:
+                    continue
+                # samplestats live on the full 18,533-gene panel axis;
+                # reindex onto the eval axis_symbols (18,080)
+                g2i = {g: i for i, g in enumerate(ss["genes"].astype(str))}
+                col = np.array([g2i.get(g, -1) for g in axis_symbols])
+                col_mask = col >= 0
+                mean = ss["mean_sample_delta"][rows].astype(np.float64)
+                e2 = ss["e2_sample_delta"][rows].astype(np.float64)
+                nv = ss["n_samples_voting"][rows].astype(np.float64)
+                nc = ss["n_cells"][rows].astype(np.float64)
+                var = np.maximum(e2 - mean * mean, 0.0)
+                w = np.maximum(nv, 0.0)
+                for j, t in enumerate(sel):
+                    entry = resp_noise.setdefault(
+                        t, {"v": np.zeros(len(axis_symbols)), "w": 0.0, "wnc": 0.0, "w2": 0.0}
+                    )
+                    vrow = np.zeros(len(axis_symbols))
+                    vrow[col_mask] = var[j][col[col_mask]]
+                    entry["v"] += w[j] * vrow
+                    entry["w"] += w[j]
+                    entry["wnc"] += w[j] * nc[j]
+                    entry["w2"] += w[j] * w[j]
+        # Per-sample-mean dispersion -> approximate per-cell noise scale:
+        # Var_cell ~ Var_sample_mean * cells_per_sample, cells_per_sample
+        # ~ n_cells / n_voting (uniform-cells-per-sample approximation).
+        resp_noise = {
+            t: np.sqrt(
+                np.where(e["w"] > 0, e["v"] / np.maximum(e["w"], 1e-9), 0.0)
+                * np.clip(e["wnc"] / max(e["w2"], 1e-9), 1.0, 1e5)
+            )
+            for t, e in resp_noise.items()
+            if e["w"] > 0
+        }
+        print(f"[k042] respnoise targets: {len(resp_noise)}/{len(eval_targets)}", flush=True)
+    else:
+        print(f"[k042] missing {SAGR_PATH}; sagr arms skipped", flush=True)
+
     # Round 10: k033 State-ST genome-wide K562 deltas (learned across-gene
     # signature, first non-heuristic signature class in the gate). Arms
     # replace consensus ONLY on targets the ST model emitted; uncovered
@@ -376,6 +441,61 @@ def run_gate(
             "dm_bulk_amp": 1.5,
         },
     }
+    # Round 13 (k042): response-heterogeneity arms on the k040 ship deltas.
+    # sagr_dm is the in-run reference (k040 config on the eval subset).
+    if cons_sagr:
+        variants.update(
+            {
+                "sagr_dm": {
+                    "deltas": cons_sagr,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                },
+                "sagr_eta1p0": {
+                    "deltas": cons_sagr,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                    "dm_eta_std": 1.0,
+                },
+                "sagr_eta1p5": {
+                    "deltas": cons_sagr,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                    "dm_eta_std": 1.5,
+                },
+                "sagr_eta2p0": {
+                    "deltas": cons_sagr,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                    "dm_eta_std": 2.0,
+                },
+                "sagr_esc30": {
+                    "deltas": cons_sagr,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                    "dm_escape": 0.3,
+                },
+                "sagr_esc50": {
+                    "deltas": cons_sagr,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                    "dm_escape": 0.5,
+                },
+                "sagr_rn": {
+                    "deltas": cons_sagr,
+                    "gen": "dm",
+                    "dm_amp": 1.0,
+                    "dm_bulk_amp": 0.5,
+                    "dm_rn": True,
+                },
+            }
+        )
     # Round 10 arms activate only once the k033 calibrator output exists on
     # the volume (modal_k033_delta_calibrate.py). dm_ref stays as the
     # same-run drift control; ST arms differ from it ONLY on eval targets
@@ -432,6 +552,9 @@ def run_gate(
                     nb_dispersion=spec.get("dm_nb", False),
                     delta_soft_threshold=spec.get("dm_soft", 0.0),
                     delta_mass_center=spec.get("dm_mass", False),
+                    eta_std=spec.get("dm_eta_std", 0.0),
+                    escape_frac=spec.get("dm_escape", 0.0),
+                    response_noise=resp_noise if spec.get("dm_rn") else None,
                 )
                 obs = pd.DataFrame(
                     {

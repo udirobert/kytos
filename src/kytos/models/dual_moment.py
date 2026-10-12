@@ -178,6 +178,10 @@ def dual_moment_counts(
     iterations: int = 100,
     tolerance: float = 2e-4,
     nb_size: np.ndarray | None = None,
+    cell_effects: np.ndarray | None = None,
+    base_probability: np.ndarray | None = None,
+    space: str = "bulk_delta",
+    amplitude: float = 1.0,
 ) -> np.ndarray:
     """Generate integer counts matching both per-cell and bulk moments.
 
@@ -192,6 +196,17 @@ def dual_moment_counts(
         nb_size: optional (n_genes,) NB dispersion sizes; when given, cells
             are gamma-Poisson sampled around the fitted profile instead of
             deterministically rounded and column-repaired.
+        cell_effects: optional (n_cells, n_genes) per-cell effect vectors.
+            When given (with ``base_probability``), each converged row
+            profile is tilted toward the target implied by its own effect
+            vector — the generic form of the transport-era kd_std mechanism
+            inside dual-moment (scalar eta_i*delta, escape mixtures, or
+            empirical per-gene response noise all reduce to this). Adds
+            variance concentrated on responding genes, not uniform noise.
+            Column totals are re-established by bulk repair.
+        base_probability: per-gene control probability used for the tilt.
+        space: effect space, forwarded to ``desired_mean_from_effects``.
+        amplitude: base amplitude, forwarded to ``desired_mean_from_effects``.
 
     Returns:
         (n_cells, n_genes) int32 count matrix with exact row sums = depths
@@ -296,6 +311,26 @@ def dual_moment_counts(
             if max(cpm_error, bulk_error) < tolerance:
                 break
 
+    # Per-cell effect tilt: row i moves toward the target profile implied by
+    # its own effect vector. Jensen drift on column means is second-order and
+    # the column totals are re-anchored below; bulk repair makes them exact.
+    if cell_effects is not None:
+        if base_probability is None:
+            raise ValueError("cell_effects tilt requires base_probability")
+        cell_effects = np.asarray(cell_effects, dtype=np.float64)
+        if cell_effects.shape != x.shape:
+            raise ValueError("cell_effects must be (n_cells, n_genes)")
+        shared = probability
+        for i in range(len(x)):
+            p_i = desired_mean_from_effects(
+                base_probability, cell_effects[i], space=space, amplitude=amplitude
+            )
+            ratio = np.divide(p_i, shared, out=np.ones_like(p_i), where=shared > 0)
+            row = x[i] * ratio
+            total = row.sum()
+            if total > 0 and np.isfinite(total):
+                x[i] = row / total
+
     # Convert to integer counts
     if nb_size is not None:
         return emit_nb_counts(x, depths, np.asarray(nb_size, dtype=np.float64), seed=seed)
@@ -338,6 +373,9 @@ def build_prediction_dual_moment(
     nb_dispersion: bool = False,
     delta_soft_threshold: float = 0.0,
     delta_mass_center: bool = False,
+    eta_std: float = 0.0,
+    escape_frac: float = 0.0,
+    response_noise: np.ndarray | None = None,
 ) -> sparse.csr_matrix:
     """Build full prediction matrix using dual-moment count generation.
 
@@ -360,6 +398,23 @@ def build_prediction_dual_moment(
             the perturbed profile is (first-order) mass-preserving; without
             it, probability renormalization shifts every expressed gene's
             CPM and the scorer's DE test calls the whole transcriptome
+        eta_std: per-cell response-amplitude heterogeneity. When >0 each
+            generated cell draws eta_i ~ trunc-normal(1, eta_std, clip 0)
+            and its profile is tilted toward the eta_i-scaled delta target —
+            the transport-era kd_std mechanism inside dual-moment, adding
+            variance proportional to delta**2 on responding genes (variable /
+            escaped knockdown structure), not uniform noise.
+        escape_frac: fraction of cells that escape the perturbation entirely —
+            generated with a zero effect vector (identical to control
+            emission) while responders get amplitude boosted by
+            1/(1-escape_frac) so the population mean response is preserved.
+            Explicit two-population Perturb-seq structure.
+        response_noise: optional per-gene effect-space std — either a
+            (n_genes,) array shared across targets or a dict
+            target -> (n_genes,). Each responding cell's effect vector
+            becomes eta_i*delta + z*noise — directional heterogeneity at
+            measured per-gene scale (e.g. k036 sample-delta dispersion),
+            only on responding genes.
 
     Returns:
         sparse.csr_matrix of shape (n_targets * cells_per_target, n_genes)
@@ -394,32 +449,75 @@ def build_prediction_dual_moment(
             c = float(np.dot(mean_cpm, delta) / mean_cpm.sum())
             delta = delta - c
 
-        # Select control cells for template
-        rng = np.random.default_rng(seed + ti)
-        selected = rng.choice(len(library), cells_per_target * pool_k, replace=False)
-        selected = selected[np.argsort(library[selected], kind="stable")]
-        template = raw[selected].toarray() / library[selected, None]
-        template = template.reshape(cells_per_target, pool_k, n_genes).mean(axis=1)
-        depths = np.rint(library[selected].reshape(cells_per_target, pool_k).mean(axis=1)).astype(
-            np.int64
-        )
-        depths = np.clip(depths, 1, 1_000_000)
+        # Escaped-knockdown mixture: ``escape_frac`` of cells are generated
+        # with a zero effect vector (identical to the control generator);
+        # responders get amplitude boosted by 1/(1-escape_frac) so the
+        # population mean response is preserved.
+        if escape_frac > 0:
+            n_esc = int(round(cells_per_target * escape_frac))
+            n_resp = cells_per_target - n_esc
+        else:
+            n_esc = 0
+            n_resp = cells_per_target
 
-        # Per-cell moment
-        prob_cell = desired_mean_from_effects(mean_cpm, delta, space=space, amplitude=amplitude)
-        # Bulk moment
-        prob_bulk = desired_mean_from_effects(
-            bulk_prob, delta, space=space, amplitude=bulk_amplitude
-        )
+        for part_i, (n_part, zero_eff, boost) in enumerate(
+            ((n_resp, False, 1.0 / max(1.0 - escape_frac, 1e-9)), (n_esc, True, 0.0))
+        ):
+            if n_part <= 0:
+                continue
+            part_delta = np.zeros_like(delta) if zero_eff else delta
 
-        counts = dual_moment_counts(
-            template,
-            prob_cell,
-            prob_bulk,
-            depths=depths,
-            seed=seed + ti,
-            nb_size=nb_size,
-        )
-        all_blocks.append(sparse.csr_matrix(counts))
+            # Select control cells for template
+            rng = np.random.default_rng(seed + 1009 * part_i + ti)
+            selected = rng.choice(len(library), n_part * pool_k, replace=False)
+            selected = selected[np.argsort(library[selected], kind="stable")]
+            template = raw[selected].toarray() / library[selected, None]
+            template = template.reshape(n_part, pool_k, n_genes).mean(axis=1)
+            depths = np.rint(library[selected].reshape(n_part, pool_k).mean(axis=1)).astype(
+                np.int64
+            )
+            depths = np.clip(depths, 1, 1_000_000)
+
+            # Per-cell moment
+            prob_cell = desired_mean_from_effects(
+                mean_cpm, part_delta, space=space, amplitude=amplitude * boost
+            )
+            # Bulk moment
+            prob_bulk = desired_mean_from_effects(
+                bulk_prob, part_delta, space=space, amplitude=bulk_amplitude * boost
+            )
+
+            cell_effects = None
+            if not zero_eff and (eta_std > 0 or response_noise is not None):
+                if eta_std > 0:
+                    eta = np.clip(rng.normal(1.0, eta_std, size=n_part), 0.0, None)
+                else:
+                    eta = np.ones(n_part)
+                cell_effects = eta[:, None] * part_delta[None, :]
+                if response_noise is not None:
+                    rn = (
+                        response_noise.get(target)
+                        if isinstance(response_noise, dict)
+                        else response_noise
+                    )
+                    if rn is not None:
+                        cell_effects += (
+                            rng.normal(0.0, 1.0, size=cell_effects.shape)
+                            * np.asarray(rn, dtype=np.float64)[None, :]
+                        )
+
+            counts = dual_moment_counts(
+                template,
+                prob_cell,
+                prob_bulk,
+                depths=depths,
+                seed=seed + 1009 * part_i + ti,
+                nb_size=nb_size,
+                cell_effects=cell_effects,
+                base_probability=mean_cpm,
+                space=space,
+                amplitude=amplitude * boost,
+            )
+            all_blocks.append(sparse.csr_matrix(counts))
 
     return sparse.vstack(all_blocks, format="csr")

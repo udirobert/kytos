@@ -1,12 +1,14 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-10-03** — the agreement-gate axis is **closed**: k035
-> and k038 both tied the champion (+0.1242/+0.1254 vs +0.1262) with
-> opposite component reshuffles (pds↔reach trade). k033 trained-signature
-> track (Modal GPU) remains **complete with a negative Gate B result** (no
-> submission); §4b's GPU-training pause is **re-instated**. The §4b
-> validation reset still supersedes broad §4 conclusions. Cleveland
-> Clinic / GQAI remains a separate workstream (`docs/cleveland/`).
+> Last updated **2026-10-12** — `kytos-k040-sagr-dm` is the **new best
+> (+0.1286)**; the sagr delta set is the Oct-22 ship recipe. The k039
+> public-source audit, k041 LOLO learned-delta axis, and k042
+> response-heterogeneity gate round are all **closed negative** — the
+> current method class is fully explored; the remaining play is the final
+> build on the Oct-22 test set. The agreement-gate axis is also closed
+> (k035/k038 tied the old champion). The §4b validation reset still
+> supersedes broad §4 conclusions. Cleveland Clinic / GQAI remains a
+> separate workstream (`docs/cleveland/`).
 
 This file is the ground truth for any agent working on this repo. It covers
 the **2026 Virtual Cell Challenge** and a **separate** Cleveland Clinic
@@ -651,6 +653,74 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   round 10 arms: ST-only, ST-raw, ST×consensus blend, plus a drift control).
   Exact step-rate, loss and arm numbers embargoed
   (`experiments/_embargoed/`).
+- **k039 — public-source lineage audit (COMPLETE 2026-10-12, negative on
+  new knockdown sources; spec `docs/k039-new-lineage-sources.md`).** Six
+  scPertEval processed h5ads fetched and extracted on `snapflip-vultr`
+  (`tools/extract_scperteval_source.py`, panel-axis pooled deltas +
+  `ctrl_mean`; tool `tools/audit_k039_sources.py`). Result: every
+  essential-or-small-library screen covers 0/300 panel targets — the panel
+  exclusion of DepMap-essentials makes non-genome-wide screens useless
+  regardless of lineage. `kaden25rpe1` nominally covers 80/300 but is
+  **CRISPRa** (TF activation), not knockdown — ineligible for the KD
+  consensus; `arch1` hESC covers 13/300. The "lineage-matched second
+  source" slot-eligible mechanism is now **closed: no processed public KD
+  corpus covers panel targets in any missing lineage.** Byproduct:
+  basal-match evidence sharpened the context-lineage read (a real Jurkat
+  basal leads context A on discriminative genes, both independent RPE1
+  basals lead B, epithelial leads C, eval ≈ H1 hESC); diagnostic numbers
+  embargoed (`experiments/_embargoed/k039-lineage-audit/`). Same session:
+  k036 hek293t samplestats resumed on Modal and entered merge; hct116 had
+  already completed — the per-sample sign-agreement ingredient is nearly
+  all on the volume. **Remaining slot-eligible mechanism: per-sample
+  sign-agreement terms from k036 outputs.**
+- **k036 complete + k040 sagr probe launched (2026-10-12).** Both X-Atlas
+  per-sample vote stores landed on the volume. New builder
+  `tools/build_consensus_deltas_v3.py` shrinks each X-Atlas arm's source
+  deltas per-gene by Jeffreys-smoothed sign-agreement
+  `(max(pos,neg)+k/2)/(n_voting+k)` before the weighted consensus —
+  the first variant that *adds information* to deltas rather than
+  re-weighting. `consensus_w_ctr_sagr` built on Modal
+  (`tools/modal_k040_sagr_build.py`); submitted via
+  `tools/modal_k040_sagr_submit.py` as `kytos-k040-sagr-dm` through the
+  unchanged champion generator — **scored +0.1286, new best** (vs +0.1262
+  champion; components in `experiments/_embargoed/diagnostic-numbers.md`).
+  Single-variable change vs `consensus_w_ctr`; predictions + read rules
+  pre-declared in `experiments/_embargoed/k040-sagr-predeclared.md`.
+  Read-outcome: direction gain real but below the promotion margin —
+  `consensus_w_ctr_sagr` is the **Oct-22 ship delta set** (sagr stats exist
+  genome-wide, covering unseen-panel targets), and no more probe slots go
+  to delta-side polish.
+- **k041 LOLO source-mixing oracle (2026-10-12).** Per-target NNLS over
+  the six genome-wide delta stores (incl. jurkat_rest/stim arms) with each
+  lineage held out: oracle mixing beats fixed consensus on ~all shared
+  targets, but **best-single-source ≈ oracle everywhere** — the win is
+  source *selection*, not blending; absolute ceiling modest. Notably the
+  fixed consensus is near-zero/anticorrelated on held-out Jurkat arms —
+  relevant if an Oct-22 test line is Jurkat-like. Numbers embargoed
+  (`experiments/_embargoed/k041-lolo/`); spec
+  `docs/k041-lolo-delta-predictor.md`. Follow-up check
+  (`tools/modal_k041_basal_transfer.py`): **basal-state similarity does NOT
+  predict which source transfers** (pairwise ρ ≈ 0; only the
+  same-assay-family hct116↔hek293t pair is both basal-nearest and
+  transfer-best; even same-lineage jurkat rest↔stim deltas don't
+  transfer). No conditionable signal exists → the learned
+  source-mixing/selection axis is **closed at rung 1**; no GPU spend.
+- **k042 — dual-moment response heterogeneity (2026-10-12, NEGATIVE —
+  axis closed).** The transport-era `kd_std` mechanism was silently
+  dropped when dual-moment replaced transport; this round retested it
+  plus two directional variants via new `dual_moment.py` knobs
+  (`eta_std` scalar amplitude, `escape_frac` escaped-cell mixture,
+  `response_noise` from k036 measured dispersion; generic
+  `cell_effects` tilt plumbing; default path pinned by golden-sha
+  test). Gate `gate-20261012-01` (7 arms on sagr deltas vs dm_ref):
+  best arm +0.003 avg, non-monotone — knob noise not a mechanism;
+  escape flat; measured-dispersion arm catastrophic. Scalar eta adds
+  bulk magnitude at unchanged direction cosine — the bulk-vs-cell
+  reconciliation already saturates the useful heterogeneity budget.
+  **Axis closed at gate level; no submission slot spent.** Exact
+  numbers in `experiments/_embargoed/diagnostic-numbers.md`; also
+  confirmed sagr deltas > cons_w in-gate, consistent with the k040
+  official read.
 
 ---
 
@@ -778,6 +848,14 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
 - **Chronicle videos never go in git** — the build caps media at 4 MB.
   Upload renders to Grove/Lens (`docs/chronicle/context-layer.md` §8) and
   reference the `gateway_url` in `shorts.json`; posters/captions stay local.
+- **Literature search** (added 2026-10-12): free, keyless search over ~200M
+  OpenAlex titles/abstracts — `science` MCP server
+  (`https://api.sciencemadereadable.com/mcp`) + `science-search` skill; the
+  JSON API also works via curl (`api.sciencemadereadable.com/api/data`, guide
+  at `/llms.txt`, 30 req/min). Useful for dataset-discovery sweeps and
+  Cleveland/GQAI literature. Search queries are logged server-side
+  (anonymous): keep them generic — never put embargoed numbers or unpublished
+  method details in a query.
 
 ---
 
