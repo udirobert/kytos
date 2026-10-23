@@ -28,6 +28,8 @@ from _enrich_common import load_facts, set_visual_paths  # noqa: E402
 API_ENV = (
     "OPENAI_API_KEY",
     "TAVILY_API_KEY",
+    "SANDBASE_API_KEY",
+    "SEARCH_ROUTE_ORDER",
     "FAL_KEY",
     "FAL_API_KEY",
     "PIONEER_API_KEY",
@@ -126,3 +128,101 @@ def test_run_id_resolution_from_repo_root() -> None:
     relative = resolve_run_dir(str(FIXTURE.relative_to(ROOT)))
     assert absolute.resolve() == FIXTURE.resolve()
     assert relative.resolve() == FIXTURE.resolve()
+
+
+# ── SandBase / Tavily search routes (_enrich_common.tavily_search) ────────────
+
+
+def test_tavily_search_no_routes_raises_lookup(
+    run_dir: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from _enrich_common import tavily_search
+
+    for name in API_ENV:
+        monkeypatch.delenv(name, raising=False)
+    with pytest.raises(LookupError):
+        tavily_search("q", search_depth="basic", max_results=3)
+
+
+def test_tavily_search_sandbase_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from _enrich_common import tavily_search
+
+    monkeypatch.delenv("TAVILY_API_KEY", raising=False)
+    monkeypatch.setenv("SANDBASE_API_KEY", "sb")
+    monkeypatch.delenv("SEARCH_ROUTE_ORDER", raising=False)
+
+    captured = {}
+
+    class FakeResp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            import json as j
+
+            return j.dumps(
+                {
+                    "status": "completed",
+                    "output": {"results": [{"title": "t", "url": "u", "content": "c"}]},
+                }
+            ).encode()
+
+    def fake_urlopen(req, timeout=None):
+        captured["url"] = req.full_url
+        captured["auth"] = req.headers.get("Authorization")
+        captured["body"] = req.data
+        return FakeResp()
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    data, route = tavily_search("q", search_depth="basic", max_results=3)
+    assert route == "sandbase"
+    assert data["results"][0]["url"] == "u"
+    assert captured["url"].endswith("/v1/api/tavily/search")
+    assert captured["auth"] == "Bearer sb"
+
+
+def test_tavily_search_falls_back_to_sandbase(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import _enrich_common as ec
+
+    monkeypatch.setenv("TAVILY_API_KEY", "tv")
+    monkeypatch.setenv("SANDBASE_API_KEY", "sb")
+    monkeypatch.delenv("SEARCH_ROUTE_ORDER", raising=False)
+
+    def boom(query, search_depth, max_results):
+        raise RuntimeError("native down")
+
+    monkeypatch.setattr(ec, "_native_tavily_search", boom)
+    monkeypatch.setattr(
+        ec,
+        "_sandbase_tavily_search",
+        lambda q, d, m: {"results": [{"title": "t", "url": "u"}]},
+    )
+    data, route = ec.tavily_search("q", search_depth="basic", max_results=3)
+    assert route == "sandbase"
+    assert data["results"][0]["url"] == "u"
+
+
+def test_tavily_search_all_fail_raises_runtime(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import _enrich_common as ec
+
+    monkeypatch.setenv("TAVILY_API_KEY", "tv")
+    monkeypatch.setenv("SANDBASE_API_KEY", "sb")
+    monkeypatch.delenv("SEARCH_ROUTE_ORDER", raising=False)
+    monkeypatch.setattr(
+        ec, "_native_tavily_search", lambda *a: (_ for _ in ()).throw(RuntimeError("n1"))
+    )
+    monkeypatch.setattr(
+        ec, "_sandbase_tavily_search", lambda *a: (_ for _ in ()).throw(RuntimeError("s1"))
+    )
+    with pytest.raises(RuntimeError) as exc:
+        ec.tavily_search("q", search_depth="basic", max_results=3)
+    assert "native" in str(exc.value) and "sandbase" in str(exc.value)

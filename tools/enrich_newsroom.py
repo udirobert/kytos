@@ -26,7 +26,15 @@ from __future__ import annotations
 import argparse
 import json
 
-from _enrich_common import env_key, load_facts, notice, resolve_run_dir, utcnow, warn
+from _enrich_common import (
+    _search_route_order,
+    load_facts,
+    notice,
+    resolve_run_dir,
+    tavily_search,
+    utcnow,
+    warn,
+)
 
 MAX_SEARCHES = 3  # spend cap: max Tavily searches per run
 MAX_RESULTS = 3  # per query
@@ -44,22 +52,23 @@ BROADCAST_OPEN = (
 )
 
 
-def field_research(api_key: str) -> list[dict]:
-    """Tavily searches on the field context; returns deduped top results."""
-    from tavily import TavilyClient  # lazy: partner client is optional
-
-    client = TavilyClient(api_key=api_key)
+def field_research() -> tuple[list[dict], str | None]:
+    """Tavily searches on the field context; returns (deduped top results,
+    route used) or ([], None) when every configured route fails."""
     seen: set[str] = set()
     results: list[dict] = []
+    provider: str | None = None
     for query in FIELD_QUERIES[:MAX_SEARCHES]:
         try:
-            response = client.search(
-                query=query,
+            response, provider = tavily_search(
+                query,
                 search_depth="basic",
                 max_results=MAX_RESULTS,
             )
+        except LookupError:
+            raise
         except Exception as exc:  # one query failing must not kill the rest
-            warn(f"Tavily search failed for {query!r} ({exc}); continuing")
+            warn(f"web search failed for {query!r} ({exc}); continuing")
             continue
         for item in response.get("results", []):
             url = item.get("url") or ""
@@ -74,7 +83,7 @@ def field_research(api_key: str) -> list[dict]:
                     "score": item.get("score"),
                 }
             )
-    return results[:6]
+    return results[:6], provider
 
 
 def broadcast_script(facts: dict, research: list[dict]) -> str:
@@ -136,16 +145,22 @@ def main(argv=None) -> int:
     run_dir = resolve_run_dir(args.run)
     facts = load_facts(run_dir)
 
-    api_key = env_key("TAVILY_API_KEY")
-    if not api_key:
-        notice("newsroom: skipped (no TAVILY_API_KEY); run degrades without newsroom")
+    if not _search_route_order():
+        notice(
+            "newsroom: skipped (no TAVILY_API_KEY / SANDBASE_API_KEY); "
+            "run degrades without newsroom"
+        )
         return 0
 
     research: list[dict] = []
+    provider: str | None = None
     try:
-        research = field_research(api_key)
-    except ImportError:
-        warn("tavily client not installed (`uv sync --extra obs`); run degrades without newsroom")
+        research, provider = field_research()
+    except LookupError:
+        notice(
+            "newsroom: skipped (no TAVILY_API_KEY / SANDBASE_API_KEY); "
+            "run degrades without newsroom"
+        )
         return 0
     except Exception as exc:
         warn(f"newsroom research failed ({exc}); run degrades without newsroom")
@@ -156,9 +171,14 @@ def main(argv=None) -> int:
 
     if research:
         (newsroom_dir / "research.json").write_text(
-            json.dumps({"generated_at": utcnow(), "results": research}, indent=2) + "\n"
+            json.dumps(
+                {"generated_at": utcnow(), "provider": provider, "results": research},
+                indent=2,
+            )
+            + "\n"
         )
-        notice(f"newsroom: cached {len(research)} research results")
+        via = f" via {provider}" if provider else ""
+        notice(f"newsroom: cached {len(research)} research results{via}")
 
     script = broadcast_script(facts, research)
     (newsroom_dir / "script.md").write_text(script)

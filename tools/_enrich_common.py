@@ -218,3 +218,80 @@ def load_pipeline_status(run_dir: Path) -> dict[str, Any]:
     except (json.JSONDecodeError, OSError):
         return {}
     return payload if isinstance(payload, dict) else {}
+
+
+# ── SandBase / Tavily search routes ──────────────────────────────────────────
+
+SANDBASE_BASE_URL = "https://api.sandbase.ai"
+
+
+def _search_route_order() -> list[str]:
+    """Ordered search routes: native,sandbase default; keyless routes skipped."""
+    order = (env_key("SEARCH_ROUTE_ORDER") or "").lower()
+    names = ["sandbase", "native"] if order == "sandbase,native" else ["native", "sandbase"]
+    return [
+        r
+        for r in names
+        if (r == "native" and env_key("TAVILY_API_KEY"))
+        or (r == "sandbase" and env_key("SANDBASE_API_KEY"))
+    ]
+
+
+def _native_tavily_search(query: str, search_depth: str, max_results: int) -> dict:
+    from tavily import TavilyClient  # lazy: partner client is optional
+
+    return TavilyClient(api_key=env_key("TAVILY_API_KEY")).search(
+        query=query, search_depth=search_depth, max_results=max_results
+    )
+
+
+def _sandbase_tavily_search(query: str, search_depth: str, max_results: int) -> dict:
+    """SandBase proxies Tavily: POST /v1/api/tavily/search, Bearer auth,
+    body is the native request; reply wraps it as {status, output}."""
+    url = f"{(env_key('SANDBASE_BASE_URL') or SANDBASE_BASE_URL).rstrip('/')}/v1/api/tavily/search"
+    body = json.dumps(
+        {
+            "query": query,
+            "search_depth": search_depth,
+            "max_results": min(20, max(1, max_results)),
+        }
+    ).encode()
+    req = urllib.request.Request(
+        url,
+        data=body,
+        headers={
+            "Authorization": f"Bearer {env_key('SANDBASE_API_KEY')}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=20) as res:
+        envelope = json.loads(res.read())
+    if envelope.get("status") != "completed" or not isinstance(envelope.get("output"), dict):
+        raise RuntimeError("sandbase response not completed")
+    return envelope["output"]
+
+
+def tavily_search(query: str, *, search_depth: str, max_results: int) -> tuple[dict, str]:
+    """Run a Tavily-shaped search across the configured routes.
+
+    Returns ``(native-shaped Tavily response, route)`` where route is
+    ``"native"`` or ``"sandbase"``. Raises ``LookupError`` when no route is
+    configured (no keys), and ``RuntimeError`` listing each route's failure
+    when every configured route fails.
+    """
+    routes = _search_route_order()
+    if not routes:
+        raise LookupError("no search route configured (TAVILY_API_KEY / SANDBASE_API_KEY)")
+    failures: list[str] = []
+    for route in routes:
+        try:
+            if route == "sandbase":
+                return _sandbase_tavily_search(query, search_depth, max_results), route
+            return _native_tavily_search(query, search_depth, max_results), route
+        except ImportError:
+            # tavily-python not installed — skip the native route silently.
+            failures.append(f"{route}: tavily client not installed")
+        except Exception as exc:  # noqa: BLE001 — every failure falls through
+            failures.append(f"{route}: {exc}")
+    raise RuntimeError("; ".join(failures))

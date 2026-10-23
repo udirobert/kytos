@@ -19,8 +19,9 @@ import argparse
 import json
 
 from _enrich_common import (
-    env_key,
+    _search_route_order,
     load_facts,
+    tavily_search,
     notice,
     record_pipeline_status,
     resolve_run_dir,
@@ -43,12 +44,10 @@ def flagged_genes(facts: dict) -> list[str]:
     return genes[:MAX_GENES]
 
 
-def search_gene(gene: str, api_key: str) -> dict:
-    from tavily import TavilyClient  # lazy: partner client is optional
-
+def search_gene(gene: str) -> dict:
     query = f"{gene} gene CRISPRi knockdown perturbation function"
-    response = TavilyClient(api_key=api_key).search(
-        query=query,
+    response, route = tavily_search(
+        query,
         search_depth="basic",
         max_results=MAX_RESULTS,
     )
@@ -67,6 +66,7 @@ def search_gene(gene: str, api_key: str) -> dict:
         "gene": gene,
         "query": query,
         "generated_at": utcnow(),
+        "provider": route,
         "results": results,
     }
 
@@ -89,27 +89,28 @@ def main(argv=None) -> int:
             "No audit-flagged genes to search.",
         )
         return 0
-    api_key = env_key("TAVILY_API_KEY")
-    if not api_key:
-        notice("literature: skipped (no TAVILY_API_KEY); run degrades empty")
+    if not _search_route_order():
+        notice("literature: skipped (no TAVILY_API_KEY / SANDBASE_API_KEY); run degrades empty")
         record_pipeline_status(
             run_dir,
             "literature",
             "skipped",
-            "TAVILY_API_KEY not set — enrichment not attempted.",
+            "Neither TAVILY_API_KEY nor SANDBASE_API_KEY set — enrichment not attempted.",
         )
         return 0
 
     succeeded = 0
     failed = 0
+    routes_used: set[str] = set()
     try:
         for gene in genes:
             try:
-                payload = search_gene(gene, api_key)
+                payload = search_gene(gene)
             except Exception as exc:  # one gene failing must not kill the rest
                 warn(f"Tavily search failed for {gene} ({exc}); continuing")
                 failed += 1
                 continue
+            routes_used.add(payload["provider"])
             out = run_dir / "literature" / f"{gene}.json"
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(json.dumps(payload, indent=2) + "\n")
@@ -137,7 +138,10 @@ def main(argv=None) -> int:
             run_dir,
             "literature",
             "fallback",
-            f"Partial: {succeeded}/{len(genes)} genes retrieved; {failed} failed.",
+            "Partial: "
+            f"{succeeded}/{len(genes)} genes retrieved via "
+            f"{sorted(routes_used)[0] if routes_used else 'none'}; "
+            f"{failed} failed.",
         )
     else:
         record_pipeline_status(
