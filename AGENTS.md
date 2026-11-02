@@ -1,13 +1,12 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-10-12** — `kytos-k040-sagr-dm` is the **new best
-> (+0.1286)**; the sagr delta set is the Oct-22 ship recipe. The k039
-> public-source audit, k041 LOLO learned-delta axis, and k042
-> response-heterogeneity gate round are all **closed negative** — the
-> current method class is fully explored; the remaining play is the final
-> build on the Oct-22 test set. The agreement-gate axis is also closed
-> (k035/k038 tied the old champion). The §4b validation reset still
-> supersedes broad §4 conclusions. Cleveland Clinic / GQAI remains a
+> Last updated **2026-11-02** — **final phase is live and the baseline
+> entry is on file**: `kytos-k043-final-sagr-dm` submitted (entry
+> `Ov4qNbLHMb1dRRyqxDn8`), the k040 sagr recipe rebuilt on the final
+> D/E/F panel with `vcc-cli==0.3.0`. Only the last submission before
+> Nov 5 23:59 UTC counts; scores hidden until Nov 19. Challenger audit
+> closed negative — no eligible new source covers the 171 new targets.
+> §7 has the final-phase details. Cleveland Clinic / GQAI remains a
 > separate workstream (`docs/cleveland/`).
 
 This file is the ground truth for any agent working on this repo. It covers
@@ -870,3 +869,56 @@ Before running anything that could take >30 minutes or use >6 GB RAM:
 
 This repo is a **competition science project**, not a local web app. The
 fastest path to a better score is almost never "run it on this Mac."
+
+## 7. Final-phase preflight (2026-10-22)
+
+- Live server confirms final panel `vcc2026-test-1`, contexts D/E/F, accepting
+  submissions. Deadline is **2026-11-05 23:59 UTC** (exclusive server bound
+  `2026-11-06T00:00:00Z`). Organizers state only the last final submission
+  counts for prizes; scores remain hidden until Nov 19.
+- Required CLI **0.3.0** was installed and checked in an isolated VPS env:
+  `snapflip-vultr:/opt/kytos/preflight-vcc030/bin/vcc`. Existing
+  `/opt/kytos/.venv/bin/vcc` is still **0.2.2**, unchanged. Default-profile
+  authentication works. CLI 0.3.0 reads contexts from the controls manifest
+  beside `--perts`/`--genes` unless explicitly supplied.
+- `controls-final` was downloaded and CRC32C-verified on the VPS at
+  `/opt/kytos/repo/data/raw/vcc2026-final-preflight-20261022/vcc_2026_controls_final.zip`.
+  Preserve the final `manifest.json` beside its CSVs. The gene CSV is
+  byte-identical to validation; the target panel differs. Rebuild final-panel
+  `consensus_w_ctr_sagr`; do not reuse the validation delta artifact.
+- The genome-wide k034 source-cache directories on the VPS are empty and
+  k036 sagr statistics are not cached there — the artifacts live on the
+  `kytos-vcc` **Modal** volume. Verified 2026-10-22 via
+  `tools/modal_k043_final_sagr.py::audit_final_coverage`: all four champion
+  sources cover the final panel (k562 277/300, hct116 298, hek293t 298,
+  cd4 265; only ANG uncovered union-wide) and the sagr stats stores cover
+  both X-Atlas arms' final targets. Final-panel `consensus_w_ctr_sagr`
+  built to `/kytos-vol/k043-final/machinery/`; receipts in
+  `experiments/_embargoed/k043-final-build.json`.
+- **`kytos-k043-final-sagr-dm` SUBMITTED 2026-10-22** — entry
+  `Ov4qNbLHMb1dRRyqxDn8`, status published + scoring launched, anchor set
+  `testD/E/F-r1`, spent 1/2 slots. This is the insurance entry: only the
+  LAST submission counts, so it can be replaced by a later build before
+  Nov 5 23:59 UTC. Scores hidden until Nov 19.
+- **Post-submit audit 2026-11-02 (no new submission).** Entry
+  `Ov4qNbLHMb1dRRyqxDn8` is `published`, mode FINAL; `limits` showed 0/2 spent
+  today, 0 in flight, accepting. Final delta set checked: all finite, no zero
+  rows, self-gene knockdown negative on 299/300 targets (ANG, uncovered by every
+  source, is the lone exception and carries only the common response); on the
+  131 targets shared with validation it matches the k040 rows to within noise
+  (recipe unchanged by re-targeting); the new targets look normal. One
+  outlier: DPY30 (K562-only, norm ~9x median) is the recipe working as
+  designed (K562 norm restored after consensus), flagged not fixed — a
+  context-fit tweak would not ship blind. Decision: **k043 stays the final
+  entry**; replacement needs new-source evidence per the runbook. Numbers:
+  `experiments/_embargoed/k043-final-audit.md`.
+- **Modal profile gotcha:** the `kytos-vcc` volume lives in the
+  `thepapajams` workspace, not the default `ungethe` profile — use
+  `MODAL_PROFILE=thepapajams modal volume ...` (the default profile reports
+  "Volume 'kytos-vcc' not found"). The other profiles are slow to list.
+- Preflight receipt (local-only):
+  `experiments/_embargoed/final-preflight-20261022.json`. Metadata inspection
+  only: no matrix-value scan, prediction build, prep, paid job or submission.
+- `docs/final-phase-runbook.md` was rewritten 2026-10-22 for the actual
+  ship path (sagr recipe, `controls-final`, 23:59 UTC, `vcc-cli==0.3.0`
+  pinned). Final upload still requires separate user approval.

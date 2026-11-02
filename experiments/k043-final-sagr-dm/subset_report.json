@@ -1,0 +1,34 @@
+[
+  {
+    "in": "/kytos-vol/k034-final-prep/k034-k562-all/deltas_k562.npz",
+    "out": "/kytos-vol/k043-final/src/deltas_k562.npz",
+    "requested": 300,
+    "present_in_source": 277,
+    "covered": 277,
+    "genes": 18533
+  },
+  {
+    "in": "/kytos-vol/k034-final-prep/k034-hct116-all/deltas_hct116.npz",
+    "out": "/kytos-vol/k043-final/src/deltas_hct116.npz",
+    "requested": 300,
+    "present_in_source": 298,
+    "covered": 298,
+    "genes": 18533
+  },
+  {
+    "in": "/kytos-vol/k034-final-prep/k034-hek293t-all/deltas_hek293t.npz",
+    "out": "/kytos-vol/k043-final/src/deltas_hek293t.npz",
+    "requested": 300,
+    "present_in_source": 298,
+    "covered": 298,
+    "genes": 18533
+  },
+  {
+    "in": "/kytos-vol/k034-final-prep/k034-cd4-all/deltas_cd4.npz",
+    "out": "/kytos-vol/k043-final/src/deltas_cd4.npz",
+    "requested": 300,
+    "present_in_source": 287,
+    "covered": 265,
+    "genes": 18533
+  }
+]

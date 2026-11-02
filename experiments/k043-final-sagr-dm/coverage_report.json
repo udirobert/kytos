@@ -1,0 +1,144 @@
+{
+  "manifest": {
+    "season": "2026",
+    "partition": "test",
+    "panel_id": "vcc2026-test-1",
+    "contexts": [
+      "D",
+      "E",
+      "F"
+    ],
+    "pert_col": "target_gene",
+    "context_col": "context",
+    "control_label": "non-targeting",
+    "n_genes": 18533,
+    "n_constructs": 300,
+    "cells_per_pert": 400,
+    "per_context": {
+      "D": {
+        "n_perturbations": 300,
+        "control_cells": 18400,
+        "n_ntc_ids": 46,
+        "ground_truth_cells": 138400
+      },
+      "E": {
+        "n_perturbations": 300,
+        "control_cells": 18400,
+        "n_ntc_ids": 46,
+        "ground_truth_cells": 138400
+      },
+      "F": {
+        "n_perturbations": 300,
+        "control_cells": 18400,
+        "n_ntc_ids": 46,
+        "ground_truth_cells": 138400
+      }
+    }
+  },
+  "n_genes": 18533,
+  "n_targets": 300,
+  "sources": {
+    "k562": {
+      "gene_axis_exact": true,
+      "n_source_targets": 9869,
+      "final_present": 277,
+      "final_covered": 277,
+      "missing": [
+        "ANG",
+        "ARSA",
+        "ATP10D",
+        "CAPRIN2",
+        "HCFC2",
+        "HEATR6",
+        "ITPRIPL1",
+        "LYSMD4",
+        "MAPK7",
+        "MLKL",
+        "NEK3",
+        "PARP3",
+        "PDK3",
+        "PSMB9",
+        "RAB26",
+        "SEMA4F",
+        "SIK2",
+        "STK10",
+        "TBC1D19",
+        "TESK2",
+        "TMEM79",
+        "UBTD2",
+        "ZDHHC13"
+      ]
+    },
+    "hct116": {
+      "gene_axis_exact": true,
+      "n_source_targets": 18293,
+      "final_present": 298,
+      "final_covered": 298,
+      "missing": [
+        "ANG",
+        "DPY30"
+      ],
+      "stats_targets": 18293,
+      "stats_cover_final": 298,
+      "stats_genes": 18533,
+      "stats_median_voting_final": 76.5
+    },
+    "hek293t": {
+      "gene_axis_exact": true,
+      "n_source_targets": 18311,
+      "final_present": 298,
+      "final_covered": 298,
+      "missing": [
+        "ANG",
+        "DPY30"
+      ],
+      "stats_targets": 18311,
+      "stats_cover_final": 298,
+      "stats_genes": 18533,
+      "stats_median_voting_final": 114.0
+    },
+    "cd4": {
+      "gene_axis_exact": true,
+      "n_source_targets": 11526,
+      "final_present": 287,
+      "final_covered": 265,
+      "missing": [
+        "ANG",
+        "ANKRD52",
+        "ATXN2",
+        "BRPF3",
+        "C5orf22",
+        "CAPRIN2",
+        "DDX50",
+        "DNAJC25",
+        "DPY30",
+        "GMEB2",
+        "GPATCH1",
+        "LDLR",
+        "LENG1",
+        "LTBR",
+        "LTO1",
+        "MRC2",
+        "MYPOP",
+        "NABP2",
+        "PARP3",
+        "PIM2",
+        "PLAGL2",
+        "PRMT6",
+        "RAB26",
+        "REV1",
+        "SAP30L",
+        "SEMA4F",
+        "SHARPIN",
+        "SORBS3",
+        "STK3",
+        "SURF4",
+        "TIGD5",
+        "TYRO3",
+        "UBTD2",
+        "VPS36",
+        "ZNF700"
+      ]
+    }
+  }
+}

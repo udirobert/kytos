@@ -1,0 +1,54 @@
+{
+  "builder": "tools/build_consensus_deltas_v3.py",
+  "src_dir": "/kytos-vol/k043-final/src",
+  "stats_dir": "/kytos-vol/k036-samplestats",
+  "sagr": {
+    "cd4": {
+      "has_samplestats": false
+    },
+    "hct116": {
+      "has_samplestats": true,
+      "kappa": 4.0,
+      "cons_median": 0.5487804878048781,
+      "cons_p10": 0.037037037037037035,
+      "cons_p90": 0.8309859154929577
+    },
+    "hek293t": {
+      "has_samplestats": true,
+      "kappa": 4.0,
+      "cons_median": 0.5526315789473685,
+      "cons_p10": 0.04201680672268908,
+      "cons_p90": 0.8449612403100775
+    },
+    "k562": {
+      "has_samplestats": false
+    }
+  },
+  "variants": [
+    "consensus_w_ctr_sagr",
+    "consensus_w_ctr_sagr_agr"
+  ],
+  "written_this_run": [],
+  "skipped_existing": [
+    "variant_consensus_w_ctr_sagr.npz",
+    "variant_consensus_w_ctr_sagr_agr.npz"
+  ],
+  "weights": {
+    "k562": 2.0,
+    "hct116": 1.0,
+    "hek293t": 1.0,
+    "cd4": 1.0
+  },
+  "agr_clip": {
+    "standard": [
+      0.3,
+      0.7
+    ]
+  },
+  "semantics": [
+    "sagr: cons[t,g] = (max(pos,neg) + k/2)/(n_voting + k), k=4; source delta rows multiplied by cons before the weighted consensus -- per-sample sign agreement acts as per-gene shrinkage inside each deep source",
+    "sources without a samplestats npz keep cons=1 (no within-source term available)",
+    "consensus_w_ctr_sagr: weighted consensus over shrunken sources, K562-norm restored, common-response centered -- single-variable change vs consensus_w_ctr",
+    "consensus_w_ctr_sagr_agr: sagr consensus x standard cross-source agreement gate recomputed on shrunken sources"
+  ]
+}
