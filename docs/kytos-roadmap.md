@@ -153,6 +153,53 @@ paper or workshop demo on the audit layer (§D).
 
 ---
 
+## Ecosystem tailwinds (deep research, 2026-11-20)
+
+The macro bet behind §A–D is stronger than it looked from inside the
+competition:
+
+- **A data flood is coming.** CZI/Biohub's Virtual Biology Initiative is a
+  **$1.8B global commitment** (announced April 2026, $500M Biohub anchor)
+  to generate AI-ready open datasets. The Billion Cells Project (10x,
+  Ultima, Scale Bio) and the Tahoe–Arc–Biohub perturbation-atlas effort
+  (Jan 2026) mean the public corpus we under-harvested in 2026 will be
+  much larger by 2027. The bottleneck shifts from *having* data to
+  *weighting* it — exactly engine v2's job.
+- **Our niche is unoccupied.** scPerturb (44 datasets) and PerturbSeq.db
+  harmonize *raw* perturbation data; OpenProblems/scPerturBench/
+  xianglin226's model library standardize *benchmarks*; nobody ships a
+  cross-dataset **statistical consensus layer** (LFC + SE + significance,
+  precision-weighted, disagreement-aware). That gap is the product.
+- **The evaluation lane is a real venue.** The "community analysts whose
+  work changed how we score" line in the wrap-up is backed by an active
+  literature — scPerturBench, the Science Advances systematic
+  comparison, and the July-2026 "Towards Principled Evaluation"
+  preprint. cell-eval2 audits (§D) land in a field that publishes and
+  cites this work.
+- **Quantum allostery just went mainstream.** Cleveland Clinic + RIKEN +
+  IBM simulated a 12,635-atom protein on quantum hardware (May 2026) and
+  are Gordon Bell finalists — and Cleveland Clinic is the same
+  institution behind our GQAI workstream. Their lane is electronic
+  structure; ours (CTQW transport on contact graphs) is orthogonal
+  dynamics. The institution's appetite for quantum-bio work is proven.
+- **Standing channels exist for everything.** OpenChallenges.io (Sage
+  Bionetworks) aggregates biomedical challenges — VCC, DREAM, CACHE —
+  so the next venue is discoverable without watching individual orgs.
+
+## Funding & support angles
+
+- **CZI Essential Open Source Software for Science (EOSS)** — recurring
+  ~$5M rounds for open science tooling. A "public evidence layer +
+  audit harness for perturbation prediction" proposal fits their stated
+  scope (tools the field builds on).
+- **CZI AI Meets Biology GPU Compute RFA** — compute grants aimed at
+  exactly our resource constraint (engine v2's heavier phases).
+- **OpenProblems benchmark membership** — contributing our pipeline as
+  a method + our audit findings as metrics feedback costs engineering
+  time only and produces citable outputs.
+- **Arc community-analyst lane** — publish cell-eval2 analyses; the
+  organizers explicitly thank and engage contributors.
+
 ## Explicitly not pursuing
 
 - **A foundation model.** The podium says the leverage is in evidence
@@ -175,3 +222,5 @@ paper or workshop demo on the audit layer (§D).
 | 4 | cell-eval2 pinned install + audit harness port | D |
 | 5 | OP3 task_perturbation_prediction — read the API, scope a baseline submission | C |
 | 6 | MecCog directness-grading pass (deadline Jan 15) | F |
+| 7 | Track CZI EOSS / AI-Meets-Biology RFA cycles for an engine-v2 proposal | funding |
+| 8 | Bookmark OpenChallenges.io; set a quarterly venue scan | housekeeping |
