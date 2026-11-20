@@ -191,12 +191,11 @@ competition:
 Ranked by fit × effort. Kytos is an independent open research program —
 non-dilutive money first.
 
-**Grants — high fit, apply as artifacts land.**
+**Grants — high fit, apply as artifacts land.** (We are **not US-based**;
+US small-business programs like NIH SBIR/STTR are off the table.)
 
-- **Emergent Ventures** (Mercatus / Tyler Cowen) — $1k–$50k+, one form,
-  ~1,500-word proposal, fast decisions, explicitly solo- and
-  high-risk-friendly. Cheapest credible first ask; our public track
-  record *is* the application.
+- **Emergent Ventures** (Mercatus / Tyler Cowen) — $1k–$50k+, solo- and
+  high-risk-friendly. **Applied, awaiting decision** (2026-11).
 - **CZI Essential Open Source Software for Science (EOSS)** — recurring
   cycles, **$50k–$250k** per award, open worldwide incl. individuals via
   fiscal sponsors/orgs. Requires "demonstrated impact" — so sequence
@@ -204,12 +203,25 @@ non-dilutive money first.
 - **CZI AI Meets Biology GPU Compute RFA** — compute grants aimed at
   exactly our resource constraint (engine v2's heavier phases).
 - **NIH PAR-26-040** (NLM R01: AI/ML bioinformatics/computational
-  biology) — broad eligibility incl. small businesses *and* foreign
-  institutions; bigger lift, but "evidence-engineering infrastructure
-  for perturbation biology" is squarely in scope.
+  biology) — foreign institutions and small businesses both eligible;
+  bigger lift, but "evidence-engineering infrastructure for
+  perturbation biology" is squarely in scope.
 - **Fast Grants lineage** — Biswas Family Foundation now runs the
   program (early-career pivots into ambitious fields); New Science funds
   independent young researchers.
+
+**Non-US structural options (if an entity exists or is formed).**
+
+- **EIC Accelerator** (EU/Horizon Europe) — grant-only track up to
+  **€2.5M** (+optional equity) for deep-tech SMEs in EU member states or
+  associated countries; UK companies are currently eligible for the
+  grant component. Needs a for-profit SME — real money, real lift.
+- **Innovate UK** — Smart Grants paused since Jan 2025 (no FY25/26
+  rounds); themed competitions do recur (Frontier AI SME Champions ran
+  Oct 2026). Watch the Innovation Funding Service for life-sciences /
+  digital AI calls rather than waiting for Smart.
+- **Horizon Europe health topics** (€528M, 2027 deadlines) —
+  consortium-scale; likely out of scope solo, listed for completeness.
 
 **Prizes — what we already know how to win.**
 
@@ -218,12 +230,8 @@ non-dilutive money first.
   biomedical challenges — quarterly venue scan, prize pools recur.
 - Quantum hackathons (Moth/IBM ecosystem) for the allostery track.
 
-**Conditional / structural.**
+**Opportunistic.**
 
-- **NIH SBIR/STTR** — Phase I ~$300k, Phase II ~$2M, but requires a US
-  for-profit entity with the PI >50% employed by it. Only on the table
-  if/when a US entity exists; note NHGRI has an active small-business
-  program for genomics tooling.
 - **Commercial services** — the funded virtual-cell startups (Tahoe,
   Xaira, Isomorphic, Isomorphic-adjacent DMTA shops like Rivercell at
   $25M seed) own the *prediction* lane. Nobody owns the
@@ -263,3 +271,5 @@ not promise.
 | 6 | MecCog directness-grading pass (deadline Jan 15) | F |
 | 7 | Track CZI EOSS / AI-Meets-Biology RFA cycles for an engine-v2 proposal | funding |
 | 8 | Bookmark OpenChallenges.io; set a quarterly venue scan | housekeeping |
+| 9 | Emergent Ventures — applied 2026-11, awaiting decision | funding |
+| 10 | Watch Innovate UK IFS for frontier-AI / life-sciences calls (Smart Grants paused); EIC Accelerator needs a for-profit entity decision | funding |
