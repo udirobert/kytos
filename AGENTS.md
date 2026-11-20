@@ -11,7 +11,9 @@
 > **`docs/kytos-roadmap.md`** (engine v2, VCC 2027 readiness, standing
 > benchmarks, audit layer); engine spec:
 > **`docs/engine-v2-design.md`** (evidence schema, meta-analysis,
-> DE-set layer, eval harness, k2NN run plan). Cleveland Clinic /
+> DE-set layer, eval harness, k2NN run plan). Engine v2 in progress:
+> **k201** landed phase-0 L0 evidence stores on `kytos-vcc` under
+> `k201-evidence/` (`experiments/k201-evidence-l0/`). Cleveland Clinic /
 > GQAI and MecCog remain separate workstreams (`docs/cleveland/`,
 > `docs/meccog.md`).
 

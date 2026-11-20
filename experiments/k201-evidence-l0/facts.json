@@ -53,10 +53,30 @@
     }
   },
   "audit_flags": [
-    "xatlas self-gene knockdown negative on ~86-90% of evaluable targets (k036 stores; consistent with known variable KD efficiency -- kd_eff weights this downstream)",
-    "cd4 covered=7281/11526 after quality filter; se derived as |lfc/z| where publisher SE layer absent",
-    "h1 n=150 targets only (2025 VCC train axis); welch-per-batch over 48 obs batches",
-    "k562 stats emitted at l0-20261120-01 pending final validation pass"
+    {
+      "id": "xatlas-self-kd-variable",
+      "severity": "info",
+      "rule": "self_knockdown_sign",
+      "message": "xatlas self-gene knockdown negative on ~86-90% of evaluable targets (k036 stores; consistent with known variable KD efficiency -- kd_eff weights this downstream)"
+    },
+    {
+      "id": "cd4-quality-filter-attrition",
+      "severity": "info",
+      "rule": "coverage",
+      "message": "cd4 covered=7281/11526 after quality filter; se derived as |lfc/z| where publisher SE layer absent"
+    },
+    {
+      "id": "h1-small-axis",
+      "severity": "info",
+      "rule": "coverage",
+      "message": "h1 n=150 targets only (2025 VCC train axis); welch-per-batch over 48 obs batches"
+    },
+    {
+      "id": "k562-validation-pending",
+      "severity": "warn",
+      "rule": "provenance",
+      "message": "k562 stats emitted at l0-20261120-01 pending final validation pass"
+    }
   ],
   "hypotheses_preregistered": [],
   "next_steps": [

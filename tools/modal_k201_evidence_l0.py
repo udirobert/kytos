@@ -493,25 +493,16 @@ def extract_cd4(run_id: str) -> dict:
 
     adata = ad.read_h5ad(local, backed="r")
     layer_keys = list(adata.layers.keys())
-    try:
-        obs = adata.obs
-        var_names = (
-            adata.var["gene_name"].astype(str).to_numpy()
-            if "gene_name" in adata.var.columns
-            else adata.var_names.astype(str).to_numpy()
-        )
-        obs_target = obs["target_contrast_gene_name"].astype(str)
-        targets = sorted(t for t in obs_target.unique() if t and t != "nan")
-        sel = np.flatnonzero(obs_target.isin(targets).to_numpy())
-        chosen = obs.iloc[sel]
-        log_fc = np.asarray(adata.layers["log_fc"][sel, :], dtype=np.float64)
-        extra = {
-            k: np.asarray(adata.layers[k][sel, :], dtype=np.float64)
-            for k in layer_keys
-            if k != "log_fc"
-        }
-    finally:
-        adata.file.close()
+    obs = adata.obs
+    var_names = (
+        adata.var["gene_name"].astype(str).to_numpy()
+        if "gene_name" in adata.var.columns
+        else adata.var_names.astype(str).to_numpy()
+    )
+    obs_target = obs["target_contrast_gene_name"].astype(str)
+    targets = sorted(t for t in obs_target.unique() if t and t != "nan")
+    sel = np.flatnonzero(obs_target.isin(targets).to_numpy())
+    chosen = obs.iloc[sel]
 
     quality = (
         (chosen["n_guides"] >= 2)
@@ -524,6 +515,11 @@ def extract_cd4(run_id: str) -> dict:
     positions, _missing = cd.map_gene_axis(list(var_names), panel_genes)
     keep_cols = positions >= 0
     pos_keep = positions[keep_cols]
+    # h5py fancy indexing needs increasing indices: sort var cols, remap
+    order = np.argsort(pos_keep)
+    pos_sorted = pos_keep[order]
+    inv_order = np.empty_like(order)
+    inv_order[order] = np.arange(order.size)
     n_targets = len(targets)
     n_genes = len(panel_genes)
 
@@ -535,7 +531,14 @@ def extract_cd4(run_id: str) -> dict:
     covered = np.zeros(n_targets, dtype=bool)
 
     chosen_targets = chosen["target_contrast_gene_name"].astype(str).to_numpy()
-    se_kind = "none"
+    t_rows = {}
+    for i, t in enumerate(targets):
+        rows = np.flatnonzero((chosen_targets == t) & quality)
+        if len(rows):
+            covered[i] = True
+            t_rows[i] = rows
+            n_voting[i, keep_cols] = len(rows)
+
     se_layer_map = {
         "se": se,
         "std_error": se,
@@ -546,18 +549,25 @@ def extract_cd4(run_id: str) -> dict:
         "zscore": z,
         "z": z,
     }
-    found = {k: v for k, v in se_layer_map.items() if k in extra}
-    for i, t in enumerate(targets):
-        rows = np.flatnonzero((chosen_targets == t) & quality)
-        if not len(rows):
-            continue
-        covered[i] = True
-        lfc[i, keep_cols] = np.nanmean(log_fc[rows][:, pos_keep], axis=0)
-        n_voting[i, keep_cols] = len(rows)
-        for k, dst in found.items():
-            dst[i, keep_cols] = np.nanmean(extra[k][rows][:, pos_keep], axis=0)
-    if found:
-        se_kind = "publisher:" + ",".join(sorted(found))
+    wanted = ["log_fc"] + [k for k in se_layer_map if k in layer_keys]
+    found = {}
+    try:
+        for key in wanted:
+            dst = lfc if key == "log_fc" else se_layer_map[key]
+            # slice (sel, mapped var cols) only -- bounded memory per layer
+            mat = np.asarray(
+                adata.layers[key][sel, :][:, pos_sorted],
+                dtype=np.float32,
+            )[:, inv_order]
+            if key != "log_fc":
+                found[key] = dst
+            for i, rows in t_rows.items():
+                vals = np.nanmean(mat[rows], axis=0)
+                dst[i, keep_cols] = vals
+            del mat
+    finally:
+        adata.file.close()
+    se_kind = "publisher:" + ",".join(sorted(found)) if found else "none"
     # publisher file ships zscore + sparse p_value but no se layer; recover
     # Wald identities where absent: se = |lfc/z|, p = 2*sf(|z|)
     from scipy import stats as _st
