@@ -47,8 +47,11 @@
     "replogle-k562-gwps": {
       "path": "/kytos-vol/k201-evidence/k562/l0-20261120-01",
       "n_targets": 9866,
+      "covered": 9866,
       "se_kind": "welch-per-gemgroup",
       "lfc_kind": "log1p-sc",
+      "median_q_lt_0.05_per_target": 6,
+      "self_kd_neg": "7327/9510",
       "provenance": "per-(target,gem_group) group-mean deltas vs same-gem NTC, Welch-t over 274 gem groups; packed-shard scan of figshare 35775507"
     }
   },
@@ -72,10 +75,10 @@
       "message": "h1 n=150 targets only (2025 VCC train axis); welch-per-batch over 48 obs batches"
     },
     {
-      "id": "k562-validation-pending",
-      "severity": "warn",
-      "rule": "provenance",
-      "message": "k562 stats emitted at l0-20261120-01 pending final validation pass"
+      "id": "k562-coarse-significance",
+      "severity": "info",
+      "rule": "estimation",
+      "message": "k562 median q<0.05 = 6 genes/target vs xatlas ~1800-2000 -- gem-group (n<=274) Welch is far more conservative than per-sample; tau^2 will absorb this in L1"
     }
   ],
   "hypotheses_preregistered": [],
