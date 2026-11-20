@@ -1,10 +1,24 @@
 {
   "run_id": "k202-evidence-harvest",
   "created": "2026-11-20",
-  "headline": "engine-v2 phase-1 corpus: inventory doc + manifest-driven harvester; first new source (RPE1 guide-level bulk) landed and validated",
-  "data_status": "partial -- replogle22rpe1-raw harvest in flight",
+  "headline": "engine-v2 phase-1 corpus: inventory doc + manifest-driven harvester; first two RPE1 sources landed and validated (2,393 sc + 2,394 bulk targets)",
+  "data_status": "final",
   "headline_metrics": {},
   "stores": {
+    "replogle22rpe1-raw/h202-20261120-01": {
+      "n_targets": 2393,
+      "covered": 2393,
+      "n_genes": 18533,
+      "lfc_finite_frac_cov": 0.446,
+      "se_finite_frac": 0.446,
+      "q_lt_0.05_median": 403.0,
+      "self_kd_neg": "1907/1921",
+      "n_voting_max": 56,
+      "se_kind": "welch-per-gem_group",
+      "lfc_kind": "norm-mean-diff",
+      "sample_unit": "gem_group",
+      "source": "figshare 35775606 (rpe1_raw_singlecell_01.h5ad; 247,914 cells, 56 gem_groups)"
+    },
     "replogle22rpe1-bulk/h202-20261120-01": {
       "n_targets": 2394,
       "covered": 2394,
@@ -47,9 +61,8 @@
   ],
   "hypotheses_preregistered": [],
   "next_steps": [
-    "finish replogle22rpe1-raw harvest (8.7GB sc, 56 gem_groups, welch-per-gemgroup)",
     "unblock scPertEval arm (GCP billing project) or find figshare/GEO alternates",
-    "k203: widen phase-1 harvest (scPerturb portal datasets, remaining figshare arms)",
+    "k203: widen phase-1 harvest (scPerturb portal datasets, remaining figshare arms, McFaline-Figueroa U-87MG)",
     "k204: L1 inverse-variance meta-analysis over landed stores"
   ],
   "provenance": {

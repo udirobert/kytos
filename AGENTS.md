@@ -13,7 +13,12 @@
 > **`docs/engine-v2-design.md`** (evidence schema, meta-analysis,
 > DE-set layer, eval harness, k2NN run plan). Engine v2 in progress:
 > **k201** landed phase-0 L0 evidence stores on `kytos-vcc` under
-> `k201-evidence/` (`experiments/k201-evidence-l0/`). Cleveland Clinic /
+> `k201-evidence/` (`experiments/k201-evidence-l0/`); **k202** built the
+> phase-1 corpus inventory (`docs/evidence-corpus-inventory.md`) +
+> manifest-driven harvester (`tools/modal_k202_harvest.py`) — note the
+> scPertEval GCS bucket went **requester-pays** since the k039 audit, so
+> those six sources are blocked pending a GCP billing project; figshare
+> Replogle arms remain open. Cleveland Clinic /
 > GQAI and MecCog remain separate workstreams (`docs/cleveland/`,
 > `docs/meccog.md`).
 

@@ -29,8 +29,8 @@ Open figshare arms (verified 2026-11-20, ranged GET):
 
 | dataset_id | size | context | assay | status |
 |---|---|---|---|---|
-| replogle22rpe1-raw | 8.7 GB | RPE1 | sc CRISPRi | `rpe1_raw_singlecell_01.h5ad` — true log1p + real gem groups; primary arm |
-| replogle22rpe1-bulk | 0.1 GB | RPE1 | bulk CRISPRi | `rpe1_raw_bulk_01.h5ad` — smoke target |
+| replogle22rpe1-raw | 8.7 GB | RPE1 | sc CRISPRi | **harvested `h202-20261120-01`** — 2,393 targets, welch-per-gem_group (56 groups); X is publisher-normalized despite filename |
+| replogle22rpe1-bulk | 0.1 GB | RPE1 | bulk CRISPRi | **harvested `h202-20261120-01`** — 2,394 guide-level targets, welch-per-row |
 
 scPertEval processed files (`X` = `log1p(normalize_total(1e4))`, no
 raw counts; no obs batch column expected → pseudo-batch or pooled —
