@@ -1,0 +1,62 @@
+{
+  "run_id": "k202-evidence-harvest",
+  "created": "2026-11-20",
+  "headline": "engine-v2 phase-1 corpus: inventory doc + manifest-driven harvester; first new source (RPE1 guide-level bulk) landed and validated",
+  "data_status": "partial -- replogle22rpe1-raw harvest in flight",
+  "headline_metrics": {},
+  "stores": {
+    "replogle22rpe1-bulk/h202-20261120-01": {
+      "n_targets": 2394,
+      "covered": 2394,
+      "n_genes": 18533,
+      "lfc_finite_frac_cov": 0.446,
+      "se_finite_frac": 0.0037,
+      "self_kd_neg": "1912/1921",
+      "n_voting_max": 17,
+      "se_kind": "welch-per-row vs pooled controls",
+      "lfc_kind": "norm-mean-diff",
+      "sample_unit": "obs-row (each row is a replicate unit)",
+      "source": "figshare 35775581 (rpe1_raw_bulk_01.h5ad)"
+    }
+  },
+  "audit_flags": [
+    {
+      "id": "scperteval-requester-pays",
+      "severity": "warning",
+      "rule": "access",
+      "message": "scPertEval bucket flipped to requester-pays since the 2026-10-12 k039 audit -- all six processed sources blocked pending a GCP billing project; catalog entries carry access:'requester-pays' guard"
+    },
+    {
+      "id": "rpe1-bulk-guide-level",
+      "severity": "info",
+      "rule": "replication",
+      "message": "rpe1 bulk file is guide-level (1-2 guides/target): most targets emit point-estimate lfc with NaN stats; 99.5% self-KD negative confirms extraction correctness"
+    },
+    {
+      "id": "rpe1-not-raw-counts",
+      "severity": "warning",
+      "rule": "units",
+      "message": "despite 'raw' filenames, both figshare rpe1 arms ship publisher-normalized expression (fractional, dense) -- lfc_kind 'norm-mean-diff', honor before mixing with log1p-sc stores"
+    },
+    {
+      "id": "rpe1-panel-axis-gap",
+      "severity": "info",
+      "rule": "coverage",
+      "message": "rpe1 sources map ~8,749/18,533 panel genes (44.6% lfc finite) -- file's own gene axis is smaller than the VCC panel; unmapped genes stay NaN"
+    }
+  ],
+  "hypotheses_preregistered": [],
+  "next_steps": [
+    "finish replogle22rpe1-raw harvest (8.7GB sc, 56 gem_groups, welch-per-gemgroup)",
+    "unblock scPertEval arm (GCP billing project) or find figshare/GEO alternates",
+    "k203: widen phase-1 harvest (scPerturb portal datasets, remaining figshare arms)",
+    "k204: L1 inverse-variance meta-analysis over landed stores"
+  ],
+  "provenance": {
+    "harvester": "tools/modal_k202_harvest.py (CATALOG spec-driven)",
+    "shared_lib": "tools/evidence_l0.py",
+    "inventory": "docs/evidence-corpus-inventory.md",
+    "validator": "tools/modal_k201_validate.py"
+  },
+  "vessel_fill": null
+}

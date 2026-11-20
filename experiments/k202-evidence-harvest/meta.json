@@ -1,0 +1,18 @@
+{
+  "run_id": "k202-evidence-harvest",
+  "created_at": "2026-11-20",
+  "mode": "engine-v2 L0 corpus inventory + manifest-driven harvester (phase 1 start) -- Modal",
+  "platform": "modal (kytos-vcc volume)",
+  "jobs": {
+    "tools/evidence_l0.py": "shared L0 helpers (welch moments, bh, emit, column detection)",
+    "tools/modal_k202_harvest.py": "manifest-driven harvester; one dataset per invocation",
+    "tools/modal_k202_peek.py": "structure inspector (obs/var/cardinality probe before harvest)",
+    "tools/modal_k201_validate.py": "schema + audit validation (shared with k201)"
+  },
+  "volume_root": "/kytos-vol/k201-evidence/",
+  "docs": {
+    "inventory": "docs/evidence-corpus-inventory.md",
+    "design": "docs/engine-v2-design.md (section 1-2, milestone k202)"
+  },
+  "notes": "Catalog spec carries url/access/size/context/assay/x_kind/sample_mode/batch_col/pert_col/sha256/license. Two extraction modes: batch-paired (per-(target,sample) group-mean deltas, Welch over samples) and row-per-sample (bulk/guide files: per-row deltas vs pooled control mean). Access field guards requester-pays sources."
+}

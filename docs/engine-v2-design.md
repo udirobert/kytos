@@ -247,7 +247,7 @@ non-DE genes get zeroed cleanly instead of carrying residual deltas
 | Run | Artifact | Done when |
 |---|---|---|
 | k201 | `k201-evidence/{hct116,hek293t,k562,cd4,h1}/` on `kytos-vcc` (L0 phase 0) | schema validates; self-KD sign audit; `tools/modal_k201_validate.py` |
-| k202 | Corpus inventory doc + harvester (`tools/evidence_harvest/`) | manifest-driven; one new source lands per invocation |
+| k202 | Corpus inventory doc (`docs/evidence-corpus-inventory.md`) + harvester (`tools/modal_k202_harvest.py`, shared lib `tools/evidence_l0.py`) | manifest-driven catalog; one new source lands per invocation |
 | k203 | Phase-1 sc harvest (10–20 stores) | each store passes invariant checks |
 | k204 | L1 meta-analysis v0 (IV-weights only) | LOLO-consistency: held-out line reconstruction |
 | k205 | DE-set predictor v0 | DE-count median in 22–44 band on held-outs |
