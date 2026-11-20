@@ -82,18 +82,30 @@ controls — Replogle-family schema, pinned in catalog.
 
 | dataset_id | source | context | status 2026-11-20 |
 |---|---|---|---|
-| datlinger17-jurkat | zenodo | Jurkat | **landed** — 32 targets |
-| shifrut18-tcell | zenodo | CD8 T | **landed** — 20 targets |
+| datlinger17-jurkat | zenodo | Jurkat | **landed** — 32 targets, welch-per-replicate |
+| datlinger21-k562 | zenodo | K562 | **landed** — welch-per-sample (fallback col) |
+| shifrut18-tcell | zenodo | CD8 T | **landed** — 20 targets, welch-per-replicate |
 | dixit16-dc | zenodo | dendritic | **landed** — 44 (PSEUDOREP) |
+| papalexi21-pbmc | zenodo | PBMC | **landed** — 98 (PSEUDOREP) |
+| norman19-k562 | zenodo | K562 | **landed** — 236 (PSEUDOREP) |
+| frangieh21-melanoma | zenodo | melanoma | **landed** — 248 (PSEUDOREP) |
+| schiebinger19-1 | zenodo | reprogramming | **landed** — 2 targets (tiny arm) |
+| zhao21-brain | zenodo | brain | **landed** — 6 targets |
+| tian21-crnispri | zenodo | neuron | **landed** — 184, welch-per-batch |
+| tian21-crispa | zenodo | neuron | **landed** — 100, welch-per-batch (**CRISPRa — audit-only, not KD consensus**) |
+| replogle22k562-ess (sc) | zenodo | K562 | **landed** — 2,057, welch-per-batch |
 | replogle22k562-gwps-bulk | figshare 35774443 | K562 | **landed** — 9,867 targets |
 | replogle22k562-ess-bulk | figshare | K562 | **landed** — 2,058 targets |
-| nadig24-jurkat / nadig24-hepg2 | altos HF | Jurkat/HepG2 | **landed** (gem_group batches confirmed) |
-| adamson16-k562-s1/s5/s10 | zenodo | K562 | respawned |
-| datlinger21-k562, papalexi21-pbmc | zenodo | K562/PBMC | respawned |
-| tian19-ipsc/neuron, tian21-crnispri/crispa | zenodo | iPSC/neuron | respawned after pert_col fallback fix (crispa arm = activation, audit-only) |
-| schiebinger19-1, zhao21-brain | zenodo | reprogram/brain | respawned |
-| norman19-k562, frangieh21-melanoma | zenodo | K562/melanoma | respawned |
-| replogle22k562-ess (sc) | zenodo | K562 | respawned |
+| nadig24-jurkat | altos HF | Jurkat | **landed** — 2,270, welch-per-gem_group (n=55) |
+| nadig24-hepg2 | altos HF | HepG2 | **landed** — 2,160, welch-per-gem_group |
+| adamson16-k562-s1/s5/s10 | zenodo | K562 | still in flight |
+| tian19-ipsc / tian19-neuron | zenodo | iPSC/neuron | still in flight |
+
+All landed stores pass `modal_k201_validate.py` invariants (gene axis
+18,533, finite-lfc structure, se_kind recorded). PSEUDOREP flags mark
+sources without real replicate columns — L1 downweights them. The
+`tian21-crispa` arm is CRISPR activation: landed for audit completeness,
+excluded from knockdown consensus by assay tag.
 
 ## Still pending (k203 backlog)
 

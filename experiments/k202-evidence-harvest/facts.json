@@ -1,7 +1,7 @@
 {
   "run_id": "k202-evidence-harvest",
   "created": "2026-11-20",
-  "headline": "engine-v2 phase-1 corpus: inventory + manifest harvester; 7 phase-1 stores landed & validated (RPE1 sc+bulk, K562 gwps+ess bulk, 3 scPerturb arms); 15 more harvests in flight",
+  "headline": "engine-v2 phase-1 corpus: inventory + manifest harvester; 22 phase-1 stores landed & validated incl K562 gwps-bulk 9,867 targets; 5 still in flight; scPertEval blocked->Zenodo/HF mirrors",
   "data_status": "final",
   "headline_metrics": {},
   "stores": {
@@ -76,13 +76,71 @@
       "se_kind": "welch-per-gem_group",
       "lfc_kind": "log1p-norm",
       "sample_unit": "gem_group (n=55)",
-      "source": "altos HF nadig24_jurkat_preprocessed.h5ad.gz (peeked: CSR log1p-norm max~6.1)"
+      "source": "altos HF nadig24_jurkat_preprocessed.h5ad.gz (peeked: CSR log1p-norm max~6.1)",
+      "covered": 2270
     },
     "nadig24-hepg2/h202-20261120-01": {
       "se_kind": "welch-per-gem_group",
       "lfc_kind": "log1p-norm",
       "sample_unit": "gem_group",
-      "source": "altos HF nadig24_hepg2_preprocessed.h5ad.gz (spec pinned from jurkat schema)"
+      "source": "altos HF nadig24_hepg2_preprocessed.h5ad.gz (spec pinned from jurkat schema)",
+      "covered": 2160
+    },
+    "datlinger21-k562/h202-20261120-01": {
+      "se_kind": "welch-per-sample",
+      "note": "fallback batch col (pinned 'target' absent)",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
+    },
+    "papalexi21-pbmc/h202-20261120-01": {
+      "covered": 98,
+      "se_kind": "welch-pseudobatch8 (PSEUDOREP)",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
+    },
+    "norman19-k562/h202-20261120-01": {
+      "covered": 236,
+      "se_kind": "welch-pseudobatch8 (PSEUDOREP)",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
+    },
+    "frangieh21-melanoma/h202-20261120-01": {
+      "covered": 248,
+      "se_kind": "welch-pseudobatch8 (PSEUDOREP)",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
+    },
+    "schiebinger19-1/h202-20261120-01": {
+      "covered": 2,
+      "se_kind": "welch-pseudobatch8 (PSEUDOREP)",
+      "note": "tiny reprogramming arm",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
+    },
+    "zhao21-brain/h202-20261120-01": {
+      "covered": 6,
+      "se_kind": "welch-per-sample",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
+    },
+    "tian21-crnispri/h202-20261120-01": {
+      "covered": 184,
+      "se_kind": "welch-per-batch",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
+    },
+    "tian21-crispa/h202-20261120-01": {
+      "covered": 100,
+      "se_kind": "welch-per-batch",
+      "note": "CRISPRa -- audit-only",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
+    },
+    "replogle22k562-ess/h202-20261120-01": {
+      "covered": 2057,
+      "se_kind": "welch-per-batch",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268"
     }
   },
   "audit_flags": [
@@ -147,5 +205,12 @@
     "replogle22k562-ess",
     "nadig24-jurkat",
     "nadig24-hepg2"
+  ],
+  "in_flight_20261120": [
+    "adamson16-k562-s1",
+    "adamson16-k562-s5",
+    "adamson16-k562-s10",
+    "tian19-ipsc",
+    "tian19-neuron"
   ]
 }
