@@ -71,6 +71,18 @@
       "lfc_kind": "log1p-sc",
       "sample_unit": "pseudo-batch",
       "source": "zenodo 10044268 DixitRegev2016.h5ad (raw counts; no replicate col)"
+    },
+    "nadig24-jurkat/h202-20261120-01": {
+      "se_kind": "welch-per-gem_group",
+      "lfc_kind": "log1p-norm",
+      "sample_unit": "gem_group (n=55)",
+      "source": "altos HF nadig24_jurkat_preprocessed.h5ad.gz (peeked: CSR log1p-norm max~6.1)"
+    },
+    "nadig24-hepg2/h202-20261120-01": {
+      "se_kind": "welch-per-gem_group",
+      "lfc_kind": "log1p-norm",
+      "sample_unit": "gem_group",
+      "source": "altos HF nadig24_hepg2_preprocessed.h5ad.gz (spec pinned from jurkat schema)"
     }
   },
   "audit_flags": [
@@ -97,6 +109,12 @@
       "severity": "info",
       "rule": "coverage",
       "message": "rpe1 sources map ~8,749/18,533 panel genes (44.6% lfc finite) -- file's own gene axis is smaller than the VCC panel; unmapped genes stay NaN"
+    },
+    {
+      "id": "scperturb-target-col-heterogeneity",
+      "severity": "info",
+      "rule": "schema",
+      "message": "not all scPerturb files carry obs.target -- first spawn wave hit KeyError on ~11 datasets; harvester now falls back to autodetect when a pinned pert_col/control_col/batch_col is absent, manifest records actual column used; all 14 respawned 2026-11-20"
     }
   ],
   "hypotheses_preregistered": [],
@@ -112,7 +130,7 @@
     "validator": "tools/modal_k201_validate.py"
   },
   "vessel_fill": null,
-  "in_flight_20261120": [
+  "respawned_20261120": [
     "adamson16-k562-s1",
     "adamson16-k562-s5",
     "adamson16-k562-s10",

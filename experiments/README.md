@@ -313,11 +313,47 @@ enrichment path.
   dual-moment response-heterogeneity gate round both closed their axes
   without a slot (qualitative records in `docs/k041-…` and `AGENTS.md`
   §4; numbers embargoed).
+- `k043-final-sagr-dm` — **final-phase submission (2026-10-22, entry
+  `Ov4qNbLHMb1dRRyqxDn8`)**: the k040 sagr recipe rebuilt on the final
+  panel — contexts D/E/F, panel `vcc2026-test-1`, 300 targets of which
+  171 are new vs validation. Final-panel `consensus_w_ctr_sagr` assembled
+  from the genome-wide k034 extracts + k036 per-sample stats (only ANG
+  uncovered union-wide); champion dual-moment generator unchanged;
+  packaged + submitted with `vcc-cli==0.3.0`. Final scores hidden until
+  Nov 19; only the last submission before Nov 5 23:59 UTC counts.
+  Tool: `tools/modal_k043_final_sagr.py`. The same session audited the
+  k039 public screens against the 171 new targets — the challenger path
+  stays closed (the only meaningful-coverage hit is CRISPRa, not
+  knockdown). Receipts: [`k043-final-sagr-dm/`](k043-final-sagr-dm/)
+  (meta + coverage + manifests; `.vcc` on the volume); analysis embargoed.
 - `k004-kaggle-smoke` — Kaggle free-tier smoke (2026-09-10): small subset
   resampling vs `ContextConditionedTransfer` + `AdditiveTransportSampler`.
   Scripts: [`notebooks/kaggle_k004_smoke.py`](../notebooks/kaggle_k004_smoke.py) /
   [`notebooks/kaggle_k004_smoke.ipynb`](../notebooks/kaggle_k004_smoke.ipynb);
   bundle: [`tools/kaggle_bundle.py`](../tools/kaggle_bundle.py).
+
+## Engine v2 (post-challenge program)
+
+- `k201-evidence-l0` — data run 2026-11-20, **no submission**: phase-0 L0
+  evidence re-extraction per `docs/engine-v2-design.md`. Five stores on
+  `kytos-vcc:/k201-evidence/` (hct116 18,293 + hek293t 18,311 +
+  replogle-k562 9,866 + cd4 7,281 + h1 150 targets), each `stats.npz`
+  (lfc/se/p/q/z/n_voting/kd_eff) + `manifest.json` with `lfc_kind`/
+  `se_kind` provenance. Tools: `tools/modal_k201_evidence_l0.py`,
+  `tools/modal_k201_validate.py`. Findings: k562 gem-group Welch is far
+  more conservative than xatlas per-sample (median 6 vs ~1,900
+  q<0.05 genes/target); cd4 has no publisher SE (derived `se=|lfc/z|`).
+- `k202-evidence-harvest` — data run 2026-11-20, **no submission**:
+  corpus inventory (`docs/evidence-corpus-inventory.md`) +
+  manifest-driven harvester (`tools/modal_k202_harvest.py`, shared lib
+  `tools/evidence_l0.py`, probe `tools/modal_k202_peek.py`). The k203
+  wave landed 9 phase-1 stores under the same schema (K562 GWPS bulk
+  9,867 + K562 ess bulk 2,058 + RPE1 sc 2,393 + RPE1 bulk 2,394 +
+  nadig24 jurkat/hepg2 + 3 scPerturb arms), with ~14 more spawned.
+  Access findings: scPertEval GCS is requester-pays; scPerturb lives
+  open on Zenodo 10044268 (raw counts → log1p-sc parity); Altos
+  `primeflow-vcc-datasets` HF mirror covers the blocked arms plus
+  McFaline GxE (U-87MG), Feng iPSC, Jiang pathway.
 
 ## 2026-09-20 validation reset
 

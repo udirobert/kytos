@@ -226,7 +226,8 @@ def pick_batch_column(obs, forced=None):
     forced: explicit column name from the catalog spec. Codes are int64
     categorical codes 0..S-1.
     """
-    col = forced or next((c for c in BATCH_COL_CANDIDATES if c in obs.columns), None)
+    col = forced if (forced and forced in obs.columns) else None
+    col = col or next((c for c in BATCH_COL_CANDIDATES if c in obs.columns), None)
     if col is None:
         return None, None
     return col, obs[col].astype("category").cat.codes.to_numpy()

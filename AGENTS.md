@@ -15,10 +15,15 @@
 > **k201** landed phase-0 L0 evidence stores on `kytos-vcc` under
 > `k201-evidence/` (`experiments/k201-evidence-l0/`); **k202** built the
 > phase-1 corpus inventory (`docs/evidence-corpus-inventory.md`) +
-> manifest-driven harvester (`tools/modal_k202_harvest.py`) — note the
-> scPertEval GCS bucket went **requester-pays** since the k039 audit, so
-> those six sources are blocked pending a GCP billing project; figshare
-> Replogle arms remain open. Cleveland Clinic /
+> manifest-driven harvester (`tools/modal_k202_harvest.py`); the k203
+> wave has 14+ stores landed and more spawned. Access notes: scPertEval
+> GCS went **requester-pays** (needs a GCP billing project); scPerturb
+> is open on **Zenodo 10044268** via `/records/.../files/<name>?download=1`
+> (the `/api/` route throttles Modal IPs); Altos Labs'
+> **`primeflow-vcc-datasets` HF mirror** covers the blocked arms plus
+> McFaline GxE/Feng/Jiang. Harvester pinned columns fall back to
+> autodetect when a file lacks them — check each store's manifest for
+> what was actually used. Cleveland Clinic /
 > GQAI and MecCog remain separate workstreams (`docs/cleveland/`,
 > `docs/meccog.md`).
 

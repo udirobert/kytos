@@ -665,7 +665,11 @@ def harvest(dataset_id: str, run_id: str) -> dict:
             # control_col: where control labels live (default = pert_col).
             # scPerturb: 'perturbation' holds 'control' while 'target'
             # holds the gene -> control_col=perturbation, pert_col=target.
+            # Pinned cols that are absent in this file fall back to
+            # autodetect -- the manifest records what was actually used.
             ctrl_col = spec.get("control_col") or spec.get("pert_col")
+            if ctrl_col and ctrl_col not in obs.columns:
+                ctrl_col = None
             if ctrl_col:
                 vals = obs[ctrl_col].astype(str).str.lower().unique()
                 hit = [v for v in vals if v in l0.CONTROL_LABELS]
@@ -678,6 +682,8 @@ def harvest(dataset_id: str, run_id: str) -> dict:
             labels_lower = obs[detected].astype(str).str.lower().to_numpy()
             is_ctrl = np.array([x in l0.CONTROL_LABELS for x in labels_lower])
             pert_col = spec.get("pert_col") or detected
+            if pert_col not in obs.columns:
+                pert_col = detected
         if spec.get("target_source") == "obs_name_field":
             names = adata.obs_names.astype(str).to_numpy()
             labels = np.array([n.split("_")[spec["target_field"]] for n in names])

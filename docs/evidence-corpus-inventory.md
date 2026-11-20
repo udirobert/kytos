@@ -28,6 +28,8 @@ Phase-1 additions (`h202-20261120-01`, validated):
 | datlinger17-jurkat | Jurkat | 32 | 32 | welch-per-replicate | log1p-sc |
 | shifrut18-tcell | CD8 T | 20 | 20 | welch-per-replicate | log1p-sc |
 | dixit16-dc | dendritic | 44 | 44 | welch-pseudobatch8 (PSEUDOREP) | log1p-sc |
+| nadig24-jurkat | Jurkat | ~2,270 | landed | welch-per-gem_group (n=55) | log1p-norm |
+| nadig24-hepg2 | HepG2 | landed | landed | welch-per-gem_group | log1p-norm |
 
 ## Phase 1 — seeded harvest catalog
 
@@ -85,13 +87,13 @@ controls — Replogle-family schema, pinned in catalog.
 | dixit16-dc | zenodo | dendritic | **landed** — 44 (PSEUDOREP) |
 | replogle22k562-gwps-bulk | figshare 35774443 | K562 | **landed** — 9,867 targets |
 | replogle22k562-ess-bulk | figshare | K562 | **landed** — 2,058 targets |
-| nadig24-jurkat / nadig24-hepg2 | altos HF | Jurkat/HepG2 | spawned |
-| adamson16-k562-s1/s5/s10 | zenodo | K562 | spawned |
-| datlinger21-k562, papalexi21-pbmc | zenodo | K562/PBMC | spawned |
-| tian19-ipsc/neuron, tian21-crnispri/crispa | zenodo | iPSC/neuron | spawned (crispa arm = activation, audit-only) |
-| schiebinger19-1, zhao21-brain | zenodo | reprogram/brain | spawned |
-| norman19-k562, frangieh21-melanoma | zenodo | K562/melanoma | spawned |
-| replogle22k562-ess (sc) | zenodo | K562 | spawned |
+| nadig24-jurkat / nadig24-hepg2 | altos HF | Jurkat/HepG2 | **landed** (gem_group batches confirmed) |
+| adamson16-k562-s1/s5/s10 | zenodo | K562 | respawned |
+| datlinger21-k562, papalexi21-pbmc | zenodo | K562/PBMC | respawned |
+| tian19-ipsc/neuron, tian21-crnispri/crispa | zenodo | iPSC/neuron | respawned after pert_col fallback fix (crispa arm = activation, audit-only) |
+| schiebinger19-1, zhao21-brain | zenodo | reprogram/brain | respawned |
+| norman19-k562, frangieh21-melanoma | zenodo | K562/melanoma | respawned |
+| replogle22k562-ess (sc) | zenodo | K562 | respawned |
 
 ## Still pending (k203 backlog)
 
