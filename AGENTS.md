@@ -15,6 +15,12 @@ Enterprise Challenge (GQAI 2026) workstream. Do not mix their stacks or
 run-ID prefixes (`kNNN-*` vs `cNNN-*`). It overrides generic assumptions about
 "local dev" because the primary dev machine is **memory- and disk-constrained**.
 
+A third, knowledge-only workstream — the **MecCog challenge** (APOE4/endosome
+literature extraction, deadline 2027-01-15) — is documented in
+`docs/meccog.md`. The pipeline lives in the `lemma` repo; kytos supplies
+domain judgement (directness grading, surrogate-assay vocabulary). No run
+prefixes, no embargo rules, artifacts go in `docs/`, not `experiments/`.
+
 ## Publication embargo (active until the Oct 22 final test set)
 
 The repo is public and competitors read it. **Code, tools, and
