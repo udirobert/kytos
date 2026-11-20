@@ -9,7 +9,9 @@
 > `experiments/_embargoed/` is now tracked in git. Full analysis:
 > **`docs/vcc-postmortem.md`**; forward program:
 > **`docs/kytos-roadmap.md`** (engine v2, VCC 2027 readiness, standing
-> benchmarks, audit layer). Cleveland Clinic /
+> benchmarks, audit layer); engine spec:
+> **`docs/engine-v2-design.md`** (evidence schema, meta-analysis,
+> DE-set layer, eval harness, k2NN run plan). Cleveland Clinic /
 > GQAI and MecCog remain separate workstreams (`docs/cleveland/`,
 > `docs/meccog.md`).
 
@@ -148,14 +150,15 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
   locally. **For the Observatory build:** system `python3` (3.14) has a
   broken x86/arm64 numpy — use `uv run --no-project --with jinja2 python
   frontend/build.py ...` (verified working 2026-11-20, 33 runs).
-- The `vcc` CLI (0.2.2) lives on `snapflip-vultr` at `/opt/kytos/.venv/bin/vcc`
-  (credentialed, `token_source: file`) and inside the Modal job images. Use it
-  there, not locally.
-- The 2026 `controls` bundle is NOT held locally any more (only
+- The `vcc` CLI (0.2.2) lived on `snapflip-vultr` — **that VPS is
+  decommissioned (2026-11-20)**. Remaining credentialed path: `vcc`
+  inside the Modal job images, or re-auth locally with the
+  virtualcellchallenge.org account (`ungethe@gmail.com`).
+- The 2026 `controls` bundle is NOT held locally (only
   `gene_names.csv` / `pert_counts.csv` / `manifest.json` remain in
-  `data/raw/vcc2026/`); the 3 context `.h5ad` files live on
-  `snapflip-vultr:/opt/kytos/repo/data/raw/vcc2026/` and every Modal build job
-  re-downloads them via `vcc datasets download controls`.
+  `data/raw/vcc2026/`); the 3 context `.h5ad` files were on
+  `snapflip-vultr` (gone) and every Modal build job re-downloads them
+  via `vcc datasets download controls` anyway.
 - Legacy `cell-eval 0.8.2` was never the official 2026 six-metric scorer
   identified in §4b.
 - A `kytos-pipe-test` random `vcc sample` baseline has been submitted and

@@ -55,9 +55,11 @@ independently useful beyond VCC scoring.
    per-gene heads on one L40S). Organizers measured everyone's
    context-specific slope at 0.02–0.13 — a tiebreaker, not the ticket.
 
-**Next artifact:** `docs/engine-v2-design.md` + a `k2NN-*` run series on
-the Observatory (VCC run-ID namespace continues — the Observatory tracks
-experiments, not competitions).
+**Design:** [`engine-v2-design.md`](engine-v2-design.md) — evidence
+schema, corpus inventory, meta-analysis, DE-set layer, eval harness,
+k2NN run plan. Runs land on the Observatory as `k2NN-*` (VCC run-ID
+namespace continues — the Observatory tracks experiments, not
+competitions).
 
 ## B. VCC 2027 readiness
 
@@ -263,8 +265,8 @@ not promise.
 
 | # | Action | Track |
 |---|---|---|
-| 1 | Retrieve k043 final score via `vcc status` on snapflip-vultr (VPS unreachable 2026-11-20) | housekeeping |
-| 2 | `docs/engine-v2-design.md` — DE-table schema, corpus inventory, LOLO fitting plan | A |
+| 1 | Retrieve k043 final score — snapflip-vultr is **decommissioned**; path is re-authing the `vcc` CLI locally with the virtualcellchallenge.org account, or the final board going public | housekeeping |
+| 2 | ~~`docs/engine-v2-design.md`~~ **done** (2026-11-20) — DE-table schema, corpus inventory, LOLO fitting plan | A |
 | 3 | Re-extract Replogle + X-Atlas per-sample LFC/SE stores on Modal | A.1 |
 | 4 | cell-eval2 pinned install + audit harness port | D |
 | 5 | OP3 task_perturbation_prediction — read the API, scope a baseline submission | C |
