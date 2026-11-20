@@ -1,0 +1,15 @@
+{
+  "run_id": "k201-evidence-l0",
+  "created_at": "2026-11-20",
+  "mode": "engine-v2 L0 evidence-store extraction (phase 0) -- Modal",
+  "n_targets": "per-dataset (see facts.json stores)",
+  "n_genes": 18533,
+  "platform": "modal (kytos-vcc volume)",
+  "jobs": {
+    "tools/modal_k201_evidence_l0.py": "extraction (5 source stages)",
+    "tools/modal_k201_validate.py": "schema + audit validation"
+  },
+  "volume_root": "/kytos-vol/k201-evidence/",
+  "design_doc": "docs/engine-v2-design.md (section 1, L0 schema)",
+  "notes": "First engine-v2 run. L0 stores replace pooled-delta schema with per-(target,gene) lfc+se+p+q+z+n_voting+kd_eff; units flagged per manifest (lfc_kind, se_kind) -- no silent unit mixing."
+}

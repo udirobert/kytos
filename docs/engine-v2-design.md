@@ -63,26 +63,29 @@ generator consumed a delta vector (§7).
 One evidence store per source dataset. Unit: **(target, gene, dataset) →
 effect estimate + uncertainty + provenance.**
 
-Physical layout: `data/evidence/<dataset_id>/` with a
-`manifest.json` + columnar table (parquet; targets × genes is too sparse
-in coverage to justify dense matrices — bulk sources hit ~1k targets,
-sc atlases ~10k).
+Physical layout (as built in k201):
+`/kytos-vol/k201-evidence/<dataset_id>/<run_id>/` with
+`manifest.json` + `stats.npz`. Per-dataset dense T×G matrices — within a
+dataset the panel axis is measured for nearly every target, so sparsity
+lives in *coverage* (which targets a dataset covers), handled by a
+`covered` bool per target rather than a long-format table. Same on-disk
+convention as the existing k035/k036 stores, so L1 reads them with the
+same tooling.
 
-Row schema (long format, one row per measured target×gene):
+`stats.npz` arrays:
 
-| field | type | semantics |
+| field | shape | semantics |
 |---|---|---|
-| `target` | cat | perturbed gene symbol (panel-axis normalized via `map_gene_axis`) |
-| `gene` | cat | measured gene symbol, panel axis |
-| `lfc` | f32 | log fold-change vs controls, in the dataset's own units + `lfc_kind` flag |
-| `se` | f32 | standard error of `lfc` |
-| `p` | f64 | raw p-value (two-sided) |
-| `q` | f32 | BH-adjusted within (dataset, target) |
-| `z` | f32 | signed z = sign(lfc)·Φ⁻¹(1−p/2) — unitless, cross-assay comparable |
-| `n_pert` | i32 | perturbed cells/samples |
-| `n_ctrl` | i32 | control cells/samples |
-| `kd_eff` | f32 | knockdown efficiency where measurable (else NaN) |
-| `batch` | i16 | extraction protocol version |
+| `genes` | (G,) str | measured gene symbols, panel axis |
+| `targets` | (T,) str | perturbed gene symbols (dataset's own axis) |
+| `covered` | (T,) bool | target has estimable stats |
+| `lfc` | (T,G) f32 | effect vs controls in the dataset's units + `lfc_kind` flag |
+| `se` | (T,G) f32 | standard error (NaN where not estimable) |
+| `p` | (T,G) f32 | raw p-value, two-sided |
+| `q` | (T,G) f32 | BH-adjusted within (dataset, target) |
+| `z` | (T,G) f32 | signed z = sign(lfc)·Φ⁻¹(1−p/2) — unitless, cross-assay |
+| `n_voting` | (T,G) i16 | samples contributing to the estimate |
+| `kd_eff` | (T,) f32 | knockdown-efficiency proxy (−self lfc, clip 0) |
 
 `manifest.json`: dataset_id, citation, context (cell line / tissue /
 disease), assay (sc CRISPRi / sc CRISPRko / bulk CRISPRi / siRNA /
@@ -243,7 +246,7 @@ non-DE genes get zeroed cleanly instead of carrying residual deltas
 
 | Run | Artifact | Done when |
 |---|---|---|
-| k201 | `data/evidence/replogle-k562/` + xatlas stores (L0 phase 0) | schema validates; stats vs k036 store cross-check |
+| k201 | `k201-evidence/{hct116,hek293t,k562,cd4,h1}/` on `kytos-vcc` (L0 phase 0) | schema validates; self-KD sign audit; `tools/modal_k201_validate.py` |
 | k202 | Corpus inventory doc + harvester (`tools/evidence_harvest/`) | manifest-driven; one new source lands per invocation |
 | k203 | Phase-1 sc harvest (10–20 stores) | each store passes invariant checks |
 | k204 | L1 meta-analysis v0 (IV-weights only) | LOLO-consistency: held-out line reconstruction |

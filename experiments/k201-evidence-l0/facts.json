@@ -1,0 +1,72 @@
+{
+  "run_id": "k201-evidence-l0",
+  "created": "2026-11-20",
+  "headline": "engine-v2 phase 0: five source arms re-expressed as L0 evidence stores (lfc+se+p+q+z per target x gene) on the kytos-vcc volume",
+  "data_status": "final",
+  "headline_metrics": {},
+  "stores": {
+    "xatlas-hct116": {
+      "path": "/kytos-vol/k201-evidence/hct116/l0-20261120-01",
+      "n_targets": 18293,
+      "covered": 18293,
+      "se_kind": "welch-per-sample",
+      "lfc_kind": "log1p-sc",
+      "median_q_lt_0.05_per_target": 1836,
+      "self_kd_neg": "14912/17376",
+      "provenance": "Welch-t over k036 per-sample vote stores (no rescan)"
+    },
+    "xatlas-hek293t": {
+      "path": "/kytos-vol/k201-evidence/hek293t/l0-20261120-01",
+      "n_targets": 18311,
+      "covered": 18311,
+      "se_kind": "welch-per-sample",
+      "lfc_kind": "log1p-sc",
+      "median_q_lt_0.05_per_target": 1964,
+      "self_kd_neg": "15573/17394",
+      "provenance": "Welch-t over k036 per-sample vote stores (no rescan)"
+    },
+    "vcc2025-h1": {
+      "path": "/kytos-vol/k201-evidence/h1/l0-20261120-01",
+      "n_targets": 150,
+      "covered": 150,
+      "se_kind": "welch-per-batch",
+      "lfc_kind": "log1p-sc",
+      "median_q_lt_0.05_per_target": 2946,
+      "self_kd_neg": "150/150",
+      "provenance": "per-batch group-mean deltas vs same-batch NTC, Welch-t"
+    },
+    "cd4-marson2025": {
+      "path": "/kytos-vol/k201-evidence/cd4/l0-20261120-02",
+      "n_targets": 11526,
+      "covered": 7281,
+      "se_kind": "publisher:p_value,zscore; se=|lfc/z|,p=2sf(|z|) where publisher sparse",
+      "lfc_kind": "log2fc-publisher",
+      "self_kd_neg": "7151/7151",
+      "provenance": "publisher DE stats (sha256-pinned h5ad), quality-filtered contrasts"
+    },
+    "replogle-k562-gwps": {
+      "path": "/kytos-vol/k201-evidence/k562/l0-20261120-01",
+      "n_targets": 9866,
+      "se_kind": "welch-per-gemgroup",
+      "lfc_kind": "log1p-sc",
+      "provenance": "per-(target,gem_group) group-mean deltas vs same-gem NTC, Welch-t over 274 gem groups; packed-shard scan of figshare 35775507"
+    }
+  },
+  "audit_flags": [
+    "xatlas self-gene knockdown negative on ~86-90% of evaluable targets (k036 stores; consistent with known variable KD efficiency -- kd_eff weights this downstream)",
+    "cd4 covered=7281/11526 after quality filter; se derived as |lfc/z| where publisher SE layer absent",
+    "h1 n=150 targets only (2025 VCC train axis); welch-per-batch over 48 obs batches",
+    "k562 stats emitted at l0-20261120-01 pending final validation pass"
+  ],
+  "hypotheses_preregistered": [],
+  "next_steps": [
+    "k202: corpus inventory + harvester for phase-1 sc screens (scPerturb 44 datasets, McFaline-Figueroa U-87MG)",
+    "k204: L1 meta-analysis v0 (inverse-variance weights, LOLO consistency)"
+  ],
+  "provenance": {
+    "strategy": "engine-v2 design doc section 1 (L0 evidence schema)",
+    "tools": "tools/modal_k201_evidence_l0.py + tools/modal_k201_validate.py",
+    "volume": "kytos-vcc/k201-evidence/"
+  },
+  "vessel_fill": 0
+}
