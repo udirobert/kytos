@@ -186,19 +186,58 @@ competition:
   Bionetworks) aggregates biomedical challenges — VCC, DREAM, CACHE —
   so the next venue is discoverable without watching individual orgs.
 
-## Funding & support angles
+## Funding & revenue (deep research, 2026-11-20)
 
+Ranked by fit × effort. Kytos is an independent open research program —
+non-dilutive money first.
+
+**Grants — high fit, apply as artifacts land.**
+
+- **Emergent Ventures** (Mercatus / Tyler Cowen) — $1k–$50k+, one form,
+  ~1,500-word proposal, fast decisions, explicitly solo- and
+  high-risk-friendly. Cheapest credible first ask; our public track
+  record *is* the application.
 - **CZI Essential Open Source Software for Science (EOSS)** — recurring
-  ~$5M rounds for open science tooling. A "public evidence layer +
-  audit harness for perturbation prediction" proposal fits their stated
-  scope (tools the field builds on).
+  cycles, **$50k–$250k** per award, open worldwide incl. individuals via
+  fiscal sponsors/orgs. Requires "demonstrated impact" — so sequence
+  after engine v2 has published artifacts (§A.1–2) and OP3 results (§C).
 - **CZI AI Meets Biology GPU Compute RFA** — compute grants aimed at
   exactly our resource constraint (engine v2's heavier phases).
-- **OpenProblems benchmark membership** — contributing our pipeline as
-  a method + our audit findings as metrics feedback costs engineering
-  time only and produces citable outputs.
-- **Arc community-analyst lane** — publish cell-eval2 analyses; the
-  organizers explicitly thank and engage contributors.
+- **NIH PAR-26-040** (NLM R01: AI/ML bioinformatics/computational
+  biology) — broad eligibility incl. small businesses *and* foreign
+  institutions; bigger lift, but "evidence-engineering infrastructure
+  for perturbation biology" is squarely in scope.
+- **Fast Grants lineage** — Biswas Family Foundation now runs the
+  program (early-career pivots into ambitious fields); New Science funds
+  independent young researchers.
+
+**Prizes — what we already know how to win.**
+
+- **VCC 2027**: $100k grand + $50k/$25k podium tiers; annual cadence.
+- **OpenChallenges.io** (Sage Bionetworks) aggregates DREAM/CACHE-style
+  biomedical challenges — quarterly venue scan, prize pools recur.
+- Quantum hackathons (Moth/IBM ecosystem) for the allostery track.
+
+**Conditional / structural.**
+
+- **NIH SBIR/STTR** — Phase I ~$300k, Phase II ~$2M, but requires a US
+  for-profit entity with the PI >50% employed by it. Only on the table
+  if/when a US entity exists; note NHGRI has an active small-business
+  program for genomics tooling.
+- **Commercial services** — the funded virtual-cell startups (Tahoe,
+  Xaira, Isomorphic, Isomorphic-adjacent DMTA shops like Rivercell at
+  $25M seed) own the *prediction* lane. Nobody owns the
+  *evidence/audit* lane. As the VBI data flood lands, labs generating
+  perturbation screens will need QC, DE-evidence extraction, and
+  scoring-calibration tooling — a services/API wedge exists if we want
+  it, but it trades against research time; keep it opportunistic.
+- **GitHub Sponsors / open collective** — near-zero revenue but zero
+  cost and signals community support in grant applications.
+
+**Cheapest credibility assets we already have:** 26k-word public run
+history, the post-mortem, published receipts (embargoed tree now open),
+and a working transparency site. Every grant above reads as evidence,
+not promise.
 
 ## Explicitly not pursuing
 

@@ -1005,6 +1005,9 @@ def _substantiation_about_html(runs: list[RunSummary]) -> str:
           <li><a href="https://arcinstitute.org/news/virtual-cell-challenge-2025-wrap-up"
               rel="noopener">
               Arc — 2025 wrap-up</a> (5,000+ registrants, Generalist Prize)</li>
+          <li><a href="https://arcinstitute.org/news/virtual-cell-challenge-2026-wrap-up"
+              rel="noopener">
+              Arc — 2026 wrap-up</a> (winners, what the field learned)</li>
           <li><a href="https://pypi.org/project/cell-eval2/" rel="noopener">
               cell-eval2</a> (2026 metric scale 0–1)</li>
           <li><a href="https://www.nature.com/articles/s41592-025-02772-6" rel="noopener">
@@ -1016,12 +1019,65 @@ def _substantiation_about_html(runs: list[RunSummary]) -> str:
     """
 
 
+def _program_about_html() -> str:
+    """Forward-looking 'what Kytos is now' panel — the program beyond VCC 2026."""
+    return """
+    <section class="panel substantiation-panel whats-next-panel" id="program">
+      <h2>What Kytos is now</h2>
+      <p class="prose">Season 1 was a challenge with a deadline. Kytos is the program
+      underneath it: an open research effort building the <em>statistical evidence
+      layer</em> under biological response prediction — the part of the stack the
+      2026 winners proved matters most — with every run, receipt, and failure mode
+      published on this site.</p>
+
+      <div class="substantiation-grid">
+        <div class="substantiation-col">
+          <h3 class="substantiation-subhead">Engine v2</h3>
+          <ul class="substantiation-list">
+            <li>Per-dataset LFC + standard error + significance, harvested from
+                ~200 public single-cell and bulk screens</li>
+            <li>Precision-weighted meta-analysis across sources, fit by
+                leave-one-line-out</li>
+            <li>Explicit DE-set prediction; effect sizes calibrated to the
+                pseudobulk noise floor</li>
+          </ul>
+        </div>
+        <div class="substantiation-col">
+          <h3 class="substantiation-subhead">The audit layer</h3>
+          <ul class="substantiation-list">
+            <li>This Observatory: every run's metrics, flags, provenance</li>
+            <li>cell-eval2 scorer analyses — the community-analyst lane the
+                organizers already credit</li>
+            <li>Receipts public: the formerly embargoed diagnostics are now
+                in the repo</li>
+          </ul>
+        </div>
+        <div class="substantiation-col">
+          <h3 class="substantiation-subhead">Adjacent workstreams</h3>
+          <ul class="substantiation-list">
+            <li><a href="../quantum/">Quantum allostery</a> — continuous-time
+                quantum walks on protein contact graphs, real IBM hardware</li>
+            <li>Literature-mechanism extraction (MecCog, due Jan 2027)</li>
+            <li>VCC returns next summer — engine v2 is the re-entry</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="prose substantiation-quantum">Kytos is independent, open, and
+      funded by grants and prizes — the public run history is the application.
+      The full program, ecosystem analysis, and funding map:
+      <a href="https://github.com/udirobert/kytos/blob/main/docs/kytos-roadmap.md"
+         rel="noopener">docs/kytos-roadmap.md</a>.</p>
+    </section>
+    """
+
+
 def render_about(runs: list[RunSummary], *, root_prefix: str = "", js_version: str = "") -> str:
     meta = PageMeta(
         title="About",
         description=(
-            "The Kytos Observatory story — hackathon build, Virtual Cell Challenge "
-            "timeline, and why we publish every run's failures in the open."
+            "The Kytos program — an open evidence layer for biological response "
+            "prediction, built in public from the 2026 Virtual Cell Challenge onward."
         ),
         canonical_path="/about/",
     )
@@ -1036,6 +1092,7 @@ def render_about(runs: list[RunSummary], *, root_prefix: str = "", js_version: s
         "timeline_html": _timeline_html(),
         "vessel_about_panel": _vessel_about_panel(runs),
         "substantiation_about_html": _substantiation_about_html(runs),
+        "program_about_html": _program_about_html(),
     }
     return render_template("about.html", **context)
 
