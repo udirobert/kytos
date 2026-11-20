@@ -1,7 +1,7 @@
 {
   "run_id": "k202-evidence-harvest",
   "created": "2026-11-20",
-  "headline": "engine-v2 phase-1 corpus: inventory doc + manifest-driven harvester; first two RPE1 sources landed and validated (2,393 sc + 2,394 bulk targets)",
+  "headline": "engine-v2 phase-1 corpus: inventory + manifest harvester; 7 phase-1 stores landed & validated (RPE1 sc+bulk, K562 gwps+ess bulk, 3 scPerturb arms); 15 more harvests in flight",
   "data_status": "final",
   "headline_metrics": {},
   "stores": {
@@ -31,6 +31,46 @@
       "lfc_kind": "norm-mean-diff",
       "sample_unit": "obs-row (each row is a replicate unit)",
       "source": "figshare 35775581 (rpe1_raw_bulk_01.h5ad)"
+    },
+    "replogle22k562-gwps-bulk/h202-20261120-01": {
+      "n_targets": 9867,
+      "covered": 9867,
+      "se_kind": "welch-per-row vs pooled controls",
+      "lfc_kind": "norm-mean-diff",
+      "sample_unit": "obs-row (guide-level)",
+      "source": "figshare 35774443 (k562 gwps bulk)"
+    },
+    "replogle22k562-ess-bulk/h202-20261120-01": {
+      "n_targets": 2058,
+      "covered": 2058,
+      "se_kind": "welch-per-row vs pooled controls",
+      "lfc_kind": "norm-mean-diff",
+      "sample_unit": "obs-row (guide-level)",
+      "source": "figshare 3577* (k562 essential bulk)"
+    },
+    "datlinger17-jurkat/h202-20261120-01": {
+      "n_targets": 32,
+      "covered": 32,
+      "se_kind": "welch-per-replicate",
+      "lfc_kind": "log1p-sc",
+      "sample_unit": "replicate",
+      "source": "zenodo 10044268 DatlingerBock2017.h5ad (raw counts)"
+    },
+    "shifrut18-tcell/h202-20261120-01": {
+      "n_targets": 20,
+      "covered": 20,
+      "se_kind": "welch-per-replicate",
+      "lfc_kind": "log1p-sc",
+      "sample_unit": "replicate",
+      "source": "zenodo 10044268 ShifrutMarson2018.h5ad (raw counts)"
+    },
+    "dixit16-dc/h202-20261120-01": {
+      "n_targets": 44,
+      "covered": 44,
+      "se_kind": "welch-pseudobatch8 (PSEUDOREP -- L1 downweight)",
+      "lfc_kind": "log1p-sc",
+      "sample_unit": "pseudo-batch",
+      "source": "zenodo 10044268 DixitRegev2016.h5ad (raw counts; no replicate col)"
     }
   },
   "audit_flags": [
@@ -71,5 +111,23 @@
     "inventory": "docs/evidence-corpus-inventory.md",
     "validator": "tools/modal_k201_validate.py"
   },
-  "vessel_fill": null
+  "vessel_fill": null,
+  "in_flight_20261120": [
+    "adamson16-k562-s1",
+    "adamson16-k562-s5",
+    "adamson16-k562-s10",
+    "datlinger21-k562",
+    "papalexi21-pbmc",
+    "tian19-neuron",
+    "tian19-ipsc",
+    "tian21-crnispri",
+    "tian21-crispa",
+    "schiebinger19-1",
+    "zhao21-brain",
+    "norman19-k562",
+    "frangieh21-melanoma",
+    "replogle22k562-ess",
+    "nadig24-jurkat",
+    "nadig24-hepg2"
+  ]
 }

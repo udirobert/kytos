@@ -48,6 +48,8 @@ ROW_CHUNK = 20_000
 PSEUDO_BATCHES = 8
 
 SCPERTEVAL = "https://storage.googleapis.com/scperteval/processed"
+SCPERTURB = "https://zenodo.org/records/10044268/files"
+ALTOSHF = "https://huggingface.co/datasets/altoslabs/primeflow-vcc-datasets/resolve/main"
 
 # Catalog: dataset_id -> spec. scPertEval URLs verified live 2026-10-12
 # (k039 audit) BUT the bucket flipped to requester-pays since -- access:
@@ -97,6 +99,364 @@ CATALOG = {
         "note": "guide-level normalized expression (2,679 guides x 8,749 "
         "genes; ~1-2 guides/target) -- point-estimate deltas, "
         "stats only where >=3 guides; units caveat recorded",
+    },
+    # --- scPerturb harmonized arm (Zenodo 10044268; X = raw CSR counts,
+    #     obs: perturbation/target/replicate/cell_line, var: gene_symbol;
+    #     conventions verified 2026-11-20 via DatlingerBock2017) ---
+    "norman19-k562": {
+        "url": f"{SCPERTURB}/NormanWeissman2019_filtered.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.7,
+        "context": "k562",
+        "assay": "sc-oe",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Norman et al. 2019 (scPerturb harmonized)",
+        "license": "public (zenodo scPerturb)",
+        "note": "overexpression interaction screen -- activation units; "
+        "do NOT pool into KD consensus",
+    },
+    "replogle22k562-ess": {
+        "url": f"{SCPERTURB}/ReplogleWeissman2022_K562_essential.h5ad?download=1",
+        "access": "open",
+        "size_gb": 1.6,
+        "context": "k562",
+        "assay": "sc-crnispri",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Replogle et al. 2022 K562 essential (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "essential screen arm -- second K562 source for LOLO",
+    },
+    "tian19-ipsc": {
+        "url": f"{SCPERTURB}/TianKampmann2019_iPSC.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.4,
+        "context": "ipsc",
+        "assay": "sc-crnispri",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Tian/Kampmann 2019 iPSC (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "Kampmann iPSC CRISPRi screen",
+    },
+    "tian19-neuron": {
+        "url": f"{SCPERTURB}/TianKampmann2019_day7neuron.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.3,
+        "context": "neuron",
+        "assay": "sc-crnispri",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Tian/Kampmann 2019 day-7 neuron (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "differentiated-neuron arm -- lineage diversity",
+    },
+    "tian21-crnispri": {
+        "url": f"{SCPERTURB}/TianKampmann2021_CRISPRi.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.3,
+        "context": "neuron",
+        "assay": "sc-crnispri",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Tian/Kampmann 2021 CRISPRi (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "2021 neuron CRISPRi arm",
+    },
+    "tian21-crispa": {
+        "url": f"{SCPERTURB}/TianKampmann2021_CRISPRa.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.2,
+        "context": "neuron",
+        "assay": "sc-crispa",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Tian/Kampmann 2021 CRISPRa (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "activation arm -- opposite-direction evidence only",
+    },
+    "shifrut18-tcell": {
+        "url": f"{SCPERTURB}/ShifrutMarson2018.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.3,
+        "context": "tcell",
+        "assay": "sc-crisprko",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Shifrut/Marson 2018 T cell (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "primary T-cell KO screen -- immune context",
+    },
+    "dixit16-dc": {
+        "url": f"{SCPERTURB}/DixitRegev2016.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.3,
+        "context": "dendritic",
+        "assay": "sc-crisprko",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Dixit/Regev 2016 DC (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "dendritic-cell Perturb-seq KO screen",
+    },
+    "datlinger17-jurkat": {
+        "url": f"{SCPERTURB}/DatlingerBock2017.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.04,
+        "context": "jurkat",
+        "assay": "crop-oe",
+        "x_kind": "raw",
+        "batch_col": "replicate",
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Datlinger/Bock 2017 Jurkat CROP-seq (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "TF overexpression screen (NOT knockdown); 6 replicates; "
+        "conventions verified 2026-11-20",
+    },
+    "datlinger21-k562": {
+        "url": f"{SCPERTURB}/DatlingerBock2021.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.03,
+        "context": "k562",
+        "assay": "crop-seq",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Datlinger/Bock 2021 (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "2021 CROP-seq arm",
+    },
+    "adamson16-k562-s1": {
+        "url": f"{SCPERTURB}/AdamsonWeissman2016_GSM2406675_10X001.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.03,
+        "context": "k562",
+        "assay": "sc-crnispri",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Adamson/Weissman 2016 K562 10X001 (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "early K562 CRISPRi screen, lane 1",
+    },
+    "adamson16-k562-s5": {
+        "url": f"{SCPERTURB}/AdamsonWeissman2016_GSM2406677_10X005.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.14,
+        "context": "k562",
+        "assay": "sc-crnispri",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Adamson/Weissman 2016 K562 10X005 (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "early K562 CRISPRi screen, lane 5",
+    },
+    "adamson16-k562-s10": {
+        "url": f"{SCPERTURB}/AdamsonWeissman2016_GSM2406681_10X010.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.47,
+        "context": "k562",
+        "assay": "sc-crnispri",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Adamson/Weissman 2016 K562 10X010 (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "early K562 CRISPRi screen, lane 10",
+    },
+    "papalexi21-pbmc": {
+        "url": f"{SCPERTURB}/PapalexiSatija2021_eccite_RNA.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.15,
+        "context": "pbmc",
+        "assay": "sc-crisprko",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Papalexi/Satija 2021 ECCITE-seq (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "PBMC ECCITE-seq arm -- immune context",
+    },
+    "frangieh21-melanoma": {
+        "url": f"{SCPERTURB}/FrangiehIzar2021_RNA.h5ad?download=1",
+        "access": "open",
+        "size_gb": 1.5,
+        "context": "melanoma",
+        "assay": "sc-crisprko",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Frangieh/Izar 2021 melanoma (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "melanoma CROP-seq arm",
+    },
+    "zhao21-brain": {
+        "url": f"{SCPERTURB}/ZhaoSims2021.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.6,
+        "context": "brain-organoid",
+        "assay": "sc-crispr",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Zhao/Sims 2021 (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "verify context at peek",
+    },
+    "schiebinger19-1": {
+        "url": f"{SCPERTURB}/SchiebingerLander2019_GSE106340.h5ad?download=1",
+        "access": "open",
+        "size_gb": 0.4,
+        "context": "ipsc-diff",
+        "assay": "sc-crisprko",
+        "x_kind": "raw",
+        "batch_col": None,
+        "pert_col": "target",
+        "control_col": "perturbation",
+        "citation": "Schiebinger/Lander 2019 GSE106340 (scPerturb)",
+        "license": "public (zenodo scPerturb)",
+        "note": "iPSC reprogramming screen arm 1",
+    },
+    # --- altoslabs HF mirror (preprocessed h5ad.gz; replaces blocked
+    #     scPertEval arm + adds new contexts) ---
+    "nadig24-jurkat": {
+        "url": f"{ALTOSHF}/nadig24_jurkat_preprocessed.h5ad.gz",
+        "access": "open",
+        "size_gb": 1.9,
+        "context": "jurkat",
+        "assay": "sc-crnispri",
+        "x_kind": "log1p-norm",
+        "batch_col": "gem_group",
+        "pert_col": "gene",
+        "citation": "Nadig et al. 2024 Jurkat (altoslabs preprocessed)",
+        "license": "public (HF primeflow-vcc-datasets)",
+        "note": "essential screen; peeked 2026-11-20: CSR log1p-norm "
+        "(max~6.1), gem_group n=55, gene w/ 'non-targeting' ctrl",
+    },
+    "nadig24-hepg2": {
+        "url": f"{ALTOSHF}/nadig24_hepg2_preprocessed.h5ad.gz",
+        "access": "open",
+        "size_gb": 1.3,
+        "context": "hepg2",
+        "assay": "sc-crnispri",
+        "x_kind": "log1p-norm",
+        "batch_col": "gem_group",
+        "pert_col": "gene",
+        "citation": "Nadig et al. 2024 HepG2 (altoslabs preprocessed)",
+        "license": "public (HF primeflow-vcc-datasets)",
+        "note": "essential screen; liver lineage; same schema as "
+        "nadig24-jurkat (pinned, unverified -- audit manifest)",
+    },
+    "mcfaline23-gxe": {
+        "url": f"{ALTOSHF}/mcfaline23_gxe_preprocessed.h5ad.gz",
+        "access": "open",
+        "size_gb": 3.2,
+        "context": "u87mg+a172+t98g",
+        "assay": "sc-crnispri-gxe",
+        "x_kind": "log1p-norm",
+        "batch_col": None,
+        "pert_col": None,
+        "citation": "McFaline-Figueroa et al. 2023 sci-Plex-GxE (altoslabs preprocessed)",
+        "license": "public (HF primeflow-vcc-datasets)",
+        "note": "kinome CRISPRi x drug GxE incl U-87MG (VCC-final context) "
+        "-- DMSO arm only is the clean KD evidence",
+    },
+    "replogle20-k562": {
+        "url": f"{ALTOSHF}/replogle20_preprocessed.h5ad.gz",
+        "access": "open",
+        "size_gb": 0.25,
+        "context": "k562",
+        "assay": "sc-crnispri",
+        "x_kind": "log1p-norm",
+        "batch_col": None,
+        "pert_col": None,
+        "citation": "Replogle et al. 2020 direct-capture (altoslabs)",
+        "license": "public (HF primeflow-vcc-datasets)",
+        "note": "direct-capture Perturb-seq, small",
+    },
+    "feng24-ipsc": {
+        "url": f"{ALTOSHF}/feng24_preprocessed.h5ad.gz",
+        "access": "open",
+        "size_gb": 10.3,
+        "context": "ipsc-lines",
+        "assay": "sc-crnispri",
+        "x_kind": "log1p-norm",
+        "batch_col": None,
+        "pert_col": None,
+        "citation": "Feng et al. 2024/26 iPSC lines (altoslabs)",
+        "license": "public (HF primeflow-vcc-datasets)",
+        "note": "genome-scale trans-regulation map across iPSC lines; "
+        "natural multi-context batch structure",
+    },
+    "jiang24-pathway": {
+        "url": f"{ALTOSHF}/jiang24_preprocessed.h5ad.gz",
+        "access": "open",
+        "size_gb": 10.0,
+        "context": "mixed",
+        "assay": "sc-crispr",
+        "x_kind": "log1p-norm",
+        "batch_col": None,
+        "pert_col": None,
+        "citation": "Jiang et al. 2024 pathway screens (altoslabs)",
+        "license": "public (HF primeflow-vcc-datasets)",
+        "note": "pathway-signature reconstruction screens",
+    },
+    # --- figshare k562 arms (same article as rpe1) ---
+    "replogle22k562-gwps-bulk": {
+        "url": "https://ndownloader.figshare.com/files/35774443",
+        "access": "open",
+        "size_gb": 0.4,
+        "context": "k562",
+        "assay": "bulk-crnispri",
+        "x_kind": "norm",
+        "sample_mode": "row-per-sample",
+        "target_source": "obs_name_field",
+        "target_field": 1,
+        "control_flag_col": "core_control",
+        "citation": "Replogle et al. 2022 K562 GWPS raw bulk (figshare 35774443)",
+        "license": "public (figshare)",
+        "note": "bulk arm of the k562 GWPS -- cross-assay check vs replogle-k562-gwps sc store",
+    },
+    "replogle22k562-ess-bulk": {
+        "url": "https://ndownloader.figshare.com/files/35773070",
+        "access": "open",
+        "size_gb": 0.1,
+        "context": "k562",
+        "assay": "bulk-crnispri",
+        "x_kind": "norm",
+        "sample_mode": "row-per-sample",
+        "target_source": "obs_name_field",
+        "target_field": 1,
+        "control_flag_col": "core_control",
+        "citation": "Replogle et al. 2022 K562 essential raw bulk (figshare 35773070)",
+        "license": "public (figshare)",
+        "note": "essential-screen bulk arm",
     },
     # --- scPertEval processed arm (requester-pays since ~Oct 2026) ---
     "wessels23": {
@@ -247,15 +607,27 @@ def harvest(dataset_id: str, run_id: str) -> dict:
         )
 
     # --- download (sha256 recorded, no pin required for new sources) ---
+    gz = spec["url"].endswith(".gz")
     local = Path(f"/tmp/{dataset_id}.h5ad")
     digest = hashlib.sha256()
     if not local.exists():
+        import gzip as _gz
+
+        src = Path(f"/tmp/{dataset_id}.h5ad.gz" if gz else local)
         with requests.get(spec["url"], stream=True, timeout=120) as r:
             r.raise_for_status()
-            with local.open("wb") as fh:
+            with src.open("wb") as fh:
                 for chunk in r.iter_content(1024 * 1024 * 8):
                     fh.write(chunk)
                     digest.update(chunk)
+        if gz:
+            with _gz.open(src, "rb") as fi, local.open("wb") as fo:
+                while True:
+                    buf = fi.read(1 << 26)
+                    if not buf:
+                        break
+                    fo.write(buf)
+            src.unlink()
     else:
         with local.open("rb") as fh:
             for chunk in iter(lambda: fh.read(1 << 26), b""):
@@ -263,6 +635,14 @@ def harvest(dataset_id: str, run_id: str) -> dict:
     sha = digest.hexdigest()
     if spec.get("sha256") and sha != spec["sha256"]:
         raise RuntimeError(f"{dataset_id}: sha256 mismatch {sha} != {spec['sha256']}")
+    with local.open("rb") as fh:
+        sig = fh.read(8)
+    if not sig.startswith(b"\x89HDF"):
+        local.unlink()  # clean slate for the retry attempt
+        raise RuntimeError(
+            f"{dataset_id}: download is not HDF5 ({local.stat().st_size} "
+            f"bytes, head={sig[:8]!r}) -- likely a redirect/error page"
+        )
 
     panel_genes = pd.read_csv(PANEL_GENES).iloc[:, 0].astype(str).tolist()
     n_genes = len(panel_genes)
@@ -281,21 +661,28 @@ def harvest(dataset_id: str, run_id: str) -> dict:
             is_ctrl = obs[spec["control_flag_col"]].astype(bool).to_numpy()
             pert_col = spec["control_flag_col"]
             ctrl_label = "True"
-        elif spec.get("pert_col"):
-            pert_col = spec["pert_col"]
-            vals = obs[pert_col].astype(str).str.lower().unique()
-            hit = [v for v in vals if v in l0.CONTROL_LABELS]
-            ctrl_label = hit[0] if hit else None
         else:
-            pert_col, ctrl_label = l0.pick_pert_column(obs)
+            # control_col: where control labels live (default = pert_col).
+            # scPerturb: 'perturbation' holds 'control' while 'target'
+            # holds the gene -> control_col=perturbation, pert_col=target.
+            ctrl_col = spec.get("control_col") or spec.get("pert_col")
+            if ctrl_col:
+                vals = obs[ctrl_col].astype(str).str.lower().unique()
+                hit = [v for v in vals if v in l0.CONTROL_LABELS]
+                if not hit:
+                    raise ValueError(f"{dataset_id}: no control label in obs.{ctrl_col}")
+                ctrl_label = hit[0]
+                detected = ctrl_col
+            else:
+                detected, ctrl_label = l0.pick_pert_column(obs)
+            labels_lower = obs[detected].astype(str).str.lower().to_numpy()
+            is_ctrl = np.array([x in l0.CONTROL_LABELS for x in labels_lower])
+            pert_col = spec.get("pert_col") or detected
         if spec.get("target_source") == "obs_name_field":
             names = adata.obs_names.astype(str).to_numpy()
             labels = np.array([n.split("_")[spec["target_field"]] for n in names])
         else:
             labels = obs[pert_col].astype(str).to_numpy()
-        if not spec.get("control_flag_col"):
-            labels_lower = obs[pert_col].astype(str).str.lower().to_numpy()
-            is_ctrl = np.array([x in l0.CONTROL_LABELS for x in labels_lower])
 
         targets = sorted(set(labels[~is_ctrl]))
         t_pos = {t: i for i, t in enumerate(targets)}
@@ -461,6 +848,7 @@ def harvest(dataset_id: str, run_id: str) -> dict:
         "assay": spec["assay"],
         "context": spec["context"],
         "pert_col": pert_col,
+        "control_col": spec.get("control_col") or spec.get("control_flag_col"),
         "control_label": ctrl_label,
         "gene_axis": gene_axis,
         "unmapped_panel_genes": len(missing),

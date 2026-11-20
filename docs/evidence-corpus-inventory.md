@@ -17,6 +17,18 @@
 | cd4-marson2025 | cd4-tcell | 11,526 | 7,281 | publisher zscore (+derived se/p) | `l0-20261120-02` |
 | vcc2025-h1 | h1-hesc | 150 | 150 | welch-per-batch | `l0-20261120-01` |
 
+Phase-1 additions (`h202-20261120-01`, validated):
+
+| dataset_id | context | targets | covered | se_kind | units |
+|---|---|---|---|---|---|
+| replogle22rpe1-raw | RPE1 | 2,393 | 2,393 | welch-per-gem_group (n=56) | norm-mean-diff |
+| replogle22rpe1-bulk | RPE1 | 2,394 | 2,394 | welch-per-row (guide-level) | norm-mean-diff |
+| replogle22k562-gwps-bulk | K562 | 9,867 | 9,867 | welch-per-row (guide-level) | norm-mean-diff |
+| replogle22k562-ess-bulk | K562 | 2,058 | 2,058 | welch-per-row (guide-level) | norm-mean-diff |
+| datlinger17-jurkat | Jurkat | 32 | 32 | welch-per-replicate | log1p-sc |
+| shifrut18-tcell | CD8 T | 20 | 20 | welch-per-replicate | log1p-sc |
+| dixit16-dc | dendritic | 44 | 44 | welch-pseudobatch8 (PSEUDOREP) | log1p-sc |
+
 ## Phase 1 — seeded harvest catalog
 
 **Access note (2026-11-20):** the scPertEval bucket flipped to
@@ -51,17 +63,44 @@ Coverage figures are vs the 2026 panel (k039 audit); they are *not* the
 harvest criterion — corpus breadth over targets is. Essential-gene
 screens still contribute ~2k targets of evidence each.
 
-## Phase 1 — pending URL/scope research (k203)
+## Phase 1 — scPerturb (Zenodo) + Altos HF mirror (k203 wave, spawned 2026-11-20)
+
+**scPerturb resolved:** the harmonized corpus lives openly on Zenodo
+record `10044268` (`/records/10044268/files/<name>?download=1` — the
+`/api/` content route 429s Modal's datacenter IPs). Raw CSR counts →
+`log1p-sc` unit parity with k201. `target`/`perturbation`/`replicate`
+columns confirmed (harvester takes separate `control_col`). Note:
+Zenodo throttles bursts — keep spawn rate modest.
+
+**Altos HF mirror resolved:** `altoslabs/primeflow-vcc-datasets`
+(`/resolve/main/<name>_preprocessed.h5ad.gz`) mirrors the blocked
+scPertEval arms *plus* new contexts. Peeked `nadig24_jurkat`: CSR
+log1p-norm (max~6.1), `gem_group` n=55, `gene` with 'non-targeting'
+controls — Replogle-family schema, pinned in catalog.
+
+| dataset_id | source | context | status 2026-11-20 |
+|---|---|---|---|
+| datlinger17-jurkat | zenodo | Jurkat | **landed** — 32 targets |
+| shifrut18-tcell | zenodo | CD8 T | **landed** — 20 targets |
+| dixit16-dc | zenodo | dendritic | **landed** — 44 (PSEUDOREP) |
+| replogle22k562-gwps-bulk | figshare 35774443 | K562 | **landed** — 9,867 targets |
+| replogle22k562-ess-bulk | figshare | K562 | **landed** — 2,058 targets |
+| nadig24-jurkat / nadig24-hepg2 | altos HF | Jurkat/HepG2 | spawned |
+| adamson16-k562-s1/s5/s10 | zenodo | K562 | spawned |
+| datlinger21-k562, papalexi21-pbmc | zenodo | K562/PBMC | spawned |
+| tian19-ipsc/neuron, tian21-crnispri/crispa | zenodo | iPSC/neuron | spawned (crispa arm = activation, audit-only) |
+| schiebinger19-1, zhao21-brain | zenodo | reprogram/brain | spawned |
+| norman19-k562, frangieh21-melanoma | zenodo | K562/melanoma | spawned |
+| replogle22k562-ess (sc) | zenodo | K562 | spawned |
+
+## Still pending (k203 backlog)
 
 | source | context | scope | status |
 |---|---|---|---|
-| scPerturb 44 datasets | many | harmonized .h5ad portal (sanderlab) | per-dataset URLs + licenses needed |
-| X-Atlas/Orion remainder | multiple lines | same Lance schema as hct116/hek293t | extend k201 xatlas stage |
-| McFaline-Figueroa U-87MG kinome screen | u-87mg | context-relevant (final line; 21 test targets) | URL TBD |
-| Parse-PBMC | pbmc | broad | URL TBD |
-| IGVF perturb-seq | k562 + | broad | portal access TBD |
-| Adamson 2016 | k562 | historic small | deprioritized vs newer |
-| VIPerturb-seq | h1-hesc | broad | URL TBD |
+| mcfaline23-gxe | U-87MG+A172+T98G | kinome CRISPRi x drug GxE — **U-87MG is a VCC-final context** | catalogued on HF; needs DMSO-arm filter spec |
+| feng24-ipsc (10.3 GB) | iPSC lines | trans-regulation map | catalogued; peek cols first |
+| jiang24-pathway (10 GB) | mixed | pathway screens | catalogued; peek cols first |
+| X-Atlas/Orion remainder | multiple lines | same Lance schema | extend k201 xatlas stage |
 | Jurkat VCC-2026 arm | jurkat | re-admit as source w/ own weight | uses existing extract |
 | Tahoe-100M | many | 100M cells | **held-out reserve — harvest last** |
 

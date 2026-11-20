@@ -30,13 +30,25 @@ def peek(url: str, local_name: str = "/tmp/peek.h5ad") -> dict:
 
     local = Path(local_name)
     digest = hashlib.sha256()
+    gz = url.endswith(".gz")
     if not local.exists():
+        src = Path(str(local) + ".gz") if gz else local
         with requests.get(url, stream=True, timeout=120) as r:
             r.raise_for_status()
-            with local.open("wb") as fh:
+            with src.open("wb") as fh:
                 for chunk in r.iter_content(1024 * 1024 * 8):
                     fh.write(chunk)
                     digest.update(chunk)
+        if gz:
+            import gzip as _gz
+
+            with _gz.open(src, "rb") as fi, local.open("wb") as fo:
+                while True:
+                    buf = fi.read(1 << 26)
+                    if not buf:
+                        break
+                    fo.write(buf)
+            src.unlink()
     else:
         with local.open("rb") as fh:
             for chunk in iter(lambda: fh.read(1 << 26), b""):
@@ -76,6 +88,24 @@ def peek(url: str, local_name: str = "/tmp/peek.h5ad") -> dict:
             if c in obs.columns:
                 vals = obs[c].astype(str)
                 info.setdefault("sample_values", {})[c] = vals.value_counts().head(8).to_dict()
+        import h5py
+        import numpy as np
+
+        # X units probe via raw HDF5: backed CSR doesn't support row slicing.
+        with h5py.File(local_name, "r") as f:
+            x = f["X"]
+            if isinstance(x, h5py.Group):  # CSR/CSC encoding
+                vals = x["data"][:1_000_000]
+                nnz = int(x["indptr"][-1])
+            else:
+                vals = x[:200].ravel()
+                nnz = None
+        info["x_probe"] = {
+            "min": float(vals.min()),
+            "max": float(vals.max()),
+            "integer_like": bool(np.allclose(vals, np.round(vals))),
+            "nnz_total": nnz,
+        }
         return info
     finally:
         adata.file.close()
