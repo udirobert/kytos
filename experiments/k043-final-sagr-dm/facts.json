@@ -1,0 +1,21 @@
+{
+  "run_id": "k043-final-sagr-dm",
+  "created": "2026-10-22",
+  "headline": "FINAL ENTRY — k040 sagr recipe rebuilt on the hidden D/E/F test panel (300 targets, 171 new); submitted Oct 22 and stood as the last submission",
+  "data_status": "final",
+  "headline_metrics": {},
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "the sagr recipe transfers to unseen test targets — its sign-agreement stats exist genome-wide, covering the 171 new-panel targets",
+    "no context-fit constants shipped blind: recipe constants were fixed on validation and re-targeted, not re-tuned"
+  ],
+  "next_steps": [
+    "post-mortem: docs/vcc-postmortem.md — why a PDS of 0.62 still scored +0.129, and the v2 recipe"
+  ],
+  "provenance": {
+    "strategy": "consensus_w_ctr_sagr + dual-moment (a1.0/b0.5/pk4) on panel vcc2026-test-1, contexts D/E/F",
+    "data": "controls-final bundle + final-panel consensus_w_ctr_sagr built from genome-wide k034 extracts + k036 stats"
+  },
+  "vessel_fill": 99
+}

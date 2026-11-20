@@ -1,13 +1,17 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-11-02** — **final phase is live and the baseline
-> entry is on file**: `kytos-k043-final-sagr-dm` submitted (entry
-> `Ov4qNbLHMb1dRRyqxDn8`), the k040 sagr recipe rebuilt on the final
-> D/E/F panel with `vcc-cli==0.3.0`. Only the last submission before
-> Nov 5 23:59 UTC counts; scores hidden until Nov 19. Challenger audit
-> closed negative — no eligible new source covers the 171 new targets.
-> §7 has the final-phase details. Cleveland Clinic / GQAI remains a
-> separate workstream (`docs/cleveland/`).
+> Last updated **2026-11-20** — **VCC 2026 is concluded.** Final entry
+> `kytos-k043-final-sagr-dm` (entry `Ov4qNbLHMb1dRRyqxDn8`) stood as the
+> last submission; scores revealed and winners announced Nov 19
+> (BioInsight AI Lab/Illumina 1st, FlowState 2nd, X-team/Xaira 3rd;
+> winning score 0.440 vs our validation best +0.1286). The embargo is
+> **lifted** — component numbers are public and
+> `experiments/_embargoed/` is now tracked in git. Full analysis:
+> **`docs/vcc-postmortem.md`**; forward program:
+> **`docs/kytos-roadmap.md`** (engine v2, VCC 2027 readiness, standing
+> benchmarks, audit layer). Cleveland Clinic /
+> GQAI and MecCog remain separate workstreams (`docs/cleveland/`,
+> `docs/meccog.md`).
 
 This file is the ground truth for any agent working on this repo. It covers
 the **2026 Virtual Cell Challenge** and a **separate** Cleveland Clinic
@@ -21,7 +25,7 @@ literature extraction, deadline 2027-01-15) — is documented in
 domain judgement (directness grading, surrogate-assay vocabulary). No run
 prefixes, no embargo rules, artifacts go in `docs/`, not `experiments/`.
 
-## Publication embargo (active until the Oct 22 final test set)
+## Publication embargo (LIFTED 2026-11-19 — retained for history)
 
 The repo is public and competitors read it. **Code, tools, and
 infrastructure still push to `main`.** Because the method is already public
@@ -134,14 +138,16 @@ strategy in `docs/vcc-two-track-strategy.md`; do not treat older labels such as
 "dead end" as class-wide scientific conclusions.
 
 - `vcc` is logged in as `ungethe@gmail.com` / team `Udi Ngethe`.
-- **Environment reality check (verified 2026-10-03).** The older entries below
-  name local venvs that no longer exist: the only local venv is `.venv`
-  (uv CPython 3.12.8 — pytest 9.1.1, anndata/scipy stack; the four cited
-  science test files pass there, 43 tests, no installs needed). `.venv-eval2`
-  was deleted 2026-09-23 for disk (rebuild recipe in
-  `docs/phase0-environment.md`); `.venv-science` and `.venv-cleveland` are also
-  gone, so `vcc`, legacy `cell-eval 0.8.2` and the cleveland runners are NOT
-  available locally.
+- **Environment reality check (verified 2026-11-20).** Local venv state has
+  drifted again: **`.venv` is gone** and `.venv-cleveland` now exists but its
+  `bin/python*` symlinks dangle (the uv-managed CPython 3.12.8 they point to
+  was removed — `uv python install 3.12.8` would re-resolve them).
+  `.venv-eval2` was deleted 2026-09-23 for disk (rebuild recipe in
+  `docs/phase0-environment.md`); `.venv-science` is also gone, so `vcc`,
+  legacy `cell-eval 0.8.2` and the cleveland runners are NOT available
+  locally. **For the Observatory build:** system `python3` (3.14) has a
+  broken x86/arm64 numpy — use `uv run --no-project --with jinja2 python
+  frontend/build.py ...` (verified working 2026-11-20, 33 runs).
 - The `vcc` CLI (0.2.2) lives on `snapflip-vultr` at `/opt/kytos/.venv/bin/vcc`
   (credentialed, `token_source: file`) and inside the Modal job images. Use it
   there, not locally.

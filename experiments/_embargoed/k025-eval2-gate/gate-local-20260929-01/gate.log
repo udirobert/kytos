@@ -1,0 +1,84 @@
+[2026-09-29T16:39:43+00:00] starting dm_ref arm
+real subset: 93697 cells on 18080 genes
+[arms] scoring ['dm_ref']
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ref] pred written: (19600, 18080), dispatch {'real': 47}
+[dm_ref] de_proxy median 7954 vs real 396
+[dm_ref] bulk_shift median_norm 0.507 cos 0.074
+[bundle] reusing /opt/kytos/data/vol/gate-20260921-01/bundle
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-01/pred_dm_ref.h5ad -ar /opt/kytos/runs/gate-local-20260929-01/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-01/run_dm_ref
+Traceback (most recent call last):
+  File "/opt/kytos/repo/tools/run_k025_gate_local.py", line 559, in <module>
+    main()
+  File "/opt/kytos/repo/tools/run_k025_gate_local.py", line 547, in main
+    payload = run_gate(
+              ^^^^^^^^^
+  File "/opt/kytos/repo/tools/run_k025_gate_local.py", line 464, in run_gate
+    cell_eval2(
+  File "/opt/kytos/repo/tools/run_k025_gate_local.py", line 392, in cell_eval2
+    raise RuntimeError(f"cell-eval2 failed (see {elog}): {tail}")
+RuntimeError: cell-eval2 failed (see /opt/kytos/runs/gate-local-20260929-01/cell_eval2_logs/run_dm_ref.stderr.log): de.backend='auto': no CUDA device, so the gpudge GPU backend was skipped -- using pdex. DE numbers differ between engines.
+
+GATE_RC=1 [2026-09-29T16:46:01+00:00]
+[2026-09-29T17:08:29+00:00] starting dm_ref arm
+real subset reused: 93697 cells on 18080 genes
+[arms] scoring ['dm_ref']
+[dm_ref] de_proxy median 7954 vs real 396
+[dm_ref] bulk_shift median_norm 0.507 cos 0.074
+[bundle] reusing /opt/kytos/data/vol/gate-20260921-01/bundle
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-01/run_dm_ref/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-01/scored_dm_ref.csv
+[dm_ref] scored
+{
+  "status": "completed",
+  "out": "/opt/kytos/runs/gate-local-20260929-01"
+}
+GATE_RC=0 [2026-09-29T17:09:30+00:00]
+[2026-09-29T17:12:51+00:00] starting machinery arms
+real subset reused: 93697 cells on 18080 genes
+[arms] scoring ['dm_agr', 'dm_agr_ctr', 'dm_ctr_agr', 'dm_selctr', 'dm_selctr_agr']
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_agr] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_agr_ctr] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ctr_agr] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_selctr] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_selctr_agr] pred written: (19600, 18080), dispatch {'real': 47}
+[dm_agr] de_proxy median 7969 vs real 396
+[dm_agr_ctr] de_proxy median 7990 vs real 396
+[dm_ctr_agr] de_proxy median 7971 vs real 396
+[dm_selctr] de_proxy median 7954 vs real 396
+[dm_selctr_agr] de_proxy median 7971 vs real 396
+[dm_agr] bulk_shift median_norm 0.517 cos 0.061
+[dm_agr_ctr] bulk_shift median_norm 0.496 cos 0.063
+[dm_ctr_agr] bulk_shift median_norm 0.461 cos 0.069
+[dm_selctr] bulk_shift median_norm 0.507 cos 0.063
+[dm_selctr_agr] bulk_shift median_norm 0.461 cos 0.061
+[bundle] reusing /opt/kytos/data/vol/gate-20260921-01/bundle
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-01/pred_dm_agr.h5ad -ar /opt/kytos/runs/gate-local-20260929-01/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-01/run_dm_agr
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-01/run_dm_agr/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-01/scored_dm_agr.csv
+[dm_agr] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-01/pred_dm_agr_ctr.h5ad -ar /opt/kytos/runs/gate-local-20260929-01/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-01/run_dm_agr_ctr
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-01/run_dm_agr_ctr/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-01/scored_dm_agr_ctr.csv
+[dm_agr_ctr] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-01/pred_dm_ctr_agr.h5ad -ar /opt/kytos/runs/gate-local-20260929-01/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-01/run_dm_ctr_agr
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-01/run_dm_ctr_agr/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-01/scored_dm_ctr_agr.csv
+[dm_ctr_agr] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-01/pred_dm_selctr.h5ad -ar /opt/kytos/runs/gate-local-20260929-01/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-01/run_dm_selctr
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-01/run_dm_selctr/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-01/scored_dm_selctr.csv
+[dm_selctr] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-01/pred_dm_selctr_agr.h5ad -ar /opt/kytos/runs/gate-local-20260929-01/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-01/run_dm_selctr_agr
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-01/run_dm_selctr_agr/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-01/scored_dm_selctr_agr.csv
+[dm_selctr_agr] scored
+{
+  "status": "completed",
+  "out": "/opt/kytos/runs/gate-local-20260929-01"
+}

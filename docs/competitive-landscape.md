@@ -1,6 +1,9 @@
 # Kytos — competitive landscape, problem, and wedge
 
-Status: **ACTIVE** · Owner: udingethe · Started: **2026-08-22**
+Status: **ACTIVE** · Owner: udingethe · Started: **2026-08-22** · VCC 2026
+concluded 2026-11-19 — the wedge (public accountability for virtual-cell
+claims) generalizes beyond the competition; see
+[`kytos-roadmap.md`](kytos-roadmap.md) §D for the audit-layer continuation
 
 This document grounds the project before we build: what problem we solve, why
 it is substantiated, who else touches adjacent space, and where Kytos is

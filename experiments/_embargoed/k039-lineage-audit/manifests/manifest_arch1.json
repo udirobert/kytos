@@ -1,0 +1,20 @@
+{
+ "source": "arch1",
+ "h5ad": "data/raw/scperteval/arch1_processed_complete.h5ad",
+ "sha256": null,
+ "units": "lognorm_mean_diff (X = log1p(normalize_total(1e4)); NOT mean(log1p(raw)) -- normalize before mixing sources)",
+ "pert_column": "perturbation",
+ "control_label": "control",
+ "gene_axis": "var_names",
+ "n_obs": 221273,
+ "n_source_genes": 18020,
+ "n_targets": 150,
+ "n_covered": 150,
+ "panel_genes_mapped": 18017,
+ "panel_genes_missing": 516,
+ "panel_targets_covered": 13,
+ "panel_targets_total": 300,
+ "control_cells": 38176,
+ "elapsed_s": 60.8,
+ "tool": "tools/extract_scperteval_source.py"
+}

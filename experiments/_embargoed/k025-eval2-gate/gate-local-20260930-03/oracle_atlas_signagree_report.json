@@ -1,0 +1,112 @@
+{
+  "atlas": "/opt/kytos/data/vol/atlas/adata_Validation.h5ad",
+  "n_cells": 98927,
+  "n_genes": 18080,
+  "n_targets_eval": 50,
+  "n_batches": 48,
+  "min_cells_per_target_batch": 20,
+  "min_eligible_batches": 3,
+  "n_splits": 3,
+  "batches_lacking_ntc": 0,
+  "cells_per_target_median": 1090.5,
+  "cells_per_target_min": 161,
+  "elig_batches_per_target_median": 34.5,
+  "targets_ge3_elig_batches": 41,
+  "targets_in_2026_panel": [
+    "ACLY",
+    "HDAC8",
+    "NFE2L1",
+    "SLIRP"
+  ],
+  "n_pairs_scored": 731917,
+  "spearman_agreefrac_vs_abspooled_all": 0.6303527407453136,
+  "spearman_agreefrac_vs_abspooled_panel_targets": 0.5991257301082751,
+  "binned": [
+    {
+      "bin": "[0.00,0.55)",
+      "n_pairs": 339232,
+      "mean_abs_pooled": 0.006150125834989354,
+      "splithalf_sign_agree_mean": 0.500927575038411,
+      "splithalf_cosine_mean": -0.09541330618432241,
+      "splithalf_sign_agree_splits": [
+        0.49544387360079745,
+        0.4992908736060646,
+        0.5080479779083711
+      ],
+      "splithalf_cosine_splits": [
+        -0.1297926164307251,
+        -0.09347000162874104,
+        -0.0629773004935011
+      ]
+    },
+    {
+      "bin": "[0.55,0.70)",
+      "n_pairs": 251276,
+      "mean_abs_pooled": 0.018784634853474137,
+      "splithalf_sign_agree_mean": 0.7182032463854316,
+      "splithalf_cosine_mean": 0.48850920520126895,
+      "splithalf_sign_agree_splits": [
+        0.7088460497620147,
+        0.7168162371903293,
+        0.7289474522039511
+      ],
+      "splithalf_cosine_splits": [
+        0.46274466986307966,
+        0.4845461804583283,
+        0.518236765282399
+      ]
+    },
+    {
+      "bin": "[0.70,0.85)",
+      "n_pairs": 90989,
+      "mean_abs_pooled": 0.04130567577358487,
+      "splithalf_sign_agree_mean": 0.8336752389683246,
+      "splithalf_cosine_mean": 0.8282151533315032,
+      "splithalf_sign_agree_splits": [
+        0.8313972018595654,
+        0.8289554666549435,
+        0.8406730483904647
+      ],
+      "splithalf_cosine_splits": [
+        0.81659897455464,
+        0.8254561045232868,
+        0.8425903809165829
+      ]
+    },
+    {
+      "bin": "[0.85,0.95)",
+      "n_pairs": 24444,
+      "mean_abs_pooled": 0.06133897805973607,
+      "splithalf_sign_agree_mean": 0.8490836197021764,
+      "splithalf_cosine_mean": 0.9388529227640176,
+      "splithalf_sign_agree_splits": [
+        0.8472017673048601,
+        0.8501063655702831,
+        0.849942726231386
+      ],
+      "splithalf_cosine_splits": [
+        0.9315161660019016,
+        0.9425736250732474,
+        0.9424689772169038
+      ]
+    },
+    {
+      "bin": "[0.95,1.00)",
+      "n_pairs": 25976,
+      "mean_abs_pooled": 0.15641634868374857,
+      "splithalf_sign_agree_mean": 0.9333102350888,
+      "splithalf_cosine_mean": 0.990909191435375,
+      "splithalf_sign_agree_splits": [
+        0.9355943948259933,
+        0.9276639975361872,
+        0.9366723129042193
+      ],
+      "splithalf_cosine_splits": [
+        0.9904767654266129,
+        0.9894331418924427,
+        0.9928176669870695
+      ]
+    }
+  ],
+  "elapsed_s": 8.0
+}

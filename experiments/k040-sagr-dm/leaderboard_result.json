@@ -1,0 +1,17 @@
+{
+    "entry": "0CfRKgZPxSFzOh59fAXN",
+    "model": "kytos-k040-sagr-dm",
+    "status": "published",
+    "submitted": "2026-10-12",
+    "rank": 529,
+    "overall": 0.1286,
+    "pds": 0.6175,
+    "mse": 0.0167,
+    "nmae": 0.0910,
+    "fid": -0.0187,
+    "reach": 0.0641,
+    "jac": 0.0011,
+    "partition": "val",
+    "panel": "vcc2026-val-1",
+    "note": "consensus_w_ctr_sagr deltas + champion dual-moment generator. Every component up-or-flat vs k035 (+0.1242). Best recorded validation score; sagr became the Oct-22 ship delta set. Receipt reconstructed post-hoc from the run log and experiments/_embargoed/diagnostic-numbers.md — the original Modal run dir was never synced to git. Rank 529 of 1457 on the public validation board per the 2026-11-20 snapshot (experiments/_embargoed/vcc_leaderboard_snapshot_2026-11-20.json); rank floats as the board grows."
+}

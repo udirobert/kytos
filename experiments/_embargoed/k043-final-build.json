@@ -1,0 +1,80 @@
+{
+  "run": "k043-final-sagr-dm",
+  "phase": "final (vcc2026-test-1, contexts D/E/F)",
+  "recipe": "consensus_w_ctr_sagr + dual-moment a1.0/b0.5/pk4, seed 0, 400 cells/pert",
+  "cli": "vcc-cli==0.3.0 (asserted in-container)",
+  "checked_on": "2026-10-22",
+
+  "final_panel_source_coverage": {
+    "k562": {"final_covered": 277, "missing_23_targets": ["ANG","ARSA","ATP10D","CAPRIN2","HCFC2","HEATR6","ITPRIPL1","LYSMD4","MAPK7","MLKL","NEK3","PARP3","PDK3","PSMB9","RAB26","SEMA4F","SIK2","STK10","TBC1D19","TESK2","TMEM79","UBTD2","ZDHHC13"]},
+    "hct116": {"final_covered": 298, "missing": ["ANG","DPY30"], "stats_cover_final": 298, "stats_median_voting": 76.5},
+    "hek293t": {"final_covered": 298, "missing": ["ANG","DPY30"], "stats_cover_final": 298, "stats_median_voting": 114.0},
+    "cd4": {"final_present": 287, "final_covered": 265},
+    "union_uncovered": ["ANG"],
+    "note": "ANG is uncovered by all four sources -> ships as zero-delta fallback (controls resampled), same convention as validation."
+  },
+
+  "new_source_audit_vs_final_panel": {
+    "question": "do k039-audited public screens cover the 171 NEW final targets?",
+    "result": "NEGATIVE for eligibility",
+    "details": {
+      "kaden25rpe1": {"final_covered": 72, "ineligible_reason": "CRISPRa activation, not knockdown (k039)"},
+      "arch1_h1_hesc": {"final_covered": 12, "note": "marginal"},
+      "replogle22rpe1": {"final_covered": 0},
+      "nadig25jurkat": {"final_covered": 0},
+      "nadig25hepg2": {"final_covered": 0},
+      "wessels23_thp1": {"final_covered": 0}
+    },
+    "decision": "No credible challenger exists. Ship the baseline sagr recipe. Closed axes (k039/k041/k042) remain closed."
+  },
+
+  "sagr_consensus_final": {
+    "path": "/kytos-vol/k043-final/machinery/variant_consensus_w_ctr_sagr.npz",
+    "sha256": "31e5aeee58a2ef0880e6e5f9e22dd6762909382ca3ddfe8393fed75c9745546d",
+    "shape": "300 x 18533 float32",
+    "subset_report": "/kytos-vol/k043-final/src/subset_report.json",
+    "manifest": "/kytos-vol/k043-final/machinery/build_manifest_v3.json",
+    "sagr_stats": {
+      "hct116": {"cons_median": 0.549, "cons_p10": 0.037, "cons_p90": 0.831},
+      "hek293t": {"cons_median": 0.553, "cons_p10": 0.042, "cons_p90": 0.845},
+      "k562_cd4": "no samplestats -> cons=1 fallback"
+    }
+  },
+
+  "build_app": "ap-9Uq7KLYbz2do31jARBQkJ6 (detached, 64GB) — completed 2026-10-22 ~10:52 UTC",
+  "deltas_npz_panel_uncovered_in_generator": 0,
+  "build_result": {
+    "generation_s": 1548.3,
+    "prediction_h5ad": "360000 x 18533, 2.3447e9 nnz",
+    "prep_checks": {
+      "cells": 360000,
+      "genes": 18533,
+      "contexts": {"D": 120000, "E": 120000, "F": 120000},
+      "targets": "verified against the official list",
+      "normalization": "counts-preserved"
+    },
+    "vcc_sha256": "2f67d631b07996755d075c10a43ea2b3a6a528197e7602a2ae5845d537b99bc8",
+    "vcc_size_bytes_approx": "3.6 GB",
+    "persisted": "/kytos-vol/k043-final/prediction.prep.vcc"
+  },
+  "artifacts": {
+    "volume_dir": "/kytos-vol/k043-final/",
+    "coverage_report": "/kytos-vol/k043-final/coverage_report.json",
+    "vcc": "/kytos-vol/k043-final/prediction.prep.vcc (when build_and_prep completes)",
+    "meta": "/kytos-vol/k043-final/meta.json",
+    "vcc_sha256": "/kytos-vol/k043-final/prediction.prep.vcc.sha256"
+  },
+  "submission": {
+    "submitted": true,
+    "entry_id": "Ov4qNbLHMb1dRRyqxDn8",
+    "model_name": "kytos-k043-final-sagr-dm",
+    "submitted_at": "2026-10-22",
+    "status": "published (terminal)",
+    "anchor_set": "vcc2026-testD-r1+vcc2026-testE-r1+vcc2026-testF-r1",
+    "is_final": true,
+    "holds_slot": false,
+    "submission_date": "2026-10-22T11:03:09Z",
+    "limits_after": "spent 1/2, in_flight 0 (verified post-submit)",
+    "note": "Re-submit of the same artifact landed on the same entry id without burning a second slot (server dedupes). All score fields null — hidden until Nov 19 winners announcement."
+  }
+}

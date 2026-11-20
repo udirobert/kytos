@@ -1,0 +1,110 @@
+{
+  "checked_on": "2026-10-22",
+  "scope": "CLI compatibility, authenticated season state, verified dataset download, ZIP/CSV/manifest and H5AD metadata inspection only",
+  "host": "snapflip-vultr",
+  "cli": {
+    "version": "0.3.0",
+    "binary": "/opt/kytos/preflight-vcc030/bin/vcc",
+    "isolated_environment": true,
+    "existing_binary_unchanged": "/opt/kytos/.venv/bin/vcc",
+    "existing_version": "0.2.2",
+    "dependency_check": "No broken requirements found",
+    "authentication": "default profile, existing file-backed credential; live whoami succeeded",
+    "contexts_default": "manifest.json beside --perts or --genes; no longer implicitly A,B,C",
+    "submission_routing": "server season state; no separate final-submission command required",
+    "full_prediction_compatibility_tested": false
+  },
+  "server_snapshot": {
+    "final_phase": true,
+    "panel_id": "vcc2026-test-1",
+    "contexts": ["D", "E", "F"],
+    "accepting_submissions": true,
+    "deadline_exclusive": "2026-11-06T00:00:00Z",
+    "last_accepted_minute_utc": "2026-11-05T23:59:00Z",
+    "spent": 0,
+    "limit": 2,
+    "in_flight": 0,
+    "blockers": []
+  },
+  "download": {
+    "dataset_id": "controls-final",
+    "filename": "vcc_2026_controls_final.zip",
+    "path": "/opt/kytos/repo/data/raw/vcc2026-final-preflight-20261022/vcc_2026_controls_final.zip",
+    "size_bytes": 643356568,
+    "crc32c": "epNJkw==",
+    "verified_with": "crc32c",
+    "checksum_ok": true,
+    "skipped": false,
+    "resumed_from": 0
+  },
+  "metadata_sha256": {
+    "manifest.json": "7fd5a2ea490c40b6d156dd189db2c8cbddedabab13dec1c27b69089a04b34e28",
+    "gene_names.csv": "25bfa66715e186bebabce7ac788bbcea47e2bf59ca70be1f8f3a06f2f0e47201",
+    "pert_counts.csv": "6a472047d58ddb2a59b2345f962dabaf4120276c381a5e97ec19ea03f640b118"
+  },
+  "manifest": {
+    "season": "2026",
+    "partition": "test",
+    "panel_id": "vcc2026-test-1",
+    "contexts": ["D", "E", "F"],
+    "pert_col": "target_gene",
+    "context_col": "context",
+    "control_label": "non-targeting",
+    "n_genes": 18533,
+    "n_constructs": 300,
+    "cells_per_pert": 400,
+    "per_context": {
+      "D": {"n_perturbations": 300, "control_cells": 18400, "n_ntc_ids": 46, "ground_truth_cells": 138400},
+      "E": {"n_perturbations": 300, "control_cells": 18400, "n_ntc_ids": 46, "ground_truth_cells": 138400},
+      "F": {"n_perturbations": 300, "control_cells": 18400, "n_ntc_ids": 46, "ground_truth_cells": 138400}
+    }
+  },
+  "validation_comparison": {
+    "reference_dir": "/opt/kytos/repo/data/raw/vcc2026",
+    "gene_names_bytes_identical": true,
+    "ordered_gene_axis_identical": true,
+    "unique_nonempty_genes": 18533,
+    "perturbations_bytes_identical": false,
+    "unique_nonempty_final_targets": 300,
+    "validation_target_count": 300,
+    "shared_targets": 129,
+    "final_only_targets": 171,
+    "validation_only_targets": 171
+  },
+  "control_h5ad_metadata": {
+    "checked_files": ["context_D.h5ad", "context_E.h5ad", "context_F.h5ad"],
+    "each_shape": [18400, 18533],
+    "each_gene_axis_exactly_matches_csv": true,
+    "each_obs_index_unique": true,
+    "each_var_index_unique": true,
+    "each_context_label_matches_filename": true,
+    "each_target_gene_label": "non-targeting",
+    "each_ntc_id_count": 46,
+    "cells_per_ntc_id": 400,
+    "obs_columns": ["target_gene", "context", "ntc_id"],
+    "var_columns": [],
+    "X_encoding": "csr_matrix",
+    "X_data_dtype": "float32",
+    "layers": [],
+    "matrix_values_scanned": false
+  },
+  "expected_prediction": {
+    "derivation": "3 contexts * 300 targets * 400 cells per target",
+    "total_cells": 360000,
+    "n_genes": 18533
+  },
+  "remaining_checks": [
+    "Genome-wide source and sagr-statistics coverage for the final targets is NOT verified. VPS k034-{k562,hct116,hek293t,cd4}-all cache directories are empty; k036-samplestats is not cached there. This is missing cached data, not evidence of zero biological coverage.",
+    "Retrieve/inspect the staged Modal artifact metadata before assembling final-panel consensus_w_ctr_sagr.",
+    "Pin the build and submit CLI to 0.3.0, preserve the final manifest and use final-panel sagr inputs rather than the validation-panel NPZ.",
+    "Run prediction correctness checks and CLI prep dry-run before packaging; neither has run.",
+    "Final-phase runbook is stale: old consensus recipe, placeholder dataset ID, and 11:59 UTC instead of 23:59 UTC."
+  ],
+  "actions_not_taken": [
+    "No new paid compute",
+    "No source extraction or delta assembly",
+    "No prediction generation or prep",
+    "No submission",
+    "No publication of embargoed artifacts"
+  ]
+}

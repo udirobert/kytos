@@ -1,0 +1,151 @@
+{
+  "builder": "tools/build_consensus_deltas_jagr.py",
+  "src_dir": "/opt/kytos/data/vol/k035-src",
+  "jurkat_src": "/opt/kytos/data/vol/k031-jurkat-parts/jurkat-20260924-02/deltas_jurkat_stim.npz",
+  "jurkat_parts_dir": "/opt/kytos/data/vol/k031-jurkat-parts/jurkat-20260924-02",
+  "sources": {
+    "cd4": {
+      "targets_covered": 282,
+      "has_n_cells": true
+    },
+    "hct116": {
+      "targets_covered": 343,
+      "has_n_cells": true
+    },
+    "hek293t": {
+      "targets_covered": 343,
+      "has_n_cells": true
+    },
+    "k562": {
+      "targets_covered": 315,
+      "has_n_cells": false
+    },
+    "jurkat_stim": {
+      "targets_covered": 341,
+      "has_n_cells": true
+    }
+  },
+  "weights": {
+    "k562": 2.0,
+    "hct116": 1.0,
+    "hek293t": 1.0,
+    "cd4": 1.0,
+    "jurkat_stim": 1.0
+  },
+  "agr_clip_tight": [
+    0.4,
+    0.8
+  ],
+  "jagr_stats": {
+    "min_channel_cells_used": 3,
+    "spec_threshold_20": "degenerate -- 0/343 targets have a qualifying channel",
+    "threshold_sweep": {
+      "1": {
+        "targets_with_qual_channels": 342,
+        "qual_channels_median": 16.0,
+        "qual_channels_mean": 15.376093294460642,
+        "j_agree_target_mean_hist": {
+          "[0,.5)": 342,
+          "[.5,.7)": 0,
+          "[.7,.9)": 0,
+          "[.9,1]": 0
+        },
+        "j_agree_target_mean_of_scored": 0.23208499071857672
+      },
+      "3": {
+        "targets_with_qual_channels": 342,
+        "qual_channels_median": 12.0,
+        "qual_channels_mean": 11.425655976676385,
+        "j_agree_target_mean_hist": {
+          "[0,.5)": 342,
+          "[.5,.7)": 0,
+          "[.7,.9)": 0,
+          "[.9,1]": 0
+        },
+        "j_agree_target_mean_of_scored": 0.23670853407874187
+      },
+      "5": {
+        "targets_with_qual_channels": 335,
+        "qual_channels_median": 5.0,
+        "qual_channels_mean": 6.291545189504373,
+        "j_agree_target_mean_hist": {
+          "[0,.5)": 335,
+          "[.5,.7)": 0,
+          "[.7,.9)": 0,
+          "[.9,1]": 0
+        },
+        "j_agree_target_mean_of_scored": 0.2429286584656272
+      },
+      "10": {
+        "targets_with_qual_channels": 102,
+        "qual_channels_median": 0.0,
+        "qual_channels_mean": 0.9037900874635568,
+        "j_agree_target_mean_hist": {
+          "[0,.5)": 102,
+          "[.5,.7)": 0,
+          "[.7,.9)": 0,
+          "[.9,1]": 0
+        },
+        "j_agree_target_mean_of_scored": 0.24174948580202643
+      },
+      "20": {
+        "targets_with_qual_channels": 0,
+        "qual_channels_median": 0.0,
+        "qual_channels_mean": 0.0,
+        "j_agree_target_mean_hist": {
+          "[0,.5)": 0,
+          "[.5,.7)": 0,
+          "[.7,.9)": 0,
+          "[.9,1]": 0
+        },
+        "j_agree_target_mean_of_scored": NaN
+      }
+    },
+    "channels": 16,
+    "targets_with_qual_channels": 342,
+    "targets_zero_qual_channels": [
+      "ZNF714"
+    ],
+    "qual_channels_per_target": {
+      "median": 12.0,
+      "min": 0,
+      "max": 16
+    },
+    "j_agree_per_target_mean_hist": {
+      "[0,.5)": 342,
+      "[.5,.7)": 0,
+      "[.7,.9)": 0,
+      "[.9,1]": 0
+    },
+    "j_agree_per_target_mean": 0.23670853407874187,
+    "stim_cells_per_channel": [
+      1503,
+      1462,
+      1554,
+      1459,
+      1156,
+      1448,
+      1385,
+      1054,
+      1456,
+      1577,
+      1533,
+      1549,
+      1857,
+      1610,
+      1449,
+      1420
+    ]
+  },
+  "semantics": [
+    "j_agree[t,g] = fraction of 16 Jurkat stim channels (>= 3 stim cells for target t) whose per-channel delta sign matches the pooled jurkat_stim delta sign; 0 where no qualifying channel or pooled delta == 0",
+    "NOTE spec threshold was 20 cells/target/channel; per-channel coverage is ~4 cells mean so >=20 is degenerate (0 qualifying channels for every target). Adapted to >=3; sweep in jagr_report.json",
+    "consensus_w_ctr_jagr_tight_rmass: 5-source weighted consensus (k562:2, hct116/hek293t/cd4/jurkat_stim:1); jurkat contributes u_j*j_agree (not renormalized) to BOTH the unit-vector mean and the tight agreement gate numerator+denominator; then common-response centering, clip(0.40,0.80) gate, per-target row-norm restore to ungated ctr norm",
+    "consensus_w_ctr_agr_tight_j5: same but j_agree=1 (unmodulated 5-source control to isolate the modifier's effect)"
+  ],
+  "written_this_run": [
+    "variant_consensus_w_ctr_jagr_tight_rmass.npz",
+    "variant_consensus_w_ctr_agr_tight_j5.npz"
+  ],
+  "skipped_existing": []
+}

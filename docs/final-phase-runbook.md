@@ -1,6 +1,8 @@
 # Final-phase runbook — Oct 22 drop → Nov 5 deadline
 
-Status: **EXECUTING** · Updated 2026-10-22 (k043) · No embargoed numbers here.
+Status: **COMPLETE** · Updated 2026-10-22 (k043), closed 2026-11-20 ·
+k043 stood as the final submission; winners announced Nov 19. Analysis:
+[`vcc-postmortem.md`](vcc-postmortem.md). Next: [`kytos-roadmap.md`](kytos-roadmap.md).
 
 The final test set is live: 3 new cell lines as contexts **D, E, F**, panel
 `vcc2026-test-1`, **300 perturbations** (129 shared with the validation

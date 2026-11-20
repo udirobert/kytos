@@ -714,7 +714,7 @@ def _timeline_html() -> str:
         <h2>{{Tech: Europe}} × VEED Hackathon</h2>
         <p class="timeline-tagline">
           Observatory Milestone 0 — the public transparency layer for our Virtual Cell
-          Challenge entry, shipping from this repo through Nov 5.
+          Challenge entry, shipped from this repo Aug 20 → Nov 5.
         </p>
         <p class="hackathon-deadline">
           <strong>Opt-in closed ✅</strong>
@@ -723,7 +723,7 @@ def _timeline_html() -> str:
       </div>
 
       <div class="timeline-vcc">
-        <p class="timeline-eyebrow">📡 78-day public build</p>
+        <p class="timeline-eyebrow">📡 78-day public build · complete</p>
         <h3 class="timeline-subhead">Virtual Cell Challenge 2026</h3>
         <div class="vcc-track" role="img" aria-label="Virtual Cell Challenge timeline"
              data-vcc-start="{VCC_START}"
@@ -751,21 +751,21 @@ def _timeline_html() -> str:
         </div>
         <div class="vcc-stats">
           <div class="vcc-stat">
-            <span class="vcc-stat-label">🏁 Submit by Nov 5</span>
+            <span class="vcc-stat-label">🏁 Submitted Oct 22</span>
             <strong class="vcc-stat-value t-text-swap" id="vcc-countdown">…</strong>
-            <span class="vcc-stat-note">Arc scores the hidden test set</span>
+            <span class="vcc-stat-note">Winners announced Nov 19</span>
           </div>
           <div class="vcc-stat">
-            <span class="vcc-stat-label">📡 Build day</span>
+            <span class="vcc-stat-label">📡 Build days</span>
             <strong class="vcc-stat-value">
               <span id="vcc-day">…</span><span class="vcc-stat-of">/{VCC_DAYS}</span>
             </strong>
-            <span class="vcc-stat-note">Publishing every run in the open</span>
+            <span class="vcc-stat-note">Every run published in the open</span>
           </div>
           <div class="vcc-stat">
-            <span class="vcc-stat-label">🎯 Test set drops</span>
+            <span class="vcc-stat-label">🎯 Final entry</span>
             <strong class="vcc-stat-value" id="vcc-testsets">…</strong>
-            <span class="vcc-stat-note">New perturbations to predict</span>
+            <span class="vcc-stat-note">k043 on the hidden D/E/F panel</span>
           </div>
         </div>
       </div>
@@ -879,9 +879,9 @@ def _runs_insight_cards(runs: list[RunSummary], *, root_prefix: str = "../") -> 
             "What we publish per run",
             "<strong>cell-eval metrics</strong> and ceiling headroom, "
             "<strong>audit flags</strong> (separate from score), "
-            "literature, provenance, and briefings — for all "
+            "literature, provenance, and briefings — across all "
             f"<strong>{VCC_DAYS} days</strong> of the public build.",
-            foot="Run #1 of 78 is live",
+            foot="78 days · every run published",
             href=f"{root_prefix}index.html" if runs else None,
         ),
     ]
@@ -942,16 +942,18 @@ def _substantiation_about_html(runs: list[RunSummary]) -> str:
         line = _run_card_metrics_line(runs[-1])
         k001_line = f"""
         <p class="substantiation-live prose">
-          <strong>Live example (run #{_run_index(runs[-1], runs)}):</strong> {_h(line)} —
+          <strong>Latest example (run #{_run_index(runs[-1], runs)}):</strong> {_h(line)} —
           plus audit flags the headline metrics never name.
         </p>"""
     return f"""
     <section class="panel substantiation-panel" id="substantiation">
       <h2>Why the Observatory</h2>
-      <p class="prose">The Virtual Cell Challenge produces high-dimensional predictions
-      and leaderboard scores. It does not publish <em>when a model is biologically wrong
-      while still scoring acceptably</em>. We do — run by run, in the open, for the full
-      competition window.</p>
+      <p class="prose">The Virtual Cell Challenge produced high-dimensional predictions
+      and leaderboard scores. It did not publish <em>when a model is biologically wrong
+      while still scoring acceptably</em>. We did — run by run, in the open, for the
+      full 78-day window. The
+      <a href="https://github.com/udirobert/kytos/blob/main/docs/vcc-postmortem.md"
+         rel="noopener">post-mortem</a> does the same for the campaign itself.</p>
 
       <div class="evidence-strip">
         <div class="evidence-stat">
@@ -960,14 +962,14 @@ def _substantiation_about_html(runs: list[RunSummary]) -> str:
           <span class="evidence-stat-note">Arc aggregate — 0 = mean baseline, 1 = replicate</span>
         </div>
         <div class="evidence-stat">
-          <span class="evidence-stat-value">5k+</span>
-          <span class="evidence-stat-label">VCC 2025 registrants</span>
-          <span class="evidence-stat-note">114 countries · 300+ final teams</span>
+          <span class="evidence-stat-value">5,441</span>
+          <span class="evidence-stat-label">VCC 2026 registrants</span>
+          <span class="evidence-stat-note">1,469 teams · 805 final entries</span>
         </div>
         <div class="evidence-stat">
           <span class="evidence-stat-value">{VCC_DAYS}</span>
           <span class="evidence-stat-label">days public build</span>
-          <span class="evidence-stat-note">Aug 20 → Nov 5, 2026</span>
+          <span class="evidence-stat-note">Aug 20 → Nov 5, 2026 · concluded</span>
         </div>
       </div>
 

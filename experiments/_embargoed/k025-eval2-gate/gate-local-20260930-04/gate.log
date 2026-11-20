@@ -1,0 +1,23 @@
+real subset: 93697 cells on 18080 genes
+[arms] scoring ['dm_ctr_agr_tight_rmass', 'dm_ctr_agr_tight_j5']
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ctr_agr_tight_rmass] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ctr_agr_tight_j5] pred written: (19600, 18080), dispatch {'real': 47}
+[dm_ctr_agr_tight_rmass] de_proxy median 7950 vs real 396
+[dm_ctr_agr_tight_j5] de_proxy median 8005 vs real 396
+[dm_ctr_agr_tight_rmass] bulk_shift median_norm 0.497 cos 0.063
+[dm_ctr_agr_tight_j5] bulk_shift median_norm 0.440 cos 0.062
+[bundle] reusing /opt/kytos/data/vol/gate-20260921-01/bundle
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260930-04/pred_dm_ctr_agr_tight_rmass.h5ad -ar /opt/kytos/runs/gate-local-20260930-04/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260930-04/run_dm_ctr_agr_tight_rmass
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260930-04/run_dm_ctr_agr_tight_rmass/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260930-04/scored_dm_ctr_agr_tight_rmass.csv
+[dm_ctr_agr_tight_rmass] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260930-04/pred_dm_ctr_agr_tight_j5.h5ad -ar /opt/kytos/runs/gate-local-20260930-04/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260930-04/run_dm_ctr_agr_tight_j5
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260930-04/run_dm_ctr_agr_tight_j5/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260930-04/scored_dm_ctr_agr_tight_j5.csv
+[dm_ctr_agr_tight_j5] scored
+{
+  "status": "completed",
+  "out": "/opt/kytos/runs/gate-local-20260930-04"
+}

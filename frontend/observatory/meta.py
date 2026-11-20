@@ -10,11 +10,11 @@ from functools import lru_cache
 from pathlib import Path
 
 SITE_TITLE = "Kytos Observatory"
-SITE_TAGLINE = "Virtual Cell Challenge · build in public"
+SITE_TAGLINE = "Virtual-cell research · built in public"
 SITE_DESCRIPTION = (
-    "Public experiment tracker for Kytos: cell-eval metrics, biological audit flags, "
-    "literature evidence, provenance, and VEED Fabric briefings — failure modes visible "
-    "during the 2026 Virtual Cell Challenge."
+    "Public experiment tracker for Kytos: perturbation-response metrics, biological "
+    "audit flags, literature evidence, provenance, and briefings — every score and "
+    "failure published in the open, from the 2026 Virtual Cell Challenge onward."
 )
 SITE_AUTHOR = "Kytos"
 THEME_COLOR = "#100e0a"

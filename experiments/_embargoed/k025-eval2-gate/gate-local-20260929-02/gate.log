@@ -1,0 +1,48 @@
+real subset reused: 93697 cells on 18080 genes
+[arms] scoring ['dm_ref', 'dm_ctr_agr', 'dm_ctr_vagr', 'dm_ctr_agr_loose', 'dm_ctr_agr_tight']
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ref] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ctr_agr] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ctr_vagr] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ctr_agr_loose] pred written: (19600, 18080), dispatch {'real': 47}
+/usr/lib/python3.12/functools.py:909: ImplicitModificationWarning: Transforming to str index.
+  return dispatch(args[0].__class__)(*args, **kw)
+[dm_ctr_agr_tight] pred written: (19600, 18080), dispatch {'real': 47}
+[dm_ref] de_proxy median 7954 vs real 396
+[dm_ctr_agr] de_proxy median 7971 vs real 396
+[dm_ctr_vagr] de_proxy median 7965 vs real 396
+[dm_ctr_agr_loose] de_proxy median 7950 vs real 396
+[dm_ctr_agr_tight] de_proxy median 7985 vs real 396
+[dm_ref] bulk_shift median_norm 0.507 cos 0.074
+[dm_ctr_agr] bulk_shift median_norm 0.461 cos 0.069
+[dm_ctr_vagr] bulk_shift median_norm 0.468 cos 0.069
+[dm_ctr_agr_loose] bulk_shift median_norm 0.479 cos 0.072
+[dm_ctr_agr_tight] bulk_shift median_norm 0.450 cos 0.063
+[bundle] reusing /opt/kytos/data/vol/gate-20260921-01/bundle
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-02/pred_dm_ref.h5ad -ar /opt/kytos/runs/gate-local-20260929-02/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-02/run_dm_ref
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-02/run_dm_ref/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-02/scored_dm_ref.csv
+[dm_ref] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-02/pred_dm_ctr_agr.h5ad -ar /opt/kytos/runs/gate-local-20260929-02/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-02/run_dm_ctr_agr
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-02/run_dm_ctr_agr/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-02/scored_dm_ctr_agr.csv
+[dm_ctr_agr] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-02/pred_dm_ctr_vagr.h5ad -ar /opt/kytos/runs/gate-local-20260929-02/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-02/run_dm_ctr_vagr
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-02/run_dm_ctr_vagr/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-02/scored_dm_ctr_vagr.csv
+[dm_ctr_vagr] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-02/pred_dm_ctr_agr_loose.h5ad -ar /opt/kytos/runs/gate-local-20260929-02/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-02/run_dm_ctr_agr_loose
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-02/run_dm_ctr_agr_loose/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-02/scored_dm_ctr_agr_loose.csv
+[dm_ctr_agr_loose] scored
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 run -ap /opt/kytos/runs/gate-local-20260929-02/pred_dm_ctr_agr_tight.h5ad -ar /opt/kytos/runs/gate-local-20260929-02/real_eval2.h5ad --preset vcc2026 --pert-col target_gene -o /opt/kytos/runs/gate-local-20260929-02/run_dm_ctr_agr_tight
+$ /opt/kytos/.venv-eval2/bin/cell-eval2 score --user-agg /opt/kytos/runs/gate-local-20260929-02/run_dm_ctr_agr_tight/agg_results.csv --real-bundle /opt/kytos/data/vol/gate-20260921-01/bundle -o /opt/kytos/runs/gate-local-20260929-02/scored_dm_ctr_agr_tight.csv
+[dm_ctr_agr_tight] scored
+{
+  "status": "completed",
+  "out": "/opt/kytos/runs/gate-local-20260929-02"
+}
+GATE_RC=0

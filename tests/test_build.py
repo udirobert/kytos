@@ -116,7 +116,7 @@ def test_build_produces_run_page(tmp_path: Path) -> None:
     assert "cm-col-label" in runs_html
     assert "component-matrix" not in home_html
     # Bar rows link into run pages relative to /runs/ — pin the best row.
-    assert 'class="traj-bar-row is-best" href="../runs/k027-consensus-dm/index.html"' in runs_html
+    assert 'class="traj-bar-row is-best" href="../runs/k040-sagr-dm/index.html"' in runs_html
 
     # Quantum workstream page — c008 QPU tomography showcase.
     quantum = dist / "quantum" / "index.html"

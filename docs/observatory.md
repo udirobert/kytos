@@ -1,12 +1,14 @@
 # Kytos Observatory — build-in-public surface
 
-Status: **ACTIVE** · Owner: udingethe · Started: **2026-08-22** · Scorer wording
-updated **2026-09-20**
+Status: **ACTIVE** · Owner: udingethe · Started: **2026-08-22** · VCC 2026
+season concluded **2026-11-19**; the Observatory continues as the program's
+standing surface (see [`kytos-roadmap.md`](kytos-roadmap.md))
 
 The **Observatory** is Kytos's public-facing layer: a visual, engaging experience
 where experiment progress, biological audit flags, and literature context are
-published for scrutiny, collaboration, and critique. It is the build-in-public
-companion to our **2026 Virtual Cell Challenge** entry — not a substitute for
+published for scrutiny, collaboration, and critique. It began as the
+build-in-public companion to our **2026 Virtual Cell Challenge** entry and
+continues as the medium for the program beyond it — not a substitute for
 the prediction pipeline, but the medium through which we share it.
 
 **Problem, evidence, and wedge:** [`competitive-landscape.md`](competitive-landscape.md)
@@ -19,8 +21,8 @@ Companion docs: [`architecture.md`](architecture.md) (model stack),
 
 ## 1. Why this exists
 
-The Virtual Cell Challenge runs for months (validation open Aug 20; final
-submission Nov 5, 2026). Arc explicitly seeks people who *"know when a model is
+The 2026 Virtual Cell Challenge ran Aug 20 → Nov 5, 2026 (winners Nov 19).
+Arc explicitly seeks people who *"know when a model is
 wrong for biological rather than numerical reasons"* — yet official
 infrastructure provides a **leaderboard and scorer metrics**, not public
 interpretability of failure modes.

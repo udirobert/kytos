@@ -21,15 +21,13 @@
         {% if latest_overall is not none and best_run_id != latest_run_id %}
         <span class="hero-latest"> · latest {{ "%.3f" | format(latest_overall) }}</span>
         {% endif %}
-        · VCC 2026 validation
-        {% if days_left is not none %} · <span class="deadline">{{ days_left }} days to submit</span>{% endif %}
+        · VCC 2026 · <span class="deadline">season concluded</span>
       </p>
       {% elif latest_rank or latest_overall is not none %}
       <p class="hero-standing">
         {% if latest_rank %}Rank <strong>{{ latest_rank }}</strong>{% endif %}
         {% if latest_overall is not none %} · Score <strong>{{ "%.3f" | format(latest_overall) }}</strong>{% endif %}
-        · VCC 2026 validation
-        {% if days_left is not none %} · <span class="deadline">{{ days_left }} days to submit</span>{% endif %}
+        · VCC 2026 · <span class="deadline">season concluded</span>
       </p>
       {% endif %}
       <div class="hero-actions">
@@ -69,6 +67,37 @@
     {{ trajectory | safe }}
   </section>
   {% endif %}
+
+  <section class="panel substantiation-panel whats-next-panel">
+    <div class="panel-header">
+      <h2>Season 1 complete — what Kytos is now</h2>
+      <p class="muted">VCC 2026 is scored and done. The Observatory stays open; the engine gets rebuilt.</p>
+    </div>
+    <div class="substantiation-grid">
+      <div class="substantiation-col">
+        <h3 class="substantiation-subhead">The post-mortem</h3>
+        <p class="prose">A PDS of 0.62 still scored +0.129: we modeled discrimination and
+        left significance estimation implicit. A component-level accounting of what the
+        winning teams (Illumina, FlowState, Xaira) did differently — and the recipe we'd
+        run next.</p>
+        <p class="prose"><a href="https://github.com/udirobert/kytos/blob/main/docs/vcc-postmortem.md" rel="noopener">Read the post-mortem &rarr;</a></p>
+      </div>
+      <div class="substantiation-col">
+        <h3 class="substantiation-subhead">Engine v2</h3>
+        <p class="prose">The delta layer becomes a meta-analysis: per-dataset LFC + standard
+        error, precision-weighted consensus across ~200 public screens, an explicit DE-set
+        predictor, and synthesis calibrated to the scorer's pseudobulk noise floor.</p>
+        <p class="prose"><a href="https://github.com/udirobert/kytos/blob/main/docs/kytos-roadmap.md" rel="noopener">The full program roadmap &rarr;</a></p>
+      </div>
+      <div class="substantiation-col">
+        <h3 class="substantiation-subhead">Beyond the challenge</h3>
+        <p class="prose">Kytos is an open virtual-cell research program: perturbation-response
+        prediction, protein topology on real quantum hardware, and literature-mechanism
+        extraction — published run by run. VCC returns next summer; so do we.</p>
+        <p class="prose"><a href="{{ quantum_href }}">Protein topology on real qubits &rarr;</a></p>
+      </div>
+    </div>
+  </section>
 
   {% if run_log %}
   <section class="panel">

@@ -1,0 +1,20 @@
+{
+ "source": "wessels23",
+ "h5ad": "data/raw/scperteval/wessels23_processed_complete.h5ad",
+ "sha256": null,
+ "units": "lognorm_mean_diff (X = log1p(normalize_total(1e4)); NOT mean(log1p(raw)) -- normalize before mixing sources)",
+ "pert_column": "perturbation",
+ "control_label": "control",
+ "gene_axis": "var_names",
+ "n_obs": 28490,
+ "n_source_genes": 16775,
+ "n_targets": 157,
+ "n_covered": 157,
+ "panel_genes_mapped": 15439,
+ "panel_genes_missing": 3094,
+ "panel_targets_covered": 0,
+ "panel_targets_total": 300,
+ "control_cells": 424,
+ "elapsed_s": 3.9,
+ "tool": "tools/extract_scperteval_source.py"
+}

@@ -1,6 +1,6 @@
 # VCC strategy — validation first
 
-Status: **ACTIVE** · Updated **2026-10-12** · Owner: udingethe
+Status: **CONCLUDED 2026-11-19 — see `docs/vcc-postmortem.md`** · Updated **2026-11-20** · Owner: udingethe
 
 This file is the single active research strategy. (The filename is historical
 — it predates the validation-first pivot; the two-track plan survives only as
@@ -11,7 +11,19 @@ checking their validity caveats.
 
 ## Current state
 
-- **Best recorded submission:** `kytos-k040-sagr-dm`, overall
+- **Final phase: CONCLUDED (entry stood; winners announced Nov 19).** The Oct-22
+  drop landed: contexts D/E/F, panel `vcc2026-test-1`, 300 targets (171 new
+  vs validation), same 18,533-gene axis. `kytos-k043-final-sagr-dm` (entry
+  `Ov4qNbLHMb1dRRyqxDn8`) shipped the k040 recipe rebuilt on the final
+  panel — final-panel `consensus_w_ctr_sagr` from the genome-wide k034
+  extracts + k036 stats, champion dual-moment generator unchanged,
+  packaged/submitted with `vcc-cli==0.3.0`. Scores hidden until Nov 19;
+  **only the last submission before Nov 5 23:59 UTC counts** — this entry
+  is replaceable insurance. The challenger path is closed: the k039-audited
+  public screens still cover none of the 171 new targets eligibly (the
+  72-hit RPE1 set is CRISPRa). Tool: `tools/modal_k043_final_sagr.py`;
+  runbook: `docs/final-phase-runbook.md`.
+- **Best recorded validation submission:** `kytos-k040-sagr-dm`, overall
   **+0.1286** (entry `0CfRKgZPxSFzOh59fAXN`, 2026-10-12) — the k027
   champion generator unchanged, delta source = `consensus_w_ctr_sagr`
   (weighted consensus with per-gene sign-agreement shrinkage from the

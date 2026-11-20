@@ -1,0 +1,101 @@
+{
+  "min_channel_cells_used": 3,
+  "spec_threshold_20": "degenerate -- 0/343 targets have a qualifying channel",
+  "threshold_sweep": {
+    "1": {
+      "targets_with_qual_channels": 342,
+      "qual_channels_median": 16.0,
+      "qual_channels_mean": 15.376093294460642,
+      "j_agree_target_mean_hist": {
+        "[0,.5)": 342,
+        "[.5,.7)": 0,
+        "[.7,.9)": 0,
+        "[.9,1]": 0
+      },
+      "j_agree_target_mean_of_scored": 0.23208499071857672
+    },
+    "3": {
+      "targets_with_qual_channels": 342,
+      "qual_channels_median": 12.0,
+      "qual_channels_mean": 11.425655976676385,
+      "j_agree_target_mean_hist": {
+        "[0,.5)": 342,
+        "[.5,.7)": 0,
+        "[.7,.9)": 0,
+        "[.9,1]": 0
+      },
+      "j_agree_target_mean_of_scored": 0.23670853407874187
+    },
+    "5": {
+      "targets_with_qual_channels": 335,
+      "qual_channels_median": 5.0,
+      "qual_channels_mean": 6.291545189504373,
+      "j_agree_target_mean_hist": {
+        "[0,.5)": 335,
+        "[.5,.7)": 0,
+        "[.7,.9)": 0,
+        "[.9,1]": 0
+      },
+      "j_agree_target_mean_of_scored": 0.2429286584656272
+    },
+    "10": {
+      "targets_with_qual_channels": 102,
+      "qual_channels_median": 0.0,
+      "qual_channels_mean": 0.9037900874635568,
+      "j_agree_target_mean_hist": {
+        "[0,.5)": 102,
+        "[.5,.7)": 0,
+        "[.7,.9)": 0,
+        "[.9,1]": 0
+      },
+      "j_agree_target_mean_of_scored": 0.24174948580202643
+    },
+    "20": {
+      "targets_with_qual_channels": 0,
+      "qual_channels_median": 0.0,
+      "qual_channels_mean": 0.0,
+      "j_agree_target_mean_hist": {
+        "[0,.5)": 0,
+        "[.5,.7)": 0,
+        "[.7,.9)": 0,
+        "[.9,1]": 0
+      },
+      "j_agree_target_mean_of_scored": NaN
+    }
+  },
+  "channels": 16,
+  "targets_with_qual_channels": 342,
+  "targets_zero_qual_channels": [
+    "ZNF714"
+  ],
+  "qual_channels_per_target": {
+    "median": 12.0,
+    "min": 0,
+    "max": 16
+  },
+  "j_agree_per_target_mean_hist": {
+    "[0,.5)": 342,
+    "[.5,.7)": 0,
+    "[.7,.9)": 0,
+    "[.9,1]": 0
+  },
+  "j_agree_per_target_mean": 0.23670853407874187,
+  "stim_cells_per_channel": [
+    1503,
+    1462,
+    1554,
+    1459,
+    1156,
+    1448,
+    1385,
+    1054,
+    1456,
+    1577,
+    1533,
+    1549,
+    1857,
+    1610,
+    1449,
+    1420
+  ]
+}

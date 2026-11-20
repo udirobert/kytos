@@ -1,0 +1,20 @@
+{
+ "source": "nadig25hepg2",
+ "h5ad": "data/raw/scperteval/nadig25hepg2_processed_complete.h5ad",
+ "sha256": null,
+ "units": "lognorm_mean_diff (X = log1p(normalize_total(1e4)); NOT mean(log1p(raw)) -- normalize before mixing sources)",
+ "pert_column": "perturbation",
+ "control_label": "control",
+ "gene_axis": "var_names",
+ "n_obs": 133757,
+ "n_source_genes": 9623,
+ "n_targets": 1818,
+ "n_covered": 1818,
+ "panel_genes_mapped": 9024,
+ "panel_genes_missing": 9509,
+ "panel_targets_covered": 0,
+ "panel_targets_total": 300,
+ "control_cells": 4976,
+ "elapsed_s": 23.7,
+ "tool": "tools/extract_scperteval_source.py"
+}

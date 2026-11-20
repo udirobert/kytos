@@ -1,0 +1,28 @@
+{
+  "run_id": "k040-sagr-dm",
+  "created": "2026-10-12",
+  "headline": "per-gene sign-agreement shrinkage (sagr) on centered consensus — overall +0.1286, best validation score recorded; the Oct-22 ship delta set",
+  "data_status": "final",
+  "headline_metrics": {
+    "overall": 0.1286,
+    "pds": 0.6175,
+    "mse": 0.0167,
+    "nmae": 0.0910,
+    "fid": -0.0187,
+    "reach": 0.0641,
+    "jac": 0.0011
+  },
+  "ceiling_headroom": {},
+  "audit_flags": [],
+  "hypotheses_preregistered": [
+    "per-sample sign-agreement shrinkage improves pds over consensus_w_ctr (pre-declared; confirmed, below the +0.005 promotion margin)"
+  ],
+  "next_steps": [
+    "rebuild consensus_w_ctr_sagr on the Oct-22 final panel and ship it blind (k043)"
+  ],
+  "provenance": {
+    "strategy": "consensus_w_ctr_sagr (k562:hct116:hek293t:cd4 = 2:1:1:1, centered, sign-agreement shrunk) + dual-moment a1.0/b0.5/pk4",
+    "data": "k034 genome-wide extracts + k036 X-Atlas per-sample sign-agreement stats"
+  },
+  "vessel_fill": 99
+}

@@ -1,0 +1,20 @@
+{
+ "source": "kaden25rpe1",
+ "h5ad": "data/raw/scperteval/kaden25rpe1_processed_complete.h5ad",
+ "sha256": null,
+ "units": "lognorm_mean_diff (X = log1p(normalize_total(1e4)); NOT mean(log1p(raw)) -- normalize before mixing sources)",
+ "pert_column": "perturbation",
+ "control_label": "control",
+ "gene_axis": "var_names",
+ "n_obs": 850225,
+ "n_source_genes": 28907,
+ "n_targets": 1836,
+ "n_covered": 1836,
+ "panel_genes_mapped": 16828,
+ "panel_genes_missing": 1705,
+ "panel_targets_covered": 80,
+ "panel_targets_total": 300,
+ "control_cells": 42233,
+ "elapsed_s": 121.3,
+ "tool": "tools/extract_scperteval_source.py"
+}

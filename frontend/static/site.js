@@ -237,12 +237,16 @@
       needle.style.left = (progress * 100).toFixed(2) + "%";
       fill.style.width = (progress * 100).toFixed(2) + "%";
 
-      swapText(countdown, fmt(Math.max(0, end - now)));
+      if (now >= end) {
+        swapText(countdown, "done ✓");
+      } else {
+        swapText(countdown, fmt(end - now));
+      }
       if (dayEl) {
         dayEl.textContent = String(buildDay);
       }
       if (testEl) {
-        swapText(testEl, fmt(Math.max(0, testSet - now)));
+        swapText(testEl, now >= testSet ? "scored" : fmt(testSet - now));
       }
       if (hackathonEl) {
         var hackLeft = hackathonEnd - now;
@@ -252,7 +256,7 @@
         homeBuild.textContent = "day " + buildDay;
       }
       if (homeLeft) {
-        swapText(homeLeft, fmtShort(Math.max(0, end - now)));
+        swapText(homeLeft, now >= end ? "done" : fmtShort(end - now));
       }
     }
 
