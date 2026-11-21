@@ -354,6 +354,14 @@ enrichment path.
   open on Zenodo 10044268 (raw counts → log1p-sc parity); Altos
   `primeflow-vcc-datasets` HF mirror covers the blocked arms plus
   McFaline GxE (U-87MG), Feng iPSC, Jiang pathway.
+- `k204-meta-analysis` — data run 2026-11-21, **no submission**: L1
+  precision-weighted meta-analysis over the L0 corpus
+  (`tools/modal_k204_meta.py`). 23 KD stores pooled →
+  `k204-meta/h204-20261121-02` (18,836/18,853 union targets covered;
+  self-KD z_hat negative for 94.3% of measured targets). z is the
+  cross-assay unit; LFC pooled only within `lfc_kind`. Run -01
+  superseded: OE arms (datlinger17, norman19) had slipped past the
+  assay filter — tokenized exclusion fixed and flagged.
 
 ## 2026-09-20 validation reset
 

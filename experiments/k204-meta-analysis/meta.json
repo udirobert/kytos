@@ -1,0 +1,18 @@
+{
+  "run_id": "k204-meta-analysis",
+  "created_at": "2026-11-21",
+  "mode": "engine-v2 L1 precision-weighted meta-analysis over L0 stores -- Modal",
+  "platform": "modal (kytos-vcc volume)",
+  "jobs": {
+    "tools/modal_k204_meta.py": "DL random-effects z pool (cross-assay unit) + per-primary-kind FE IV lfc pool with sqrt(Q/df) se inflation; tau2/i2/votes emitted"
+  },
+  "input": {
+    "stores": "/kytos-vol/k201-evidence/*/*/stats.npz + manifest.json (k201+k203 corpus)"
+  },
+  "output": "/kytos-vol/k204-meta/<run_id>/stats.npz + manifest.json",
+  "docs": {
+    "design": "docs/engine-v2-design.md sections 1-4",
+    "inventory": "docs/evidence-corpus-inventory.md"
+  },
+  "notes": "h204-20261121-01 superseded by -02: run 01 pooled two overexpression arms into KD consensus (datlinger17 crop-oe via '-oe' suffix gap, norman19 sc-oe). Tokenized assay exclusion fixed it; see facts.json audit flags."
+}

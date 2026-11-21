@@ -249,7 +249,7 @@ non-DE genes get zeroed cleanly instead of carrying residual deltas
 | k201 | `k201-evidence/{hct116,hek293t,k562,cd4,h1}/` on `kytos-vcc` (L0 phase 0) | schema validates; self-KD sign audit; `tools/modal_k201_validate.py` |
 | k202 | Corpus inventory doc (`docs/evidence-corpus-inventory.md`) + harvester (`tools/modal_k202_harvest.py`, shared lib `tools/evidence_l0.py`) | manifest-driven catalog; one new source lands per invocation |
 | k203 | Phase-1 sc harvest — 14 stores landed as of 2026-11-20 (K562 gwps+ess bulk, RPE1 sc+bulk, nadig24 jurkat/hepg2, 3 scPerturb arms); ~14 spawned; scPertEval blocked (requester-pays) → Zenodo/HF mirrors | each store passes invariant checks |
-| k204 | L1 meta-analysis v0 (IV-weights only) | LOLO-consistency: held-out line reconstruction |
+| k204 | L1 meta-analysis v0 — `k204-meta/h204-20261121-02`: 23 KD stores, 18,836 covered targets, z-space DL + per-kind FE lfc | LOLO-consistency: held-out line reconstruction |
 | k205 | DE-set predictor v0 | DE-count median in 22–44 band on held-outs |
 | k206 | L3 interface swap (delta → calibrated effects) | cell-eval2 score on held-out ≥ k040-equivalent |
 | k207+ | weight learning, bulk harvest, context layer | per phase gates |

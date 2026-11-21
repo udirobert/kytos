@@ -1,0 +1,52 @@
+{
+  "run_id": "k204-meta-analysis",
+  "created": "2026-11-21",
+  "headline": "L1 consensus store: 18,836/18,853 union targets covered across 23 KD stores; self-KD z_hat negative for 94.3% of measured targets (median -4.97)",
+  "data_status": "final",
+  "output": "/kytos-vol/k204-meta/h204-20261121-02/{stats.npz,manifest.json}",
+  "headline_metrics": {
+    "n_stores_included": 23,
+    "excluded_assay": ["datlinger17-jurkat (crop-oe)", "norman19-k562 (sc-oe)", "tian21-crispa (crispa)"],
+    "n_targets_union": 18853,
+    "n_covered": 18836,
+    "selfkd_neg": "16687/17692",
+    "selfkd_z_median": -4.97,
+    "median_n_sources": 3.0,
+    "frac_cells_multi_source": 0.555,
+    "lfc_finite_frac": 0.932,
+    "se_z_median": 0.707
+  },
+  "audit_flags": [
+    {
+      "id": "oe-contamination-run01",
+      "severity": "warning",
+      "rule": "assay-filter",
+      "message": "run h204-20261121-01 pooled two overexpression arms into KD consensus (datlinger17 crop-oe via '-oe' suffix gap, norman19 sc-oe); tokenized assay exclusion fixed in run -02. Run -01 retained on volume but marked superseded."
+    },
+    {
+      "id": "lfc-kind-partitioning",
+      "severity": "info",
+      "rule": "units",
+      "message": "lfc_hat pooled only within each target's primary lfc_kind (log1p-sc / log1p-norm / norm-mean-diff / log2fc-publisher); z_hat pools across all stores -- units never mixed"
+    },
+    {
+      "id": "pseudorep-uniform-weight",
+      "severity": "info",
+      "rule": "weights",
+      "message": "v0 uses uniform source multipliers; PSEUDOREP stores contribute via their honest SEs only. LOLO-fitted weights are k205+."
+    },
+    {
+      "id": "bulk-se-sparse",
+      "severity": "info",
+      "rule": "coverage",
+      "message": "guide-level bulk stores have ~0.4% finite-SE cells; they contribute lfc magnitude but few z votes"
+    },
+    {
+      "id": "tau2-zero-median",
+      "severity": "info",
+      "rule": "heterogeneity",
+      "message": "median tau2_z = 0 even on multi-source cells: most genes are null in every screen; disagreement concentrates in true-DE tails (i2 signal lives there)"
+    }
+  ],
+  "supersedes": "h204-20261121-01 (OE contamination -- see audit flag)"
+}
