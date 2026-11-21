@@ -711,7 +711,18 @@ def harvest(dataset_id: str, run_id: str) -> dict:
         else:
             labels = obs[pert_col].astype(str).to_numpy()
 
-        targets = sorted(set(labels[~is_ctrl]))
+        # target axis is panel genes only: combinatorial labels
+        # ('PPP2R1A_MAT2A'), off-panel symbols and junk labels can't be
+        # consumed downstream and would explode the (T,G) accumulator
+        all_labels = set(labels[~is_ctrl])
+        targets = sorted(all_labels & set(panel_genes))
+        n_offpanel = len(all_labels) - len(targets)
+        if n_offpanel:
+            print(
+                f"{dataset_id}: {n_offpanel} off-panel/combo labels excluded "
+                f"from target axis (e.g. {sorted(all_labels - set(targets))[:3]})",
+                flush=True,
+            )
         t_pos = {t: i for i, t in enumerate(targets)}
         n_targets = len(targets)
 

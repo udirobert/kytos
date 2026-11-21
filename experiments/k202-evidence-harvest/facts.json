@@ -162,6 +162,20 @@
       "lfc_kind": "log1p-sc",
       "source": "zenodo 10044268 AdamsonWeissman2016",
       "note": "perturbation=GENE_sgRNA; controls=pBA plasmid guides via control_regex; no batch col"
+    },
+    "tian19-ipsc/h202-20261121-01": {
+      "covered": 24,
+      "se_kind": "welch-per-batch",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268 TianKampmann2019_iPSC",
+      "note": "combinatorial screen: 39k+ combo labels excluded via panel-only target axis"
+    },
+    "tian19-neuron/h202-20261121-01": {
+      "covered": 24,
+      "se_kind": "welch-per-batch",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268 TianKampmann2019_day7neuron",
+      "note": "41,333 combo/off-panel labels excluded"
     }
   },
   "audit_flags": [
@@ -200,6 +214,12 @@
       "severity": "info",
       "rule": "schema",
       "message": "Adamson16 obs.perturbation uses GENE_sgRNA labels with pBA-plasmid controls (no 'control' label, no 'target' col); harvester gained control_regex + col_field target extraction; 3 lanes landed PSEUDOREP"
+    },
+    {
+      "id": "combo-labels",
+      "severity": "info",
+      "rule": "target-axis",
+      "message": "tian19 files are combinatorial screens (39-41k A_B labels); harvester now restricts target axis to panel genes -- combos can't serve single-KD consensus"
     }
   ],
   "hypotheses_preregistered": [],
@@ -240,8 +260,5 @@
     "tian19-ipsc",
     "tian19-neuron"
   ],
-  "in_flight_20261121": [
-    "tian19-ipsc",
-    "tian19-neuron"
-  ]
+  "phase1_status": "complete: all open catalogued sources landed; scPertEval blocked (requester-pays); backlog = mcfaline23-gxe DMSO filter, feng24, jiang24 peeks"
 }

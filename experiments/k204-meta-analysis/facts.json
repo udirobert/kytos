@@ -3,10 +3,14 @@
   "created": "2026-11-21",
   "headline": "L1 consensus store: 18,836/18,853 union targets covered across 23 KD stores; self-KD z_hat negative for 94.3% of measured targets (median -4.97)",
   "data_status": "final",
-  "output": "/kytos-vol/k204-meta/h204-20261121-02/{stats.npz,manifest.json}",
+  "output": "/kytos-vol/k204-meta/h204-20261121-03/{stats.npz,manifest.json}",
   "headline_metrics": {
-    "n_stores_included": 23,
-    "excluded_assay": ["datlinger17-jurkat (crop-oe)", "norman19-k562 (sc-oe)", "tian21-crispa (crispa)"],
+    "n_stores_included": 25,
+    "excluded_assay": [
+      "datlinger17-jurkat (crop-oe)",
+      "norman19-k562 (sc-oe)",
+      "tian21-crispa (crispa)"
+    ],
     "n_targets_union": 18853,
     "n_covered": 18836,
     "selfkd_neg": "16687/17692",
@@ -48,5 +52,6 @@
       "message": "median tau2_z = 0 even on multi-source cells: most genes are null in every screen; disagreement concentrates in true-DE tails (i2 signal lives there)"
     }
   ],
-  "supersedes": "h204-20261121-01 (OE contamination -- see audit flag)"
+  "supersedes": "h204-20261121-02 (predates tian19 stores) > h204-20261121-01 (OE contamination)",
+  "stores_note": "25 KD stores incl tian19 x2 (24 targets each); identical aggregate stats vs -02 since tian19 targets were already covered"
 }
