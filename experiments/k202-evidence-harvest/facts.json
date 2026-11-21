@@ -1,7 +1,7 @@
 {
   "run_id": "k202-evidence-harvest",
   "created": "2026-11-20",
-  "headline": "engine-v2 phase-1 corpus: inventory + manifest harvester; 22 phase-1 stores landed & validated incl K562 gwps-bulk 9,867 targets; 5 still in flight; scPertEval blocked->Zenodo/HF mirrors",
+  "headline": "engine-v2 phase-1 corpus: 25 datasets landed & validated (incl K562 gwps-bulk 9,867, xatlas pair ~36.6k, replogle-k562 9,866); tian19 x2 still in flight",
   "data_status": "final",
   "headline_metrics": {},
   "stores": {
@@ -141,6 +141,27 @@
       "se_kind": "welch-per-batch",
       "lfc_kind": "log1p-sc",
       "source": "zenodo 10044268"
+    },
+    "adamson16-k562-s1/h202-20261121-01": {
+      "covered": 9,
+      "se_kind": "welch-pseudobatch8 (PSEUDOREP)",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268 AdamsonWeissman2016",
+      "note": "perturbation=GENE_sgRNA; controls=pBA plasmid guides via control_regex; no batch col"
+    },
+    "adamson16-k562-s5/h202-20261121-01": {
+      "covered": 11,
+      "se_kind": "welch-pseudobatch8 (PSEUDOREP)",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268 AdamsonWeissman2016",
+      "note": "perturbation=GENE_sgRNA; controls=pBA plasmid guides via control_regex; no batch col"
+    },
+    "adamson16-k562-s10/h202-20261121-01": {
+      "covered": 87,
+      "se_kind": "welch-pseudobatch8 (PSEUDOREP)",
+      "lfc_kind": "log1p-sc",
+      "source": "zenodo 10044268 AdamsonWeissman2016",
+      "note": "perturbation=GENE_sgRNA; controls=pBA plasmid guides via control_regex; no batch col"
     }
   },
   "audit_flags": [
@@ -173,6 +194,12 @@
       "severity": "info",
       "rule": "schema",
       "message": "not all scPerturb files carry obs.target -- first spawn wave hit KeyError on ~11 datasets; harvester now falls back to autodetect when a pinned pert_col/control_col/batch_col is absent, manifest records actual column used; all 14 respawned 2026-11-20"
+    },
+    {
+      "id": "adamson16-control-regex",
+      "severity": "info",
+      "rule": "schema",
+      "message": "Adamson16 obs.perturbation uses GENE_sgRNA labels with pBA-plasmid controls (no 'control' label, no 'target' col); harvester gained control_regex + col_field target extraction; 3 lanes landed PSEUDOREP"
     }
   ],
   "hypotheses_preregistered": [],
@@ -210,6 +237,10 @@
     "adamson16-k562-s1",
     "adamson16-k562-s5",
     "adamson16-k562-s10",
+    "tian19-ipsc",
+    "tian19-neuron"
+  ],
+  "in_flight_20261121": [
     "tian19-ipsc",
     "tian19-neuron"
   ]

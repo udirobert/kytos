@@ -98,8 +98,8 @@ controls — Replogle-family schema, pinned in catalog.
 | replogle22k562-ess-bulk | figshare | K562 | **landed** — 2,058 targets |
 | nadig24-jurkat | altos HF | Jurkat | **landed** — 2,270, welch-per-gem_group (n=55) |
 | nadig24-hepg2 | altos HF | HepG2 | **landed** — 2,160, welch-per-gem_group |
-| adamson16-k562-s1/s5/s10 | zenodo | K562 | still in flight |
-| tian19-ipsc / tian19-neuron | zenodo | iPSC/neuron | still in flight |
+| adamson16-k562-s1/s5/s10 | zenodo | K562 | **landed `h202-20261121-01`** — 9/11/87 targets; GENE_sgRNA labels, pBA-plasmid controls via `control_regex`; PSEUDOREP |
+| tian19-ipsc / tian19-neuron | zenodo | iPSC/neuron | respawned `h202-20261121-01` (earlier calls dropped by platform) |
 
 All landed stores pass `modal_k201_validate.py` invariants (gene axis
 18,533, finite-lfc structure, se_kind recorded). PSEUDOREP flags mark

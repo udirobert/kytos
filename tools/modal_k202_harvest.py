@@ -253,8 +253,10 @@ CATALOG = {
         "assay": "sc-crnispri",
         "x_kind": "raw",
         "batch_col": None,
-        "pert_col": "target",
-        "control_col": "perturbation",
+        "pert_col": "perturbation",
+        "control_regex": "pBA",
+        "target_source": "col_field",
+        "target_field": 0,
         "citation": "Adamson/Weissman 2016 K562 10X001 (scPerturb)",
         "license": "public (zenodo scPerturb)",
         "note": "early K562 CRISPRi screen, lane 1",
@@ -267,8 +269,10 @@ CATALOG = {
         "assay": "sc-crnispri",
         "x_kind": "raw",
         "batch_col": None,
-        "pert_col": "target",
-        "control_col": "perturbation",
+        "pert_col": "perturbation",
+        "control_regex": "pBA",
+        "target_source": "col_field",
+        "target_field": 0,
         "citation": "Adamson/Weissman 2016 K562 10X005 (scPerturb)",
         "license": "public (zenodo scPerturb)",
         "note": "early K562 CRISPRi screen, lane 5",
@@ -281,8 +285,10 @@ CATALOG = {
         "assay": "sc-crnispri",
         "x_kind": "raw",
         "batch_col": None,
-        "pert_col": "target",
-        "control_col": "perturbation",
+        "pert_col": "perturbation",
+        "control_regex": "pBA",
+        "target_source": "col_field",
+        "target_field": 0,
         "citation": "Adamson/Weissman 2016 K562 10X010 (scPerturb)",
         "license": "public (zenodo scPerturb)",
         "note": "early K562 CRISPRi screen, lane 10",
@@ -657,7 +663,19 @@ def harvest(dataset_id: str, run_id: str) -> dict:
         src_genes, gene_axis = l0.pick_gene_axis(adata)
 
         # --- control rows + target labels ---
-        if spec.get("control_flag_col"):
+        if spec.get("control_regex"):
+            # e.g. Adamson16: perturbation = GENE_sgRNA, controls are the
+            # pBA-plasmid guides -> control_regex 'pBA'
+            ccol = spec.get("control_col") or spec.get("pert_col")
+            if ccol not in obs.columns:
+                ccol, _ = l0.pick_pert_column(obs)
+            is_ctrl = (
+                obs[ccol].astype(str).str.contains(spec["control_regex"], case=False).to_numpy()
+            )
+            pert_col = ccol
+            detected = ccol
+            ctrl_label = spec["control_regex"]
+        elif spec.get("control_flag_col"):
             is_ctrl = obs[spec["control_flag_col"]].astype(bool).to_numpy()
             pert_col = spec["control_flag_col"]
             ctrl_label = "True"
@@ -687,6 +705,9 @@ def harvest(dataset_id: str, run_id: str) -> dict:
         if spec.get("target_source") == "obs_name_field":
             names = adata.obs_names.astype(str).to_numpy()
             labels = np.array([n.split("_")[spec["target_field"]] for n in names])
+        elif spec.get("target_source") == "col_field":
+            # e.g. Adamson16 perturbation 'SPI1_pDS255' -> target 'SPI1'
+            labels = obs[pert_col].astype(str).str.split("_").str[spec["target_field"]].to_numpy()
         else:
             labels = obs[pert_col].astype(str).to_numpy()
 
