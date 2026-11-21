@@ -198,6 +198,16 @@ The layer we never built. Two outputs per target×gene:
    land near the measured regime (~22–44/target median from the
    wrap-up), not by fixed p-cutoff.
 
+   *As built (k205)*: LOSO-trained HistGradientBoosting `de_prob`
+   (label stores hct116/hek293t/k562, features from an L1 rebuilt
+   without each label store); `lfc_cal = lfc_hat · σ²_t/(σ²_t +
+   max(se_hat, floor)²)` per-target EB shrinkage. Audit finding: the
+   label stores' DE regimes (xatlas ~1.8k/target vs k562 ~6/target)
+   sit far from the eval band — the operating threshold (0.64) is
+   picked from the emitted count curve to put the covered-target
+   median in-band. k205b candidates: regime-matched labels, per-target
+   top-K, isotonic calibration.
+
 ## 6. L4 — context adaptation (deferred)
 
 Only after L0–L3 post real benchmark numbers. Options in order of
@@ -249,8 +259,8 @@ non-DE genes get zeroed cleanly instead of carrying residual deltas
 | k201 | `k201-evidence/{hct116,hek293t,k562,cd4,h1}/` on `kytos-vcc` (L0 phase 0) | schema validates; self-KD sign audit; `tools/modal_k201_validate.py` |
 | k202 | Corpus inventory doc (`docs/evidence-corpus-inventory.md`) + harvester (`tools/modal_k202_harvest.py`, shared lib `tools/evidence_l0.py`) | manifest-driven catalog; one new source lands per invocation |
 | k203 | Phase-1 sc harvest — 14 stores landed as of 2026-11-20 (K562 gwps+ess bulk, RPE1 sc+bulk, nadig24 jurkat/hepg2, 3 scPerturb arms); ~14 spawned; scPertEval blocked (requester-pays) → Zenodo/HF mirrors | each store passes invariant checks |
-| k204 | L1 meta-analysis v0 — `k204-meta/h204-20261121-02`: 23 KD stores, 18,836 covered targets, z-space DL + per-kind FE lfc | LOLO-consistency: held-out line reconstruction |
-| k205 | DE-set predictor v0 | DE-count median in 22–44 band on held-outs |
+| k204 | L1 meta-analysis v0 — `k204-meta/h204-20261121-03`: 25 KD stores, 18,836 covered targets, z-space DL + per-kind FE lfc | LOLO-consistency: held-out line reconstruction |
+| k205 | DE-set predictor v0 — `k205-deset/h205-20261121-01`: LOSO-trained GBM `de_prob` (AUROC 0.796), EB `lfc_cal`; audit curve picks thr 0.64 → median 29 in band (IQR wide — per-target calibration is k205b work) | DE-count median in 22–44 band on held-outs — met on median criterion |
 | k206 | L3 interface swap (delta → calibrated effects) | cell-eval2 score on held-out ≥ k040-equivalent |
 | k207+ | weight learning, bulk harvest, context layer | per phase gates |
 

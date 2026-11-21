@@ -1,6 +1,6 @@
 # Kytos — Agent Operating Rules
 
-> Last updated **2026-11-20** — **VCC 2026 is concluded.** Final entry
+> Last updated **2026-11-21** — **VCC 2026 is concluded.** Final entry
 > `kytos-k043-final-sagr-dm` (entry `Ov4qNbLHMb1dRRyqxDn8`) stood as the
 > last submission; scores revealed and winners announced Nov 19
 > (BioInsight AI Lab/Illumina 1st, FlowState 2nd, X-team/Xaira 3rd;
@@ -11,12 +11,14 @@
 > **`docs/kytos-roadmap.md`** (engine v2, VCC 2027 readiness, standing
 > benchmarks, audit layer); engine spec:
 > **`docs/engine-v2-design.md`** (evidence schema, meta-analysis,
-> DE-set layer, eval harness, k2NN run plan). Engine v2 in progress:
-> **k201** landed phase-0 L0 evidence stores on `kytos-vcc` under
-> `k201-evidence/` (`experiments/k201-evidence-l0/`); **k202** built the
-> phase-1 corpus inventory (`docs/evidence-corpus-inventory.md`) +
-> manifest-driven harvester (`tools/modal_k202_harvest.py`); the k203
-> wave has 14+ stores landed and more spawned. Access notes: scPertEval
+> DE-set layer, eval harness, k2NN run plan). Engine v2 progress:
+> **k201–k203** landed a 28-dataset L0 corpus on `kytos-vcc` under
+> `k201-evidence/`; **k204** built the L1 consensus store
+> (`k204-meta/h204-20261121-03`, 25 KD stores, 18,836 covered targets);
+> **k205** landed the L2 DE-set predictor + `lfc_cal`
+> (`k205-deset/h205-20261121-01`, LOSO-trained GBM, AUROC 0.796,
+> operating threshold 0.64 → median 29 in the 22–44 band).
+> Access notes: scPertEval
 > GCS went **requester-pays** (needs a GCP billing project); scPerturb
 > is open on **Zenodo 10044268** via `/records/.../files/<name>?download=1`
 > (the `/api/` route throttles Modal IPs); Altos Labs'

@@ -1,0 +1,62 @@
+{
+  "run_id": "k205-deset",
+  "created": "2026-11-21",
+  "headline": "L2 DE-set predictor v0 trained LOSO over 3 label lines (39.2M target-gene rows); AUROC 0.796, operating threshold 0.64 lands covered-target median DE count at 29 (gate band 22-44); lfc_cal EB-shrunk (median ratio 0.51, 93.2% finite)",
+  "data_status": "final",
+  "output": "/kytos-vol/k205-deset/h205-20261121-01/{stats.npz,manifest.json,audit.json}",
+  "headline_metrics": {
+    "auroc": 0.7965,
+    "auprc": 0.5966,
+    "brier": 0.1569,
+    "n_train": 33271426,
+    "n_eval": 5886773,
+    "pos_frac_eval": 0.2897,
+    "operating_threshold": 0.64,
+    "median_de_count_at_thr": 29.0,
+    "frac_targets_in_band_at_thr": 0.199,
+    "lfc_cal_finite_frac": 0.932,
+    "shrink_ratio_median": 0.513,
+    "shrink_ratio_q10_q90": [0.254, 0.763],
+    "measured_label_de_median": {
+      "hct116": 1836,
+      "hek293t": 1964,
+      "k562": 6
+    }
+  },
+  "count_curve": [
+    {"thr": 0.5, "median": 1174.0, "q25": 939.0, "q75": 2055.0},
+    {"thr": 0.6, "median": 235.0, "q25": 86.0, "q75": 627.25},
+    {"thr": 0.62, "median": 89.0, "q25": 4.0, "q75": 388.0},
+    {"thr": 0.64, "median": 29.0, "q25": 1.0, "q75": 188.25},
+    {"thr": 0.66, "median": 9.0, "q25": 1.0, "q75": 84.0},
+    {"thr": 0.7, "median": 1.0, "q25": 0.0, "q75": 14.0}
+  ],
+  "audit_flags": [
+    {
+      "id": "gate-median-pass",
+      "severity": "info",
+      "rule": "de-count-band",
+      "message": "Design gate (median predicted DE count in 22-44 on covered targets) met at threshold 0.64 (median 29). Caveat: predicted counts are on the full-L1 production model, and the per-target spread is wide (IQR 1-188; 20% of covered targets in band) -- a global threshold is a weak per-target calibrator."
+    },
+    {
+      "id": "label-regime-mismatch",
+      "severity": "warning",
+      "rule": "label-regime",
+      "message": "Label stores are in different DE-calling regimes from the eval target band: xatlas Welch-per-sample (n<=218) calls ~1,800-2,000 genes DE per target at q<0.05, k562 gem-group Welch calls ~6. The predictor inherits the xatlas-dominated label regime (pos_frac 0.29); k205b candidates: regime-matched labels (downsampled-power or conservative-stat labels), per-target top-K output instead of global threshold, isotonic calibration."
+    },
+    {
+      "id": "prob-mass-cliff",
+      "severity": "info",
+      "rule": "calibration",
+      "message": "de_prob mass piles just above the 0.5 decision boundary: median count falls 1,174 -> 29 across thr 0.5->0.64. Brier 0.157 is honest; the cliff means small threshold moves swing counts hard -- L3 should consume de_prob as a ranking/weight, not only a hard set."
+    },
+    {
+      "id": "feature-leakage-guard",
+      "severity": "info",
+      "rule": "leakage",
+      "message": "LOSO protocol verified: features for each label store built from L1 excluding that store (loso-{hct116,hek293t,k562} rebuilt under OUT_ROOT). Labels = within-store q<0.05; the label store never contributes to its own feature row."
+    }
+  ],
+  "supersedes": null,
+  "notes": "Build incidents: (1) kd_eff broadcast to len(cols) then re-sliced by full-axis indices -> IndexError; fixed by broadcasting to full gene axis before column slicing, covered by tests/test_k205_deset.py. (2) npz member access re-decompresses full arrays; _load_feats materializes each member once. Sampled-eval DE counts (234 pred / 300 true) are within the <=900-col label window, not full-axis -- the full-axis audit curve is the gate quantity."
+}

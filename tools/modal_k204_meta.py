@@ -90,7 +90,7 @@ def _excluded(man: dict) -> bool:
     timeout=7200,
     volumes={"/kytos-vol": vol},
 )
-def meta(run_id: str = RUN_ID) -> dict:
+def meta(run_id: str = RUN_ID, exclude_datasets: list | None = None) -> dict:
     import numpy as np
 
     discovered = _discover()
@@ -105,8 +105,17 @@ def meta(run_id: str = RUN_ID) -> dict:
         for e in discovered
         if by_ds[e["manifest"]["_dataset"]] is not e
     ]
-    entries = [e for e in by_ds.values() if not _excluded(e["manifest"])]
-    skipped = [e["manifest"]["_dataset"] for e in by_ds.values() if _excluded(e["manifest"])]
+    excl = set(exclude_datasets or [])
+    entries = [
+        e
+        for e in by_ds.values()
+        if not _excluded(e["manifest"]) and e["manifest"]["_dataset"] not in excl
+    ]
+    skipped = [
+        e["manifest"]["_dataset"]
+        for e in by_ds.values()
+        if _excluded(e["manifest"]) or e["manifest"]["_dataset"] in excl
+    ]
     if superseded:
         print(f"superseded runs ignored: {superseded}", flush=True)
     print(f"{len(entries)} stores included; excluded: {skipped}", flush=True)

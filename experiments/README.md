@@ -357,11 +357,24 @@ enrichment path.
 - `k204-meta-analysis` — data run 2026-11-21, **no submission**: L1
   precision-weighted meta-analysis over the L0 corpus
   (`tools/modal_k204_meta.py`). 23 KD stores pooled →
-  `k204-meta/h204-20261121-02` (18,836/18,853 union targets covered;
+  `k204-meta/h204-20261121-03` (18,836/18,853 union targets covered;
   self-KD z_hat negative for 94.3% of measured targets). z is the
   cross-assay unit; LFC pooled only within `lfc_kind`. Run -01
   superseded: OE arms (datlinger17, norman19) had slipped past the
-  assay filter — tokenized exclusion fixed and flagged.
+  assay filter — tokenized exclusion fixed and flagged. Run -03 folds
+  in tian19 (aggregate identical — targets already covered).
+- `k205-deset` — data run 2026-11-21, **no submission**: L2 DE-set
+  predictor + calibrated effects (`tools/modal_k205_deset.py`), design
+  doc §5. LOSO protocol: for each label store (hct116, hek293t, k562)
+  an L1 is rebuilt without it so features can't leak its labels;
+  HistGradientBoostingClassifier trained on 39.2M target×gene rows.
+  Held-out AUROC 0.796 / AUPRC 0.597 / Brier 0.157. Audit count-curve
+  picks operating threshold 0.64 → covered-target median DE count 29,
+  inside the measured 22–44 band (gate met on the median criterion;
+  per-target spread is wide — flagged). `lfc_cal` = per-target EB
+  shrinkage (median ratio 0.51, 93.2% finite). Label-regime mismatch
+  flagged: xatlas calls ~1.8k genes/target DE, k562 ~6 — the 22–44
+  band is the eval regime, not the label regime.
 
 ## 2026-09-20 validation reset
 

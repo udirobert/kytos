@@ -1,0 +1,23 @@
+{
+  "run_id": "k205-deset",
+  "created_at": "2026-11-21",
+  "mode": "engine-v2 L2 DE-set predictor + calibrated effects -- Modal",
+  "platform": "modal (kytos-vcc volume)",
+  "jobs": {
+    "tools/modal_k205_deset.py": "LOSO L1 rebuilds (per label store, exclude=), HistGradientBoostingClassifier de_prob trained on within-store q<0.05 labels, full-corpus predict + per-target EB lfc_cal; audit stage emits threshold count curve"
+  },
+  "input": {
+    "l1": "/kytos-vol/k204-meta/h204-20261121-03/stats.npz",
+    "label_stores": [
+      "/kytos-vol/k201-evidence/hct116",
+      "/kytos-vol/k201-evidence/hek293t",
+      "/kytos-vol/k201-evidence/k562"
+    ]
+  },
+  "output": "/kytos-vol/k205-deset/h205-20261121-01/{stats.npz,manifest.json,audit.json} + loso-{hct116,hek293t,k562}/",
+  "docs": {
+    "design": "docs/engine-v2-design.md sections 5, 9",
+    "l1_run": "experiments/k204-meta-analysis/"
+  },
+  "notes": "LOSO feature honesty: features for a label store's targets come from an L1 rebuilt without that store (tools/modal_k204_meta.py gained an exclude= parameter). Operating threshold 0.64 chosen by the audit curve so the covered-target median DE count lands in the measured 22-44 band."
+}
